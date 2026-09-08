@@ -1,4 +1,4 @@
-import { impactMetrics, namedPrograms, funderReports, donationTiers } from "../../_content/donors";
+import { impactMetrics, namedPrograms, wellWishersEvents, funderReports, donationTiers } from "../../_content/donors";
 import { legalStatus } from "../../_content/people";
 import { PageHeader, SectionHeading, Stat, DocumentRow, StatusTag } from "../_ui/kit";
 import MediaSlot from "../_ui/MediaSlot";
@@ -14,12 +14,12 @@ export default function DonorsV1() {
         </div>
       </section>
 
-      <section className="border-y border-[#2e3891]/10 bg-[#f7f7f3]">
+      <section className="border-y border-[#243D9A]/10 bg-[#f7f7f3]">
         <div className="mx-auto max-w-5xl px-6 py-16">
           <SectionHeading>Named Programmes</SectionHeading>
           <div className="mt-8 grid gap-6 sm:grid-cols-2">
             {namedPrograms.map((p) => (
-              <div key={p.slug} className="border border-[#2e3891]/12 bg-white">
+              <div key={p.slug} className="border border-[#243D9A]/12 bg-white">
                 {p.image && <MediaSlot need={p.image} />}
                 <div className="p-5">
                   <h3 className="flex items-center gap-2 font-[family-name:var(--font-heading)] text-lg text-[#171a2b]">
@@ -35,6 +35,24 @@ export default function DonorsV1() {
       </section>
 
       <section className="mx-auto max-w-5xl px-6 py-16">
+        <SectionHeading>Well Wishers Program</SectionHeading>
+        <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[#5b5f74]">Moments with the well-wishers and supporters who back PRI's work.</p>
+        <div className="mt-8 grid gap-6 sm:grid-cols-3">
+          {wellWishersEvents.map((p) => (
+            <div key={p.slug} className="border border-[#243D9A]/12 bg-white">
+              {p.image && <MediaSlot need={p.image} />}
+              <div className="p-5">
+                <h3 className="flex items-center gap-2 font-[family-name:var(--font-heading)] text-lg text-[#171a2b]">
+                  {p.name} <StatusTag status={p.status} />
+                </h3>
+                <p className="mt-2 text-sm text-[#5b5f74]">{p.description}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-5xl px-6 py-16">
         <SectionHeading>Financial Transparency</SectionHeading>
         <dl className="mt-6 grid gap-6 sm:grid-cols-3">
           {legalStatus.map((l) => (
@@ -44,12 +62,12 @@ export default function DonorsV1() {
             </div>
           ))}
         </dl>
-        <ul className="mt-8 divide-y divide-[#2e3891]/10 border-y border-[#2e3891]/10">
+        <ul className="mt-8 divide-y divide-[#243D9A]/10 border-y border-[#243D9A]/10">
           {funderReports.map((r) => <DocumentRow key={r.title} doc={r} />)}
         </ul>
       </section>
 
-      <section className="border-t border-[#2e3891]/10 bg-[#1c2456]">
+      <section className="border-t border-[#243D9A]/10 bg-[#1c2456]">
         <div className="mx-auto max-w-3xl px-6 py-16 text-center">
           <h2 className="font-[family-name:var(--font-heading)] text-2xl italic text-white">Make a donation</h2>
           <div className="mt-8 flex flex-wrap justify-center gap-3">

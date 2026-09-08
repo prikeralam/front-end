@@ -1,6 +1,6 @@
 import type { MediaNeed } from "../_lib/types";
 import { org, vision } from "./org";
-import { people, reports, testimonials, directorsNote, orgChart } from "./people";
+import { people, teamMembers, patrons, executiveCouncil, reports, testimonials, directorsNote, orgChart } from "./people";
 import { publications } from "./publications";
 import { datasets, dashboards } from "./datasets";
 import { fellows, programmes } from "./fellows";
@@ -54,6 +54,19 @@ export const auditSections: SectionAudit[] = [
       "Governance names and roles are all placeholders.",
       "Director's Note is invented and needs writing.",
       "Society registration number, 12A and 80G status all unconfirmed.",
+    ],
+  },
+  {
+    section: "· People",
+    href: "/people",
+    real: count(teamMembers, "real") + count(patrons, "real") + count(executiveCouncil, "real"),
+    placeholder: count(teamMembers, "placeholder") + count(patrons, "placeholder") + count(executiveCouncil, "placeholder"),
+    media: media(...people.map((p) => p.photo)),
+    documents: [],
+    notes: [
+      "Names and designations are real for all 7 team, 2 patron and 17 executive council entries.",
+      "Only 2 of 26 have a real photo supplied (Rashiq, Muhammed Sinan) — everyone else shows a themed stock portrait until PRI supplies one.",
+      "Profile pages exist at /people/[slug] but bios are unwritten.",
     ],
   },
   {

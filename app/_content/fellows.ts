@@ -31,7 +31,7 @@ export const fellows: Person[] = [
     group: "fellow",
     bio: "Biography and impact story to be supplied.",
     status: "placeholder",
-    photo: { label: "Fellow headshot", ratio: "square", kind: "photo" },
+    photo: { label: "Fellow headshot — Human Capital Development", ratio: "square", kind: "photo" },
   },
   {
     slug: "fellow-two",
@@ -40,7 +40,7 @@ export const fellows: Person[] = [
     group: "fellow",
     bio: "Biography and impact story to be supplied.",
     status: "placeholder",
-    photo: { label: "Fellow headshot", ratio: "square", kind: "photo" },
+    photo: { label: "Fellow headshot — Economic Analysis", ratio: "square", kind: "photo" },
   },
   {
     slug: "fellow-three",
@@ -49,7 +49,7 @@ export const fellows: Person[] = [
     group: "fellow",
     bio: "Biography and impact story to be supplied.",
     status: "placeholder",
-    photo: { label: "Fellow headshot", ratio: "square", kind: "photo" },
+    photo: { label: "Fellow headshot — Governance & Policy Analysis", ratio: "square", kind: "photo" },
   },
   {
     slug: "past-fellow-one",
@@ -58,7 +58,7 @@ export const fellows: Person[] = [
     group: "past-fellow",
     bio: "Biography and impact story to be supplied.",
     status: "placeholder",
-    photo: { label: "Past fellow headshot", ratio: "square", kind: "photo" },
+    photo: { label: "Past fellow headshot — Demography & Health", ratio: "square", kind: "photo" },
   },
   {
     slug: "past-fellow-two",
@@ -67,7 +67,7 @@ export const fellows: Person[] = [
     group: "past-fellow",
     bio: "Biography and impact story to be supplied.",
     status: "placeholder",
-    photo: { label: "Past fellow headshot", ratio: "square", kind: "photo" },
+    photo: { label: "Past fellow headshot — Society Development", ratio: "square", kind: "photo" },
   },
 ];
 

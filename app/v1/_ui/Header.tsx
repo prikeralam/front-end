@@ -12,7 +12,7 @@ export default function Header() {
   const [group, setGroup] = useState<string | null>(null);
 
   return (
-    <header className="sticky top-0 z-20 border-b border-[#2e3891]/15 bg-white">
+    <header className="sticky top-0 z-20 border-b border-[#243D9A]/15 bg-white">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-6 px-6 py-5">
         <Link href={base} className="flex shrink-0 items-center gap-3">
           <Image src="/logo.png" alt="PRI mark" width={34} height={34} />
@@ -27,7 +27,7 @@ export default function Header() {
               <Link
                 key={n.label}
                 href={`${base}${n.href}`}
-                className="text-[13px] uppercase tracking-[0.12em] text-[#3a3f55] transition-colors hover:text-[#2e3891]"
+                className="text-[13px] uppercase tracking-[0.12em] text-[#3a3f55] transition-colors hover:text-[#243D9A]"
               >
                 {n.label}
               </Link>
@@ -41,19 +41,19 @@ export default function Header() {
                 <button
                   onClick={() => setGroup(group === n.label ? null : n.label)}
                   aria-expanded={group === n.label}
-                  className="text-[13px] uppercase tracking-[0.12em] text-[#3a3f55] transition-colors hover:text-[#2e3891]"
+                  className="text-[13px] uppercase tracking-[0.12em] text-[#3a3f55] transition-colors hover:text-[#243D9A]"
                 >
                   {n.label}
                 </button>
                 {group === n.label && (
                   <div className="absolute left-1/2 top-full w-64 -translate-x-1/2 pt-4">
-                    <div className="border border-[#2e3891]/15 bg-white py-2 shadow-[0_8px_28px_rgba(28,36,86,0.10)]">
+                    <div className="border border-[#243D9A]/15 bg-white py-2 shadow-[0_8px_28px_rgba(28,36,86,0.10)]">
                       {n.items.map((item) => (
                         <Link
                           key={item.href}
                           href={`${base}${item.href}`}
                           onClick={() => setGroup(null)}
-                          className="block px-5 py-2.5 text-[14px] text-[#3a3f55] transition-colors hover:bg-[#f7f7f3] hover:text-[#2e3891]"
+                          className="block px-5 py-2.5 text-[14px] text-[#3a3f55] transition-colors hover:bg-[#f7f7f3] hover:text-[#243D9A]"
                         >
                           {item.label}
                         </Link>
@@ -64,10 +64,10 @@ export default function Header() {
               </div>
             )
           )}
-          <span className="flex items-center gap-1 border-l border-[#2e3891]/20 pl-6 text-[12px] text-[#6b7094]">
-            <button className="text-[#2e3891]">EN</button>
+          <span className="flex items-center gap-1 border-l border-[#243D9A]/20 pl-6 text-[12px] text-[#6b7094]">
+            <button className="text-[#243D9A]">EN</button>
             <span>/</span>
-            <button className="hover:text-[#2e3891]">ML</button>
+            <button className="hover:text-[#243D9A]">ML</button>
           </span>
         </nav>
 
@@ -84,10 +84,10 @@ export default function Header() {
       </div>
 
       {open && (
-        <div className="border-t border-[#2e3891]/15 bg-white lg:hidden">
+        <div className="border-t border-[#243D9A]/15 bg-white lg:hidden">
           <nav className="mx-auto max-w-6xl px-6 py-6">
             {nav.map((n) => (
-              <div key={n.label} className="border-b border-[#2e3891]/10 py-4 last:border-0">
+              <div key={n.label} className="border-b border-[#243D9A]/10 py-4 last:border-0">
                 {n.items.length === 0 ? (
                   <Link
                     href={`${base}${n.href}`}

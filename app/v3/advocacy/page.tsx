@@ -35,7 +35,7 @@ export default function AdvocacyV3() {
           <SectionHeading>{scorecard.caption}</SectionHeading>
           <table className="mt-6 w-full min-w-[500px] text-left text-sm">
             <thead>
-              <tr className="border-b-2 border-[#6B2737]">
+              <tr className="border-b-2 border-[#243D9A]">
                 {scorecard.columns.map((c) => (
                   <th key={c} scope="col" className="pb-3 pr-4 text-[12px] font-semibold uppercase tracking-wide text-[#8b8fa3]">{c}</th>
                 ))}

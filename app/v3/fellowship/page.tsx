@@ -36,7 +36,7 @@ export default function FellowshipV3() {
         </div>
 
         <div className="mt-8">
-          <Link href="#apply" className="inline-block bg-[#6B2737] px-6 py-3 text-sm font-semibold text-white hover:bg-[#551E2A]">
+          <Link href="#apply" className="inline-block bg-[#243D9A] px-6 py-3 text-sm font-semibold text-white hover:bg-[#1B2C70]">
             Apply now &rarr;
           </Link>
         </div>

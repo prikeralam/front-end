@@ -1,6 +1,7 @@
+import Link from "next/link";
 import { org, vision, missionPoints, departments } from "../../_content/org";
-import { directorsNote, executiveCouncil, steeringCouncil, legalStatus, reports, orgChart } from "../../_content/people";
-import { PageHeader, SectionHeading, PersonCard, DocumentRow, StatusTag } from "../_ui/kit";
+import { directorsNote, legalStatus, reports, orgChart } from "../../_content/people";
+import { PageHeader, SectionHeading, DocumentRow, StatusTag } from "../_ui/kit";
 import MediaSlot from "../_ui/MediaSlot";
 
 export default function AboutV2() {
@@ -9,9 +10,10 @@ export default function AboutV2() {
       <PageHeader kicker="About PRI" title={org.tagline} intro={org.summary} />
 
       <section className="mx-auto max-w-6xl px-6 py-16">
-        <div className="grid gap-8 lg:grid-cols-2">
+        <SectionHeading>Who We Are</SectionHeading>
+        <div className="mt-8 grid gap-8 lg:grid-cols-2">
           <p className="text-lg leading-relaxed text-[#4b4f66]">{org.intro}</p>
-          <div className="rounded-xl bg-[#0F6B5C] p-8 text-white">
+          <div className="rounded-xl bg-[#243D9A] p-8 text-white">
             <p className="text-xs font-bold uppercase tracking-wider text-white/60">Our Vision</p>
             <p className="mt-4 text-lg leading-relaxed">{vision.text}</p>
           </div>
@@ -71,20 +73,12 @@ export default function AboutV2() {
       <section className="border-y border-[#e6e8f0] bg-[#fafbfc]">
         <div className="mx-auto max-w-6xl px-6 py-16">
           <SectionHeading>Governance</SectionHeading>
-          <div className="mt-8 grid gap-8 lg:grid-cols-2">
-            <div>
-              <p className="mb-4 text-xs font-bold uppercase tracking-wider text-[#8b8fa3]">Executive Council</p>
-              <div className="grid gap-3">
-                {executiveCouncil.map((p) => <PersonCard key={p.slug} person={p} />)}
-              </div>
-            </div>
-            <div>
-              <p className="mb-4 text-xs font-bold uppercase tracking-wider text-[#8b8fa3]">Steering Council</p>
-              <div className="grid gap-3">
-                {steeringCouncil.map((p) => <PersonCard key={p.slug} person={p} />)}
-              </div>
-            </div>
-          </div>
+          <p className="mt-4 max-w-2xl text-[15px] leading-relaxed text-[#5b5f74]">
+            PRI&rsquo;s governance includes a 7-person team, 2 patrons, and a 17-member Executive Council.
+          </p>
+          <Link href="/v2/people" className="mt-5 inline-block text-sm font-semibold text-[#243D9A] hover:underline">
+            Meet our people &rarr;
+          </Link>
         </div>
       </section>
 

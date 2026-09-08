@@ -23,7 +23,7 @@ export default async function FellowDetailV1({ params }: { params: Promise<{ slu
             <p className="mt-4 text-[15px] leading-relaxed text-[#5b5f74]">{fellow.bio}</p>
           </div>
         </div>
-        <div className="mt-10 border-t border-[#2e3891]/10 pt-6">
+        <div className="mt-10 border-t border-[#243D9A]/10 pt-6">
           <p className="text-[12px] uppercase tracking-[0.12em] text-[#8b8fa3]">Linked publications</p>
           <p className="mt-2 text-sm text-[#8b8fa3]">No publications linked yet.</p>
         </div>

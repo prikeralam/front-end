@@ -10,7 +10,7 @@ export default function GetInvolvedV3() {
       <section className="mx-auto max-w-6xl px-6 py-16">
         <div className="grid gap-6 sm:grid-cols-4">
           {involvementPaths.map((p) => (
-            <div key={p.title} className="border-t-2 border-[#6B2737] pt-4">
+            <div key={p.title} className="border-t-2 border-[#243D9A] pt-4">
               <h3 className="font-[family-name:var(--font-heading)] text-lg font-semibold text-[#171a2b]">{p.title}</h3>
               <p className="mt-2 text-sm text-[#5b5f74]">{p.desc}</p>
             </div>
@@ -24,12 +24,12 @@ export default function GetInvolvedV3() {
           <ul className="mt-8 divide-y divide-[#e6dbc7] border-y border-[#e6dbc7]">
             {jobs.map((j) => (
               <li key={j.slug}>
-                <Link href={`/v3/get-involved/jobs/${j.slug}`} className="flex items-center justify-between gap-4 py-5 hover:text-[#6B2737]">
+                <Link href={`/v3/get-involved/jobs/${j.slug}`} className="flex items-center justify-between gap-4 py-5 hover:text-[#243D9A]">
                   <div>
                     <p className="flex items-center gap-2 text-[15px] font-semibold text-[#171a2b]">{j.title} <StatusTag status={j.status} /></p>
                     <p className="mt-1 text-[13px] text-[#8b8fa3]">{j.location} &middot; {j.employment}</p>
                   </div>
-                  <span className="shrink-0 text-sm text-[#6B2737]">View &rarr;</span>
+                  <span className="shrink-0 text-sm text-[#243D9A]">View &rarr;</span>
                 </Link>
               </li>
             ))}

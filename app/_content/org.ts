@@ -122,8 +122,16 @@ export const nav = [
     label: "About",
     items: [
       { label: "About PRI", href: "/about" },
-      { label: "Partner Network", href: "/partners" },
       { label: "Donors & Sponsors", href: "/donors" },
+    ],
+  },
+  {
+    label: "People",
+    items: [
+      { label: "Our Team", href: "/people/team" },
+      { label: "Patrons", href: "/people/patrons" },
+      { label: "Executive Council", href: "/people/executive" },
+      { label: "Partners", href: "/partners" },
     ],
   },
   {

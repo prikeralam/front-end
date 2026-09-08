@@ -10,13 +10,15 @@ export type MediaNeed = {
   /** Shape hint shown in the slot, e.g. "16:9", "square", "3:2". */
   ratio: string;
   kind: "photo" | "logo" | "chart" | "map" | "video" | "diagram" | "document";
+  /** Real asset path (e.g. "/people/team/rashiq.jpg") once PRI has supplied one — takes priority over any stock/placeholder rendering. */
+  src?: string;
 };
 
 export type Person = {
   slug: string;
   name: string;
   role: string;
-  group: "executive" | "steering" | "fellow" | "past-fellow" | "author";
+  group: "team" | "patron" | "executive" | "fellow" | "past-fellow" | "author";
   bio?: string;
   status: ContentStatus;
   photo: MediaNeed | null;
@@ -99,7 +101,7 @@ export type Partner = {
   slug: string;
   name: string;
   description: string;
-  type: "institutional" | "consortium";
+  type: "institution" | "researcher";
   status: ContentStatus;
   logo: MediaNeed | null;
 };

@@ -21,7 +21,7 @@ export default async function MediaCaseDetailV2({ params }: { params: Promise<{ 
         </div>
         {item.screenshot && <MediaSlot need={item.screenshot} className="max-w-lg" />}
         <p className="mt-8 text-lg leading-relaxed text-[#4b4f66]">{item.summary}</p>
-        <div className="mt-8 rounded-xl bg-[#0F6B5C] p-6 text-white">
+        <div className="mt-8 rounded-xl bg-[#243D9A] p-6 text-white">
           <p className="text-xs font-bold uppercase tracking-wider text-white/60">PRI&rsquo;s Response</p>
           <p className="mt-2 text-[15px] leading-relaxed">{item.response}</p>
         </div>

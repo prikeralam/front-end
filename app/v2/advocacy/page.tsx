@@ -17,7 +17,7 @@ export default function AdvocacyV2() {
         <div className="mt-8 grid gap-4">
           {advocacyItems.map((a) => (
             <Link key={a.slug} href={`/v2/advocacy/${a.slug}`} className="grid gap-2 rounded-xl border border-[#e6e8f0] bg-white p-5 transition-shadow hover:shadow-[0_2px_16px_rgba(15,107,92,0.10)] sm:grid-cols-[140px_1fr] sm:gap-6">
-              <span className="rounded bg-[#0F6B5C]/8 px-2 py-1 text-[11px] font-bold uppercase tracking-wide text-[#0F6B5C]">{a.type}</span>
+              <span className="rounded bg-[#243D9A]/8 px-2 py-1 text-[11px] font-bold uppercase tracking-wide text-[#243D9A]">{a.type}</span>
               <div>
                 <h3 className="flex items-center gap-2 text-lg font-bold text-[#171a2b]">
                   {a.title} <StatusTag status={a.status} />

@@ -31,12 +31,12 @@ export default function DataV2() {
               {d.preview && <MediaSlot need={d.preview} />}
               <div className="p-5">
                 <div className="flex items-center justify-between">
-                  <span className="rounded bg-[#0F6B5C]/8 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-[#0F6B5C]">{d.type}</span>
+                  <span className="rounded bg-[#243D9A]/8 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-[#243D9A]">{d.type}</span>
                   <span className="rounded-full bg-[#E4633F]/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[#E4633F]">
                     {visibilityLabel[d.visibility]}
                   </span>
                 </div>
-                <h3 className="mt-3 flex items-start gap-2 text-lg font-bold leading-snug text-[#171a2b] group-hover:text-[#0F6B5C]">
+                <h3 className="mt-3 flex items-start gap-2 text-lg font-bold leading-snug text-[#171a2b] group-hover:text-[#243D9A]">
                   {d.title}
                   <StatusTag status={d.status} />
                 </h3>

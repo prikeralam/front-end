@@ -19,7 +19,7 @@ export default function MediaWatchV3() {
         </div>
         <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {mediaCases.map((c) => (
-            <Link key={c.slug} href={`/v3/media-watch/${c.slug}`} className="block border border-[#e6dbc7] bg-white transition-colors hover:border-[#6B2737]">
+            <Link key={c.slug} href={`/v3/media-watch/${c.slug}`} className="block border border-[#e6dbc7] bg-white transition-colors hover:border-[#243D9A]">
               {c.screenshot && <MediaSlot need={c.screenshot} />}
               <div className="p-5">
                 <span className="text-[11px] font-semibold uppercase tracking-wide text-[#B8862F]">{c.classification}</span>

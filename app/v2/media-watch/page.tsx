@@ -22,8 +22,8 @@ export default function MediaWatchV2() {
             <Link key={c.slug} href={`/v2/media-watch/${c.slug}`} className="group overflow-hidden rounded-xl border border-[#e6e8f0] bg-white transition-shadow hover:shadow-[0_2px_16px_rgba(15,107,92,0.10)]">
               {c.screenshot && <MediaSlot need={c.screenshot} />}
               <div className="p-5">
-                <span className="rounded bg-[#0F6B5C]/8 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-[#0F6B5C]">{c.classification}</span>
-                <h3 className="mt-2 flex items-start gap-2 text-lg font-bold leading-snug text-[#171a2b] group-hover:text-[#0F6B5C]">
+                <span className="rounded bg-[#243D9A]/8 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-[#243D9A]">{c.classification}</span>
+                <h3 className="mt-2 flex items-start gap-2 text-lg font-bold leading-snug text-[#171a2b] group-hover:text-[#243D9A]">
                   {c.headline} <StatusTag status={c.status} />
                 </h3>
                 <p className="mt-1 text-[13px] text-[#8b8fa3]">{c.source} &middot; {c.date}</p>

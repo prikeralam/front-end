@@ -38,7 +38,7 @@ export default async function EventDetailV1({ params }: { params: Promise<{ slug
             </div>
             <div>
               <p className="mb-3 text-[12px] uppercase tracking-[0.12em] text-[#8b8fa3]">Report</p>
-              <ul className="divide-y divide-[#2e3891]/10 border-y border-[#2e3891]/10">
+              <ul className="divide-y divide-[#243D9A]/10 border-y border-[#243D9A]/10">
                 <DocumentRow doc={pastEventArchive.report} />
               </ul>
             </div>

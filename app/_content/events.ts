@@ -15,7 +15,7 @@ export const events: PRIEvent[] = [
     venue: "To be confirmed",
     timing: "upcoming",
     status: "placeholder",
-    image: { label: "Event hero photograph", ratio: "16:9", kind: "photo" },
+    image: { label: "Event hero photograph — Policy roundtable", ratio: "16:9", kind: "photo" },
   },
   {
     slug: "capacity-building-workshop",
@@ -27,7 +27,7 @@ export const events: PRIEvent[] = [
     venue: "To be confirmed",
     timing: "upcoming",
     status: "placeholder",
-    image: { label: "Event hero photograph", ratio: "16:9", kind: "photo" },
+    image: { label: "Event hero photograph — Capacity-building workshop", ratio: "16:9", kind: "photo" },
   },
   {
     slug: "research-launch",
@@ -39,7 +39,7 @@ export const events: PRIEvent[] = [
     venue: "To be confirmed",
     timing: "upcoming",
     status: "placeholder",
-    image: { label: "Event hero photograph", ratio: "16:9", kind: "photo" },
+    image: { label: "Event hero photograph — Research launch", ratio: "16:9", kind: "photo" },
   },
   {
     slug: "past-seminar",
@@ -51,7 +51,7 @@ export const events: PRIEvent[] = [
     venue: "To be confirmed",
     timing: "past",
     status: "placeholder",
-    image: { label: "Event photograph", ratio: "16:9", kind: "photo" },
+    image: { label: "Event photograph — Seminar on translating research into policy", ratio: "16:9", kind: "photo" },
   },
   {
     slug: "past-advocacy-day",
@@ -63,7 +63,7 @@ export const events: PRIEvent[] = [
     venue: "To be confirmed",
     timing: "past",
     status: "placeholder",
-    image: { label: "Event photograph", ratio: "16:9", kind: "photo" },
+    image: { label: "Event photograph — Advocacy day", ratio: "16:9", kind: "photo" },
   },
 ];
 

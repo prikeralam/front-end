@@ -24,14 +24,14 @@ export default function ContactV1() {
         </div>
       </section>
 
-      <section className="border-t border-[#2e3891]/10 bg-[#f7f7f3]">
+      <section className="border-t border-[#243D9A]/10 bg-[#f7f7f3]">
         <div className="mx-auto max-w-3xl px-6 py-16">
           <SectionHeading>Newsletter</SectionHeading>
           <div className="mt-6 max-w-md">
             <FormMock title="Sign up" fields={["Email"]} />
           </div>
           <p className="mt-10 mb-4 text-[12px] uppercase tracking-[0.12em] text-[#8b8fa3]">Archive</p>
-          <ul className="divide-y divide-[#2e3891]/10 border-y border-[#2e3891]/10">
+          <ul className="divide-y divide-[#243D9A]/10 border-y border-[#243D9A]/10">
             {newsletterIssues.map((n, i) => <DocumentRow key={i} doc={n} />)}
           </ul>
         </div>

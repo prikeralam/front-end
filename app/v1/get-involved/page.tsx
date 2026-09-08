@@ -10,7 +10,7 @@ export default function GetInvolvedV1() {
       <section className="mx-auto max-w-5xl px-6 pb-16">
         <div className="grid gap-6 sm:grid-cols-4">
           {involvementPaths.map((p) => (
-            <div key={p.title} className="border-t-2 border-[#2e3891] pt-4">
+            <div key={p.title} className="border-t-2 border-[#243D9A] pt-4">
               <h3 className="font-[family-name:var(--font-heading)] text-lg text-[#171a2b]">{p.title}</h3>
               <p className="mt-2 text-sm text-[#5b5f74]">{p.desc}</p>
             </div>
@@ -18,18 +18,18 @@ export default function GetInvolvedV1() {
         </div>
       </section>
 
-      <section className="border-y border-[#2e3891]/10 bg-[#f7f7f3]">
+      <section className="border-y border-[#243D9A]/10 bg-[#f7f7f3]">
         <div className="mx-auto max-w-5xl px-6 py-16">
           <SectionHeading>Open Roles</SectionHeading>
-          <ul className="mt-8 divide-y divide-[#2e3891]/10 border-y border-[#2e3891]/10">
+          <ul className="mt-8 divide-y divide-[#243D9A]/10 border-y border-[#243D9A]/10">
             {jobs.map((j) => (
               <li key={j.slug}>
-                <Link href={`/v1/get-involved/jobs/${j.slug}`} className="flex items-center justify-between gap-4 py-5 hover:text-[#2e3891]">
+                <Link href={`/v1/get-involved/jobs/${j.slug}`} className="flex items-center justify-between gap-4 py-5 hover:text-[#243D9A]">
                   <div>
                     <p className="flex items-center gap-2 text-[15px] text-[#171a2b]">{j.title} <StatusTag status={j.status} /></p>
                     <p className="mt-1 text-[13px] text-[#8b8fa3]">{j.location} &middot; {j.employment}</p>
                   </div>
-                  <span className="shrink-0 text-sm text-[#2e3891]">View &rarr;</span>
+                  <span className="shrink-0 text-sm text-[#243D9A]">View &rarr;</span>
                 </Link>
               </li>
             ))}
@@ -45,7 +45,7 @@ export default function GetInvolvedV1() {
         </div>
       </section>
 
-      <section className="border-t border-[#2e3891]/10 bg-[#f7f7f3]">
+      <section className="border-t border-[#243D9A]/10 bg-[#f7f7f3]">
         <div className="mx-auto max-w-5xl px-6 py-16">
           <SectionHeading>Mailing List</SectionHeading>
           <div className="mt-6 max-w-md">

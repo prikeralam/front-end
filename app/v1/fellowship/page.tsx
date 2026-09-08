@@ -13,7 +13,7 @@ export default function FellowshipV1() {
       <section className="mx-auto max-w-5xl px-6 pb-16">
         <div className="grid gap-6 sm:grid-cols-2">
           {programmes.map((p) => (
-            <div key={p.name} className="border border-[#2e3891]/12 bg-white p-6">
+            <div key={p.name} className="border border-[#243D9A]/12 bg-white p-6">
               <h3 className="flex items-center gap-2 font-[family-name:var(--font-heading)] text-lg text-[#171a2b]">
                 {p.name} <StatusTag status={p.status} />
               </h3>
@@ -23,7 +23,7 @@ export default function FellowshipV1() {
           ))}
         </div>
 
-        <div className="mt-10 border border-[#2e3891]/12 bg-[#f7f7f3] p-6">
+        <div className="mt-10 border border-[#243D9A]/12 bg-[#f7f7f3] p-6">
           <p className="text-[12px] uppercase tracking-[0.12em] text-[#8b8fa3]">Timeline</p>
           <div className="mt-4 grid gap-4 sm:grid-cols-4">
             {timeline.map((t) => (
@@ -36,13 +36,13 @@ export default function FellowshipV1() {
         </div>
 
         <div className="mt-8">
-          <Link href="#apply" className="inline-block bg-[#2e3891] px-6 py-3 text-sm font-semibold text-white hover:bg-[#242c72]">
+          <Link href="#apply" className="inline-block bg-[#243D9A] px-6 py-3 text-sm font-semibold text-white hover:bg-[#242c72]">
             Apply now &rarr;
           </Link>
         </div>
       </section>
 
-      <section className="border-y border-[#2e3891]/10 bg-[#f7f7f3]">
+      <section className="border-y border-[#243D9A]/10 bg-[#f7f7f3]">
         <div className="mx-auto max-w-5xl px-6 py-16">
           <SectionHeading>Current Fellows</SectionHeading>
           <div className="mt-8 grid gap-5 sm:grid-cols-3">

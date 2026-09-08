@@ -29,7 +29,7 @@ export default function GetInvolvedV2() {
                     <p className="flex items-center gap-2 text-[15px] font-semibold text-[#171a2b]">{j.title} <StatusTag status={j.status} /></p>
                     <p className="mt-1 text-[13px] text-[#8b8fa3]">{j.location} &middot; {j.employment}</p>
                   </div>
-                  <span className="shrink-0 text-sm font-semibold text-[#0F6B5C]">View &rarr;</span>
+                  <span className="shrink-0 text-sm font-semibold text-[#243D9A]">View &rarr;</span>
                 </Link>
               </li>
             ))}

@@ -1,4 +1,4 @@
-import { institutionalPartners, consortiumMembers, partnerForms } from "../../_content/partners";
+import { institutions, researchers, partnerForms } from "../../_content/partners";
 import { PageHeader, SectionHeading, FormMock, StatusTag } from "../_ui/kit";
 import MediaSlot from "../_ui/MediaSlot";
 
@@ -6,14 +6,14 @@ export default function PartnersV3() {
   return (
     <>
       <PageHeader
-        kicker="Partner & Consortium Network"
-        title="Institutions and collaborators working with PRI"
+        kicker="Partner Network"
+        title="Institutions and researchers working with PRI"
       />
 
       <section className="mx-auto max-w-6xl px-6 py-16">
-        <SectionHeading>Institutional Partners</SectionHeading>
+        <SectionHeading>Institutions</SectionHeading>
         <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {institutionalPartners.map((p) => (
+          {institutions.map((p) => (
             <div key={p.slug} className="border border-[#e6dbc7] bg-white p-5">
               {p.logo && <MediaSlot need={p.logo} />}
               <h3 className="mt-4 flex items-center gap-2 text-[15px] font-semibold text-[#4A1B26]">{p.name} <StatusTag status={p.status} /></h3>
@@ -25,9 +25,9 @@ export default function PartnersV3() {
 
       <section className="border-y border-[#e6dbc7] bg-[#F1E9D8]">
         <div className="mx-auto max-w-6xl px-6 py-16">
-          <SectionHeading>Collaborative Consortium</SectionHeading>
+          <SectionHeading>Researchers</SectionHeading>
           <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {consortiumMembers.map((p) => (
+            {researchers.map((p) => (
               <div key={p.slug} className="border border-[#e6dbc7] bg-white p-5">
                 {p.logo && <MediaSlot need={p.logo} />}
                 <h3 className="mt-4 flex items-center gap-2 text-[15px] font-semibold text-[#4A1B26]">{p.name} <StatusTag status={p.status} /></h3>

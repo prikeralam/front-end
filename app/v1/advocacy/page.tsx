@@ -14,7 +14,7 @@ export default function AdvocacyV1() {
 
       <section className="mx-auto max-w-5xl px-6 pb-16">
         <FilterBar facets={[{ label: "Type", options: advocacyTypes }]} />
-        <div className="mt-8 divide-y divide-[#2e3891]/10 border-y border-[#2e3891]/10">
+        <div className="mt-8 divide-y divide-[#243D9A]/10 border-y border-[#243D9A]/10">
           {advocacyItems.map((a) => (
             <Link key={a.slug} href={`/v1/advocacy/${a.slug}`} className="grid gap-2 py-6 hover:bg-[#f7f7f3] sm:grid-cols-[140px_1fr] sm:gap-6">
               <span className="text-[12px] uppercase tracking-[0.12em] text-[#C9972C]">{a.type}</span>
@@ -30,12 +30,12 @@ export default function AdvocacyV1() {
         </div>
       </section>
 
-      <section className="border-t border-[#2e3891]/10 bg-[#f7f7f3]">
+      <section className="border-t border-[#243D9A]/10 bg-[#f7f7f3]">
         <div className="mx-auto max-w-5xl overflow-x-auto px-6 py-16">
           <SectionHeading>{scorecard.caption}</SectionHeading>
           <table className="mt-6 w-full min-w-[500px] text-left text-sm">
             <thead>
-              <tr className="border-b border-[#2e3891]/20">
+              <tr className="border-b border-[#243D9A]/20">
                 {scorecard.columns.map((c) => (
                   <th key={c} className="pb-3 pr-4 text-[12px] uppercase tracking-wide text-[#8b8fa3]">{c}</th>
                 ))}
@@ -43,7 +43,7 @@ export default function AdvocacyV1() {
             </thead>
             <tbody>
               {scorecard.rows.map((row, i) => (
-                <tr key={i} className="border-b border-[#2e3891]/10">
+                <tr key={i} className="border-b border-[#243D9A]/10">
                   {row.map((cell, j) => <td key={j} className="py-3 pr-4 text-[#22263a]">{cell}</td>)}
                 </tr>
               ))}

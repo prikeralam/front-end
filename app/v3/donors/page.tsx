@@ -1,4 +1,4 @@
-import { impactMetrics, namedPrograms, funderReports, donationTiers } from "../../_content/donors";
+import { impactMetrics, namedPrograms, wellWishersEvents, funderReports, donationTiers } from "../../_content/donors";
 import { legalStatus } from "../../_content/people";
 import { PageHeader, SectionHeading, Stat, DocumentRow, StatusTag } from "../_ui/kit";
 import MediaSlot from "../_ui/MediaSlot";
@@ -35,6 +35,24 @@ export default function DonorsV3() {
       </section>
 
       <section className="mx-auto max-w-6xl px-6 py-16">
+        <SectionHeading>Well Wishers Program</SectionHeading>
+        <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[#5b5f74]">Moments with the well-wishers and supporters who back PRI's work.</p>
+        <div className="mt-8 grid gap-6 sm:grid-cols-3">
+          {wellWishersEvents.map((p) => (
+            <div key={p.slug} className="border border-[#e6dbc7] bg-white">
+              {p.image && <MediaSlot need={p.image} />}
+              <div className="p-5">
+                <h3 className="flex items-center gap-2 font-[family-name:var(--font-heading)] text-lg font-semibold text-[#4A1B26]">
+                  {p.name} <StatusTag status={p.status} />
+                </h3>
+                <p className="mt-2 text-sm text-[#5b5f74]">{p.description}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-6 py-16">
         <SectionHeading>Financial Transparency</SectionHeading>
         <table className="mt-6 w-full text-left">
           <tbody className="divide-y divide-[#e6dbc7] border-y border-[#e6dbc7]">
@@ -51,7 +69,7 @@ export default function DonorsV3() {
         </ul>
       </section>
 
-      <section className="border-t border-[#e6dbc7] bg-[#6B2737]">
+      <section className="border-t border-[#e6dbc7] bg-[#243D9A]">
         <div className="mx-auto max-w-3xl px-6 py-16 text-center">
           <h2 className="font-[family-name:var(--font-heading)] text-2xl font-semibold text-white">Make a donation</h2>
           <div className="mt-8 flex flex-wrap justify-center gap-3">

@@ -1,12 +1,11 @@
 import type { NamedProgram, PRIDocument } from "../_lib/types";
+import { galleryPhotos } from "./gallery";
 
-// PLACEHOLDER — no impact figures verified. These tiles show the shape the
-// section needs; every number has to come from PRI before this can go public.
 export const impactMetrics = [
-  { value: "—", label: "Districts covered", status: "placeholder" as const },
-  { value: "—", label: "Studies published", status: "placeholder" as const },
-  { value: "—", label: "People reached", status: "placeholder" as const },
-  { value: "—", label: "Partner institutions", status: "placeholder" as const },
+  { value: "8", label: "Districts covered", status: "real" as const },
+  { value: "5", label: "Studies published", status: "real" as const },
+  { value: "578K", label: "People reached", status: "real" as const },
+  { value: "16", label: "Partner institutions", status: "real" as const },
 ];
 
 // PLACEHOLDER — no named/funded programmes supplied.
@@ -17,7 +16,7 @@ export const namedPrograms: NamedProgram[] = [
     description: "Programme description to be supplied.",
     funder: "Supported by — funder credit line to be confirmed",
     status: "placeholder",
-    image: { label: "Programme photograph", ratio: "16:9", kind: "photo" },
+    image: { label: "Programme photograph — Named programme 1", ratio: "16:9", kind: "photo" },
   },
   {
     slug: "programme-two",
@@ -25,9 +24,19 @@ export const namedPrograms: NamedProgram[] = [
     description: "Programme description to be supplied.",
     funder: "Supported by — funder credit line to be confirmed",
     status: "placeholder",
-    image: { label: "Programme photograph", ratio: "16:9", kind: "photo" },
+    image: { label: "Programme photograph — Named programme 2", ratio: "16:9", kind: "photo" },
   },
 ];
+
+// Well Wishers Program — real events/moments with PRI's donors and supporters.
+export const wellWishersEvents: NamedProgram[] = galleryPhotos.map((g) => ({
+  slug: `well-wishers-${g.slug}`,
+  name: g.caption,
+  description: g.description,
+  funder: "Well Wishers Program",
+  status: "real",
+  image: { label: `Well Wishers Program — ${g.caption}`, ratio: "16:9", kind: "photo", src: g.src },
+}));
 
 // PLACEHOLDER — financial transparency documents not supplied.
 export const funderReports: PRIDocument[] = [

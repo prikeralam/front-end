@@ -19,7 +19,7 @@ export default function MediaWatchV1() {
         </div>
         <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {mediaCases.map((c) => (
-            <Link key={c.slug} href={`/v1/media-watch/${c.slug}`} className="block border border-[#2e3891]/12 bg-white transition-colors hover:border-[#2e3891]/40">
+            <Link key={c.slug} href={`/v1/media-watch/${c.slug}`} className="block border border-[#243D9A]/12 bg-white transition-colors hover:border-[#243D9A]/40">
               {c.screenshot && <MediaSlot need={c.screenshot} />}
               <div className="p-5">
                 <span className="text-[11px] uppercase tracking-wide text-[#C9972C]">{c.classification}</span>
@@ -33,7 +33,7 @@ export default function MediaWatchV1() {
         </div>
       </section>
 
-      <section className="border-y border-[#2e3891]/10 bg-[#f7f7f3]">
+      <section className="border-y border-[#243D9A]/10 bg-[#f7f7f3]">
         <div className="mx-auto max-w-5xl px-6 py-16">
           <SectionHeading>Video Explainers</SectionHeading>
           <div className="mt-8 grid gap-6 sm:grid-cols-2">
@@ -49,7 +49,7 @@ export default function MediaWatchV1() {
 
       <section className="mx-auto max-w-5xl px-6 py-16">
         <SectionHeading>Downloads</SectionHeading>
-        <ul className="mt-8 divide-y divide-[#2e3891]/10 border-y border-[#2e3891]/10">
+        <ul className="mt-8 divide-y divide-[#243D9A]/10 border-y border-[#243D9A]/10">
           {toolkits.map((t) => (
             <li key={t.title} className="flex items-center justify-between py-4">
               <span className="flex items-center gap-2 text-[15px] text-[#22263a]">{t.title} <StatusTag status={t.status} /></span>

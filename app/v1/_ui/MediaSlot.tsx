@@ -1,5 +1,7 @@
+import Image from "next/image";
 import type { MediaNeed } from "../../_lib/types";
 import { ratioClass } from "../../_lib/ratio";
+import { stockPhotoFor } from "../../_lib/stockPhotos";
 
 const kindLabel: Record<MediaNeed["kind"], string> = {
   photo: "Photograph",
@@ -13,9 +15,24 @@ const kindLabel: Record<MediaNeed["kind"], string> = {
 
 /** Renders wherever a photo/logo/chart/map/video/diagram is required but PRI hasn't supplied it. */
 export default function MediaSlot({ need, className = "" }: { need: MediaNeed; className?: string }) {
+  const photo = need.src ?? stockPhotoFor(need);
+  if (photo) {
+    const fit = need.kind === "logo" ? "object-contain p-3" : "object-cover";
+    return (
+      <div className={`relative ${ratioClass(need.ratio)} overflow-hidden ${className}`}>
+        <Image src={photo} alt={need.label} fill sizes="(max-width: 768px) 100vw, 400px" className={fit} />
+        {!need.src && (
+          <span className="absolute bottom-2 left-2 bg-black/40 px-1.5 py-0.5 text-[9px] uppercase tracking-[0.1em] text-white/80">
+            Stock photo — placeholder
+          </span>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div
-      className={`flex ${ratioClass(need.ratio)} flex-col items-center justify-center gap-2 border border-dashed border-[#2e3891]/30 bg-[#f7f7f3] p-4 text-center ${className}`}
+      className={`flex ${ratioClass(need.ratio)} flex-col items-center justify-center gap-2 border border-dashed border-[#243D9A]/30 bg-[#f7f7f3] p-4 text-center ${className}`}
     >
       <span className="text-[10px] font-medium uppercase tracking-[0.14em] text-[#C9972C]">
         {kindLabel[need.kind]} needed

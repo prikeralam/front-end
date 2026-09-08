@@ -21,7 +21,7 @@ export default async function AdvocacyDetailV2({ params }: { params: Promise<{ s
         </div>
         {item.media && <MediaSlot need={item.media} className="max-w-lg" />}
         <p className="mt-8 text-lg leading-relaxed text-[#4b4f66]">{item.summary}</p>
-        <button disabled className="mt-8 cursor-not-allowed rounded-full bg-[#0F6B5C]/40 px-5 py-2.5 text-sm font-semibold text-white">
+        <button disabled className="mt-8 cursor-not-allowed rounded-full bg-[#243D9A]/40 px-5 py-2.5 text-sm font-semibold text-white">
           Download PDF (not wired)
         </button>
       </section>
