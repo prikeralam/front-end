@@ -14,7 +14,7 @@ export default function Header() {
   return (
     <header>
       {/* Utility bar */}
-      <div className="bg-[#243D9A] text-white">
+      <div className="bg-[#121e4d] text-white">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-2 text-[12px]">
           <span className="tracking-wide text-white/75">{org.tagline}</span>
           <div className="flex items-center gap-4">

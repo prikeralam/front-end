@@ -28,10 +28,10 @@ export default function HomeV3() {
           </h1>
           <p className="mt-6 max-w-2xl text-[17px] leading-relaxed text-[#4b4f66]">{org.summary}</p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <Link href="/v3/research" className="bg-[#243D9A] px-6 py-3 text-sm font-semibold text-white hover:bg-[#1B2C70]">
+            <Link href="/v3/research" className="bg-[#20368a] px-6 py-3 text-sm font-semibold text-white hover:bg-[#192a6b]">
               Explore Our Research
             </Link>
-            <Link href="/v3/about" className="border border-[#243D9A] px-6 py-3 text-sm font-semibold text-[#243D9A] hover:bg-[#243D9A] hover:text-white">
+            <Link href="/v3/about" className="border border-[#20368a] px-6 py-3 text-sm font-semibold text-[#20368a] hover:bg-[#20368a] hover:text-white">
               About PRI
             </Link>
           </div>

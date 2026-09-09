@@ -69,7 +69,7 @@ export default function DonorsV3() {
         </ul>
       </section>
 
-      <section className="border-t border-[#e6dbc7] bg-[#243D9A]">
+      <section className="border-t border-[#e6dbc7] bg-[#121e4d]">
         <div className="mx-auto max-w-3xl px-6 py-16 text-center">
           <h2 className="font-[family-name:var(--font-heading)] text-2xl font-semibold text-white">Make a donation</h2>
           <div className="mt-8 flex flex-wrap justify-center gap-3">

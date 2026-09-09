@@ -23,7 +23,7 @@ export default async function ProjectDetailV3({ params }: { params: Promise<{ sl
           <Image src={heroProjectPhotos[project.slug]} alt={project.title} fill className="object-cover" sizes="(min-width: 768px) 700px, 100vw" />
         </div>
         <p className="mt-8 text-[17px] leading-relaxed text-[#4b4f66]">{project.blurb}</p>
-        <Link href="/v3" className="mt-10 inline-block border border-[#243D9A] px-6 py-3 text-sm font-semibold text-[#243D9A] hover:bg-[#243D9A] hover:text-white">
+        <Link href="/v3" className="mt-10 inline-block border border-[#20368a] px-6 py-3 text-sm font-semibold text-[#20368a] hover:bg-[#20368a] hover:text-white">
           &larr; Back to home
         </Link>
       </section>
