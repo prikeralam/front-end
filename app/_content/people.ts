@@ -51,7 +51,7 @@ export const people: Person[] = [
     group: "team",
     bio: "Biography to be supplied.",
     status: "real",
-    photo: portrait("Badusha — Content Writer portrait", "/people/team/badusha.jpg"),
+    photo: portrait("Badusha — Content Writer portrait", "/people/team/badusha.png"),
   },
   {
     slug: "muhammed-sinan",

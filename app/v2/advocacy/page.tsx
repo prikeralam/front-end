@@ -1,5 +1,6 @@
+import Image from "next/image";
 import Link from "next/link";
-import { advocacyItems, advocacyTypes, scorecard } from "../../_content/advocacy";
+import { advocacyItems, advocacyTypes, scorecard, policyConversationPhotos } from "../../_content/advocacy";
 import { PageHeader, SectionHeading, FilterBar, StatusTag } from "../_ui/kit";
 import MediaSlot from "../_ui/MediaSlot";
 
@@ -64,6 +65,22 @@ export default function AdvocacyV2() {
               <p className="mt-2 text-sm text-[#5b5f74]">{a.title}</p>
             </div>
           ))}
+        </div>
+      </section>
+
+      <section className="border-t border-[#e6e8f0] bg-[#fafbfc]">
+        <div className="mx-auto max-w-6xl px-6 py-16">
+          <SectionHeading>Policy Conversations</SectionHeading>
+          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-[#5b5f74]">
+            Moments from PRI&rsquo;s meetings with policymakers and community leaders.
+          </p>
+          <div className="mt-8 grid gap-5 sm:grid-cols-4">
+            {policyConversationPhotos.map((p) => (
+              <div key={p.slug} className="relative aspect-[4/3] overflow-hidden rounded-xl">
+                <Image src={p.src} alt={p.description} fill sizes="(min-width: 640px) 25vw, 50vw" className="object-cover" />
+              </div>
+            ))}
+          </div>
         </div>
       </section>
     </>

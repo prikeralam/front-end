@@ -1,13 +1,15 @@
+import Image from "next/image";
 import Link from "next/link";
 import { org, vision, missionPoints, departments } from "../../_content/org";
 import { directorsNote, legalStatus, reports, orgChart } from "../../_content/people";
+import { teamPhotos } from "../../_content/gallery";
 import { PageHeader, SectionHeading, DocumentRow, StatusTag } from "../_ui/kit";
 import MediaSlot from "../_ui/MediaSlot";
 
 export default function AboutV1() {
   return (
     <>
-      <PageHeader kicker="About PRI" title={org.tagline} intro={org.summary} />
+      <PageHeader kicker="Who we are" title={org.tagline} intro={org.summary} />
 
       <section className="mx-auto max-w-3xl px-6 pb-14">
         <p className="text-lg leading-relaxed text-[#4b4f66]">{org.intro}</p>
@@ -45,6 +47,18 @@ export default function AboutV1() {
             &ldquo;{directorsNote.quote}&rdquo;
           </blockquote>
           <p className="mt-6 text-sm text-[#5b5f74]">&mdash; {directorsNote.name}, {directorsNote.role}</p>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-3xl px-6 py-16">
+        <SectionHeading>Life at PRI</SectionHeading>
+        <p className="mt-3 text-[15px] leading-relaxed text-[#5b5f74]">Moments from PRI&rsquo;s office and everyday work.</p>
+        <div className="mt-8 grid gap-4 sm:grid-cols-3">
+          {teamPhotos.map((p) => (
+            <div key={p.slug} className="relative aspect-[4/3] overflow-hidden">
+              <Image src={p.src} alt={p.description} fill sizes="(min-width: 640px) 33vw, 100vw" className="object-cover" />
+            </div>
+          ))}
         </div>
       </section>
 

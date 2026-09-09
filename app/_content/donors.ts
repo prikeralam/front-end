@@ -16,7 +16,7 @@ export const namedPrograms: NamedProgram[] = [
     description: "Programme description to be supplied.",
     funder: "Supported by — funder credit line to be confirmed",
     status: "placeholder",
-    image: { label: "Programme photograph — Named programme 1", ratio: "16:9", kind: "photo" },
+    image: { label: "Programme photograph — Named programme 1", ratio: "16:9", kind: "photo", src: "/gallery/programme-planning-session-1.jpg" },
   },
   {
     slug: "programme-two",
@@ -24,7 +24,7 @@ export const namedPrograms: NamedProgram[] = [
     description: "Programme description to be supplied.",
     funder: "Supported by — funder credit line to be confirmed",
     status: "placeholder",
-    image: { label: "Programme photograph — Named programme 2", ratio: "16:9", kind: "photo" },
+    image: { label: "Programme photograph — Named programme 2", ratio: "16:9", kind: "photo", src: "/gallery/programme-planning-session-2.jpg" },
   },
 ];
 

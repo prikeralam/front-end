@@ -5,7 +5,9 @@ import { updates, quickLinks } from "../_content/updates";
 import { testimonials } from "../_content/people";
 import { heroProjects } from "../_content/projects";
 import { heroProjectPhotos } from "../_lib/stockPhotos";
+import { officeLifePhotos } from "../_content/gallery";
 import { SectionHeading, Quote, StatusTag } from "./_ui/kit";
+import HeroCarousel from "./_ui/HeroCarousel";
 
 const stats = [
   { value: "05", label: "Research departments" },
@@ -18,28 +20,9 @@ export default function HomeV2() {
   return (
     <>
       {/* Hero banners */}
-      <section className="grid sm:grid-cols-3">
-        {heroProjects.map((p) => (
-          <Link key={p.slug} href={`/v2/projects/${p.slug}`} className="group relative block h-[380px] overflow-hidden sm:h-[480px]">
-            <Image
-              src={heroProjectPhotos[p.slug]}
-              alt={p.title}
-              fill
-              priority
-              sizes="(min-width: 640px) 33vw, 100vw"
-              className="object-cover transition-transform duration-500 group-hover:scale-105"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
-            <div className="absolute inset-x-0 bottom-0 p-7">
-              <h2 className="text-2xl font-extrabold leading-tight text-white">{p.title}</h2>
-              <p className="mt-2 max-w-xs text-sm leading-relaxed text-white/80">{p.blurb}</p>
-              <span className="mt-5 inline-block rounded-full bg-[#E4633F] px-5 py-2.5 text-sm font-semibold text-white">
-                Explore project &rarr;
-              </span>
-            </div>
-          </Link>
-        ))}
-      </section>
+      <div className="mx-auto max-w-6xl px-6 pt-8">
+        <HeroCarousel projects={heroProjects} photos={heroProjectPhotos} />
+      </div>
 
       {/* Hero */}
       <section className="border-b border-[#e6e8f0]">
@@ -84,6 +67,19 @@ export default function HomeV2() {
               <h3 className="mt-3 text-lg font-bold text-[#171a2b]">{p.title}</h3>
               <p className="mt-3 text-sm leading-relaxed text-[#5b5f74]">{p.desc}</p>
             </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* Inside PRI */}
+      <section className="mx-auto max-w-6xl px-6 py-16">
+        <SectionHeading>Inside PRI</SectionHeading>
+        <p className="mt-2 max-w-2xl text-sm leading-relaxed text-[#5b5f74]">A look at PRI&rsquo;s team and everyday work.</p>
+        <div className="mt-8 grid gap-5 sm:grid-cols-4">
+          {officeLifePhotos.map((p) => (
+            <div key={p.slug} className="relative aspect-[4/3] overflow-hidden rounded-xl">
+              <Image src={p.src} alt={p.description} fill sizes="(min-width: 640px) 25vw, 50vw" className="object-cover" />
+            </div>
           ))}
         </div>
       </section>

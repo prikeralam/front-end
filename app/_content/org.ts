@@ -121,7 +121,7 @@ export const nav = [
   {
     label: "About",
     items: [
-      { label: "About PRI", href: "/about" },
+      { label: "Who we are", href: "/about" },
       { label: "Donors & Sponsors", href: "/donors" },
     ],
   },

@@ -58,7 +58,36 @@ export const advocacyItems: AdvocacyItem[] = [
     type: "Event Snapshot",
     date: "To be confirmed",
     status: "placeholder",
-    media: { label: "Roundtable photo gallery — people at the table", ratio: "16:9", kind: "photo" },
+    media: { label: "Roundtable photo gallery — people at the table", ratio: "16:9", kind: "photo", src: "/gallery/policy-engagement-handshake.jpg" },
+  },
+];
+
+// Real photographs from PRI's meetings with policymakers, community leaders,
+// and delegations — used on the Advocacy & Policy Engagement page.
+export const policyConversationPhotos = [
+  {
+    slug: "policy-conversation-lounge",
+    caption: "In Conversation",
+    description: "PRI's team in conversation with community leaders.",
+    src: "/gallery/policy-conversation-lounge.jpg",
+  },
+  {
+    slug: "policy-conversation-meeting",
+    caption: "Policy Discussion",
+    description: "A policy discussion with community leaders at PRI's office.",
+    src: "/gallery/policy-conversation-meeting.jpg",
+  },
+  {
+    slug: "policy-conversation-guest",
+    caption: "Hosting a Guest",
+    description: "PRI's team in discussion with a visiting guest.",
+    src: "/gallery/policy-conversation-guest.jpg",
+  },
+  {
+    slug: "policy-conversation-tea-meeting",
+    caption: "Stakeholder Meeting",
+    description: "A stakeholder meeting at PRI's office.",
+    src: "/gallery/policy-conversation-tea-meeting.jpg",
   },
 ];
 

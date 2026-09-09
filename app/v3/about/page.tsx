@@ -1,6 +1,8 @@
+import Image from "next/image";
 import Link from "next/link";
 import { org, vision, missionPoints, departments } from "../../_content/org";
 import { directorsNote, legalStatus, reports, orgChart } from "../../_content/people";
+import { teamPhotos } from "../../_content/gallery";
 import { StatusTag, NumberedItem, DocumentRow } from "../_ui/kit";
 import MediaSlot from "../_ui/MediaSlot";
 
@@ -8,6 +10,7 @@ const sections = [
   "Institutional Overview",
   "Who We Are",
   "Director's Note",
+  "Life at PRI",
   "Research & Analysis Wing",
   "Governance",
   "Organisational Chart",
@@ -20,7 +23,7 @@ export default function AboutV3() {
     <>
       <section className="border-b border-[#e6dbc7] bg-[#F1E9D8]">
         <div className="mx-auto max-w-6xl px-6 py-12">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#B8862F]">About PRI</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#B8862F]">Who we are</p>
           <h1 className="mt-3 font-[family-name:var(--font-heading)] text-[42px] font-semibold leading-tight text-[#171a2b]">
             Institutional Overview
           </h1>
@@ -78,6 +81,20 @@ export default function AboutV3() {
               <span className="font-semibold text-[#4A1B26]">{directorsNote.name}</span>
               <span className="block">{directorsNote.role}</span>
             </p>
+          </section>
+
+          <section className="mt-16">
+            <h2 className="border-b-2 border-[#243D9A] pb-3 font-[family-name:var(--font-heading)] text-[26px] font-semibold text-[#171a2b]">
+              Life at PRI
+            </h2>
+            <p className="mt-4 text-[15px] leading-relaxed text-[#5b5f74]">Moments from PRI&rsquo;s office and everyday work.</p>
+            <div className="mt-6 grid gap-4 sm:grid-cols-3">
+              {teamPhotos.map((p) => (
+                <div key={p.slug} className="relative aspect-[4/3] overflow-hidden">
+                  <Image src={p.src} alt={p.description} fill sizes="(min-width: 768px) 33vw, 100vw" className="object-cover" />
+                </div>
+              ))}
+            </div>
           </section>
 
           <section className="mt-16">
