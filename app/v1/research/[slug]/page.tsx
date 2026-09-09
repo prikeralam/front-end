@@ -299,7 +299,7 @@ export default async function PublicationDetailV1({ params }: { params: Promise<
         <div className="flex items-center gap-2 text-sm text-[#5b5f74]">
           {pub.authors.join(", ")} &middot; {pub.date} <StatusTag status={pub.status} />
         </div>
-        {pub.cover && <MediaSlot need={pub.cover} className="mt-6 max-w-sm" />}
+        {pub.cover && <MediaSlot need={pub.cover} className="mt-6" />}
         {story ? (
           <StoryBody slug={slug} />
         ) : (

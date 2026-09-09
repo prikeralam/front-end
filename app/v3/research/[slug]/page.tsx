@@ -76,7 +76,7 @@ function CalloutGrid({ callouts }: { callouts: NonNullable<(typeof dataStories)[
 
 function WhyItMatters({ text }: { text: string }) {
   return (
-    <div className="mt-16 bg-[#243D9A] p-8 text-white">
+    <div className="mt-16 bg-[#121e4d] p-8 text-white">
       <h2 className="mb-4 font-[family-name:var(--font-heading)] text-[22px] font-semibold">Why this matters</h2>
       <p className="text-[15px] leading-relaxed text-white/85">{text}</p>
     </div>
@@ -380,7 +380,7 @@ export default async function PublicationDetailV3({ params }: { params: Promise<
           <div className="flex items-center gap-2 text-sm text-[#5b5f74]">
             {pub.authors.join(", ")} &middot; {pub.date} <StatusTag status={pub.status} />
           </div>
-          {pub.cover && <MediaSlot need={pub.cover} className="mt-6 max-w-sm" />}
+          {pub.cover && <MediaSlot need={pub.cover} className="mt-6" />}
           <p className="mt-8 text-[17px] leading-relaxed text-[#4b4f66]">{pub.abstract}</p>
           <div className="mt-10 flex flex-wrap gap-3">
             <button disabled className="cursor-not-allowed bg-[#243D9A]/40 px-5 py-2.5 text-sm font-semibold text-white">
@@ -412,7 +412,7 @@ export default async function PublicationDetailV3({ params }: { params: Promise<
         <div className="flex items-center gap-2 text-sm text-[#5b5f74]">
           {pub.authors.join(", ")} &middot; {pub.date} <StatusTag status={pub.status} />
         </div>
-        {pub.cover && <MediaSlot need={pub.cover} className="mt-6 max-w-sm" />}
+        {pub.cover && <MediaSlot need={pub.cover} className="mt-6" />}
 
         <HookBox story={story} />
 

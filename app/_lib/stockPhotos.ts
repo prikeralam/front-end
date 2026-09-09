@@ -86,3 +86,11 @@ export const heroProjectPhotos: Record<string, string> = {
   education: THEME.classroom,
   "demography-migration": THEME.worldMap,
 };
+
+/** Hand-picked, on-theme cover photos for the "Kerala in Data" story series, keyed by publication slug. */
+export const dataStoryCoverPhotos: Record<string, string> = {
+  "malappuram-classrooms": u("photo-1709290749293-c6152a187b14"), // crowded Indian classroom
+  "kerala-population-mix": u("photo-1777802059614-2d892adb2de6"), // Fort Kochi street scene
+  "kerala-healthcare-gap": u("photo-1517120026326-d87759a7b63b"), // hospital corridor, staff with incubator
+  "kerala-gulf-migration": u("photo-1780683164903-9c4a8e365b84"), // travellers silhouetted at an airport window
+};

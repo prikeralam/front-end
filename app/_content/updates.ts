@@ -10,22 +10,6 @@ export const updates: {
   status: ContentStatus;
 }[] = [
   {
-    type: "Research",
-    meta: "Ongoing · Expected Q2 2024",
-    title: "Educational Equity Assessment",
-    desc: "Comprehensive analysis of educational access, quality, and outcomes across different communities to identify gaps and recommend interventions.",
-    href: "/research/educational-equity-assessment",
-    status: "real",
-  },
-  {
-    type: "Research",
-    meta: "Data Collection · Expected Q3 2024",
-    title: "Employment Patterns Study",
-    desc: "Longitudinal study examining employment trends, skill gaps, and opportunities for workforce development in emerging sectors.",
-    href: "/research/employment-patterns-study",
-    status: "real",
-  },
-  {
     type: "Media",
     meta: "Date to be confirmed",
     title: "Rapid response brief on emerging socio-political issues",

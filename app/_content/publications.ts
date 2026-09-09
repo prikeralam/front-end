@@ -1,37 +1,11 @@
 import type { Publication } from "../_lib/types";
+import { dataStoryCoverPhotos } from "../_lib/stockPhotos";
 
 export const publicationThemes = ["Education", "Employment", "Economics", "Public Finance", "Health", "Governance", "Demography", "Migration"];
 export const publicationFormats = ["Report", "Working Paper", "Brief", "Explainer", "Infographic", "Video", "Data Story"];
 
-// The two "Ongoing" studies are real — they were listed as current research
-// initiatives on PRI's previous site.
+// --- Kerala in Data series (real, integrated as normal Research & Publications entries) ---
 export const publications: Publication[] = [
-  {
-    slug: "educational-equity-assessment",
-    title: "Educational Equity Assessment",
-    abstract:
-      "Comprehensive analysis of educational access, quality, and outcomes across different communities to identify gaps and recommend interventions. Status: ongoing, expected Q2 2024.",
-    format: "Report",
-    theme: "Education",
-    date: "Ongoing",
-    authors: ["Name Surname"],
-    status: "real",
-    cover: { label: "Report cover — Educational Equity Assessment", ratio: "4:3", kind: "photo" },
-  },
-  {
-    slug: "employment-patterns-study",
-    title: "Employment Patterns Study",
-    abstract:
-      "Longitudinal study examining employment trends, skill gaps, and opportunities for workforce development in emerging sectors. Status: data collection, expected Q3 2024.",
-    format: "Working Paper",
-    theme: "Employment",
-    date: "Ongoing",
-    authors: ["Name Surname"],
-    status: "real",
-    cover: { label: "Report cover — Employment Patterns Study", ratio: "4:3", kind: "photo" },
-  },
-
-  // --- Kerala in Data series (real, integrated as normal Research & Publications entries) ---
   {
     slug: "malappuram-classrooms",
     title: "Malappuram's Plus One classrooms are Kerala's most crowded",
@@ -42,7 +16,7 @@ export const publications: Publication[] = [
     date: "To be confirmed",
     authors: ["PRI Research Team"],
     status: "real",
-    cover: { label: "Malappuram classrooms data dashboard visual", ratio: "4:3", kind: "photo" },
+    cover: { label: "Malappuram classrooms data dashboard visual", ratio: "4:3", kind: "photo", src: dataStoryCoverPhotos["malappuram-classrooms"] },
   },
   {
     slug: "kerala-population-mix",
@@ -54,7 +28,7 @@ export const publications: Publication[] = [
     date: "To be confirmed",
     authors: ["PRI Research Team"],
     status: "real",
-    cover: { label: "Kerala population mix data dashboard visual", ratio: "4:3", kind: "photo" },
+    cover: { label: "Kerala population mix data dashboard visual", ratio: "4:3", kind: "photo", src: dataStoryCoverPhotos["kerala-population-mix"] },
   },
   {
     slug: "kerala-healthcare-gap",
@@ -66,7 +40,7 @@ export const publications: Publication[] = [
     date: "To be confirmed",
     authors: ["PRI Research Team"],
     status: "real",
-    cover: { label: "Kerala healthcare gap data dashboard visual", ratio: "4:3", kind: "photo" },
+    cover: { label: "Kerala healthcare gap data dashboard visual", ratio: "4:3", kind: "photo", src: dataStoryCoverPhotos["kerala-healthcare-gap"] },
   },
   {
     slug: "kerala-gulf-migration",
@@ -78,6 +52,6 @@ export const publications: Publication[] = [
     date: "To be confirmed",
     authors: ["PRI Research Team"],
     status: "real",
-    cover: { label: "Kerala Gulf migration data dashboard visual", ratio: "4:3", kind: "photo" },
+    cover: { label: "Kerala Gulf migration data dashboard visual", ratio: "4:3", kind: "photo", src: dataStoryCoverPhotos["kerala-gulf-migration"] },
   },
 ];
