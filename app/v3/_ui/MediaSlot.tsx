@@ -33,7 +33,7 @@ export default function MediaSlot({ need, className = "" }: { need: MediaNeed; c
 
   return (
     <div
-      className={`flex ${ratioClass(need.ratio)} flex-col items-center justify-center gap-2 border border-dashed border-[#243D9A]/30 bg-[#F1E9D8] p-4 text-center ${className}`}
+      className={`flex ${ratioClass(need.ratio)} flex-col items-center justify-center gap-2 border border-dashed border-[#253D9A]/30 bg-[#F1E9D8] p-4 text-center ${className}`}
     >
       <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#B8862F]">
         {kindLabel[need.kind]} needed

@@ -27,7 +27,7 @@ export default async function DatasetDetailV1({ params }: { params: Promise<{ sl
         </div>
         {ds.preview && <MediaSlot need={ds.preview} className="max-w-lg" />}
         <p className="mt-8 text-lg leading-relaxed text-[#4b4f66]">{ds.description}</p>
-        <dl className="mt-8 grid gap-6 border-t border-[#243D9A]/10 pt-6 sm:grid-cols-2">
+        <dl className="mt-8 grid gap-6 border-t border-[#253D9A]/10 pt-6 sm:grid-cols-2">
           {[
             ["Geography", ds.geography], ["Year", ds.year], ["Source", ds.source],
             ["Coverage", ds.coverage], ["Update frequency", ds.frequency], ["Visibility", ds.visibility],
@@ -38,7 +38,7 @@ export default async function DatasetDetailV1({ params }: { params: Promise<{ sl
             </div>
           ))}
         </dl>
-        <button disabled className="mt-8 cursor-not-allowed bg-[#243D9A]/40 px-5 py-2.5 text-sm font-medium text-white">
+        <button disabled className="mt-8 cursor-not-allowed bg-[#253D9A]/40 px-5 py-2.5 text-sm font-medium text-white">
           {actionLabel[ds.visibility]}
         </button>
       </section>

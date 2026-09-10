@@ -1,17 +1,17 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { heroProjects } from "../../../_content/projects";
+import { projects } from "../../../_content/projects";
 import { heroProjectPhotos } from "../../../_lib/stockPhotos";
 import { PageHeader, StatusTag } from "../../_ui/kit";
 
 export function generateStaticParams() {
-  return heroProjects.map((p) => ({ slug: p.slug }));
+  return projects.map((p) => ({ slug: p.slug }));
 }
 
 export default async function ProjectDetailV3({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const project = heroProjects.find((p) => p.slug === slug);
+  const project = projects.find((p) => p.slug === slug);
   if (!project) notFound();
 
   return (

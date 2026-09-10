@@ -1,6 +1,10 @@
 import type { ReactNode } from "react";
+import Image from "next/image";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { publications } from "../../../_content/publications";
+import { people } from "../../../_content/people";
+import { stockPhotoFor } from "../../../_lib/stockPhotos";
 import { dataStories, educationCharts, demographyCharts, healthCharts, migrationCharts } from "../../../_content/dataStories";
 import { HBarChart, GroupedBarChart, DivergingBarChart, ScatterChart, LineChart, VBarChart, HBarSimpleChart, type ChartPalette } from "../../../_lib/dataStoryCharts";
 import { PageHeader, SectionHeading, StatusTag } from "../../_ui/kit";
@@ -11,7 +15,7 @@ export function generateStaticParams() {
 }
 
 const palette: ChartPalette = {
-  primary: "#243D9A",
+  primary: "#253D9A",
   secondary: "#C9972C",
   text: "#171a2b",
   textSoft: "#4b4f66",
@@ -28,7 +32,7 @@ function sortAsc(labels: string[], values: number[]) {
 function Figure({ children, caption }: { children: ReactNode; caption: string }) {
   return (
     <div className="mt-6">
-      <div className="border border-[#243D9A]/12 p-3">{children}</div>
+      <div className="border border-[#253D9A]/12 p-3">{children}</div>
       <p className="mt-2 text-sm italic text-[#8b8fa3]">{caption}</p>
     </div>
   );
@@ -233,7 +237,7 @@ function StoryBody({ slug }: { slug: string }) {
 
   return (
     <>
-      <div className="mt-10 border border-[#243D9A]/12 border-l-4 border-l-[#C9972C] bg-white p-7">
+      <div className="mt-10 border border-[#253D9A]/12 border-l-4 border-l-[#C9972C] bg-white p-7">
         <div className={story.hookStats.length > 1 ? "grid gap-6 sm:grid-cols-2" : ""}>
           {story.hookStats.map((s, i) => (
             <div key={i}>
@@ -260,9 +264,9 @@ function StoryBody({ slug }: { slug: string }) {
       {story.callouts && (
         <div className={`mt-10 grid gap-4 ${story.callouts.length === 3 ? "sm:grid-cols-3" : "sm:grid-cols-2"}`}>
           {story.callouts.map((c, i) => (
-            <div key={i} className="border border-[#243D9A]/12 bg-white p-5">
+            <div key={i} className="border border-[#253D9A]/12 bg-white p-5">
               <p className="text-[13px] text-[#8b8fa3]">{c.label}</p>
-              <p className={`mt-1 font-[family-name:var(--font-heading)] text-2xl ${c.tone === "bad" ? "text-[#C9972C]" : c.tone === "good" ? "text-[#243D9A]" : "text-[#171a2b]"}`}>{c.value}</p>
+              <p className={`mt-1 font-[family-name:var(--font-heading)] text-2xl ${c.tone === "bad" ? "text-[#C9972C]" : c.tone === "good" ? "text-[#253D9A]" : "text-[#171a2b]"}`}>{c.value}</p>
               {c.sub && <p className="mt-1 text-[13px] text-[#8b8fa3]">{c.sub}</p>}
             </div>
           ))}
@@ -274,7 +278,7 @@ function StoryBody({ slug }: { slug: string }) {
         <p className="mt-4 text-[15px] leading-relaxed text-white/80">{story.whyItMatters}</p>
       </div>
 
-      <div className="mt-10 border-t border-[#243D9A]/10 pt-6">
+      <div className="mt-10 border-t border-[#253D9A]/10 pt-6">
         <h3 className="text-[12px] uppercase tracking-[0.12em] text-[#8b8fa3]">Sources &amp; notes</h3>
         <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm text-[#8b8fa3]">
           {story.sources.map((s, i) => (
@@ -291,13 +295,24 @@ export default async function PublicationDetailV1({ params }: { params: Promise<
   const pub = publications.find((p) => p.slug === slug);
   if (!pub) notFound();
   const story = dataStories[slug];
+  const author = people.find((p) => p.slug === pub.authors[0]);
 
   return (
     <>
       <PageHeader kicker={`${pub.format} · ${pub.theme}`} title={pub.title} />
       <section className="mx-auto max-w-3xl px-6 pb-16">
         <div className="flex items-center gap-2 text-sm text-[#5b5f74]">
-          {pub.authors.join(", ")} &middot; {pub.date} <StatusTag status={pub.status} />
+          {author?.photo && (
+            <Link href={`/v1/people/${author.slug}`} className="relative h-7 w-7 shrink-0 overflow-hidden rounded-full bg-[#f7f7f3]">
+              <Image src={author.photo.src ?? stockPhotoFor(author.photo) ?? ""} alt={author.name} fill sizes="28px" className="object-cover" />
+            </Link>
+          )}
+          {author ? (
+            <Link href={`/v1/people/${author.slug}`} className="hover:text-[#253D9A]">{author.name}</Link>
+          ) : (
+            pub.authors.join(", ")
+          )}
+          &middot; {pub.date} <StatusTag status={pub.status} />
         </div>
         {pub.cover && <MediaSlot need={pub.cover} className="mt-6" />}
         {story ? (
@@ -306,10 +321,10 @@ export default async function PublicationDetailV1({ params }: { params: Promise<
           <>
             <p className="mt-8 text-lg leading-relaxed text-[#4b4f66]">{pub.abstract}</p>
             <div className="mt-10 flex flex-wrap gap-3">
-              <button disabled className="cursor-not-allowed bg-[#243D9A]/40 px-5 py-2.5 text-sm font-medium text-white">
+              <button disabled className="cursor-not-allowed bg-[#253D9A]/40 px-5 py-2.5 text-sm font-medium text-white">
                 Download PDF (not wired)
               </button>
-              <button disabled className="cursor-not-allowed border border-[#243D9A]/30 px-5 py-2.5 text-sm font-medium text-[#243D9A]/60">
+              <button disabled className="cursor-not-allowed border border-[#253D9A]/30 px-5 py-2.5 text-sm font-medium text-[#253D9A]/60">
                 Export citation
               </button>
             </div>

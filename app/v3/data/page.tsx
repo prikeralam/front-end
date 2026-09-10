@@ -27,11 +27,11 @@ export default function DataV3() {
         </div>
         <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {datasets.map((d) => (
-            <Link key={d.slug} href={`/v3/data/${d.slug}`} className="block border border-[#e6dbc7] bg-white transition-colors hover:border-[#243D9A]">
+            <Link key={d.slug} href={`/v3/data/${d.slug}`} className="block border border-[#e6dbc7] bg-white transition-colors hover:border-[#253D9A]">
               {d.preview && <MediaSlot need={d.preview} />}
               <div className="p-5">
                 <div className="flex items-center justify-between">
-                  <span className="bg-[#243D9A]/8 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-[#243D9A]">{d.type}</span>
+                  <span className="bg-[#253D9A]/8 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-[#253D9A]">{d.type}</span>
                   <span className="border border-[#B8862F]/40 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[#B8862F]">
                     {visibilityLabel[d.visibility]}
                   </span>

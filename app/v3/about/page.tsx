@@ -1,21 +1,15 @@
-import Image from "next/image";
 import Link from "next/link";
 import { org, vision, missionPoints, departments } from "../../_content/org";
-import { directorsNote, legalStatus, reports, orgChart } from "../../_content/people";
-import { teamPhotos } from "../../_content/gallery";
-import { StatusTag, NumberedItem, DocumentRow } from "../_ui/kit";
-import MediaSlot from "../_ui/MediaSlot";
+import { directorsNote, legalStatus } from "../../_content/people";
+import { StatusTag, NumberedItem } from "../_ui/kit";
 
 const sections = [
   "Institutional Overview",
   "Who We Are",
   "Director's Note",
-  "Life at PRI",
   "Research & Analysis Wing",
   "Governance",
-  "Organisational Chart",
   "Legal Status",
-  "Reports & Plans",
 ];
 
 export default function AboutV3() {
@@ -36,7 +30,7 @@ export default function AboutV3() {
           <ul className="space-y-2 border-l border-[#e6dbc7]">
             {sections.map((s) => (
               <li key={s}>
-                <span className="-ml-px block border-l-2 border-transparent pl-4 text-[13px] leading-snug text-[#5b5f74] hover:border-[#B8862F] hover:text-[#243D9A]">
+                <span className="-ml-px block border-l-2 border-transparent pl-4 text-[13px] leading-snug text-[#5b5f74] hover:border-[#B8862F] hover:text-[#253D9A]">
                   {s}
                 </span>
               </li>
@@ -49,7 +43,7 @@ export default function AboutV3() {
             <p className="text-[17px] leading-relaxed text-[#4b4f66]">{org.summary}</p>
             <p className="mt-5 text-[17px] leading-relaxed text-[#4b4f66]">{org.intro}</p>
 
-            <h2 className="mt-12 border-b-2 border-[#243D9A] pb-3 font-[family-name:var(--font-heading)] text-[26px] font-semibold text-[#171a2b]">
+            <h2 className="mt-12 border-b-2 border-[#253D9A] pb-3 font-[family-name:var(--font-heading)] text-[26px] font-semibold text-[#171a2b]">
               Who We Are
             </h2>
 
@@ -58,7 +52,7 @@ export default function AboutV3() {
               <p className="mt-3 font-[family-name:var(--font-heading)] text-[19px] leading-relaxed text-[#22263a]">{vision.text}</p>
             </div>
 
-            <h2 className="mt-12 border-b-2 border-[#243D9A] pb-3 font-[family-name:var(--font-heading)] text-[26px] font-semibold text-[#171a2b]">
+            <h2 className="mt-12 border-b-2 border-[#253D9A] pb-3 font-[family-name:var(--font-heading)] text-[26px] font-semibold text-[#171a2b]">
               Our Mission
             </h2>
             <div className="mt-6 space-y-5">
@@ -71,7 +65,7 @@ export default function AboutV3() {
           </section>
 
           <section className="mt-16">
-            <h2 className="flex items-center gap-2 border-b-2 border-[#243D9A] pb-3 font-[family-name:var(--font-heading)] text-[26px] font-semibold text-[#171a2b]">
+            <h2 className="flex items-center gap-2 border-b-2 border-[#253D9A] pb-3 font-[family-name:var(--font-heading)] text-[26px] font-semibold text-[#171a2b]">
               Director&rsquo;s Note <StatusTag status={directorsNote.status} />
             </h2>
             <blockquote className="mt-6 font-[family-name:var(--font-heading)] text-[22px] leading-relaxed text-[#22263a]">
@@ -84,21 +78,7 @@ export default function AboutV3() {
           </section>
 
           <section className="mt-16">
-            <h2 className="border-b-2 border-[#243D9A] pb-3 font-[family-name:var(--font-heading)] text-[26px] font-semibold text-[#171a2b]">
-              Life at PRI
-            </h2>
-            <p className="mt-4 text-[15px] leading-relaxed text-[#5b5f74]">Moments from PRI&rsquo;s office and everyday work.</p>
-            <div className="mt-6 grid gap-4 sm:grid-cols-3">
-              {teamPhotos.map((p) => (
-                <div key={p.slug} className="relative aspect-[4/3] overflow-hidden">
-                  <Image src={p.src} alt={p.description} fill sizes="(min-width: 768px) 33vw, 100vw" className="object-cover" />
-                </div>
-              ))}
-            </div>
-          </section>
-
-          <section className="mt-16">
-            <h2 className="border-b-2 border-[#243D9A] pb-3 font-[family-name:var(--font-heading)] text-[26px] font-semibold text-[#171a2b]">
+            <h2 className="border-b-2 border-[#253D9A] pb-3 font-[family-name:var(--font-heading)] text-[26px] font-semibold text-[#171a2b]">
               Research &amp; Analysis Wing
             </h2>
             <p className="mt-4 text-[15px] leading-relaxed text-[#5b5f74]">
@@ -124,26 +104,19 @@ export default function AboutV3() {
           </section>
 
           <section className="mt-16">
-            <h2 className="border-b-2 border-[#243D9A] pb-3 font-[family-name:var(--font-heading)] text-[26px] font-semibold text-[#171a2b]">
+            <h2 className="border-b-2 border-[#253D9A] pb-3 font-[family-name:var(--font-heading)] text-[26px] font-semibold text-[#171a2b]">
               Governance
             </h2>
             <p className="mt-4 text-[15px] leading-relaxed text-[#5b5f74]">
-              PRI&rsquo;s governance includes a 7-person team, 2 patrons, and a 17-member Executive Council.
+              PRI&rsquo;s governance includes a 7-person team, 2 patrons, and a 16-member Executive Council.
             </p>
-            <Link href="/v3/people" className="mt-4 inline-block text-sm font-semibold text-[#243D9A] hover:underline">
+            <Link href="/v3/people" className="mt-4 inline-block text-sm font-semibold text-[#253D9A] hover:underline">
               Meet our people &rarr;
             </Link>
           </section>
 
           <section className="mt-16">
-            <h2 className="border-b-2 border-[#243D9A] pb-3 font-[family-name:var(--font-heading)] text-[26px] font-semibold text-[#171a2b]">
-              Organisational Chart
-            </h2>
-            <MediaSlot need={orgChart} className="mt-6" />
-          </section>
-
-          <section className="mt-16">
-            <h2 className="border-b-2 border-[#243D9A] pb-3 font-[family-name:var(--font-heading)] text-[26px] font-semibold text-[#171a2b]">
+            <h2 className="border-b-2 border-[#253D9A] pb-3 font-[family-name:var(--font-heading)] text-[26px] font-semibold text-[#171a2b]">
               Legal Status
             </h2>
             <table className="mt-6 w-full text-left">
@@ -161,15 +134,6 @@ export default function AboutV3() {
                 ))}
               </tbody>
             </table>
-          </section>
-
-          <section className="mt-16">
-            <h2 className="border-b-2 border-[#243D9A] pb-3 font-[family-name:var(--font-heading)] text-[26px] font-semibold text-[#171a2b]">
-              Annual Reports &amp; Strategic Plans
-            </h2>
-            <ul className="mt-6 divide-y divide-[#e6dbc7] border-y border-[#e6dbc7]">
-              {reports.map((r) => <DocumentRow key={r.title} doc={r} />)}
-            </ul>
           </section>
         </div>
       </div>

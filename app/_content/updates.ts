@@ -1,32 +1,3 @@
-import type { ContentStatus } from "../_lib/types";
-
-/** Homepage "Latest Updates" feed — in production this is a CMS query across content types. */
-export const updates: {
-  type: string;
-  meta: string;
-  title: string;
-  desc: string;
-  href: string;
-  status: ContentStatus;
-}[] = [
-  {
-    type: "Media",
-    meta: "Date to be confirmed",
-    title: "Rapid response brief on emerging socio-political issues",
-    desc: "Timely and research-backed responses to emerging socio-political issues to inform public debate.",
-    href: "/media-watch/case-one",
-    status: "placeholder",
-  },
-  {
-    type: "Event",
-    meta: "Date to be confirmed",
-    title: "Policy roundtable with stakeholders",
-    desc: "Creating platforms to share research, address problems, and collaboratively build solutions.",
-    href: "/events/policy-roundtable",
-    status: "placeholder",
-  },
-];
-
 export const quickLinks = [
   {
     title: "Data Hub",
@@ -39,9 +10,9 @@ export const quickLinks = [
     href: "/research",
   },
   {
-    title: "Get Involved",
+    title: "Careers",
     desc: "Fellowships and internships to train the next generation of researchers and policymakers.",
-    href: "/get-involved",
+    href: "/careers",
   },
 ];
 

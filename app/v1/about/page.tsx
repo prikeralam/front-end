@@ -1,10 +1,7 @@
-import Image from "next/image";
 import Link from "next/link";
 import { org, vision, missionPoints, departments } from "../../_content/org";
-import { directorsNote, legalStatus, reports, orgChart } from "../../_content/people";
-import { teamPhotos } from "../../_content/gallery";
-import { PageHeader, SectionHeading, DocumentRow, StatusTag } from "../_ui/kit";
-import MediaSlot from "../_ui/MediaSlot";
+import { directorsNote, legalStatus } from "../../_content/people";
+import { PageHeader, SectionHeading, StatusTag } from "../_ui/kit";
 
 export default function AboutV1() {
   return (
@@ -38,9 +35,9 @@ export default function AboutV1() {
         </div>
       </section>
 
-      <section className="border-y border-[#243D9A]/10 bg-[#f7f7f3]">
+      <section className="border-y border-[#253D9A]/10 bg-[#f7f7f3]">
         <div className="mx-auto max-w-3xl px-6 py-16">
-          <p className="flex items-center gap-2 text-[13px] uppercase tracking-[0.2em] text-[#243D9A]">
+          <p className="flex items-center gap-2 text-[13px] uppercase tracking-[0.2em] text-[#253D9A]">
             Director&rsquo;s Note <StatusTag status={directorsNote.status} />
           </p>
           <blockquote className="mt-6 font-[family-name:var(--font-heading)] text-2xl italic leading-snug text-[#171a2b]">
@@ -51,23 +48,11 @@ export default function AboutV1() {
       </section>
 
       <section className="mx-auto max-w-3xl px-6 py-16">
-        <SectionHeading>Life at PRI</SectionHeading>
-        <p className="mt-3 text-[15px] leading-relaxed text-[#5b5f74]">Moments from PRI&rsquo;s office and everyday work.</p>
-        <div className="mt-8 grid gap-4 sm:grid-cols-3">
-          {teamPhotos.map((p) => (
-            <div key={p.slug} className="relative aspect-[4/3] overflow-hidden">
-              <Image src={p.src} alt={p.description} fill sizes="(min-width: 640px) 33vw, 100vw" className="object-cover" />
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-3xl px-6 py-16">
         <SectionHeading>Research &amp; Analysis Wing</SectionHeading>
         <p className="mt-3 text-[15px] leading-relaxed text-[#5b5f74]">
           Five specialised departments examining gaps, inequalities, and opportunities across different societal sections.
         </p>
-        <div className="mt-8 divide-y divide-[#243D9A]/10 border-y border-[#243D9A]/10">
+        <div className="mt-8 divide-y divide-[#253D9A]/10 border-y border-[#253D9A]/10">
           {departments.map((d, i) => (
             <div key={d.name} className="grid gap-3 py-6 sm:grid-cols-[40px_1fr] sm:gap-6">
               <span className="font-[family-name:var(--font-heading)] text-[13px] text-[#C9972C]">{String(i + 1).padStart(2, "0")}</span>
@@ -80,30 +65,25 @@ export default function AboutV1() {
         </div>
       </section>
 
-      <section className="border-y border-[#243D9A]/10 bg-[#f7f7f3]">
+      <section className="border-y border-[#253D9A]/10 bg-[#f7f7f3]">
         <div className="mx-auto max-w-3xl px-6 py-16">
           <SectionHeading>Governance</SectionHeading>
           <p className="mt-4 max-w-2xl text-[15px] leading-relaxed text-[#5b5f74]">
-            PRI&rsquo;s governance includes a 7-person team, 2 patrons, and a 17-member Executive Council.
+            PRI&rsquo;s governance includes a 7-person team, 2 patrons, and a 16-member Executive Council.
           </p>
           <Link
             href="/v1/people"
-            className="mt-4 inline-block border-b-2 border-[#C9972C] pb-1 text-sm font-medium tracking-wide text-[#171a2b] transition-colors hover:border-[#243D9A]"
+            className="mt-4 inline-block border-b-2 border-[#C9972C] pb-1 text-sm font-medium tracking-wide text-[#171a2b] transition-colors hover:border-[#253D9A]"
           >
             Meet our people &rarr;
           </Link>
         </div>
       </section>
 
-      <section className="mx-auto max-w-3xl px-6 py-16">
-        <SectionHeading>Organisational Chart</SectionHeading>
-        <MediaSlot need={orgChart} className="mt-8" />
-      </section>
-
-      <section className="border-y border-[#243D9A]/10 bg-[#f7f7f3]">
+      <section className="border-y border-[#253D9A]/10 bg-[#f7f7f3]">
         <div className="mx-auto max-w-3xl px-6 py-16">
           <SectionHeading>Legal Status</SectionHeading>
-          <dl className="mt-8 grid gap-6 border-t border-[#243D9A]/10 pt-6 sm:grid-cols-3">
+          <dl className="mt-8 grid gap-6 border-t border-[#253D9A]/10 pt-6 sm:grid-cols-3">
             {legalStatus.map((l) => (
               <div key={l.label}>
                 <dt className="text-[12px] uppercase tracking-[0.12em] text-[#8b8fa3]">{l.label}</dt>
@@ -113,13 +93,6 @@ export default function AboutV1() {
             ))}
           </dl>
         </div>
-      </section>
-
-      <section className="mx-auto max-w-3xl px-6 py-16">
-        <SectionHeading>Annual Reports &amp; Strategic Plans</SectionHeading>
-        <ul className="mt-8 divide-y divide-[#243D9A]/10 border-y border-[#243D9A]/10">
-          {reports.map((r) => <DocumentRow key={r.title} doc={r} />)}
-        </ul>
       </section>
     </>
   );

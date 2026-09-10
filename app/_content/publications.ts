@@ -2,7 +2,8 @@ import type { Publication } from "../_lib/types";
 import { dataStoryCoverPhotos } from "../_lib/stockPhotos";
 
 export const publicationThemes = ["Education", "Employment", "Economics", "Public Finance", "Health", "Governance", "Demography", "Migration"];
-export const publicationFormats = ["Report", "Working Paper", "Brief", "Explainer", "Infographic", "Video", "Data Story"];
+export const publicationFormats = ["Report", "Working Paper", "Data Story"];
+export const publicationLanguages = ["English", "Malayalam"];
 
 // --- Kerala in Data series (real, integrated as normal Research & Publications entries) ---
 export const publications: Publication[] = [
@@ -14,8 +15,10 @@ export const publications: Publication[] = [
     format: "Data Story",
     theme: "Education",
     date: "To be confirmed",
-    authors: ["PRI Research Team"],
+    authors: ["pri-research-team"],
+    language: "English",
     status: "real",
+    views: 1240,
     cover: { label: "Malappuram classrooms data dashboard visual", ratio: "4:3", kind: "photo", src: dataStoryCoverPhotos["malappuram-classrooms"] },
   },
   {
@@ -26,8 +29,10 @@ export const publications: Publication[] = [
     format: "Data Story",
     theme: "Demography",
     date: "To be confirmed",
-    authors: ["PRI Research Team"],
+    authors: ["pri-research-team"],
+    language: "English",
     status: "real",
+    views: 980,
     cover: { label: "Kerala population mix data dashboard visual", ratio: "4:3", kind: "photo", src: dataStoryCoverPhotos["kerala-population-mix"] },
   },
   {
@@ -38,8 +43,10 @@ export const publications: Publication[] = [
     format: "Data Story",
     theme: "Health",
     date: "To be confirmed",
-    authors: ["PRI Research Team"],
+    authors: ["pri-research-team"],
+    language: "English",
     status: "real",
+    views: 860,
     cover: { label: "Kerala healthcare gap data dashboard visual", ratio: "4:3", kind: "photo", src: dataStoryCoverPhotos["kerala-healthcare-gap"] },
   },
   {
@@ -50,8 +57,10 @@ export const publications: Publication[] = [
     format: "Data Story",
     theme: "Migration",
     date: "To be confirmed",
-    authors: ["PRI Research Team"],
+    authors: ["pri-research-team"],
+    language: "English",
     status: "real",
+    views: 640,
     cover: { label: "Kerala Gulf migration data dashboard visual", ratio: "4:3", kind: "photo", src: dataStoryCoverPhotos["kerala-gulf-migration"] },
   },
 ];

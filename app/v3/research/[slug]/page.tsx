@@ -1,5 +1,9 @@
+import Image from "next/image";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { publications } from "../../../_content/publications";
+import { people } from "../../../_content/people";
+import { stockPhotoFor } from "../../../_lib/stockPhotos";
 import { dataStories, educationCharts, demographyCharts, healthCharts, migrationCharts } from "../../../_content/dataStories";
 import { PageHeader, SectionHeading, StatusTag } from "../../_ui/kit";
 import MediaSlot from "../../_ui/MediaSlot";
@@ -10,7 +14,7 @@ export function generateStaticParams() {
 }
 
 const palette: ChartPalette = {
-  primary: "#243D9A",
+  primary: "#253D9A",
   secondary: "#B8862F",
   text: "#171a2b",
   textSoft: "#5b5f74",
@@ -44,7 +48,7 @@ function HookBox({ story }: { story: (typeof dataStories)[string] }) {
       <div className="flex flex-wrap gap-8">
         {story.hookStats.map((s, i) => (
           <div key={i}>
-            <p className="font-[family-name:var(--font-heading)] text-[28px] font-semibold text-[#243D9A]">{s.value}</p>
+            <p className="font-[family-name:var(--font-heading)] text-[28px] font-semibold text-[#253D9A]">{s.value}</p>
             {s.label && <p className="mt-1 max-w-xs text-[13px] leading-snug text-[#5b5f74]">{s.label}</p>}
           </div>
         ))}
@@ -369,6 +373,7 @@ export default async function PublicationDetailV3({ params }: { params: Promise<
   const { slug } = await params;
   const pub = publications.find((p) => p.slug === slug);
   if (!pub) notFound();
+  const author = people.find((p) => p.slug === pub.authors[0]);
 
   const story = dataStories[slug];
 
@@ -378,15 +383,25 @@ export default async function PublicationDetailV3({ params }: { params: Promise<
         <PageHeader kicker={`${pub.format} · ${pub.theme}`} title={pub.title} />
         <section className="mx-auto max-w-3xl px-6 py-16">
           <div className="flex items-center gap-2 text-sm text-[#5b5f74]">
-            {pub.authors.join(", ")} &middot; {pub.date} <StatusTag status={pub.status} />
+            {author?.photo && (
+            <Link href={`/v3/people/${author.slug}`} className="relative h-7 w-7 shrink-0 overflow-hidden rounded-full bg-[#F1E9D8]">
+              <Image src={author.photo.src ?? stockPhotoFor(author.photo) ?? ""} alt={author.name} fill sizes="28px" className="object-cover" />
+            </Link>
+          )}
+          {author ? (
+            <Link href={`/v3/people/${author.slug}`} className="font-semibold hover:text-[#253D9A]">{author.name}</Link>
+          ) : (
+            pub.authors.join(", ")
+          )}
+          &middot; {pub.date} <StatusTag status={pub.status} />
           </div>
           {pub.cover && <MediaSlot need={pub.cover} className="mt-6" />}
           <p className="mt-8 text-[17px] leading-relaxed text-[#4b4f66]">{pub.abstract}</p>
           <div className="mt-10 flex flex-wrap gap-3">
-            <button disabled className="cursor-not-allowed bg-[#243D9A]/40 px-5 py-2.5 text-sm font-semibold text-white">
+            <button disabled className="cursor-not-allowed bg-[#253D9A]/40 px-5 py-2.5 text-sm font-semibold text-white">
               Download PDF (not wired)
             </button>
-            <button disabled className="cursor-not-allowed border border-[#243D9A]/30 px-5 py-2.5 text-sm font-semibold text-[#243D9A]/60">
+            <button disabled className="cursor-not-allowed border border-[#253D9A]/30 px-5 py-2.5 text-sm font-semibold text-[#253D9A]/60">
               Export citation
             </button>
           </div>
@@ -410,7 +425,17 @@ export default async function PublicationDetailV3({ params }: { params: Promise<
       <PageHeader kicker={`${pub.format} · ${pub.theme}`} title={pub.title} intro={story.lede} />
       <section className="mx-auto max-w-3xl px-6 py-16">
         <div className="flex items-center gap-2 text-sm text-[#5b5f74]">
-          {pub.authors.join(", ")} &middot; {pub.date} <StatusTag status={pub.status} />
+          {author?.photo && (
+            <Link href={`/v3/people/${author.slug}`} className="relative h-7 w-7 shrink-0 overflow-hidden rounded-full bg-[#F1E9D8]">
+              <Image src={author.photo.src ?? stockPhotoFor(author.photo) ?? ""} alt={author.name} fill sizes="28px" className="object-cover" />
+            </Link>
+          )}
+          {author ? (
+            <Link href={`/v3/people/${author.slug}`} className="font-semibold hover:text-[#253D9A]">{author.name}</Link>
+          ) : (
+            pub.authors.join(", ")
+          )}
+          &middot; {pub.date} <StatusTag status={pub.status} />
         </div>
         {pub.cover && <MediaSlot need={pub.cover} className="mt-6" />}
 

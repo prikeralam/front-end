@@ -1,4 +1,5 @@
 import type { Person, PRIDocument } from "../_lib/types";
+import { org } from "./org";
 
 const portrait = (label: string, src?: string) => ({ label, ratio: "square" as const, kind: "photo" as const, src });
 
@@ -10,7 +11,7 @@ export const people: Person[] = [
   // --- Our Team (7) ---
   {
     slug: "noushad",
-    name: "Noushad",
+    name: "Dr. Noushad T",
     role: "Director of Operations",
     group: "team",
     bio: "Biography to be supplied.",
@@ -19,7 +20,7 @@ export const people: Person[] = [
   },
   {
     slug: "thufail",
-    name: "Thufail",
+    name: "Muhammed Thufail",
     role: "Head of Data",
     group: "team",
     bio: "Biography to be supplied.",
@@ -28,7 +29,7 @@ export const people: Person[] = [
   },
   {
     slug: "afsal",
-    name: "Afsal",
+    name: "Dr. Afsal K",
     role: "Researcher",
     group: "team",
     bio: "Biography to be supplied.",
@@ -42,7 +43,7 @@ export const people: Person[] = [
     group: "team",
     bio: "Biography to be supplied.",
     status: "real",
-    photo: portrait("Sayyid Hashir — Editor portrait"),
+    photo: portrait("Sayyid Hashir — Editor portrait", "/people/team/hashir.png"),
   },
   {
     slug: "badusha",
@@ -92,20 +93,22 @@ export const people: Person[] = [
     photo: portrait("Galfar Mohammed Ali — Patron portrait", "/people/patrons/galfar-mohammed-ali.jpg"),
   },
 
-  // --- Executive Council (17) ---
+  // --- Executive Council (16) ---
   {
     slug: "sayyid-sadiq-ali-shihab",
     name: "Sayyid Sadiq Ali Shihab",
     role: "Chairman",
     group: "executive",
+    bio: "Biography to be supplied.",
     status: "real",
-    photo: portrait("Sayyid Sadiq Ali Shihab — Chairman portrait", "/people/executive/sayyid-sadiq-ali-shihab.webp"),
+    photo: portrait("Sayyid Sadiq Ali Shihab — Chairman portrait", "/people/executive/sayyid-sadiq-ali-shihab.jpg"),
   },
   {
     slug: "ahmad-munavvar-puthiya-maliyekkal",
     name: "Ahmad Munavvar Puthiya Maliyekkal",
     role: "Vice Chairman",
     group: "executive",
+    bio: "Biography to be supplied.",
     status: "real",
     photo: portrait("Ahmad Munavvar Puthiya Maliyekkal — Vice Chairman portrait", "/people/executive/ahmad-munavvar-puthiya-maliyekkal.jpg"),
   },
@@ -114,6 +117,7 @@ export const people: Person[] = [
     name: "Sayyid Rasheed Ali Puthiya Maliyekkal",
     role: "Treasurer",
     group: "executive",
+    bio: "Biography to be supplied.",
     status: "real",
     photo: portrait("Sayyid Rasheed Ali Puthiya Maliyekkal — Treasurer portrait", "/people/executive/sayyid-rasheed-ali-puthiya-maliyekkal.jpg"),
   },
@@ -122,6 +126,7 @@ export const people: Person[] = [
     name: "Abubakr T",
     role: "Vice President",
     group: "executive",
+    bio: "Biography to be supplied.",
     status: "real",
     photo: portrait("Abubakr T — Vice President portrait"),
   },
@@ -130,14 +135,16 @@ export const people: Person[] = [
     name: "Dr. Mohammed Haris KT",
     role: "General Secretary",
     group: "executive",
+    bio: "Biography to be supplied.",
     status: "real",
-    photo: portrait("Dr. Mohammed Haris KT — General Secretary portrait"),
+    photo: portrait("Dr. Mohammed Haris KT — General Secretary portrait", "/people/executive/haris-kt.jpg"),
   },
   {
     slug: "muhammed-thufail",
     name: "Muhammed Thufail",
     role: "Executive Member",
     group: "executive",
+    bio: "Biography to be supplied.",
     status: "real",
     photo: portrait("Muhammed Thufail — Executive Member portrait", "/people/executive/muhammed-thufail.jpg"),
   },
@@ -146,6 +153,7 @@ export const people: Person[] = [
     name: "Dr. Noushad T",
     role: "Executive Member",
     group: "executive",
+    bio: "Biography to be supplied.",
     status: "real",
     photo: portrait("Dr. Noushad T — Executive Member portrait", "/people/executive/noushad-t.jpg"),
   },
@@ -154,6 +162,7 @@ export const people: Person[] = [
     name: "Dr. Afsal K",
     role: "Executive Member",
     group: "executive",
+    bio: "Biography to be supplied.",
     status: "real",
     photo: portrait("Dr. Afsal K — Executive Member portrait", "/people/executive/afsal-k.jpg"),
   },
@@ -162,6 +171,7 @@ export const people: Person[] = [
     name: "Muhammed Nazeel NP",
     role: "Executive Member",
     group: "executive",
+    bio: "Biography to be supplied.",
     status: "real",
     photo: portrait("Muhammed Nazeel NP — Executive Member portrait"),
   },
@@ -170,6 +180,7 @@ export const people: Person[] = [
     name: "Sayyid Aseel Ali Shihab Thangal",
     role: "Executive Member",
     group: "executive",
+    bio: "Biography to be supplied.",
     status: "real",
     photo: portrait("Sayyid Aseel Ali Shihab Thangal — Executive Member portrait", "/people/executive/sayyid-aseel-ali-shihab-thangal.jpg"),
   },
@@ -178,6 +189,7 @@ export const people: Person[] = [
     name: "Sayyid Rajih Ali Shihab Thangal",
     role: "Executive Member",
     group: "executive",
+    bio: "Biography to be supplied.",
     status: "real",
     photo: portrait("Sayyid Rajih Ali Shihab Thangal — Executive Member portrait", "/people/executive/sayyid-rajih-ali-shihab-thangal.jpg"),
   },
@@ -186,6 +198,7 @@ export const people: Person[] = [
     name: "Anwar Naha",
     role: "Vice Chairman",
     group: "executive",
+    bio: "Biography to be supplied.",
     status: "real",
     photo: portrait("Anwar Naha — Vice Chairman portrait"),
   },
@@ -194,6 +207,7 @@ export const people: Person[] = [
     name: "C.H Abdul Raheem",
     role: "Executive Member",
     group: "executive",
+    bio: "Biography to be supplied.",
     status: "real",
     photo: portrait("C.H Abdul Raheem — Executive Member portrait", "/people/executive/ch-abdul-raheem.jpeg"),
   },
@@ -202,38 +216,45 @@ export const people: Person[] = [
     name: "P.A Abdulla Ibrahim",
     role: "Executive Member",
     group: "executive",
+    bio: "Biography to be supplied.",
     status: "real",
-    photo: portrait("P.A Abdulla Ibrahim — Executive Member portrait"),
+    photo: portrait("P.A Abdulla Ibrahim — Executive Member portrait", "/people/executive/pa-abdulla-ibrahim.jpg"),
   },
   {
     slug: "abdul-muhaimin-kakkiya",
     name: "Abdul Muhaimin Kakkiya",
     role: "Executive Member",
     group: "executive",
+    bio: "Biography to be supplied.",
     status: "real",
     photo: portrait("Abdul Muhaimin Kakkiya — Executive Member portrait"),
-  },
-  {
-    slug: "rauf-ck",
-    name: "Dr. Rauf C.K",
-    role: "Executive Member",
-    group: "executive",
-    status: "real",
-    photo: portrait("Dr. Rauf C.K — Executive Member portrait"),
   },
   {
     slug: "muneer-kalliyil",
     name: "Dr. Muneer Kalliyil",
     role: "Executive Member",
     group: "executive",
+    bio: "Biography to be supplied.",
     status: "real",
     photo: portrait("Dr. Muneer Kalliyil — Executive Member portrait", "/people/executive/muneer-kalliyil.jpg"),
+  },
+
+  // --- Authors (1) ---
+  {
+    slug: "pri-research-team",
+    name: "PRI Research Team",
+    role: "Research Team",
+    group: "author",
+    bio: "The collective byline for research produced across PRI's departments.",
+    status: "placeholder",
+    photo: portrait("PRI Research Team portrait"),
   },
 ];
 
 export const teamMembers = people.filter((p) => p.group === "team");
 export const patrons = people.filter((p) => p.group === "patron");
 export const executiveCouncil = people.filter((p) => p.group === "executive");
+export const authors = people.filter((p) => p.group === "author");
 
 // PLACEHOLDER — Director's Note to be written.
 export const directorsNote = {
@@ -244,16 +265,15 @@ export const directorsNote = {
   status: "placeholder" as const,
 };
 
-// PLACEHOLDER — registration details to be confirmed.
 export const legalStatus = [
-  { label: "Registration", value: "Registered Society", note: "Reg. No. to be confirmed" },
-  { label: "12A Status", value: "To be confirmed", note: "Income Tax Act, 1961" },
-  { label: "80G Status", value: "To be confirmed", note: "Donations tax-deductible" },
+  { label: "Registration", value: org.registration.regNo, note: "Registered Society" },
+  { label: "12A Status", value: org.registration.pan12A, note: "Income Tax Act, 1961" },
+  { label: "80G Status", value: org.registration.cert80G, note: "Donations tax-deductible" },
 ];
 
-// PLACEHOLDER — no annual reports or strategic plans supplied yet.
 export const reports: PRIDocument[] = [
-  { title: "Annual Report 2025–26", kind: "Annual Report", year: "2026", status: "placeholder" },
+  { title: "Annual Report 2025–26", kind: "Annual Report", year: "2026", status: "real", href: "/PDFs/Annual%20Report%2025-26.pdf" },
+  // PLACEHOLDER — remaining reports/strategic plans not supplied yet.
   { title: "Strategic Plan 2024–2028", kind: "Strategic Plan", year: "2024", status: "placeholder" },
   { title: "Annual Report 2024–25", kind: "Annual Report", year: "2025", status: "placeholder" },
 ];
@@ -265,8 +285,3 @@ export const testimonials = [
   { quote: "Few institutes make it this easy to trace a policy from the budget line to the ground.", name: "Name Surname", role: "Programme Director, partner NGO", status: "placeholder" as const },
 ];
 
-export const orgChart = {
-  label: "Organisational chart diagram",
-  ratio: "4:3",
-  kind: "diagram" as const,
-};

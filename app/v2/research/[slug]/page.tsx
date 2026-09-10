@@ -1,6 +1,10 @@
 import type { ReactNode } from "react";
+import Image from "next/image";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { publications } from "../../../_content/publications";
+import { people } from "../../../_content/people";
+import { stockPhotoFor } from "../../../_lib/stockPhotos";
 import { dataStories, educationCharts, demographyCharts, healthCharts, migrationCharts } from "../../../_content/dataStories";
 import { HBarChart, GroupedBarChart, DivergingBarChart, ScatterChart, LineChart, VBarChart, HBarSimpleChart, type ChartPalette } from "../../../_lib/dataStoryCharts";
 import { PageHeader, SectionHeading, StatusTag } from "../../_ui/kit";
@@ -11,7 +15,7 @@ export function generateStaticParams() {
 }
 
 const palette: ChartPalette = {
-  primary: "#243D9A",
+  primary: "#253D9A",
   secondary: "#E4633F",
   text: "#171a2b",
   textSoft: "#5b5f74",
@@ -262,7 +266,7 @@ function StoryBody({ slug }: { slug: string }) {
           {story.callouts.map((c, i) => (
             <div key={i} className="rounded-xl border border-[#e6e8f0] bg-white p-5">
               <p className="text-[13px] text-[#8b8fa3]">{c.label}</p>
-              <p className={`mt-1 font-[family-name:var(--font-mono)] text-2xl font-semibold ${c.tone === "bad" ? "text-[#E4633F]" : c.tone === "good" ? "text-[#243D9A]" : "text-[#171a2b]"}`}>{c.value}</p>
+              <p className={`mt-1 font-[family-name:var(--font-mono)] text-2xl font-semibold ${c.tone === "bad" ? "text-[#E4633F]" : c.tone === "good" ? "text-[#253D9A]" : "text-[#171a2b]"}`}>{c.value}</p>
               {c.sub && <p className="mt-1 text-[13px] text-[#8b8fa3]">{c.sub}</p>}
             </div>
           ))}
@@ -291,13 +295,24 @@ export default async function PublicationDetailV2({ params }: { params: Promise<
   const pub = publications.find((p) => p.slug === slug);
   if (!pub) notFound();
   const story = dataStories[slug];
+  const author = people.find((p) => p.slug === pub.authors[0]);
 
   return (
     <>
       <PageHeader kicker={`${pub.format} · ${pub.theme}`} title={pub.title} />
       <section className="mx-auto max-w-3xl px-6 py-16">
         <div className="flex items-center gap-2 text-sm text-[#5b5f74]">
-          {pub.authors.join(", ")} &middot; {pub.date} <StatusTag status={pub.status} />
+          {author?.photo && (
+            <Link href={`/v2/people/${author.slug}`} className="relative h-7 w-7 shrink-0 overflow-hidden rounded-full bg-[#fafbfc]">
+              <Image src={author.photo.src ?? stockPhotoFor(author.photo) ?? ""} alt={author.name} fill sizes="28px" className="object-cover" />
+            </Link>
+          )}
+          {author ? (
+            <Link href={`/v2/people/${author.slug}`} className="font-semibold hover:text-[#253D9A]">{author.name}</Link>
+          ) : (
+            pub.authors.join(", ")
+          )}
+          &middot; {pub.date} <StatusTag status={pub.status} />
         </div>
         {pub.cover && <MediaSlot need={pub.cover} className="mt-6" />}
         {story ? (
@@ -306,7 +321,7 @@ export default async function PublicationDetailV2({ params }: { params: Promise<
           <>
             <p className="mt-8 text-lg leading-relaxed text-[#4b4f66]">{pub.abstract}</p>
             <div className="mt-10 flex flex-wrap gap-3">
-              <button disabled className="cursor-not-allowed rounded-full bg-[#243D9A]/40 px-5 py-2.5 text-sm font-semibold text-white">
+              <button disabled className="cursor-not-allowed rounded-full bg-[#253D9A]/40 px-5 py-2.5 text-sm font-semibold text-white">
                 Download PDF (not wired)
               </button>
               <button disabled className="cursor-not-allowed rounded-full border border-[#dcdee8] px-5 py-2.5 text-sm font-semibold text-[#8b8fa3]">

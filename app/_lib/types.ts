@@ -28,10 +28,13 @@ export type Publication = {
   slug: string;
   title: string;
   abstract: string;
-  format: "Report" | "Working Paper" | "Brief" | "Explainer" | "Infographic" | "Video" | "Data Story";
+  format: "Report" | "Working Paper" | "Data Story";
   theme: string;
   date: string;
+  /** `Person.slug` references, not raw display names. */
   authors: string[];
+  language: "English" | "Malayalam";
+  views: number;
   status: ContentStatus;
   cover: MediaNeed | null;
 };
@@ -59,29 +62,6 @@ export type Dashboard = {
   theme: string;
   status: ContentStatus;
   embed: MediaNeed | null;
-};
-
-export type AdvocacyItem = {
-  slug: string;
-  title: string;
-  summary: string;
-  type: "Memo" | "Policy Brief" | "White Paper" | "Letter" | "Scorecard" | "Event Snapshot";
-  date: string;
-  recipient?: string;
-  status: ContentStatus;
-  media: MediaNeed | null;
-};
-
-export type MediaCase = {
-  slug: string;
-  headline: string;
-  summary: string;
-  classification: "Misinformation" | "Hate Speech" | "Biased Coverage";
-  source: string;
-  date: string;
-  response: string;
-  status: ContentStatus;
-  screenshot: MediaNeed | null;
 };
 
 export type PRIEvent = {
@@ -122,6 +102,8 @@ export type PRIDocument = {
   kind: string;
   year?: string;
   status: ContentStatus;
+  /** Path to the actual file once PRI has supplied one, e.g. "/PDFs/Annual Report 25-26.pdf". */
+  href?: string;
 };
 
 export type NamedProgram = {

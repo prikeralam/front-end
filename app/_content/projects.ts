@@ -6,12 +6,15 @@ export type HeroProject = {
   blurb: string;
   status: ContentStatus;
   image: MediaNeed;
+  /** Overrides the default "Explore project →" / `/projects/{slug}` link — used by the motto slide. */
+  ctaLabel?: string;
+  ctaHref?: string;
 };
 
 // PLACEHOLDER — full project names, descriptions and photography to be
 // supplied by PRI; titles below are the working names given for the
-// homepage banner.
-export const heroProjects: HeroProject[] = [
+// homepage banner and the /projects listing.
+export const projects: HeroProject[] = [
   {
     slug: "sir-project",
     title: "SIR Project",
@@ -33,4 +36,18 @@ export const heroProjects: HeroProject[] = [
     status: "placeholder",
     image: { label: "Demography and Migration project photograph", ratio: "3:2", kind: "photo" },
   },
+];
+
+/** Homepage hero carousel: PRI's motto, plus the two most-developed projects. */
+export const heroProjects: HeroProject[] = [
+  {
+    slug: "motto",
+    title: "Data-driven research. Evidence-based policy.",
+    blurb: "Strategy and collaboration that turn rigorous research into real-world policy impact — for a more equitable society.",
+    status: "real",
+    image: { label: "PRI hero photograph", ratio: "3:2", kind: "photo" },
+    ctaLabel: "Know more",
+    ctaHref: "/about",
+  },
+  ...projects.filter((p) => p.slug === "education" || p.slug === "demography-migration"),
 ];

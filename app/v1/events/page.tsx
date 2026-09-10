@@ -13,7 +13,7 @@ export default function EventsV1() {
         <SectionHeading>Upcoming</SectionHeading>
         <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {upcomingEvents.map((e) => (
-            <Link key={e.slug} href={`/v1/events/${e.slug}`} className="block border border-[#243D9A]/12 bg-white transition-colors hover:border-[#243D9A]/40">
+            <Link key={e.slug} href={`/v1/events/${e.slug}`} className="block border border-[#253D9A]/12 bg-white transition-colors hover:border-[#253D9A]/40">
               {e.image && <MediaSlot need={e.image} />}
               <div className="p-5">
                 <span className="text-[11px] uppercase tracking-wide text-[#C9972C]">{e.type}</span>
@@ -29,12 +29,12 @@ export default function EventsV1() {
         {upcomingEvents.length === 0 && <EmptyState message="No upcoming events scheduled." />}
       </section>
 
-      <section className="border-t border-[#243D9A]/10 bg-[#f7f7f3]">
+      <section className="border-t border-[#253D9A]/10 bg-[#f7f7f3]">
         <div className="mx-auto max-w-5xl px-6 py-16">
           <SectionHeading>Past Events</SectionHeading>
           <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {pastEvents.map((e) => (
-              <Link key={e.slug} href={`/v1/events/${e.slug}`} className="block border border-[#243D9A]/12 bg-white transition-colors hover:border-[#243D9A]/40">
+              <Link key={e.slug} href={`/v1/events/${e.slug}`} className="block border border-[#253D9A]/12 bg-white transition-colors hover:border-[#253D9A]/40">
                 {e.image && <MediaSlot need={e.image} />}
                 <div className="p-5">
                   <span className="text-[11px] uppercase tracking-wide text-[#C9972C]">{e.type}</span>

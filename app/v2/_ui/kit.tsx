@@ -14,7 +14,7 @@ export function StatusTag({ status }: { status: ContentStatus }) {
 
 export function Badge({ children }: { children: ReactNode }) {
   return (
-    <span className="inline-block rounded-full bg-[#243D9A]/8 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-[#243D9A]">
+    <span className="inline-block rounded-full bg-[#253D9A]/8 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-[#253D9A]">
       {children}
     </span>
   );
@@ -24,7 +24,7 @@ export function PageHeader({ kicker, title, intro }: { kicker: string; title: st
   return (
     <section className="border-b border-[#e6e8f0] bg-[#fafbfc]">
       <div className="mx-auto max-w-6xl px-6 py-14">
-        <span className="inline-block rounded-full bg-[#243D9A]/8 px-3 py-1 text-xs font-bold uppercase tracking-wider text-[#243D9A]">
+        <span className="inline-block rounded-full bg-[#253D9A]/8 px-3 py-1 text-xs font-bold uppercase tracking-wider text-[#253D9A]">
           {kicker}
         </span>
         <h1 className="mt-5 max-w-3xl text-4xl font-extrabold leading-tight tracking-tight text-[#171a2b] sm:text-5xl">
@@ -54,7 +54,7 @@ export function Card({ children, href }: { children: ReactNode; href?: string })
 export function Stat({ value, label }: { value: string; label: string }) {
   return (
     <div className="rounded-xl border border-[#e6e8f0] bg-[#fafbfc] p-6">
-      <p className="font-[family-name:var(--font-mono)] text-3xl font-semibold text-[#243D9A]">{value}</p>
+      <p className="font-[family-name:var(--font-mono)] text-3xl font-semibold text-[#253D9A]">{value}</p>
       <p className="mt-2 text-sm text-[#5b5f74]">{label}</p>
     </div>
   );
@@ -62,7 +62,7 @@ export function Stat({ value, label }: { value: string; label: string }) {
 
 export function Quote({ quote, name, role, status }: { quote: string; name: string; role: string; status: ContentStatus }) {
   return (
-    <figure className="rounded-xl bg-[#243D9A] p-6 text-white">
+    <figure className="rounded-xl bg-[#253D9A] p-6 text-white">
       <blockquote className="text-[15px] leading-relaxed text-white/95">&ldquo;{quote}&rdquo;</blockquote>
       <figcaption className="mt-5 flex items-center gap-2 border-t border-white/15 pt-4 text-sm">
         <span className="font-semibold">{name}</span>
@@ -87,14 +87,14 @@ export function EmptyState({ message }: { message: string }) {
 
 export function PersonCard({ person }: { person: Person }) {
   return (
-    <div className="rounded-xl border border-[#e6e8f0] bg-white p-5">
-      {person.photo && <MediaSlot need={person.photo} className="mb-4" />}
-      <p className="flex items-center gap-2 text-[15px] font-semibold text-[#171a2b]">
+    <div className="rounded-xl border border-[#e6e8f0] bg-white p-3">
+      {person.photo && <MediaSlot need={person.photo} className="mb-3" />}
+      <p className="flex flex-wrap items-center gap-1.5 text-[13px] font-semibold text-[#171a2b]">
         {person.name}
         <StatusTag status={person.status} />
       </p>
-      <p className="mt-1 text-sm text-[#5b5f74]">{person.role}</p>
-      {person.bio && <p className="mt-3 text-[13px] leading-relaxed text-[#5b5f74]">{person.bio}</p>}
+      <p className="mt-0.5 text-[12px] text-[#5b5f74]">{person.role}</p>
+      {person.bio && <p className="mt-2 text-[11px] leading-relaxed text-[#5b5f74]">{person.bio}</p>}
     </div>
   );
 }
@@ -109,9 +109,15 @@ export function DocumentRow({ doc }: { doc: PRIDocument }) {
         </span>
         {doc.year && <span className="text-[13px] text-[#8b8fa3]">{doc.kind} &middot; {doc.year}</span>}
       </div>
-      <span className="shrink-0 rounded-full bg-[#E4633F]/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-[#E4633F]">
-        {doc.kind === "Issue" ? "Read" : doc.kind}
-      </span>
+      {doc.href ? (
+        <a href={doc.href} target="_blank" rel="noopener noreferrer" className="shrink-0 rounded-full bg-[#E4633F]/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-[#E4633F] hover:bg-[#E4633F]/20">
+          Download
+        </a>
+      ) : (
+        <span className="shrink-0 rounded-full bg-[#E4633F]/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-[#E4633F]">
+          {doc.kind === "Issue" ? "Read" : doc.kind}
+        </span>
+      )}
     </li>
   );
 }
@@ -154,7 +160,7 @@ export function FormMock({ title, fields, note }: { title: string; fields: strin
         ))}
       </div>
       {note && <p className="mt-3 text-[12px] text-[#8b8fa3]">{note}</p>}
-      <button type="button" disabled className="mt-4 cursor-not-allowed rounded-full bg-[#243D9A]/40 px-5 py-2.5 text-sm font-semibold text-white">
+      <button type="button" disabled className="mt-4 cursor-not-allowed rounded-full bg-[#253D9A]/40 px-5 py-2.5 text-sm font-semibold text-white">
         Submit (not wired)
       </button>
     </div>

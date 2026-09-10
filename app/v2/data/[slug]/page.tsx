@@ -38,7 +38,7 @@ export default async function DatasetDetailV2({ params }: { params: Promise<{ sl
             </div>
           ))}
         </dl>
-        <button disabled className="mt-8 cursor-not-allowed rounded-full bg-[#243D9A]/40 px-5 py-2.5 text-sm font-semibold text-white">
+        <button disabled className="mt-8 cursor-not-allowed rounded-full bg-[#253D9A]/40 px-5 py-2.5 text-sm font-semibold text-white">
           {actionLabel[ds.visibility]}
         </button>
       </section>

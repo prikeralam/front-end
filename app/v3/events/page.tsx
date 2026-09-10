@@ -15,7 +15,7 @@ export default function EventsV3() {
         </div>
         <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {upcomingEvents.map((e) => (
-            <Link key={e.slug} href={`/v3/events/${e.slug}`} className="block border border-[#e6dbc7] bg-white transition-colors hover:border-[#243D9A]">
+            <Link key={e.slug} href={`/v3/events/${e.slug}`} className="block border border-[#e6dbc7] bg-white transition-colors hover:border-[#253D9A]">
               {e.image && <MediaSlot need={e.image} />}
               <div className="p-5">
                 <span className="text-[11px] font-semibold uppercase tracking-wide text-[#B8862F]">{e.type}</span>
@@ -36,7 +36,7 @@ export default function EventsV3() {
           <SectionHeading>Past Events</SectionHeading>
           <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {pastEvents.map((e) => (
-              <Link key={e.slug} href={`/v3/events/${e.slug}`} className="block border border-[#e6dbc7] bg-white transition-colors hover:border-[#243D9A]">
+              <Link key={e.slug} href={`/v3/events/${e.slug}`} className="block border border-[#e6dbc7] bg-white transition-colors hover:border-[#253D9A]">
                 {e.image && <MediaSlot need={e.image} />}
                 <div className="p-5">
                   <span className="text-[11px] font-semibold uppercase tracking-wide text-[#B8862F]">{e.type}</span>

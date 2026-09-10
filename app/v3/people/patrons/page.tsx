@@ -5,7 +5,7 @@ import type { Person } from "../../../_lib/types";
 
 function PeopleGrid({ people }: { people: Person[] }) {
   return (
-    <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="mt-8 grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
       {people.map((p) => (
         <Link key={p.slug} href={`/v3/people/${p.slug}`} className="block transition-opacity hover:opacity-80">
           <PersonCard person={p} />

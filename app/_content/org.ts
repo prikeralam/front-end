@@ -12,9 +12,17 @@ export const org = {
     "A dedicated think tank committed to promoting inclusive development, social justice, and national integration through data-driven research and evidence-based policy advocacy.",
   intro:
     "PRI brings together researchers, policymakers, community leaders, and civil society representatives to address socio-economic and political disparities, ensuring equal opportunities and fair representation.",
-  email: "workgroup.drc@gmail.com",
+  email: "contact@priresearch.in",
   phone: "+91 96052 21921",
-  address: ["HADIA Center for Social Excellence", "Panakkad, Pattarkadavu P.O", "Kerala, India"],
+  address: ["West Kodur", "Kodur PO", "Malappuram Dt, Kerala, India", "676504"],
+  mapUrl: "https://maps.app.goo.gl/pYeLtPJWy6aAuSDA8",
+  mapEmbedUrl:
+    "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3916.1031468509!2d76.05481567686878!3d11.030887489133773!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ba64b000079cc33%3A0xc39cf9903f7f5ab0!2sPolicy%20and%20Research%20Initiative!5e0!3m2!1sen!2sin!4v1789020272719!5m2!1sen!2sin",
+  registration: {
+    regNo: "MPM/CA/204/2025",
+    pan12A: "AAOAP9667ME20251",
+    cert80G: "AAOAP9667MF20251",
+  },
   status: "real" as ContentStatus,
 };
 
@@ -39,12 +47,10 @@ export const pillars = [
   {
     title: "Policy Advocacy & Engagement",
     desc: "Active engagement with policymakers to ensure research findings translate into actionable policies and solutions.",
-    href: "/advocacy",
   },
   {
     title: "Outreach & Production House",
     desc: "Comprehensive outreach through publications, media engagement, and strategic content to shape public discourse.",
-    href: "/media-watch",
   },
 ];
 
@@ -122,38 +128,40 @@ export const nav = [
     label: "About",
     items: [
       { label: "Who we are", href: "/about" },
-      { label: "Donors & Sponsors", href: "/donors" },
-    ],
-  },
-  {
-    label: "People",
-    items: [
-      { label: "Our Team", href: "/people/team" },
-      { label: "Patrons", href: "/people/patrons" },
-      { label: "Executive Council", href: "/people/executive" },
-      { label: "Partners", href: "/partners" },
+      { label: "Annual Reports", href: "/about/annual-reports" },
     ],
   },
   {
     label: "Research",
+    href: "/research",
+    items: [] as { label: string; href: string }[],
+  },
+  {
+    label: "Projects",
+    href: "/projects",
+    items: [] as { label: string; href: string }[],
+  },
+  {
+    label: "Data",
+    href: "/data",
+    items: [] as { label: string; href: string }[],
+  },
+  {
+    label: "People",
     items: [
-      { label: "Research & Publications", href: "/research" },
-      { label: "Data Repository", href: "/data" },
-      { label: "Media Watch", href: "/media-watch" },
+      { label: "Patrons", href: "/people/patrons" },
+      { label: "Executive Council", href: "/people/executive" },
+      { label: "Partners", href: "/partners" },
+      { label: "Our Team", href: "/people/team" },
     ],
   },
   {
     label: "Engage",
     items: [
-      { label: "Advocacy & Policy", href: "/advocacy" },
       { label: "Events & Campaigns", href: "/events" },
       { label: "Fellowships & Internships", href: "/fellowship" },
-      { label: "Get Involved", href: "/get-involved" },
+      { label: "Careers", href: "/careers" },
+      { label: "Contact", href: "/contact" },
     ],
-  },
-  {
-    label: "Contact",
-    href: "/contact",
-    items: [] as { label: string; href: string }[],
   },
 ];

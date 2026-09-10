@@ -82,6 +82,7 @@ export function stockPhotoFor(need: MediaNeed): string | null {
 
 /** Hand-picked hero images for the three named homepage projects. */
 export const heroProjectPhotos: Record<string, string> = {
+  motto: THEME.meeting,
   "sir-project": THEME.libraryGroup,
   education: THEME.classroom,
   "demography-migration": THEME.worldMap,

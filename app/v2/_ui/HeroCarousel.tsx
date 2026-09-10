@@ -18,7 +18,7 @@ export default function HeroCarousel({ projects, photos }: { projects: HeroProje
         {projects.map((p, i) => (
           <Link
             key={p.slug}
-            href={`/v2/projects/${p.slug}`}
+            href={p.ctaHref ?? `/v2/projects/${p.slug}`}
             className="group relative block h-full w-full shrink-0 overflow-hidden"
           >
             <Image
@@ -34,7 +34,7 @@ export default function HeroCarousel({ projects, photos }: { projects: HeroProje
               <h2 className="text-2xl font-extrabold leading-tight text-white sm:text-4xl">{p.title}</h2>
               <p className="mt-2 max-w-md text-sm leading-relaxed text-white/80 sm:text-base">{p.blurb}</p>
               <span className="mt-5 inline-block rounded-full bg-[#E4633F] px-5 py-2.5 text-sm font-semibold text-white">
-                Explore project &rarr;
+                {p.ctaLabel ?? "Explore project"} &rarr;
               </span>
             </div>
           </Link>
