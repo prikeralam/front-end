@@ -2,14 +2,27 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import { nav, org } from "../../_content/org";
+import { getSession, clearSession, type MockSession } from "../../_lib/mockAuth";
 
 const base = "/v1";
 
 export default function Header() {
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [group, setGroup] = useState<string | null>(null);
+  const [session, setSession] = useState<MockSession | null>(null);
+
+  useEffect(() => {
+    setSession(getSession());
+  }, [pathname]);
+
+  function handleSignOut() {
+    clearSession();
+    setSession(null);
+  }
 
   return (
     <header className="sticky top-0 z-20 border-b border-[#253D9A]/15 bg-white">
@@ -73,6 +86,21 @@ export default function Header() {
           Donate
         </Link>
 
+        {session ? (
+          <div className="hidden shrink-0 items-center gap-3 lg:flex">
+            <Link href={`${base}/dashboard`} className="text-[14px] text-[#3a3f55] hover:text-[#253D9A]">
+              {session.name} &middot; Dashboard
+            </Link>
+            <button onClick={handleSignOut} className="text-[13px] uppercase tracking-[0.1em] text-[#8b8fa3] hover:text-[#253D9A]">
+              Sign out
+            </button>
+          </div>
+        ) : (
+          <Link href={`${base}/account`} className="hidden shrink-0 text-[14px] uppercase tracking-[0.12em] text-[#3a3f55] transition-colors hover:text-[#253D9A] lg:inline-block">
+            Sign in
+          </Link>
+        )}
+
         <button
           onClick={() => setOpen(!open)}
           aria-label={open ? "Close menu" : "Open menu"}
@@ -124,6 +152,26 @@ export default function Header() {
             >
               Donate
             </Link>
+            {session ? (
+              <div className="mt-4 flex items-center gap-4">
+                <Link href={`${base}/dashboard`} onClick={() => setOpen(false)} className="text-[14px] text-[#3a3f55]">
+                  {session.name} &middot; Dashboard
+                </Link>
+                <button
+                  onClick={() => {
+                    handleSignOut();
+                    setOpen(false);
+                  }}
+                  className="text-[13px] uppercase tracking-[0.1em] text-[#8b8fa3]"
+                >
+                  Sign out
+                </button>
+              </div>
+            ) : (
+              <Link href={`${base}/account`} onClick={() => setOpen(false)} className="mt-4 inline-block text-[14px] uppercase tracking-[0.12em] text-[#3a3f55]">
+                Sign in
+              </Link>
+            )}
             <p className="mt-6 text-sm text-[#5b5f74]">{org.email}</p>
           </nav>
         </div>

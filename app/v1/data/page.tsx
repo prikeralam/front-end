@@ -32,7 +32,18 @@ export default function DataV1() {
               <div className="p-5">
                 <div className="flex items-center justify-between">
                   <span className="text-[11px] uppercase tracking-wide text-[#C9972C]">{d.type}</span>
-                  <span className="border border-[#253D9A]/20 px-2 py-0.5 text-[10px] uppercase tracking-wide text-[#253D9A]">
+                  <span
+                    className={`flex items-center gap-1 border px-2 py-0.5 text-[10px] uppercase tracking-wide ${
+                      d.visibility === "internal"
+                        ? "border-[#8b8fa3]/40 bg-[#8b8fa3]/10 text-[#5b5f74]"
+                        : "border-[#253D9A]/20 text-[#253D9A]"
+                    }`}
+                  >
+                    {d.visibility === "internal" && (
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <path d="M12 1a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V11a2 2 0 0 0-2-2h-1V6a5 5 0 0 0-5-5Zm-3 8V6a3 3 0 1 1 6 0v3H9Z" />
+                      </svg>
+                    )}
                     {visibilityLabel[d.visibility]}
                   </span>
                 </div>

@@ -2,16 +2,11 @@ import { notFound } from "next/navigation";
 import { datasets } from "../../../_content/datasets";
 import { PageHeader, StatusTag } from "../../_ui/kit";
 import MediaSlot from "../../_ui/MediaSlot";
+import DatasetAccessPanel from "../_ui/DatasetAccessPanel";
 
 export function generateStaticParams() {
   return datasets.map((d) => ({ slug: d.slug }));
 }
-
-const actionLabel: Record<string, string> = {
-  public: "Download (not wired)",
-  "on-request": "Request access (not wired)",
-  internal: "Access restricted",
-};
 
 export default async function DatasetDetailV1({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -38,9 +33,7 @@ export default async function DatasetDetailV1({ params }: { params: Promise<{ sl
             </div>
           ))}
         </dl>
-        <button disabled className="mt-8 cursor-not-allowed bg-[#253D9A]/40 px-5 py-2.5 text-sm font-medium text-white">
-          {actionLabel[ds.visibility]}
-        </button>
+        <DatasetAccessPanel dataset={ds} />
       </section>
     </>
   );

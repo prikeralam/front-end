@@ -55,8 +55,15 @@ export type Dataset = {
   source: string;
   coverage: string;
   frequency: string;
+  /** When this dataset's data was last refreshed. */
+  lastUpdated: string;
   status: ContentStatus;
   preview: MediaNeed | null;
+  /** Real downloadable files (path under /public), when supplied. Gated the same as everything else — only shown to sessions with "full" access. */
+  files?: { label: string; path: string }[];
+  tags?: string[];
+  /** Actual file format, when a real file exists. Distinct from `type`, which is a methodology classification. */
+  fileFormat?: "CSV" | "Parquet" | "ZIP";
 };
 
 export type Dashboard = {
