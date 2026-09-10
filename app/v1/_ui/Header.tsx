@@ -15,8 +15,8 @@ export default function Header() {
     <header className="sticky top-0 z-20 border-b border-[#253D9A]/15 bg-white">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-6 px-6 py-5">
         <Link href={base} className="flex shrink-0 items-center gap-3">
-          <Image src="/logo.png" alt="PRI mark" width={34} height={34} />
-          <span className="font-[family-name:var(--font-heading)] text-lg leading-tight tracking-tight text-[#1c2456] sm:text-xl">
+          <Image src="/logo.png" alt="PRI mark" width={46} height={46} />
+          <span className="font-[family-name:var(--font-heading)] text-xl leading-tight tracking-tight text-[#1c2456] sm:text-2xl">
             Policy &amp; Research Initiative
           </span>
         </Link>
@@ -27,7 +27,7 @@ export default function Header() {
               <Link
                 key={n.label}
                 href={`${base}${n.href}`}
-                className="text-[13px] uppercase tracking-[0.12em] text-[#3a3f55] transition-colors hover:text-[#253D9A]"
+                className="text-[14px] uppercase tracking-[0.12em] text-[#3a3f55] transition-colors hover:text-[#253D9A]"
               >
                 {n.label}
               </Link>
@@ -41,7 +41,7 @@ export default function Header() {
                 <button
                   onClick={() => setGroup(group === n.label ? null : n.label)}
                   aria-expanded={group === n.label}
-                  className="text-[13px] uppercase tracking-[0.12em] text-[#3a3f55] transition-colors hover:text-[#253D9A]"
+                  className="text-[14px] uppercase tracking-[0.12em] text-[#3a3f55] transition-colors hover:text-[#253D9A]"
                 >
                   {n.label}
                 </button>
@@ -65,6 +65,13 @@ export default function Header() {
             )
           )}
         </nav>
+
+        <Link
+          href={`${base}/donate`}
+          className="hidden shrink-0 border border-[#253D9A] px-4 py-2 text-[14px] uppercase tracking-[0.12em] text-[#253D9A] transition-colors hover:bg-[#253D9A] hover:text-white lg:inline-block"
+        >
+          Donate
+        </Link>
 
         <button
           onClick={() => setOpen(!open)}
@@ -110,6 +117,13 @@ export default function Header() {
                 )}
               </div>
             ))}
+            <Link
+              href={`${base}/donate`}
+              onClick={() => setOpen(false)}
+              className="mt-4 inline-block border border-[#253D9A] px-4 py-2 text-[14px] uppercase tracking-[0.12em] text-[#253D9A]"
+            >
+              Donate
+            </Link>
             <p className="mt-6 text-sm text-[#5b5f74]">{org.email}</p>
           </nav>
         </div>

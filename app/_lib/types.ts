@@ -20,6 +20,10 @@ export type Person = {
   role: string;
   group: "team" | "patron" | "executive" | "fellow" | "past-fellow" | "author";
   bio?: string;
+  /** Fellows only: their research topic. */
+  topic?: string;
+  /** Fellows only: research objectives, shown as a bulleted list. */
+  objectives?: string[];
   status: ContentStatus;
   photo: MediaNeed | null;
 };

@@ -21,6 +21,20 @@ export default async function FellowDetailV3({ params }: { params: Promise<{ slu
           <div>
             <p className="flex items-center gap-2 text-[15px] font-semibold text-[#4A1B26]">{fellow.role} <StatusTag status={fellow.status} /></p>
             <p className="mt-4 text-[15px] leading-relaxed text-[#5b5f74]">{fellow.bio}</p>
+            {fellow.topic && (
+              <div className="mt-6">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#8b8fa3]">Research Topic</p>
+                <p className="mt-2 text-[15px] leading-relaxed text-[#4A1B26]">{fellow.topic}</p>
+              </div>
+            )}
+            {fellow.objectives && (
+              <div className="mt-6">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#8b8fa3]">Objectives</p>
+                <ul className="mt-2 list-disc space-y-1.5 pl-5 text-[15px] leading-relaxed text-[#5b5f74]">
+                  {fellow.objectives.map((o) => <li key={o}>{o}</li>)}
+                </ul>
+              </div>
+            )}
           </div>
         </div>
         <div className="mt-10 border-t border-[#e6dbc7] pt-6">

@@ -16,8 +16,8 @@ export default function Header() {
       <div className="h-1 w-full bg-[#253D9A]" />
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-6 px-6 py-4">
         <Link href={base} className="flex shrink-0 items-center gap-2.5">
-          <Image src="/logo.png" alt="PRI mark" width={30} height={30} className="rounded" />
-          <span className="text-[17px] font-bold tracking-tight text-[#171a2b]">{org.name}</span>
+          <Image src="/logo.png" alt="PRI mark" width={40} height={40} className="rounded" />
+          <span className="text-[20px] font-bold tracking-tight text-[#171a2b]">{org.name}</span>
         </Link>
 
         <nav className="hidden items-center gap-1 lg:flex">
@@ -26,7 +26,7 @@ export default function Header() {
               <Link
                 key={n.label}
                 href={`${base}${n.href}`}
-                className="rounded-full px-4 py-2 text-sm font-semibold text-[#3a3f55] transition-colors hover:bg-[#253D9A]/8"
+                className="rounded-full px-4 py-2 text-[15px] font-semibold text-[#3a3f55] transition-colors hover:bg-[#253D9A]/8"
               >
                 {n.label}
               </Link>
@@ -35,7 +35,7 @@ export default function Header() {
                 <button
                   onClick={() => setGroup(group === n.label ? null : n.label)}
                   aria-expanded={group === n.label}
-                  className={`rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
+                  className={`rounded-full px-4 py-2 text-[15px] font-semibold transition-colors ${
                     group === n.label ? "bg-[#253D9A] text-white" : "text-[#3a3f55] hover:bg-[#253D9A]/8"
                   }`}
                 >
@@ -61,6 +61,10 @@ export default function Header() {
             )
           )}
         </nav>
+
+        <Link href={`${base}/donate`} className="hidden shrink-0 rounded-full bg-[#E4633F] px-5 py-2 text-[15px] font-semibold text-white hover:bg-[#C94F2E] lg:inline-block">
+          Donate
+        </Link>
 
         <button
           onClick={() => setOpen(!open)}
@@ -97,6 +101,13 @@ export default function Header() {
                 )}
               </div>
             ))}
+            <Link
+              href={`${base}/donate`}
+              onClick={() => setOpen(false)}
+              className="mt-4 inline-block rounded-full bg-[#E4633F] px-4 py-2 text-sm font-semibold text-white"
+            >
+              Donate
+            </Link>
           </nav>
         </div>
       )}

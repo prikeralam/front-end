@@ -1,12 +1,13 @@
-import { Newsreader, Inter } from "next/font/google";
+import { Inter } from "next/font/google";
+import localFont from "next/font/local";
 
-// TODO: brand font is Gilroy-SemiBold. Swap this to next/font/local once the
-// real .woff2 file is supplied (e.g. app/fonts/Gilroy-SemiBold.woff2) —
-// switching now with no file present would break the build.
-export const headingFont = Newsreader({
-  subsets: ["latin"],
-  style: ["normal", "italic"],
+export const headingFont = localFont({
+  src: [
+    { path: "../../fonts/GILROY-SEMIBOLD.ttf", weight: "600", style: "normal" },
+    { path: "../../fonts/GILROY-SEMIBOLDITALIC.ttf", weight: "600", style: "italic" },
+  ],
   variable: "--font-heading",
+  fallback: ["ui-sans-serif", "system-ui", "Arial", "sans-serif"],
 });
 
 export const bodyFont = Inter({
