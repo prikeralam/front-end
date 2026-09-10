@@ -9,7 +9,6 @@ import {
   getAccessRequests,
   requestAccess,
   canAccessDataset,
-  logDownload,
   isFavorite,
   toggleFavorite,
   watchTheme,
@@ -133,7 +132,7 @@ export default function DashboardThemeV2({ params }: { params: Promise<{ theme: 
                           </svg>
                         </div>
                         <div className="min-w-0">
-                          <Link href={`/v2/data/${d.slug}`} className="flex items-center gap-2 text-[15px] font-bold leading-snug text-[#171a2b] hover:text-[#253D9A]">
+                          <Link href={`/v2/dashboard/theme/${encodeURIComponent(theme)}/data/${d.slug}`} className="flex items-center gap-2 text-[15px] font-bold leading-snug text-[#171a2b] hover:text-[#253D9A]">
                             {d.title}
                             <StatusTag status={d.status} />
                           </Link>
@@ -144,32 +143,13 @@ export default function DashboardThemeV2({ params }: { params: Promise<{ theme: 
                       </div>
 
                       <div className="flex shrink-0 items-center gap-2 self-center">
-                        {state === "full" && d.files && (
-                          <div className="flex flex-wrap justify-end gap-1.5">
-                            {d.files.map((f) => (
-                              <a
-                                key={f.path}
-                                href={f.path}
-                                download
-                                onClick={() => logDownload(d.slug, session)}
-                                className="rounded-full bg-[#253D9A] px-3 py-1.5 text-[12px] font-semibold text-white hover:bg-[#1B2C70]"
-                              >
-                                {f.label}
-                              </a>
-                            ))}
-                          </div>
-                        )}
-                        {state === "full" && !d.files && (
-                          <button
-                            onClick={() => {
-                              logDownload(d.slug, session);
-                              setTick((t) => t + 1);
-                              alert("Mock download — no real file exists yet.");
-                            }}
+                        {state === "full" && (
+                          <Link
+                            href={`/v2/dashboard/theme/${encodeURIComponent(theme)}/data/${d.slug}`}
                             className="rounded-full bg-[#253D9A] px-3 py-1.5 text-[12px] font-semibold text-white hover:bg-[#1B2C70]"
                           >
                             Download
-                          </button>
+                          </Link>
                         )}
                         {state === "requestable" && !pending && (
                           <button

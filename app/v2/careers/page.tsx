@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { jobs, involvementPaths } from "../../_content/jobs";
-import { PageHeader, SectionHeading, FormMock, StatusTag } from "../_ui/kit";
+import { PageHeader, SectionHeading, StatusTag } from "../_ui/kit";
 
 export default function GetInvolvedV2() {
   return (
@@ -34,33 +34,6 @@ export default function GetInvolvedV2() {
               </li>
             ))}
           </ul>
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-6xl px-6 py-16">
-        <SectionHeading>Volunteer &amp; Intern</SectionHeading>
-        <div className="mt-8 grid gap-5 sm:grid-cols-2">
-          <FormMock title="Volunteer application" fields={["Full name", "Email", "Area of interest"]} />
-          <FormMock title="Internship interest" fields={["Full name", "Email", "Department", "Availability"]} />
-        </div>
-      </section>
-
-      <section className="border-t border-[#e6e8f0] bg-[#fafbfc]">
-        <div className="mx-auto max-w-6xl px-6 py-16">
-          <SectionHeading>Mailing List</SectionHeading>
-          <div className="mt-6 max-w-md">
-            <FormMock title="Join the mailing list" fields={["Email", "Interest: General or Media briefings"]} />
-          </div>
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-6xl px-6 py-16">
-        <SectionHeading>Suggestions &amp; Whistleblower Reports</SectionHeading>
-        <div className="mt-8 grid gap-5 sm:grid-cols-2">
-          <FormMock title="Suggestions" fields={["Name (optional)", "Email (optional)", "Suggestion"]} />
-          <div className="rounded-xl border-2 border-[#E4633F]/50 bg-white p-1">
-            <FormMock title="Whistleblower report" fields={["Report details"]} note="Anonymity toggle: identifying metadata is suppressed when selected. Handling policy to be confirmed before this form goes live." />
-          </div>
         </div>
       </section>
     </>

@@ -34,7 +34,7 @@ export default function DatasetAccessPanel({ dataset }: { dataset: Dataset }) {
   if (state === "full") {
     return (
       <Link
-        href="/v2/dashboard"
+        href={`/v2/dashboard/theme/${encodeURIComponent(dataset.theme)}/data/${dataset.slug}`}
         title="Go to your dashboard to download"
         className="mt-8 inline-block rounded-full bg-[#253D9A] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#1B2C70]"
       >

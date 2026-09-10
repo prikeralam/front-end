@@ -39,9 +39,13 @@ export default function DownloadsV2() {
                 const d = datasets.find((ds) => ds.slug === r.slug);
                 return (
                   <li key={i} className="flex items-center justify-between gap-4 px-5 py-4">
-                    <Link href={`/v2/data/${r.slug}`} className="text-[15px] font-semibold text-[#171a2b] hover:text-[#253D9A]">
-                      {d?.title ?? r.slug}
-                    </Link>
+                    {d ? (
+                      <Link href={`/v2/dashboard/theme/${encodeURIComponent(d.theme)}/data/${d.slug}`} className="text-[15px] font-semibold text-[#171a2b] hover:text-[#253D9A]">
+                        {d.title}
+                      </Link>
+                    ) : (
+                      <span className="text-[15px] font-semibold text-[#171a2b]">{r.slug}</span>
+                    )}
                     <span className="shrink-0 text-[12px] text-[#8b8fa3]">{new Date(r.at).toLocaleString()}</span>
                   </li>
                 );

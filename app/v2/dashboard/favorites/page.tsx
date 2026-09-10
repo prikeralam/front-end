@@ -56,7 +56,7 @@ export default function FavoritesV2() {
                         </svg>
                       </button>
                       <div className="min-w-0">
-                        <Link href={`/v2/data/${d.slug}`} className="flex items-center gap-2 text-[15px] font-bold leading-snug text-[#171a2b] hover:text-[#253D9A]">
+                        <Link href={`/v2/dashboard/theme/${encodeURIComponent(d.theme)}/data/${d.slug}`} className="flex items-center gap-2 text-[15px] font-bold leading-snug text-[#171a2b] hover:text-[#253D9A]">
                           {d.title}
                           <StatusTag status={d.status} />
                         </Link>
@@ -82,7 +82,7 @@ export default function FavoritesV2() {
                           ))}
                         </div>
                       ) : (
-                        <Link href={`/v2/data/${d.slug}`} className="text-[12px] font-semibold text-[#253D9A] hover:underline">View dataset &rarr;</Link>
+                        <Link href={`/v2/dashboard/theme/${encodeURIComponent(d.theme)}/data/${d.slug}`} className="text-[12px] font-semibold text-[#253D9A] hover:underline">View dataset &rarr;</Link>
                       )}
                     </div>
                   </div>

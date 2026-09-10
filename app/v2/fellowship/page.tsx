@@ -1,6 +1,8 @@
 import Link from "next/link";
-import { programmes, timeline, currentFellows, pastFellows } from "../../_content/fellows";
-import { PageHeader, SectionHeading, PersonCard, FormMock, StatusTag } from "../_ui/kit";
+import { programmes, timeline, currentFellows } from "../../_content/fellows";
+import { PageHeader, SectionHeading, PersonCard, StatusTag } from "../_ui/kit";
+
+const featuredFellows = currentFellows.filter((f) => f.slug === "hisham");
 
 export default function FellowshipV2() {
   return (
@@ -36,7 +38,7 @@ export default function FellowshipV2() {
         </div>
 
         <div className="mt-8">
-          <Link href="#apply" className="inline-block rounded-full bg-[#253D9A] px-6 py-3 text-sm font-semibold text-white hover:bg-[#1B2C70]">
+          <Link href="/v2/fellowship/apply" className="inline-block rounded-full bg-[#253D9A] px-6 py-3 text-sm font-semibold text-white hover:bg-[#1B2C70]">
             Apply now &rarr;
           </Link>
         </div>
@@ -46,37 +48,11 @@ export default function FellowshipV2() {
         <div className="mx-auto max-w-6xl px-6 py-16">
           <SectionHeading>Current Fellows</SectionHeading>
           <div className="mt-8 grid gap-5 sm:grid-cols-3">
-            {currentFellows.map((f) => (
+            {featuredFellows.map((f) => (
               <Link key={f.slug} href={`/v2/fellowship/${f.slug}`}>
                 <PersonCard person={f} />
               </Link>
             ))}
-          </div>
-          <div className="mt-12">
-            <SectionHeading>Past Fellows</SectionHeading>
-          </div>
-          <div className="mt-8 grid gap-5 sm:grid-cols-3">
-            {pastFellows.map((f) => (
-              <Link key={f.slug} href={`/v2/fellowship/${f.slug}`}>
-                <PersonCard person={f} />
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section id="apply" className="mx-auto max-w-3xl px-6 py-16">
-        <SectionHeading>Application</SectionHeading>
-        <div className="mt-8">
-          <FormMock
-            title="Fellowship / Internship application"
-            fields={["Full name", "Email", "Programme", "CV upload", "Writing sample upload", "Statement of interest"]}
-          />
-        </div>
-        <div className="mt-10">
-          <SectionHeading>Feedback &amp; Testimonials</SectionHeading>
-          <div className="mt-6">
-            <FormMock title="Share your experience" fields={["Name", "Cohort / year", "Testimonial"]} note="Submissions are reviewed by an Editor before publishing." />
           </div>
         </div>
       </section>

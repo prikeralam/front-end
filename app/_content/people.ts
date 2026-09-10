@@ -137,7 +137,7 @@ export const people: Person[] = [
     group: "executive",
     bio: "Biography to be supplied.",
     status: "real",
-    photo: portrait("Dr. Mohammed Haris KT — General Secretary portrait", "/people/executive/haris-kt.jpg"),
+    photo: portrait("Dr. Mohammed Haris KT — General Secretary portrait", "/people/executive/haris-kt.jpeg"),
   },
   {
     slug: "muhammed-thufail",
