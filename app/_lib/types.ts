@@ -18,7 +18,7 @@ export type Person = {
   slug: string;
   name: string;
   role: string;
-  group: "team" | "patron" | "executive" | "fellow" | "past-fellow" | "author";
+  group: "team" | "patron" | "advisory" | "executive" | "fellow" | "past-fellow" | "author";
   bio?: string;
   /** Fellows only: their research topic. */
   topic?: string;

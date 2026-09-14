@@ -93,7 +93,18 @@ export const people: Person[] = [
     photo: portrait("Galfar Mohammed Ali — Patron portrait", "/people/patrons/galfar-mohammed-ali.jpg"),
   },
 
-  // --- Executive Council (16) ---
+  // --- Advisory Body (10) --- PLACEHOLDER, awaiting real names/designations from PRI.
+  ...Array.from({ length: 10 }, (_, i) => ({
+    slug: `advisory-member-${i + 1}`,
+    name: `Advisory Member ${i + 1}`,
+    role: "Advisory Body",
+    group: "advisory" as const,
+    bio: "Biography to be supplied.",
+    status: "placeholder" as const,
+    photo: portrait(`Advisory Member ${i + 1} portrait`),
+  })),
+
+  // --- Executive Council (13) ---
   {
     slug: "sayyid-sadiq-ali-shihab",
     name: "Sayyid Sadiq Ali Shihab",
@@ -140,40 +151,13 @@ export const people: Person[] = [
     photo: portrait("Dr. Mohammed Haris KT — General Secretary portrait", "/people/executive/haris-kt.jpeg"),
   },
   {
-    slug: "muhammed-thufail",
-    name: "Muhammed Thufail",
-    role: "Executive Member",
-    group: "executive",
-    bio: "Biography to be supplied.",
-    status: "real",
-    photo: portrait("Muhammed Thufail — Executive Member portrait", "/people/executive/muhammed-thufail.jpg"),
-  },
-  {
-    slug: "noushad-t",
-    name: "Dr. Noushad T",
-    role: "Executive Member",
-    group: "executive",
-    bio: "Biography to be supplied.",
-    status: "real",
-    photo: portrait("Dr. Noushad T — Executive Member portrait", "/people/executive/noushad-t.jpg"),
-  },
-  {
-    slug: "afsal-k",
-    name: "Dr. Afsal K",
-    role: "Executive Member",
-    group: "executive",
-    bio: "Biography to be supplied.",
-    status: "real",
-    photo: portrait("Dr. Afsal K — Executive Member portrait", "/people/executive/afsal-k.jpg"),
-  },
-  {
     slug: "muhammed-nazeel-np",
     name: "Muhammed Nazeel NP",
     role: "Executive Member",
     group: "executive",
     bio: "Biography to be supplied.",
     status: "real",
-    photo: portrait("Muhammed Nazeel NP — Executive Member portrait"),
+    photo: portrait("Muhammed Nazeel NP — Executive Member portrait", "/people/executive/naseel.jpeg"),
   },
   {
     slug: "sayyid-aseel-ali-shihab-thangal",
@@ -253,6 +237,7 @@ export const people: Person[] = [
 
 export const teamMembers = people.filter((p) => p.group === "team");
 export const patrons = people.filter((p) => p.group === "patron");
+export const advisoryBody = people.filter((p) => p.group === "advisory");
 export const executiveCouncil = people.filter((p) => p.group === "executive");
 export const authors = people.filter((p) => p.group === "author");
 

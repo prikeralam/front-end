@@ -10,7 +10,7 @@ export default function HeroCarousel({ projects, photos }: { projects: HeroProje
   const go = (i: number) => setIndex((i + projects.length) % projects.length);
 
   return (
-    <section className="relative w-full aspect-[3/2] min-h-[320px] max-h-[700px] overflow-hidden">
+    <section className="relative w-full aspect-[3/2] min-h-[320px] max-h-[520px] overflow-hidden">
       <div
         className="flex h-full transition-transform duration-500 ease-out"
         style={{ transform: `translateX(-${index * 100}%)` }}

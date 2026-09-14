@@ -72,17 +72,22 @@ export default function Footer() {
           <span>12A: {org.registration.pan12A}</span>
           <span>80G: {org.registration.cert80G}</span>
         </div>
-        <div className="mt-8 flex items-center justify-between gap-4">
+        <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
           <p className="text-xs text-white/35">&copy; {new Date().getFullYear()} {org.name}. Prototype build.</p>
-          {/* TODO: real social URLs */}
-          <div className="flex items-center gap-4">
-            {socials.map((s) => (
-              <a key={s.label} href={s.href} aria-label={s.label} className="text-white/55 transition-colors hover:text-[#E4633F]">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                  <path d={s.path} />
-                </svg>
-              </a>
-            ))}
+          <div className="flex items-center gap-6">
+            <Link href="/v2/account" className="text-xs font-semibold uppercase tracking-[0.12em] text-white/55 transition-colors hover:text-[#E4633F]">
+              Login
+            </Link>
+            {/* TODO: real social URLs */}
+            <div className="flex items-center gap-4">
+              {socials.map((s) => (
+                <a key={s.label} href={s.href} aria-label={s.label} className="text-white/55 transition-colors hover:text-[#E4633F]">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d={s.path} />
+                  </svg>
+                </a>
+              ))}
+            </div>
           </div>
         </div>
       </div>

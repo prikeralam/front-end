@@ -64,6 +64,7 @@ export function getSession(): MockSession | null {
 
 export function setSession(session: MockSession) {
   writeJSON(SESSION_KEY, session);
+  upsertDirectoryUser(session);
 }
 
 export function clearSession() {
@@ -98,9 +99,31 @@ export function decideAccessRequest(datasetSlug: string, requesterEmail: string,
 
 export type AccessState = "full" | "requestable" | "locked";
 
-const STAFF_ROLES: Role[] = ["researcher", "editor", "admin"];
+export const STAFF_ROLES: Role[] = ["researcher", "editor", "admin"];
 /** Roles that can submit a dataset for review, per Module C's "Researcher uploads a dataset" story. */
 export const CONTRIBUTOR_ROLES: Role[] = ["researcher", "editor", "admin"];
+
+const REVIEWER_ROLES: Role[] = ["editor", "admin"];
+
+/** Editor/Admin: can approve/deny dataset access requests (Module C). */
+export function canReviewAccessRequests(session: MockSession | null): boolean {
+  return !!session && REVIEWER_ROLES.includes(session.role);
+}
+
+/** Editor/Admin: can approve/reject drafted datasets or drafted content (Module A/C's shared review step). */
+export function canReviewDrafts(session: MockSession | null): boolean {
+  return !!session && REVIEWER_ROLES.includes(session.role);
+}
+
+/** Researcher/Editor/Admin: can submit a new dataset (Module C) or content draft (Module A). */
+export function canContributeContent(session: MockSession | null): boolean {
+  return !!session && CONTRIBUTOR_ROLES.includes(session.role);
+}
+
+/** Admin only: can view the user directory and grant/revoke roles (Module H, user story 8). */
+export function isAdmin(session: MockSession | null): boolean {
+  return !!session && session.role === "admin";
+}
 
 export function canAccessDataset(dataset: Dataset, session: MockSession | null): AccessState {
   if (!session) return "locked";
@@ -257,4 +280,140 @@ export function submitDraftDataset(input: Omit<DraftDataset, "id" | "submittedAt
 export function decideDraftDataset(id: string, decision: "approved" | "rejected") {
   const drafts = getDraftDatasets().map((d) => (d.id === id ? { ...d, status: decision } : d));
   writeJSON(DRAFTS_KEY, drafts);
+}
+
+// ---------------------------------------------------------------------------
+// Draft publication submissions (Researcher/Editor/Admin draft → Editor/Admin
+// review). Demonstrates Module A's shared Draft→Review→Approve→Publish
+// workflow applied to a publication-shaped submission — this is NOT Module
+// B's full Publication Repository (no versioning, DOI, or citation export);
+// that module is Future-phase/unbuilt. This is a lightweight stand-in scoped
+// to the workflow state machine only.
+// ---------------------------------------------------------------------------
+const PUBLICATION_DRAFTS_KEY = "pri_mock_publication_drafts";
+
+export type DraftPublication = {
+  id: string;
+  title: string;
+  abstract: string;
+  format: string;
+  theme: string;
+  language: string;
+  submittedByEmail: string;
+  submittedByName: string;
+  submittedAt: string;
+  status: DraftStatus;
+};
+
+export function getDraftPublications(): DraftPublication[] {
+  return readJSON<DraftPublication[]>(PUBLICATION_DRAFTS_KEY, []);
+}
+
+export function submitDraftPublication(input: Omit<DraftPublication, "id" | "submittedAt" | "status">) {
+  const drafts = getDraftPublications();
+  drafts.push({
+    ...input,
+    id: `pubdraft-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+    submittedAt: new Date().toISOString(),
+    status: "pending",
+  });
+  writeJSON(PUBLICATION_DRAFTS_KEY, drafts);
+}
+
+export function decideDraftPublication(id: string, decision: "approved" | "rejected") {
+  const drafts = getDraftPublications().map((d) => (d.id === id ? { ...d, status: decision } : d));
+  writeJSON(PUBLICATION_DRAFTS_KEY, drafts);
+}
+
+// ---------------------------------------------------------------------------
+// Recent activity — a lightweight, honest activity feed derived from records
+// that already exist (access requests, dataset drafts, publication drafts),
+// merged by timestamp. Not a real audit log: Module H's cross-module,
+// server-side audit log (GET /api/audit-log/) is Future-phase/unbuilt. This
+// stores nothing new — it only reads and merges what's already there.
+// ---------------------------------------------------------------------------
+export type ActivityItem = {
+  at: string;
+  kind: "access-request" | "dataset-draft" | "publication-draft";
+  summary: string;
+  status: string;
+};
+
+export function getRecentActivity(limit = 8): ActivityItem[] {
+  const items: ActivityItem[] = [
+    ...getAccessRequests().map((r) => ({
+      at: r.requestedAt,
+      kind: "access-request" as const,
+      summary: `${r.requesterName} requested access to ${r.datasetSlug}`,
+      status: r.status,
+    })),
+    ...getDraftDatasets().map((d) => ({
+      at: d.submittedAt,
+      kind: "dataset-draft" as const,
+      summary: `${d.submittedByName} submitted dataset "${d.title}"`,
+      status: d.status,
+    })),
+    ...getDraftPublications().map((d) => ({
+      at: d.submittedAt,
+      kind: "publication-draft" as const,
+      summary: `${d.submittedByName} submitted publication "${d.title}"`,
+      status: d.status,
+    })),
+  ];
+  return items.sort((a, b) => b.at.localeCompare(a.at)).slice(0, limit);
+}
+
+// ---------------------------------------------------------------------------
+// User directory & role management (Module H, "grant or revoke a user's
+// role" — user story 8). This is a record of every account that has signed
+// in on this browser, not a real multi-device user table: there's no backend
+// yet, so an Admin can only manage accounts this browser has actually seen.
+// Changing a role here updates the directory immediately, and also updates
+// the live session in this browser if it belongs to the account being
+// changed — that's as far as "takes effect immediately" can honestly go
+// without a real server.
+// ---------------------------------------------------------------------------
+const USER_DIRECTORY_KEY = "pri_mock_user_directory";
+
+export type DirectoryUser = {
+  name: string;
+  email: string;
+  role: Role;
+  firstSignInAt: string;
+  updatedAt: string;
+};
+
+function getDirectoryMap(): Record<string, DirectoryUser> {
+  return readJSON<Record<string, DirectoryUser>>(USER_DIRECTORY_KEY, {});
+}
+
+function upsertDirectoryUser(session: MockSession) {
+  const map = getDirectoryMap();
+  const existing = map[session.email];
+  map[session.email] = {
+    name: session.name,
+    email: session.email,
+    role: session.role,
+    firstSignInAt: existing?.firstSignInAt ?? new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+  writeJSON(USER_DIRECTORY_KEY, map);
+}
+
+export function getUserDirectory(): DirectoryUser[] {
+  return Object.values(getDirectoryMap()).sort((a, b) => a.name.localeCompare(b.name));
+}
+
+/** Admin-only: grant or revoke a user's role (Module H). */
+export function setUserRole(email: string, role: Role) {
+  const map = getDirectoryMap();
+  const existing = map[email];
+  if (!existing) return;
+  map[email] = { ...existing, role, updatedAt: new Date().toISOString() };
+  writeJSON(USER_DIRECTORY_KEY, map);
+
+  const current = getSession();
+  if (current && current.email === email) {
+    writeJSON(SESSION_KEY, { ...current, role });
+  }
 }

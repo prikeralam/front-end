@@ -18,7 +18,7 @@ function PersonGrid({ people }: { people: Person[] }) {
 export default function ExecutiveCouncilV2() {
   return (
     <>
-      <PageHeader kicker="People" title="Executive Council" intro="PRI's governing council, chaired and staffed by 16 members." />
+      <PageHeader kicker="People" title="Executive Council" intro="PRI's governing council, chaired and staffed by 13 members." />
       <section className="mx-auto max-w-6xl px-6 py-16">
         <SectionHeading>Executive Council</SectionHeading>
         <PersonGrid people={executiveCouncil} />
