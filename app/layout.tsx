@@ -1,15 +1,24 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import Header from "./_ui/Header";
+import Footer from "./_ui/Footer";
+import { headingFont, bodyFont, monoFont } from "./fonts";
 
 export const metadata: Metadata = {
-  title: "PRI Website — Design Prototypes",
-  description: "Homepage and About PRI design variations for the Policy and Research Initiative.",
+  title: "PRI — Policy and Research Initiative",
+  description: "The public website and research platform for the Policy and Research Initiative (PRI).",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className="h-full antialiased">
-      <body className="min-h-full">{children}</body>
+      <body
+        className={`${headingFont.variable} ${bodyFont.variable} ${monoFont.variable} flex min-h-screen flex-col bg-white font-[family-name:var(--font-body)] text-[#22263a]`}
+      >
+        <Header />
+        <main className="flex-1">{children}</main>
+        <Footer />
+      </body>
     </html>
   );
 }

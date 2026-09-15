@@ -61,6 +61,33 @@ Deferred in detail (no code yet), but flagged as the highest-stakes module to ge
 - Publication Repository Module (B) — separate module for research papers/publications, not datasets.
 - ElasticSearch integration — Postgres full-text/filter search is assumed sufficient for Phase 1 per the project's tech stack notes; revisit only if search performance/relevance becomes a real problem.
 
+## Amendment — 2026-09-15
+
+**This module is now being built on CKAN, not the bespoke Django app described above.** Decided with the
+user alongside the v1/v3 → v2 site consolidation. What changes and what doesn't:
+
+- **CKAN owns**: dataset/resource storage, search (`package_search`), table/map preview data, theme/
+  geography/year/type metadata (via CKAN extras/groups/tags). This runs as its own service in a new
+  `pri-ckan` repo (Docker Compose: CKAN + Postgres + Solr + Redis) — not part of this or any Django
+  codebase.
+- **A thin custom API layer owns**: the `public`/`on_request`/`internal_only` three-tier visibility model
+  and the `AccessRequest` approve/deny workflow, exactly as designed in the Implementation Decisions above
+  — CKAN only has public/private, so this logic can't live in CKAN itself. For this pass it's implemented
+  as Next.js Route Handlers inside `pri-website` (`app/api/datasets/*`) backed by Postgres/Prisma — a
+  "Module C v0." The `Dataset`/`Dashboard`/`AccessRequest`/`UserAccount` model design above is otherwise
+  unchanged; it's just split across CKAN (catalog data) and this thin layer (access state) instead of
+  living entirely in one Django app.
+- **Still true**: the API surface shape (search/detail/preview/download/request-access), the visibility
+  enforcement rules (`internal_only` fully hidden from non-staff, `on_request` gated on an approved
+  `AccessRequest`), file storage off the database, and the open `internal_only` stakeholder-confirmation
+  flag.
+- **Migration path**: when Module A's Django backend repo is actually created, this thin layer's logic and
+  Postgres schema are the direct port target for Module C proper — same data model, same rules, moved into
+  Django rather than rebuilt.
+- **Dashboards** (`Dashboard` records) are not stored in CKAN — CKAN has no native concept matching
+  "embedded Datawrapper/Tableau/D3 reference" — they remain hand-authored content in the frontend repo, as
+  already scoped under Out of Scope above.
+
 ## Further Notes
 
 - Source: docx Backend §2.C "Data Repository & Dashboard Integration" — "Upload/host structured datasets (CSV, XLSX, GeoJSON, SPSS); Visualize through APIs with Datawrapper, Tableau Public, or D3.js; Metadata tagging for filters: theme, geography, year, type; Option to make datasets 'public,' 'on request,' or 'internal-only'; Preview options (table view, map view)."

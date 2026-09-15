@@ -6,7 +6,7 @@ export default function ContentAudit() {
     <div className="min-h-screen bg-[#fafafa] text-[#22263a]">
       <header className="border-b border-[#2e3891]/15 bg-white">
         <div className="mx-auto max-w-5xl px-6 py-6">
-          <Link href="/" className="text-sm text-[#2e3891] hover:underline">&larr; Back to prototypes</Link>
+          <Link href="/" className="text-sm text-[#2e3891] hover:underline">&larr; Back to site</Link>
           <h1 className="mt-3 text-2xl font-semibold tracking-tight text-[#1c2456]">Content & Media Gap Audit</h1>
           <p className="mt-1 text-sm text-[#5b5f74]">
             What&apos;s real, what&apos;s placeholder, and what photos/logos/documents PRI still needs to supply — across all 12 sections.

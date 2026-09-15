@@ -1,0 +1,51 @@
+// "Module C v0" — the thin layer in front of CKAN that enforces the
+// public/on-request/internal visibility model CKAN doesn't natively support.
+// See docs/PRDs/backend/C-data-repository-dashboard-integration.md's
+// Amendment section. This schema is the direct port target for Module C
+// proper once the Django backend repo exists.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum VisibilityTier {
+  public
+  on_request
+  internal
+}
+
+enum AccessRequestStatus {
+  pending
+  approved
+  denied
+}
+
+// CKAN only has public/private. This table is the source of truth for the
+// actual three-tier visibility per CKAN package — keyed by CKAN's dataset
+// slug (package name), not a foreign key into CKAN's own DB.
+model DatasetVisibilityOverride {
+  id          String         @id @default(cuid())
+  ckanSlug    String         @unique
+  tier        VisibilityTier
+  updatedAt   DateTime       @updatedAt
+  accessRequests AccessRequest[]
+}
+
+model AccessRequest {
+  id              String                     @id @default(cuid())
+  dataset         DatasetVisibilityOverride  @relation(fields: [datasetSlug], references: [ckanSlug])
+  datasetSlug     String
+  requesterEmail  String
+  requesterName   String
+  status          AccessRequestStatus        @default(pending)
+  createdAt       DateTime                   @default(now())
+  reviewedAt      DateTime?
+  reviewerEmail   String?
+
+  @@index([datasetSlug, requesterEmail])
+}
