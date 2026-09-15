@@ -23,7 +23,7 @@ export default async function DataThemeV2({ params }: { params: Promise<{ theme:
         intro={`${themeDatasets.length} ${themeDatasets.length === 1 ? "dataset" : "datasets"} in this theme.`}
       />
       <section className="mx-auto max-w-6xl px-6 py-16">
-        <Link href="/v2/data" className="text-[14px] font-semibold text-[#253D9A] hover:underline">&larr; All themes</Link>
+        <Link href="/data" className="text-[14px] font-semibold text-[#253D9A] hover:underline">&larr; All themes</Link>
         <ThemeDatasetGrid datasets={themeDatasets} />
       </section>
     </>

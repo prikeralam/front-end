@@ -22,11 +22,11 @@ export default function HomeV2() {
       <section className="mx-auto max-w-6xl px-6 py-16">
         <div className="flex items-end justify-between gap-4">
           <SectionHeading>Featured research</SectionHeading>
-          <Link href="/v2/research" className="text-sm font-semibold text-[#E4633F] hover:underline">View all research &rarr;</Link>
+          <Link href="/research" className="text-sm font-semibold text-[#E4633F] hover:underline">View all research &rarr;</Link>
         </div>
         <div className="mt-8 grid gap-5 sm:grid-cols-3">
           {featuredResearch.map((p) => (
-            <Link key={p.slug} href={`/v2/research/${p.slug}`} className="block overflow-hidden rounded-xl border border-[#e6e8f0] bg-white transition-shadow hover:shadow-[0_2px_16px_rgba(15,107,92,0.10)]">
+            <Link key={p.slug} href={`/research/${p.slug}`} className="block overflow-hidden rounded-xl border border-[#e6e8f0] bg-white transition-shadow hover:shadow-[0_2px_16px_rgba(15,107,92,0.10)]">
               {p.cover && <MediaSlot need={p.cover} />}
               <div className="p-6">
                 <span className="inline-block w-fit rounded bg-[#253D9A]/8 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-[#253D9A]">{p.format}</span>
@@ -42,11 +42,11 @@ export default function HomeV2() {
         <div className="mx-auto max-w-6xl px-6 py-16">
           <div className="flex items-end justify-between gap-4">
             <SectionHeading>Featured events &amp; campaigns</SectionHeading>
-            <Link href="/v2/events" className="text-sm font-semibold text-[#E4633F] hover:underline">View all events &rarr;</Link>
+            <Link href="/events" className="text-sm font-semibold text-[#E4633F] hover:underline">View all events &rarr;</Link>
           </div>
           <div className="mt-8 grid gap-5 sm:grid-cols-3">
             {featuredEvents.map((e) => (
-              <Link key={e.slug} href={`/v2/events/${e.slug}`} className="block overflow-hidden rounded-xl border border-[#e6e8f0] bg-white transition-shadow hover:shadow-[0_2px_16px_rgba(15,107,92,0.10)]">
+              <Link key={e.slug} href={`/events/${e.slug}`} className="block overflow-hidden rounded-xl border border-[#e6e8f0] bg-white transition-shadow hover:shadow-[0_2px_16px_rgba(15,107,92,0.10)]">
                 {e.image && <MediaSlot need={e.image} />}
                 <div className="p-6">
                   <span className="inline-block w-fit rounded bg-[#253D9A]/8 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-[#253D9A]">{e.type}</span>

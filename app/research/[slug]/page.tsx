@@ -303,12 +303,12 @@ export default async function PublicationDetailV2({ params }: { params: Promise<
       <section className="mx-auto max-w-3xl px-6 py-16">
         <div className="flex items-center gap-2 text-sm text-[#5b5f74]">
           {author?.photo && (
-            <Link href={`/v2/people/${author.slug}`} className="relative h-7 w-7 shrink-0 overflow-hidden rounded-full bg-[#fafbfc]">
+            <Link href={`/people/${author.slug}`} className="relative h-7 w-7 shrink-0 overflow-hidden rounded-full bg-[#fafbfc]">
               <Image src={author.photo.src ?? stockPhotoFor(author.photo) ?? ""} alt={author.name} fill sizes="28px" className="object-cover" />
             </Link>
           )}
           {author ? (
-            <Link href={`/v2/people/${author.slug}`} className="font-semibold hover:text-[#253D9A]">{author.name}</Link>
+            <Link href={`/people/${author.slug}`} className="font-semibold hover:text-[#253D9A]">{author.name}</Link>
           ) : (
             pub.authors.join(", ")
           )}

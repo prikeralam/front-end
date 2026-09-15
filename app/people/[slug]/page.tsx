@@ -15,10 +15,10 @@ const groupLabel: Record<string, string> = {
 };
 
 const groupHref: Record<string, string> = {
-  team: "/v2/people/team",
-  patron: "/v2/people/patrons",
-  executive: "/v2/people/executive",
-  author: "/v2/research",
+  team: "/people/team",
+  patron: "/people/patrons",
+  executive: "/people/executive",
+  author: "/research",
 };
 
 const groupBackLabel: Record<string, string> = {
@@ -56,7 +56,7 @@ export default async function PersonDetailV2({ params }: { params: Promise<{ slu
               <ul className="mt-4 grid gap-3">
                 {authoredPublications.map((p) => (
                   <li key={p.slug} className="rounded-lg border border-[#e6e8f0] bg-white px-5 py-4">
-                    <Link href={`/v2/research/${p.slug}`} className="text-[15px] font-semibold text-[#171a2b] hover:text-[#253D9A]">
+                    <Link href={`/research/${p.slug}`} className="text-[15px] font-semibold text-[#171a2b] hover:text-[#253D9A]">
                       {p.title}
                     </Link>
                     <p className="mt-1 text-[13px] text-[#8b8fa3]">{p.format} &middot; {p.date}</p>
@@ -67,7 +67,7 @@ export default async function PersonDetailV2({ params }: { params: Promise<{ slu
           </div>
         )}
 
-        <Link href={groupHref[person.group] ?? "/v2/people"} className="mt-10 inline-block text-sm font-semibold text-[#253D9A] hover:underline">
+        <Link href={groupHref[person.group] ?? "/people"} className="mt-10 inline-block text-sm font-semibold text-[#253D9A] hover:underline">
           &larr; Back to {groupBackLabel[person.group] ?? groupLabel[person.group] ?? "People"}
         </Link>
       </section>

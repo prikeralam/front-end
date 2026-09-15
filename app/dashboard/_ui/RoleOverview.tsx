@@ -44,7 +44,7 @@ function BrowseDatasetsGrid() {
         {themeCounts.map((t) => (
           <Link
             key={t.theme}
-            href={`/v2/dashboard/theme/${encodeURIComponent(t.theme)}`}
+            href={`/dashboard/theme/${encodeURIComponent(t.theme)}`}
             className="group rounded-xl border border-[#e6e8f0] bg-white p-7 transition-shadow hover:shadow-[0_2px_16px_rgba(15,107,92,0.10)]"
           >
             <p className="text-4xl font-bold text-[#253D9A]">{t.count}</p>
@@ -220,12 +220,12 @@ function FavoritesDownloadsShortcuts({ session }: { session: MockSession }) {
 
   return (
     <div className="grid gap-5 sm:grid-cols-2">
-      <Card href="/v2/dashboard/favorites">
+      <Card href="/dashboard/favorites">
         <p className="text-3xl font-bold text-[#253D9A]">{favoriteCount}</p>
         <p className="mt-2 text-lg font-bold text-[#171a2b]">Saved datasets</p>
         <p className="mt-1 text-[13px] text-[#8b8fa3]">View your favorites &rarr;</p>
       </Card>
-      <Card href="/v2/dashboard/downloads">
+      <Card href="/dashboard/downloads">
         <p className="text-3xl font-bold text-[#253D9A]">{downloadCount}</p>
         <p className="mt-2 text-lg font-bold text-[#171a2b]">Downloads</p>
         <p className="mt-1 text-[13px] text-[#8b8fa3]">View your download history &rarr;</p>
@@ -254,7 +254,7 @@ export function AdminOverview({ bump }: OverviewProps) {
         <Stat value={String(datasets.length)} label="Total datasets in repository" />
       </div>
 
-      <Card href="/v2/dashboard/users">
+      <Card href="/dashboard/users">
         <p className="text-lg font-bold text-[#171a2b]">Manage users &rarr;</p>
         <p className="mt-2 text-[13px] text-[#8b8fa3]">
           {getUserDirectory().length} account{getUserDirectory().length === 1 ? "" : "s"} on this browser &middot; grant or revoke roles.
@@ -298,7 +298,7 @@ export function AdminOverview({ bump }: OverviewProps) {
                   <p className="text-[15px] text-[#171a2b]">Dataset draft &middot; {d.title}</p>
                   <p className="mt-1 text-[13px] text-[#8b8fa3]">submitted by {d.submittedByName}</p>
                 </div>
-                <Link href="/v2/dashboard/manage" className="shrink-0 rounded-full border border-[#253D9A] px-3 py-1.5 text-[12px] font-semibold text-[#253D9A] hover:bg-[#253D9A] hover:text-white">
+                <Link href="/dashboard/manage" className="shrink-0 rounded-full border border-[#253D9A] px-3 py-1.5 text-[12px] font-semibold text-[#253D9A] hover:bg-[#253D9A] hover:text-white">
                   Review in Manage &rarr;
                 </Link>
               </div>
@@ -309,7 +309,7 @@ export function AdminOverview({ bump }: OverviewProps) {
                   <p className="text-[15px] text-[#171a2b]">Publication draft &middot; {d.title}</p>
                   <p className="mt-1 text-[13px] text-[#8b8fa3]">submitted by {d.submittedByName}</p>
                 </div>
-                <Link href="/v2/dashboard/manage" className="shrink-0 rounded-full border border-[#253D9A] px-3 py-1.5 text-[12px] font-semibold text-[#253D9A] hover:bg-[#253D9A] hover:text-white">
+                <Link href="/dashboard/manage" className="shrink-0 rounded-full border border-[#253D9A] px-3 py-1.5 text-[12px] font-semibold text-[#253D9A] hover:bg-[#253D9A] hover:text-white">
                   Review in Manage &rarr;
                 </Link>
               </div>
@@ -389,11 +389,11 @@ export function ResearcherOverview({ session }: OverviewProps) {
       </div>
 
       <div className="grid gap-5 sm:grid-cols-2">
-        <Card href="/v2/dashboard/manage">
+        <Card href="/dashboard/manage">
           <p className="text-lg font-bold text-[#171a2b]">Submit a new dataset &rarr;</p>
           <p className="mt-2 text-[13px] text-[#8b8fa3]">Upload a dataset for Editor/Admin review.</p>
         </Card>
-        <Card href="/v2/dashboard/manage">
+        <Card href="/dashboard/manage">
           <p className="text-lg font-bold text-[#171a2b]">Submit a new publication &rarr;</p>
           <p className="mt-2 text-[13px] text-[#8b8fa3]">Draft a publication for Editor/Admin review.</p>
         </Card>
@@ -442,7 +442,7 @@ export function FellowOverview({ session }: OverviewProps) {
 export function DonorOverview({ session }: OverviewProps) {
   return (
     <div className="space-y-12">
-      <Card href="/v2/donate">
+      <Card href="/donate">
         <p className="text-lg font-bold text-[#171a2b]">Support PRI&rsquo;s work &rarr;</p>
         <p className="mt-2 text-[13px] text-[#8b8fa3]">See how your contribution funds our research and outreach.</p>
       </Card>

@@ -67,7 +67,7 @@ export default function ThemeDatasetGrid({ datasets }: { datasets: Dataset[] }) 
             {filtered.map((d) => (
               <Link
                 key={d.slug}
-                href={`/v2/data/${d.slug}`}
+                href={`/data/${d.slug}`}
                 className="flex flex-wrap items-start justify-between gap-4 px-5 py-4 transition-colors hover:bg-[#fafbfc]"
               >
                 <div className="flex min-w-0 flex-1 gap-4">

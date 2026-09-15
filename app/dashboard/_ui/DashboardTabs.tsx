@@ -6,10 +6,10 @@ import { useEffect, useState } from "react";
 import { getSession, canContributeContent, canReviewDrafts, isAdmin, type MockSession } from "../../_lib/mockAuth";
 
 const baseNav = [
-  { label: "Dashboard", href: "/v2/dashboard" },
-  { label: "Favorites", href: "/v2/dashboard/favorites" },
-  { label: "Downloads", href: "/v2/dashboard/downloads" },
-  { label: "API Access", href: "/v2/dashboard/api" },
+  { label: "Dashboard", href: "/dashboard" },
+  { label: "Favorites", href: "/dashboard/favorites" },
+  { label: "Downloads", href: "/dashboard/downloads" },
+  { label: "API Access", href: "/dashboard/api" },
 ];
 
 export default function DashboardTabs() {
@@ -23,9 +23,9 @@ export default function DashboardTabs() {
   const portalNav = [
     ...baseNav,
     ...(session && (canContributeContent(session) || canReviewDrafts(session))
-      ? [{ label: "Manage Datasets", href: "/v2/dashboard/manage" }]
+      ? [{ label: "Manage Datasets", href: "/dashboard/manage" }]
       : []),
-    ...(isAdmin(session) ? [{ label: "Manage Users", href: "/v2/dashboard/users" }] : []),
+    ...(isAdmin(session) ? [{ label: "Manage Users", href: "/dashboard/users" }] : []),
   ];
 
   return (

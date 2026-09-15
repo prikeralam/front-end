@@ -59,7 +59,7 @@ export default function DataV2() {
           {themeCounts.map((t) => (
             <Link
               key={t.theme}
-              href={`/v2/data/theme/${encodeURIComponent(t.theme)}`}
+              href={`/data/theme/${encodeURIComponent(t.theme)}`}
               className="group rounded-xl border border-[#e6e8f0] bg-white p-7 transition-shadow hover:shadow-[0_2px_16px_rgba(15,107,92,0.10)]"
             >
               <div className="flex items-center justify-between">

@@ -15,7 +15,7 @@ export default function DashboardV2() {
   useEffect(() => {
     const s = getSession();
     if (!s) {
-      router.replace("/v2/account");
+      router.replace("/account");
       return;
     }
     setSessionState(s);

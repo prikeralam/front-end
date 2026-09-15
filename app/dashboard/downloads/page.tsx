@@ -15,7 +15,7 @@ export default function DownloadsV2() {
   useEffect(() => {
     const s = getSession();
     if (!s) {
-      router.replace("/v2/account");
+      router.replace("/account");
       return;
     }
     setSession(s);
@@ -40,7 +40,7 @@ export default function DownloadsV2() {
                 return (
                   <li key={i} className="flex items-center justify-between gap-4 px-5 py-4">
                     {d ? (
-                      <Link href={`/v2/dashboard/theme/${encodeURIComponent(d.theme)}/data/${d.slug}`} className="text-[15px] font-semibold text-[#171a2b] hover:text-[#253D9A]">
+                      <Link href={`/dashboard/theme/${encodeURIComponent(d.theme)}/data/${d.slug}`} className="text-[15px] font-semibold text-[#171a2b] hover:text-[#253D9A]">
                         {d.title}
                       </Link>
                     ) : (

@@ -61,7 +61,7 @@ export default function DashboardThemeV2({ params }: { params: Promise<{ theme: 
   useEffect(() => {
     const s = getSession();
     if (!s) {
-      router.replace("/v2/account");
+      router.replace("/account");
       return;
     }
     setSession(s);
@@ -132,7 +132,7 @@ export default function DashboardThemeV2({ params }: { params: Promise<{ theme: 
                           </svg>
                         </div>
                         <div className="min-w-0">
-                          <Link href={`/v2/dashboard/theme/${encodeURIComponent(theme)}/data/${d.slug}`} className="flex items-center gap-2 text-[15px] font-bold leading-snug text-[#171a2b] hover:text-[#253D9A]">
+                          <Link href={`/dashboard/theme/${encodeURIComponent(theme)}/data/${d.slug}`} className="flex items-center gap-2 text-[15px] font-bold leading-snug text-[#171a2b] hover:text-[#253D9A]">
                             {d.title}
                             <StatusTag status={d.status} />
                           </Link>
@@ -145,7 +145,7 @@ export default function DashboardThemeV2({ params }: { params: Promise<{ theme: 
                       <div className="flex shrink-0 items-center gap-2 self-center">
                         {state === "full" && (
                           <Link
-                            href={`/v2/dashboard/theme/${encodeURIComponent(theme)}/data/${d.slug}`}
+                            href={`/dashboard/theme/${encodeURIComponent(theme)}/data/${d.slug}`}
                             className="rounded-full bg-[#253D9A] px-3 py-1.5 text-[12px] font-semibold text-white hover:bg-[#1B2C70]"
                           >
                             Download

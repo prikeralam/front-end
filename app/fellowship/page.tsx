@@ -38,7 +38,7 @@ export default function FellowshipV2() {
         </div>
 
         <div className="mt-8">
-          <Link href="/v2/fellowship/apply" className="inline-block rounded-full bg-[#253D9A] px-6 py-3 text-sm font-semibold text-white hover:bg-[#1B2C70]">
+          <Link href="/fellowship/apply" className="inline-block rounded-full bg-[#253D9A] px-6 py-3 text-sm font-semibold text-white hover:bg-[#1B2C70]">
             Apply now &rarr;
           </Link>
         </div>
@@ -49,7 +49,7 @@ export default function FellowshipV2() {
           <SectionHeading>Current Fellows</SectionHeading>
           <div className="mt-8 grid gap-5 sm:grid-cols-3">
             {featuredFellows.map((f) => (
-              <Link key={f.slug} href={`/v2/fellowship/${f.slug}`}>
+              <Link key={f.slug} href={`/fellowship/${f.slug}`}>
                 <PersonCard person={f} />
               </Link>
             ))}

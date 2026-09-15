@@ -50,7 +50,7 @@ export default function ManageDatasetsV2() {
   useEffect(() => {
     const s = getSession();
     if (!s) {
-      router.replace("/v2/account");
+      router.replace("/account");
       return;
     }
     setSession(s);

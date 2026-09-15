@@ -7,7 +7,7 @@ function PersonGrid({ people }: { people: Person[] }) {
   return (
     <div className="mt-8 grid grid-cols-2 gap-5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
       {people.map((p) => (
-        <Link key={p.slug} href={`/v2/people/${p.slug}`} className="block transition-shadow hover:shadow-[0_2px_16px_rgba(15,107,92,0.10)]">
+        <Link key={p.slug} href={`/people/${p.slug}`} className="block transition-shadow hover:shadow-[0_2px_16px_rgba(15,107,92,0.10)]">
           <PersonCard person={p} />
         </Link>
       ))}

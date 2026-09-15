@@ -53,7 +53,7 @@ export default function ResearchV2() {
             {filtered.map((p) => {
               const author = authorFor(p.authors[0]);
               return (
-                <Link key={p.slug} href={`/v2/research/${p.slug}`} className="group overflow-hidden rounded-xl border border-[#e6e8f0] bg-white transition-shadow hover:shadow-[0_2px_16px_rgba(15,107,92,0.10)]">
+                <Link key={p.slug} href={`/research/${p.slug}`} className="group overflow-hidden rounded-xl border border-[#e6e8f0] bg-white transition-shadow hover:shadow-[0_2px_16px_rgba(15,107,92,0.10)]">
                   {p.cover && <MediaSlot need={p.cover} />}
                   <div className="p-5">
                     <div className="flex items-center gap-2">

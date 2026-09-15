@@ -10,7 +10,7 @@ export default function ProjectsV2() {
       <section className="mx-auto max-w-6xl px-6 py-16">
         <div className="grid gap-5 sm:grid-cols-3">
           {projects.map((p) => (
-            <Link key={p.slug} href={`/v2/projects/${p.slug}`} className="block overflow-hidden rounded-xl border border-[#e6e8f0] bg-white transition-shadow hover:shadow-[0_2px_16px_rgba(15,107,92,0.10)]">
+            <Link key={p.slug} href={`/projects/${p.slug}`} className="block overflow-hidden rounded-xl border border-[#e6e8f0] bg-white transition-shadow hover:shadow-[0_2px_16px_rgba(15,107,92,0.10)]">
               <MediaSlot need={p.image} />
               <div className="p-5">
                 <h3 className="flex items-start gap-2 text-lg font-bold leading-snug text-[#171a2b]">

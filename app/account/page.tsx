@@ -15,7 +15,7 @@ export default function AccountV2() {
     e.preventDefault();
     if (!name || !email) return;
     setSession({ name, email, role });
-    router.push("/v2/dashboard");
+    router.push("/dashboard");
   }
 
   return (

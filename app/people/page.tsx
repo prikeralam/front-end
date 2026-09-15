@@ -2,10 +2,10 @@ import Link from "next/link";
 import { PageHeader, SectionHeading } from "../_ui/kit";
 
 const sections = [
-  { title: "Patrons", href: "/v2/people/patrons", desc: "Individuals who lend PRI their name and support." },
-  { title: "Executive Council", href: "/v2/people/executive", desc: "PRI's governing council." },
-  { title: "Partners", href: "/v2/partners", desc: "Institutions and researchers collaborating with PRI." },
-  { title: "Our Team", href: "/v2/people/team", desc: "PRI's staff, who run the day-to-day work of the institute." },
+  { title: "Patrons", href: "/people/patrons", desc: "Individuals who lend PRI their name and support." },
+  { title: "Executive Council", href: "/people/executive", desc: "PRI's governing council." },
+  { title: "Partners", href: "/partners", desc: "Institutions and researchers collaborating with PRI." },
+  { title: "Our Team", href: "/people/team", desc: "PRI's staff, who run the day-to-day work of the institute." },
 ];
 
 export default function PeopleV2() {
