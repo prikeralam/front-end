@@ -2,12 +2,17 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import type { Dataset } from "../../_lib/types";
-import { getSession, getAccessRequests, requestAccess, canAccessDataset, logDownload, type MockSession } from "../../_lib/mockAuth";
+import { getSession, mockSessionHeaders, logDownload, type MockSession } from "../../_lib/mockAuth";
 
-export default function PortalDownloadPanel({ dataset }: { dataset: Dataset }) {
+type AccessState = "full" | "requestable" | "locked";
+type DatasetFile = { label: string; path: string };
+
+export default function PortalDownloadPanel({ slug }: { slug: string }) {
   const router = useRouter();
   const [session, setSession] = useState<MockSession | null | undefined>(undefined);
+  const [state, setState] = useState<AccessState | null>(null);
+  const [files, setFiles] = useState<DatasetFile[]>([]);
+  const [pending, setPending] = useState(false);
   const [tick, setTick] = useState(0);
 
   useEffect(() => {
@@ -17,55 +22,54 @@ export default function PortalDownloadPanel({ dataset }: { dataset: Dataset }) {
       return;
     }
     setSession(s);
-  }, [router, tick]);
+
+    async function load() {
+      const res = await fetch(`/api/datasets/${slug}`, { headers: mockSessionHeaders(s) });
+      if (res.ok) {
+        const data = await res.json();
+        setState(data.accessState);
+        setFiles(data.files ?? []);
+      }
+
+      const mineRes = await fetch(`/api/access-requests?mine=1`, { headers: mockSessionHeaders(s) });
+      if (mineRes.ok) {
+        const mine = await mineRes.json();
+        setPending(mine.results?.some((r: { datasetSlug: string; status: string }) => r.datasetSlug === slug && r.status === "pending"));
+      }
+    }
+    load();
+  }, [router, slug, tick]);
 
   if (!session) return null;
 
-  const state = canAccessDataset(dataset, session);
-
   if (state === "full") {
-    if (dataset.files && dataset.files.length > 0) {
+    if (files.length > 0) {
       return (
         <div className="mt-8 flex flex-wrap gap-2">
-          {dataset.files.map((f) => (
+          {files.map((f) => (
             <a
               key={f.path}
               href={f.path}
-              download
-              onClick={() => logDownload(dataset.slug, session)}
+              onClick={() => logDownload(slug, session)}
               className="inline-block rounded-full bg-[#253D9A] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#1B2C70]"
             >
-              {dataset.files!.length > 1 ? `Download ${f.label}` : "Download"}
+              {files.length > 1 ? `Download ${f.label}` : "Download"}
             </a>
           ))}
         </div>
       );
     }
-    return (
-      <button
-        onClick={() => {
-          logDownload(dataset.slug, session);
-          setTick((t) => t + 1);
-          alert("Mock download — no real file exists yet.");
-        }}
-        className="mt-8 rounded-full bg-[#253D9A] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#1B2C70]"
-      >
-        Download
-      </button>
-    );
+    return <p className="mt-8 text-sm text-[#8b8fa3]">No file uploaded yet for this dataset.</p>;
   }
 
   if (state === "requestable") {
-    const pending = getAccessRequests().some(
-      (r) => r.datasetSlug === dataset.slug && r.requesterEmail === session.email && r.status === "pending"
-    );
     if (pending) {
       return <p className="mt-8 text-sm text-[#8b8fa3]">Request pending — check your dashboard for updates.</p>;
     }
     return (
       <button
-        onClick={() => {
-          requestAccess(dataset.slug, session);
+        onClick={async () => {
+          await fetch(`/api/datasets/${slug}/request-access`, { method: "POST", headers: mockSessionHeaders(session) });
           setTick((t) => t + 1);
         }}
         className="mt-8 rounded-full border border-[#253D9A] px-5 py-2.5 text-sm font-semibold text-[#253D9A] hover:bg-[#253D9A] hover:text-white"

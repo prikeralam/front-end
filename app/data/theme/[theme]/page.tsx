@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { datasets, datasetThemes } from "../../../_content/datasets";
+import { datasetThemes } from "../../../_content/dashboards";
+import { listDatasets } from "../../../_lib/datasetsService";
 import { PageHeader } from "../../../_ui/kit";
 import ThemeDatasetGrid from "../../_ui/ThemeDatasetGrid";
 
@@ -13,7 +14,8 @@ export default async function DataThemeV2({ params }: { params: Promise<{ theme:
   const theme = decodeURIComponent(rawTheme);
   if (!datasetThemes.includes(theme)) notFound();
 
-  const themeDatasets = datasets.filter((d) => d.theme === theme);
+  const allDatasets = await listDatasets({ session: null });
+  const themeDatasets = allDatasets.filter((d) => d.theme === theme);
 
   return (
     <>

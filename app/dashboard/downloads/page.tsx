@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { datasets } from "../../_content/datasets";
+import { useDatasets } from "../../_lib/useDatasetsApi";
 import { getSession, getDownloadHistory, type MockSession } from "../../_lib/mockAuth";
 import { PageHeader, EmptyState } from "../../_ui/kit";
 import DashboardTabs from "../_ui/DashboardTabs";
@@ -20,6 +20,8 @@ export default function DownloadsV2() {
     }
     setSession(s);
   }, [router]);
+
+  const datasets = useDatasets(session ?? null);
 
   if (!session) return null;
 
@@ -40,7 +42,7 @@ export default function DownloadsV2() {
                 return (
                   <li key={i} className="flex items-center justify-between gap-4 px-5 py-4">
                     {d ? (
-                      <Link href={`/dashboard/theme/${encodeURIComponent(d.theme)}/data/${d.slug}`} className="text-[15px] font-semibold text-[#171a2b] hover:text-[#253D9A]">
+                      <Link href={`/dashboard/theme/${encodeURIComponent(d.theme ?? "")}/data/${d.slug}`} className="text-[15px] font-semibold text-[#171a2b] hover:text-[#253D9A]">
                         {d.title}
                       </Link>
                     ) : (

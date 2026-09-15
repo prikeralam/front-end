@@ -1,8 +1,6 @@
 import { notFound } from "next/navigation";
-import { datasets } from "../../../../../_content/datasets";
-import { readCsvPreview } from "../../../../../_lib/csv";
-import { PageHeader, StatusTag } from "../../../../../_ui/kit";
-import MediaSlot from "../../../../../_ui/MediaSlot";
+import { getDatasetDetail, getDatasetPreview } from "../../../../../_lib/datasetsService";
+import { PageHeader } from "../../../../../_ui/kit";
 import DatasetTabs from "../../../../../data/_ui/DatasetTabs";
 import DashboardTabs from "../../../../_ui/DashboardTabs";
 import PortalDownloadPanel from "../../../../_ui/PortalDownloadPanel";
@@ -10,10 +8,10 @@ import PortalDownloadPanel from "../../../../_ui/PortalDownloadPanel";
 export default async function DashboardDatasetDetailV2({ params }: { params: Promise<{ theme: string; slug: string }> }) {
   const { theme: rawTheme, slug } = await params;
   const theme = decodeURIComponent(rawTheme);
-  const ds = datasets.find((d) => d.slug === slug);
+  const ds = await getDatasetDetail(slug, null);
   if (!ds || ds.theme !== theme) notFound();
 
-  const filePreviews = ds.files?.map((f) => ({ label: f.label, ...readCsvPreview(f.path) })) ?? [];
+  const previews = (await getDatasetPreview(slug, null)) ?? [];
 
   const descriptionTab = <p className="max-w-2xl text-lg leading-relaxed text-[#4b4f66]">{ds.description}</p>;
 
@@ -27,11 +25,11 @@ export default async function DashboardDatasetDetailV2({ params }: { params: Pro
         ].map(([label, value]) => (
           <div key={label} className="rounded-lg border border-[#e6e8f0] px-4 py-3">
             <dt className="text-[11px] font-bold uppercase tracking-wider text-[#8b8fa3]">{label}</dt>
-            <dd className="mt-1 text-[15px] text-[#171a2b]">{value}</dd>
+            <dd className="mt-1 text-[15px] text-[#171a2b]">{value ?? "To be confirmed"}</dd>
           </div>
         ))}
       </dl>
-      {ds.tags && ds.tags.length > 0 && (
+      {ds.tags.length > 0 && (
         <div className="mt-6">
           <p className="mb-2 text-[11px] font-bold uppercase tracking-wider text-[#8b8fa3]">Tags</p>
           <div className="flex flex-wrap gap-2">
@@ -46,24 +44,23 @@ export default async function DashboardDatasetDetailV2({ params }: { params: Pro
 
   const previewTab = (
     <div className="space-y-8">
-      {ds.preview && <MediaSlot need={ds.preview} className="max-w-lg" />}
-      {filePreviews.map((f) => (
-        <div key={f.label} className="overflow-hidden rounded-lg border border-[#e6e8f0]">
-          <p className="border-b border-[#e6e8f0] bg-[#fafbfc] px-4 py-2 text-[13px] font-bold text-[#171a2b]">{f.label}</p>
-          {f.columns.length === 0 ? (
-            <p className="px-4 py-4 text-[13px] text-[#8b8fa3]">Preview to be confirmed.</p>
+      {previews.map((p) => (
+        <div key={p.label} className="overflow-hidden rounded-lg border border-[#e6e8f0]">
+          <p className="border-b border-[#e6e8f0] bg-[#fafbfc] px-4 py-2 text-[13px] font-bold text-[#171a2b]">{p.label}</p>
+          {p.columns.length === 0 ? (
+            <p className="px-4 py-4 text-[13px] text-[#8b8fa3]">Preview not available for this file format.</p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full border-collapse text-left">
                 <thead>
                   <tr>
-                    {f.columns.map((c) => (
+                    {p.columns.map((c) => (
                       <th key={c} className="whitespace-nowrap border-b border-[#e6e8f0] px-3 py-2 font-mono text-[11px] font-semibold text-[#5b5f74]">{c}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
-                  {f.rows.map((row, i) => (
+                  {p.rows.map((row, i) => (
                     <tr key={i}>
                       {row.map((cell, j) => (
                         <td key={j} className="whitespace-nowrap border-b border-[#e6e8f0] px-3 py-2 text-[12px] text-[#171a2b]">{cell}</td>
@@ -76,7 +73,7 @@ export default async function DashboardDatasetDetailV2({ params }: { params: Pro
           )}
         </div>
       ))}
-      {filePreviews.length === 0 && !ds.preview && <p className="text-[13px] text-[#8b8fa3]">Preview to be confirmed.</p>}
+      {previews.length === 0 && <p className="text-[13px] text-[#8b8fa3]">No files uploaded yet.</p>}
     </div>
   );
 
@@ -85,10 +82,6 @@ export default async function DashboardDatasetDetailV2({ params }: { params: Pro
       <PageHeader kicker="Your dashboard" title={ds.title} />
       <DashboardTabs />
       <section className="mx-auto max-w-3xl px-6 py-16">
-        <div className="flex items-center gap-2 text-sm text-[#5b5f74]">
-          <StatusTag status={ds.status} />
-        </div>
-
         <DatasetTabs
           tabs={[
             { id: "description", label: "Description", content: descriptionTab },
@@ -97,7 +90,7 @@ export default async function DashboardDatasetDetailV2({ params }: { params: Pro
           ]}
         />
 
-        <PortalDownloadPanel dataset={ds} />
+        <PortalDownloadPanel slug={ds.slug} />
       </section>
     </>
   );

@@ -2,7 +2,7 @@
 
 import { useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { datasetThemes, datasetGeographies, datasetYears, datasetFormats } from "../../_content/datasets";
+import { datasetThemes, datasetGeographies, datasetYears, datasetFormats } from "../../_content/dashboards";
 import { publicationThemes, publicationFormats, publicationLanguages } from "../../_content/publications";
 import {
   getSession,

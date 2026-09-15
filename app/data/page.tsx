@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { datasets, dashboards, datasetThemes } from "../_content/datasets";
+import { dashboards, datasetThemes } from "../_content/dashboards";
+import { listDatasets } from "../_lib/datasetsService";
 import { PageHeader, SectionHeading, StatusTag } from "../_ui/kit";
 import MediaSlot from "../_ui/MediaSlot";
 
@@ -40,7 +41,8 @@ const themeIcons: Record<string, ReactNode> = {
   ),
 };
 
-export default function DataV2() {
+export default async function DataV2() {
+  const datasets = await listDatasets({ session: null });
   const themeCounts = datasetThemes
     .map((theme) => ({ theme, count: datasets.filter((d) => d.theme === theme).length }))
     .filter((t) => t.count > 0);

@@ -3,18 +3,17 @@
 import { use, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { datasets, datasetThemes, datasetGeographies, datasetYears, datasetFormats } from "../../../_content/datasets";
+import { datasetThemes, datasetGeographies, datasetYears, datasetFormats } from "../../../_content/dashboards";
+import { useDatasets, useMyAccessRequests } from "../../../_lib/useDatasetsApi";
 import {
   getSession,
-  getAccessRequests,
-  requestAccess,
-  canAccessDataset,
+  mockSessionHeaders,
   isFavorite,
   toggleFavorite,
   watchTheme,
   type MockSession,
 } from "../../../_lib/mockAuth";
-import { PageHeader, StatusTag, EmptyState } from "../../../_ui/kit";
+import { PageHeader, EmptyState } from "../../../_ui/kit";
 import DatasetMeta from "../../../data/_ui/DatasetMeta";
 import DashboardTabs from "../../_ui/DashboardTabs";
 
@@ -68,8 +67,10 @@ export default function DashboardThemeV2({ params }: { params: Promise<{ theme: 
     watchTheme(s.email, theme);
   }, [router, tick, theme]);
 
-  const themeDatasets = useMemo(() => datasets.filter((d) => d.theme === theme), [theme]);
-  const types = useMemo(() => Array.from(new Set(themeDatasets.map((d) => d.type))), [themeDatasets]);
+  const datasets = useDatasets(session ?? null, [tick]);
+  const myRequests = useMyAccessRequests(session ?? null, [tick]);
+  const themeDatasets = useMemo(() => datasets.filter((d) => d.theme === theme), [datasets, theme]);
+  const types = useMemo(() => Array.from(new Set(themeDatasets.map((d) => d.type).filter((t): t is string => !!t))), [themeDatasets]);
 
   if (session === undefined) return null;
   if (!session) return null;
@@ -110,10 +111,7 @@ export default function DashboardThemeV2({ params }: { params: Promise<{ theme: 
             ) : (
               <div className="divide-y divide-[#e6e8f0] rounded-xl border border-[#e6e8f0] bg-white">
                 {filtered.map((d) => {
-                  const state = canAccessDataset(d, session);
-                  const pending = getAccessRequests().some(
-                    (r) => r.datasetSlug === d.slug && r.requesterEmail === session.email && r.status === "pending"
-                  );
+                  const pending = myRequests.some((r) => r.datasetSlug === d.slug && r.status === "pending");
                   return (
                     <div key={d.slug} className="flex flex-wrap items-start justify-between gap-4 px-5 py-4">
                       <div className="flex min-w-0 flex-1 gap-3">
@@ -134,16 +132,15 @@ export default function DashboardThemeV2({ params }: { params: Promise<{ theme: 
                         <div className="min-w-0">
                           <Link href={`/dashboard/theme/${encodeURIComponent(theme)}/data/${d.slug}`} className="flex items-center gap-2 text-[15px] font-bold leading-snug text-[#171a2b] hover:text-[#253D9A]">
                             {d.title}
-                            <StatusTag status={d.status} />
                           </Link>
                           <p className="mt-1 line-clamp-2 max-w-xl text-[13px] leading-relaxed text-[#5b5f74]">{d.description}</p>
                           <p className="mt-1.5 text-[12px] text-[#8b8fa3]">{d.geography} &middot; {d.year}</p>
-                          <DatasetMeta slug={d.slug} lastUpdated={d.lastUpdated} frequency={d.frequency} />
+                          <DatasetMeta slug={d.slug} lastUpdated={d.lastUpdated ?? "To be confirmed"} frequency={d.frequency ?? "To be confirmed"} />
                         </div>
                       </div>
 
                       <div className="flex shrink-0 items-center gap-2 self-center">
-                        {state === "full" && (
+                        {d.accessState === "full" && (
                           <Link
                             href={`/dashboard/theme/${encodeURIComponent(theme)}/data/${d.slug}`}
                             className="rounded-full bg-[#253D9A] px-3 py-1.5 text-[12px] font-semibold text-white hover:bg-[#1B2C70]"
@@ -151,10 +148,10 @@ export default function DashboardThemeV2({ params }: { params: Promise<{ theme: 
                             Download
                           </Link>
                         )}
-                        {state === "requestable" && !pending && (
+                        {d.accessState === "requestable" && !pending && (
                           <button
-                            onClick={() => {
-                              requestAccess(d.slug, session);
+                            onClick={async () => {
+                              await fetch(`/api/datasets/${d.slug}/request-access`, { method: "POST", headers: mockSessionHeaders(session) });
                               setTick((t) => t + 1);
                             }}
                             className="rounded-full border border-[#253D9A] px-3 py-1.5 text-[12px] font-semibold text-[#253D9A] hover:bg-[#253D9A] hover:text-white"
@@ -162,10 +159,10 @@ export default function DashboardThemeV2({ params }: { params: Promise<{ theme: 
                             Request access
                           </button>
                         )}
-                        {state === "requestable" && pending && (
+                        {d.accessState === "requestable" && pending && (
                           <span className="rounded-full bg-[#E4633F]/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-[#E4633F]">Pending</span>
                         )}
-                        {state === "locked" && (
+                        {d.accessState === "locked" && (
                           <span className="text-[12px] text-[#8b8fa3]">Restricted</span>
                         )}
                       </div>

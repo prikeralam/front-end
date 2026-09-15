@@ -2,9 +2,9 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import type { Dataset } from "../../_lib/types";
-import { datasetGeographies, datasetYears, datasetFormats } from "../../_content/datasets";
-import { StatusTag, EmptyState } from "../../_ui/kit";
+import type { DatasetSummary } from "../../_lib/datasetsService";
+import { datasetGeographies, datasetYears, datasetFormats } from "../../_content/dashboards";
+import { EmptyState } from "../../_ui/kit";
 import DatasetMeta from "./DatasetMeta";
 
 const visibilityLabel: Record<string, string> = { public: "Public", "on-request": "On request", internal: "Internal only" };
@@ -34,13 +34,13 @@ function FacetGroup({ label, options, value, onChange }: { label: string; option
   );
 }
 
-export default function ThemeDatasetGrid({ datasets }: { datasets: Dataset[] }) {
+export default function ThemeDatasetGrid({ datasets }: { datasets: DatasetSummary[] }) {
   const [type, setType] = useState("");
   const [fileFormat, setFileFormat] = useState("");
   const [geography, setGeography] = useState("");
   const [year, setYear] = useState("");
 
-  const types = useMemo(() => Array.from(new Set(datasets.map((d) => d.type))), [datasets]);
+  const types = useMemo(() => Array.from(new Set(datasets.map((d) => d.type).filter((t): t is string => !!t))), [datasets]);
 
   const filtered = datasets.filter(
     (d) =>
@@ -81,11 +81,10 @@ export default function ThemeDatasetGrid({ datasets }: { datasets: Dataset[] }) 
                   <div className="min-w-0">
                     <h3 className="flex items-center gap-2 text-[15px] font-bold leading-snug text-[#171a2b]">
                       {d.title}
-                      <StatusTag status={d.status} />
                     </h3>
                     <p className="mt-1 line-clamp-2 max-w-xl text-[13px] leading-relaxed text-[#5b5f74]">{d.description}</p>
                     <p className="mt-1.5 text-[12px] text-[#8b8fa3]">{d.geography} &middot; {d.year} &middot; {d.theme}</p>
-                    <DatasetMeta slug={d.slug} lastUpdated={d.lastUpdated} frequency={d.frequency} />
+                    <DatasetMeta slug={d.slug} lastUpdated={d.lastUpdated ?? "To be confirmed"} frequency={d.frequency ?? "To be confirmed"} />
                   </div>
                 </div>
                 <div className="flex shrink-0 items-center gap-2 self-center">

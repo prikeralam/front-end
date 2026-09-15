@@ -2,7 +2,7 @@ import type { MediaNeed } from "../_lib/types";
 import { org, vision } from "./org";
 import { people, teamMembers, patrons, executiveCouncil, reports, testimonials, directorsNote } from "./people";
 import { publications } from "./publications";
-import { datasets, dashboards } from "./datasets";
+import { dashboards } from "./dashboards";
 import { fellows, programmes } from "./fellows";
 import { events, pastEvents, pastEventArchive } from "./events";
 import { partners } from "./partners";
@@ -79,15 +79,18 @@ export const auditSections: SectionAudit[] = [
     ],
   },
   {
+    // Datasets now live in CKAN (a real backend, not static placeholder
+    // content in this repo), so this section is no longer measured the
+    // same way as the rest of this audit — see /data for live counts.
     section: "4 · Data Repository",
     href: "/data",
     real: 0,
-    placeholder: count(datasets, "placeholder") + count(dashboards, "placeholder"),
-    media: media(...datasets.map((d) => d.preview), ...dashboards.map((d) => d.embed)),
-    documents: datasets.map((d) => `${d.title} (dataset file)`),
+    placeholder: count(dashboards, "placeholder"),
+    media: media(...dashboards.map((d) => d.embed)),
+    documents: [],
     notes: [
-      "No datasets exist yet — every card is a placeholder.",
-      "Source, coverage and update frequency unconfirmed for all datasets.",
+      "Datasets are now served live from CKAN — see the pri-ckan repo, not this audit.",
+      "Some seeded datasets still have unconfirmed source/coverage/frequency metadata in CKAN itself.",
       "No dashboards built; embeds are empty slots.",
     ],
   },

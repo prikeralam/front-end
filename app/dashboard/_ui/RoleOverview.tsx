@@ -1,10 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { datasets, datasetThemes, dashboards } from "../../_content/datasets";
+import { dashboards, datasetThemes } from "../../_content/dashboards";
+import { useDatasets, usePendingAccessRequests, useMyAccessRequests, decideAccessRequestApi, type AccessRequestRow } from "../../_lib/useDatasetsApi";
 import {
-  getAccessRequests,
-  decideAccessRequest,
   getDraftDatasets,
   getDraftPublications,
   decideDraftDataset,
@@ -32,7 +31,8 @@ const statusColor: Record<DraftStatus, string> = {
 // Shared building blocks reused across role views
 // ---------------------------------------------------------------------------
 
-function BrowseDatasetsGrid() {
+function BrowseDatasetsGrid({ session }: { session: MockSession | null }) {
+  const datasets = useDatasets(session);
   const themeCounts = datasetThemes
     .map((theme) => ({ theme, count: datasets.filter((d) => d.theme === theme).length }))
     .filter((t) => t.count > 0);
@@ -77,7 +77,9 @@ function DashboardsList() {
 }
 
 function MyPendingRequests({ session }: { session: MockSession }) {
-  const myPending = getAccessRequests().filter((r) => r.requesterEmail === session.email && r.status === "pending");
+  const datasets = useDatasets(session);
+  const mine = useMyAccessRequests(session);
+  const myPending = mine.filter((r) => r.status === "pending");
   if (myPending.length === 0) return null;
 
   return (
@@ -98,8 +100,28 @@ function MyPendingRequests({ session }: { session: MockSession }) {
   );
 }
 
-function AccessRequestsToReview({ bump }: { bump: () => void }) {
-  const toReview = getAccessRequests().filter((r) => r.status === "pending");
+function AccessRequestRowActions({ session, r, bump }: { session: MockSession; r: AccessRequestRow; bump: () => void }) {
+  return (
+    <div className="flex shrink-0 gap-2">
+      <button
+        onClick={async () => { await decideAccessRequestApi(session, r.datasetSlug, r.requesterEmail, "approved"); bump(); }}
+        className="rounded-full border border-[#253D9A] px-3 py-1.5 text-[12px] font-semibold text-[#253D9A] hover:bg-[#253D9A] hover:text-white"
+      >
+        Approve
+      </button>
+      <button
+        onClick={async () => { await decideAccessRequestApi(session, r.datasetSlug, r.requesterEmail, "denied"); bump(); }}
+        className="rounded-full border border-[#8b8fa3]/40 px-3 py-1.5 text-[12px] font-semibold text-[#8b8fa3] hover:bg-[#8b8fa3]/10"
+      >
+        Deny
+      </button>
+    </div>
+  );
+}
+
+function AccessRequestsToReview({ session, bump }: { session: MockSession; bump: () => void }) {
+  const datasets = useDatasets(session);
+  const toReview = usePendingAccessRequests(session).filter((r) => r.status === "pending");
   if (toReview.length === 0) return null;
 
   return (
@@ -114,26 +136,7 @@ function AccessRequestsToReview({ bump }: { bump: () => void }) {
                 <p className="text-[15px] text-[#171a2b]">{d?.title ?? r.datasetSlug}</p>
                 <p className="mt-1 text-[13px] text-[#8b8fa3]">{r.requesterName} &middot; {r.requesterEmail}</p>
               </div>
-              <div className="flex shrink-0 gap-2">
-                <button
-                  onClick={() => {
-                    decideAccessRequest(r.datasetSlug, r.requesterEmail, "approved");
-                    bump();
-                  }}
-                  className="rounded-full border border-[#253D9A] px-3 py-1.5 text-[12px] font-semibold text-[#253D9A] hover:bg-[#253D9A] hover:text-white"
-                >
-                  Approve
-                </button>
-                <button
-                  onClick={() => {
-                    decideAccessRequest(r.datasetSlug, r.requesterEmail, "denied");
-                    bump();
-                  }}
-                  className="rounded-full border border-[#8b8fa3]/40 px-3 py-1.5 text-[12px] font-semibold text-[#8b8fa3] hover:bg-[#8b8fa3]/10"
-                >
-                  Deny
-                </button>
-              </div>
+              <AccessRequestRowActions session={session} r={r} bump={bump} />
             </div>
           );
         })}
@@ -238,8 +241,9 @@ function FavoritesDownloadsShortcuts({ session }: { session: MockSession }) {
 // Role overviews
 // ---------------------------------------------------------------------------
 
-export function AdminOverview({ bump }: OverviewProps) {
-  const pendingAccessRequests = getAccessRequests().filter((r) => r.status === "pending");
+export function AdminOverview({ session, bump }: OverviewProps) {
+  const datasets = useDatasets(session);
+  const pendingAccessRequests = usePendingAccessRequests(session).filter((r) => r.status === "pending");
   const pendingDatasets = getDraftDatasets().filter((d) => d.status === "pending");
   const pendingPublications = getDraftPublications().filter((d) => d.status === "pending");
   const recentActivity = getRecentActivity();
@@ -275,20 +279,7 @@ export function AdminOverview({ bump }: OverviewProps) {
                     <p className="text-[15px] text-[#171a2b]">Access request &middot; {d?.title ?? r.datasetSlug}</p>
                     <p className="mt-1 text-[13px] text-[#8b8fa3]">{r.requesterName} &middot; {r.requesterEmail}</p>
                   </div>
-                  <div className="flex shrink-0 gap-2">
-                    <button
-                      onClick={() => { decideAccessRequest(r.datasetSlug, r.requesterEmail, "approved"); bump(); }}
-                      className="rounded-full border border-[#253D9A] px-3 py-1.5 text-[12px] font-semibold text-[#253D9A] hover:bg-[#253D9A] hover:text-white"
-                    >
-                      Approve
-                    </button>
-                    <button
-                      onClick={() => { decideAccessRequest(r.datasetSlug, r.requesterEmail, "denied"); bump(); }}
-                      className="rounded-full border border-[#8b8fa3]/40 px-3 py-1.5 text-[12px] font-semibold text-[#8b8fa3] hover:bg-[#8b8fa3]/10"
-                    >
-                      Deny
-                    </button>
-                  </div>
+                  <AccessRequestRowActions session={session} r={r} bump={bump} />
                 </div>
               );
             })}
@@ -338,21 +329,21 @@ export function AdminOverview({ bump }: OverviewProps) {
       </div>
 
       <div className="border-t border-[#e6e8f0] pt-10 space-y-12">
-        <BrowseDatasetsGrid />
+        <BrowseDatasetsGrid session={session} />
         <DashboardsList />
       </div>
     </div>
   );
 }
 
-export function EditorOverview({ bump }: OverviewProps) {
+export function EditorOverview({ session, bump }: OverviewProps) {
   return (
     <div className="space-y-12">
       <DatasetsAwaitingReview bump={bump} />
       <PublicationsAwaitingReview bump={bump} />
-      <AccessRequestsToReview bump={bump} />
+      <AccessRequestsToReview session={session} bump={bump} />
       <div className="border-t border-[#e6e8f0] pt-10 space-y-12">
-        <BrowseDatasetsGrid />
+        <BrowseDatasetsGrid session={session} />
         <DashboardsList />
       </div>
     </div>
@@ -400,7 +391,7 @@ export function ResearcherOverview({ session }: OverviewProps) {
       </div>
 
       <div className="border-t border-[#e6e8f0] pt-10">
-        <BrowseDatasetsGrid />
+        <BrowseDatasetsGrid session={session} />
       </div>
 
       <div className="border-t border-[#e6e8f0] pt-10">
@@ -432,7 +423,7 @@ export function FellowOverview({ session }: OverviewProps) {
       </div>
 
       <div className="border-t border-[#e6e8f0] pt-10 space-y-12">
-        <BrowseDatasetsGrid />
+        <BrowseDatasetsGrid session={session} />
         <DashboardsList />
       </div>
     </div>
@@ -457,7 +448,7 @@ export function DonorOverview({ session }: OverviewProps) {
       </div>
 
       <div className="border-t border-[#e6e8f0] pt-10 space-y-12">
-        <BrowseDatasetsGrid />
+        <BrowseDatasetsGrid session={session} />
         <DashboardsList />
       </div>
     </div>
