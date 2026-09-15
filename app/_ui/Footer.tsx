@@ -53,7 +53,7 @@ export default function Footer() {
               <ul className="space-y-2 text-white/55">
                 {(n.items.length ? n.items : [{ label: n.label, href: n.href! }]).map((item) => (
                   <li key={item.href}>
-                    <Link href={`/v2${item.href}`} className="hover:text-[#E4633F]">{item.label}</Link>
+                    <Link href={item.href} className="hover:text-[#E4633F]">{item.label}</Link>
                   </li>
                 ))}
               </ul>

@@ -7,8 +7,6 @@ import { useEffect, useState } from "react";
 import { nav, org } from "../_content/org";
 import { getSession, clearSession, type MockSession } from "../_lib/mockAuth";
 
-const base = "/v2";
-
 function PortalHeader() {
   const pathname = usePathname();
   const router = useRouter();
@@ -20,14 +18,14 @@ function PortalHeader() {
 
   function handleSignOut() {
     clearSession();
-    router.push(base);
+    router.push("/");
   }
 
   return (
     <header className="sticky top-0 z-20 bg-[#12142b] text-white">
       <div className="h-1 w-full bg-[#E4633F]" />
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-6 px-6 py-4">
-        <Link href={`${base}/data`} className="flex shrink-0 items-center gap-2.5">
+        <Link href="/data" className="flex shrink-0 items-center gap-2.5">
           <Image src="/logo.png" alt="PRI mark" width={32} height={32} className="rounded" />
           <span className="text-[16px] font-bold tracking-tight text-white">PRI Data Portal</span>
         </Link>
@@ -52,14 +50,14 @@ export default function Header() {
   const [open, setOpen] = useState(false);
   const [group, setGroup] = useState<string | null>(null);
 
-  const isPortal = pathname === `${base}/account` || pathname.startsWith(`${base}/dashboard`);
+  const isPortal = pathname === "/account" || pathname.startsWith("/dashboard");
   if (isPortal) return <PortalHeader />;
 
   return (
     <header className="sticky top-0 z-20 bg-white">
       <div className="h-1 w-full bg-[#253D9A]" />
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-6 px-6 py-4">
-        <Link href={base} className="flex shrink-0 items-center gap-2.5">
+        <Link href="/" className="flex shrink-0 items-center gap-2.5">
           <Image src="/logo.png" alt="PRI mark" width={40} height={40} className="rounded" />
           <span className="text-[20px] font-bold tracking-tight text-[#171a2b]">{org.name}</span>
         </Link>
@@ -69,7 +67,7 @@ export default function Header() {
             n.items.length === 0 ? (
               <Link
                 key={n.label}
-                href={`${base}${n.href}`}
+                href={`${n.href}`}
                 className="rounded-full px-4 py-2 text-[15px] font-semibold text-[#3a3f55] transition-colors hover:bg-[#253D9A]/8"
               >
                 {n.label}
@@ -91,7 +89,7 @@ export default function Header() {
                       {n.items.map((item) => (
                         <Link
                           key={item.href}
-                          href={`${base}${item.href}`}
+                          href={`${item.href}`}
                           onClick={() => setGroup(null)}
                           className="block px-5 py-2.5 text-[14px] font-medium text-[#3a3f55] transition-colors hover:bg-[#f0f1f5] hover:text-[#253D9A]"
                         >
@@ -106,7 +104,7 @@ export default function Header() {
           )}
         </nav>
 
-        <Link href={`${base}/donate`} className="hidden shrink-0 rounded-full bg-[#E4633F] px-5 py-2 text-[15px] font-semibold text-white hover:bg-[#C94F2E] lg:inline-block">
+        <Link href={`/donate`} className="hidden shrink-0 rounded-full bg-[#E4633F] px-5 py-2 text-[15px] font-semibold text-white hover:bg-[#C94F2E] lg:inline-block">
           Donate
         </Link>
 
@@ -128,7 +126,7 @@ export default function Header() {
             {nav.map((n) => (
               <div key={n.label} className="border-b border-[#e6e8f0] py-4 last:border-0">
                 {n.items.length === 0 ? (
-                  <Link href={`${base}${n.href}`} onClick={() => setOpen(false)} className="text-lg font-bold text-[#171a2b]">
+                  <Link href={`${n.href}`} onClick={() => setOpen(false)} className="text-lg font-bold text-[#171a2b]">
                     {n.label}
                   </Link>
                 ) : (
@@ -136,7 +134,7 @@ export default function Header() {
                     <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#8b8fa3]">{n.label}</p>
                     <div className="mt-3 space-y-3">
                       {n.items.map((item) => (
-                        <Link key={item.href} href={`${base}${item.href}`} onClick={() => setOpen(false)} className="block text-lg font-bold text-[#171a2b]">
+                        <Link key={item.href} href={`${item.href}`} onClick={() => setOpen(false)} className="block text-lg font-bold text-[#171a2b]">
                           {item.label}
                         </Link>
                       ))}
@@ -146,7 +144,7 @@ export default function Header() {
               </div>
             ))}
             <Link
-              href={`${base}/donate`}
+              href={`/donate`}
               onClick={() => setOpen(false)}
               className="mt-4 inline-block rounded-full bg-[#E4633F] px-4 py-2 text-sm font-semibold text-white"
             >
