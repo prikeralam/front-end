@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getSession, getOrCreateApiKey, regenerateApiKey, type MockSession } from "../../_lib/mockAuth";
 import { PageHeader, SectionHeading } from "../../_ui/kit";
-import DashboardTabs from "../_ui/DashboardTabs";
 
 export default function ApiAccessV2() {
   const router = useRouter();
@@ -27,7 +26,6 @@ export default function ApiAccessV2() {
   return (
     <>
       <PageHeader kicker="Your dashboard" title="API access" intro="A mock API key for scripted access to datasets you have permission to download." />
-      <DashboardTabs />
       <section className="mx-auto max-w-3xl px-6 py-16">
         <div className="rounded-xl border border-[#e6e8f0] bg-white p-6">
           <p className="text-[11px] font-bold uppercase tracking-wider text-[#8b8fa3]">Your API key</p>

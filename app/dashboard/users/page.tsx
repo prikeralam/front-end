@@ -13,7 +13,6 @@ import {
   type Role,
 } from "../../_lib/mockAuth";
 import { PageHeader, SectionHeading, EmptyState } from "../../_ui/kit";
-import DashboardTabs from "../_ui/DashboardTabs";
 
 export default function ManageUsersV2() {
   const router = useRouter();
@@ -36,7 +35,6 @@ export default function ManageUsersV2() {
     return (
       <>
         <PageHeader kicker="Your dashboard" title="Manage users" />
-        <DashboardTabs />
         <section className="mx-auto max-w-3xl px-6 py-16">
           <p className="text-sm text-[#8b8fa3]">Granting or revoking roles is limited to the Admin role. Sign in as Admin to preview this page.</p>
         </section>
@@ -69,7 +67,6 @@ export default function ManageUsersV2() {
         title="Manage users"
         intro="Grant or revoke a role for any account that has signed in on this browser (Module H)."
       />
-      <DashboardTabs />
       <section className="mx-auto max-w-4xl px-6 py-16">
         <SectionHeading>User directory</SectionHeading>
 

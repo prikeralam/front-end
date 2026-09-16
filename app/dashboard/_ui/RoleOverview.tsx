@@ -5,27 +5,41 @@ import { dashboards, datasetThemes } from "../../_content/dashboards";
 import { useDatasets, usePendingAccessRequests, useMyAccessRequests, decideAccessRequestApi, type AccessRequestRow } from "../../_lib/useDatasetsApi";
 import {
   getDraftDatasets,
-  getDraftPublications,
   decideDraftDataset,
-  decideDraftPublication,
   getRecentActivity,
   getFavorites,
   getDownloadHistory,
   getUserDirectory,
   type MockSession,
-  type DraftStatus,
 } from "../../_lib/mockAuth";
+import {
+  ALL_CONTENT_TYPES,
+  contentTypeLabel,
+  listRecords,
+  transition,
+  workflowStatusLabel,
+  type ContentTypeKey,
+  type WorkflowStatus,
+} from "../../_lib/mockContentStore";
 import { SectionHeading, Stat, Card, EmptyState, StatusTag } from "../../_ui/kit";
 import MediaSlot from "../../_ui/MediaSlot";
 
 type OverviewProps = { session: MockSession; bump: () => void };
 
-const statusLabel: Record<DraftStatus, string> = { pending: "Pending review", approved: "Approved", rejected: "Rejected" };
-const statusColor: Record<DraftStatus, string> = {
+const statusLabel: Record<string, string> = { pending: "Pending review", rejected: "Rejected", ...workflowStatusLabel };
+const statusColor: Record<string, string> = {
   pending: "bg-[#E4633F]/10 text-[#E4633F]",
+  in_review: "bg-[#E4633F]/10 text-[#E4633F]",
   approved: "bg-[#253D9A]/10 text-[#253D9A]",
+  published: "bg-[#253D9A]/10 text-[#253D9A]",
   rejected: "bg-[#8b8fa3]/10 text-[#5b5f74]",
+  draft: "bg-[#8b8fa3]/10 text-[#5b5f74]",
+  unpublished: "bg-[#8b8fa3]/10 text-[#5b5f74]",
 };
+
+function titleOf(data: Record<string, unknown>): string {
+  return (data.title as string) ?? (data.name as string) ?? (data.quote as string) ?? String(data.slug ?? "");
+}
 
 // ---------------------------------------------------------------------------
 // Shared building blocks reused across role views
@@ -181,33 +195,44 @@ function DatasetsAwaitingReview({ bump }: { bump: () => void }) {
   );
 }
 
-function PublicationsAwaitingReview({ bump }: { bump: () => void }) {
-  const toReview = getDraftPublications().filter((d) => d.status === "pending");
+/** Generalized across all Module A/B content types (content blocks, testimonials,
+ * people, partners, documents, projects, publications) — replaces the old
+ * type-specific "PublicationsAwaitingReview" block. */
+function ContentAwaitingReview({ session, bump }: { session: MockSession; bump: () => void }) {
+  const toReview = ALL_CONTENT_TYPES.flatMap((type) =>
+    listRecords(type)
+      .filter((r) => r.workflowStatus === "in_review")
+      .map((r) => ({ type, ...r }))
+  );
   if (toReview.length === 0) return null;
+
+  function decide(type: ContentTypeKey, id: string, next: WorkflowStatus) {
+    transition(type, id, next, session);
+    bump();
+  }
 
   return (
     <div>
-      <SectionHeading>Publications awaiting review</SectionHeading>
+      <SectionHeading>Content awaiting review</SectionHeading>
       <ul className="mt-6 divide-y divide-[#e6e8f0] rounded-xl border border-[#e6e8f0] bg-white">
-        {toReview.map((d) => (
-          <li key={d.id} className="flex items-center justify-between gap-4 px-5 py-4">
+        {toReview.map((r) => (
+          <li key={`${r.type}-${r.id}`} className="flex items-center justify-between gap-4 px-5 py-4">
             <div className="min-w-0">
-              <p className="text-[15px] font-semibold text-[#171a2b]">{d.title}</p>
-              <p className="mt-1 line-clamp-1 text-[13px] text-[#5b5f74]">{d.abstract}</p>
-              <p className="mt-1 text-[12px] text-[#8b8fa3]">{d.theme} &middot; {d.format} &middot; {d.language} &middot; submitted by {d.submittedByName}</p>
+              <p className="text-[15px] font-semibold text-[#171a2b]">{titleOf(r.data as Record<string, unknown>)}</p>
+              <p className="mt-1 text-[12px] text-[#8b8fa3]">{contentTypeLabel[r.type]} &middot; submitted by {r.submittedByName}</p>
             </div>
             <div className="flex shrink-0 gap-2">
               <button
-                onClick={() => { decideDraftPublication(d.id, "approved"); bump(); }}
+                onClick={() => decide(r.type, r.id, "approved")}
                 className="rounded-full border border-[#253D9A] px-3 py-1.5 text-[12px] font-semibold text-[#253D9A] hover:bg-[#253D9A] hover:text-white"
               >
                 Approve
               </button>
               <button
-                onClick={() => { decideDraftPublication(d.id, "rejected"); bump(); }}
+                onClick={() => decide(r.type, r.id, "draft")}
                 className="rounded-full border border-[#8b8fa3]/40 px-3 py-1.5 text-[12px] font-semibold text-[#8b8fa3] hover:bg-[#8b8fa3]/10"
               >
-                Reject
+                Send back
               </button>
             </div>
           </li>
@@ -245,25 +270,35 @@ export function AdminOverview({ session, bump }: OverviewProps) {
   const datasets = useDatasets(session);
   const pendingAccessRequests = usePendingAccessRequests(session).filter((r) => r.status === "pending");
   const pendingDatasets = getDraftDatasets().filter((d) => d.status === "pending");
-  const pendingPublications = getDraftPublications().filter((d) => d.status === "pending");
+  const pendingContent = ALL_CONTENT_TYPES.flatMap((type) =>
+    listRecords(type)
+      .filter((r) => r.workflowStatus === "in_review")
+      .map((r) => ({ type, ...r }))
+  );
   const recentActivity = getRecentActivity();
-  const needsAttentionCount = pendingAccessRequests.length + pendingDatasets.length + pendingPublications.length;
+  const needsAttentionCount = pendingAccessRequests.length + pendingDatasets.length + pendingContent.length;
 
   return (
     <div className="space-y-12">
       <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
         <Stat value={String(pendingAccessRequests.length)} label="Pending access requests" />
         <Stat value={String(pendingDatasets.length)} label="Datasets awaiting review" />
-        <Stat value={String(pendingPublications.length)} label="Publications awaiting review" />
+        <Stat value={String(pendingContent.length)} label="Content items awaiting review" />
         <Stat value={String(datasets.length)} label="Total datasets in repository" />
       </div>
 
-      <Card href="/dashboard/users">
-        <p className="text-lg font-bold text-[#171a2b]">Manage users &rarr;</p>
-        <p className="mt-2 text-[13px] text-[#8b8fa3]">
-          {getUserDirectory().length} account{getUserDirectory().length === 1 ? "" : "s"} on this browser &middot; grant or revoke roles.
-        </p>
-      </Card>
+      <div className="grid gap-5 sm:grid-cols-2">
+        <Card href="/dashboard/users">
+          <p className="text-lg font-bold text-[#171a2b]">Manage users &rarr;</p>
+          <p className="mt-2 text-[13px] text-[#8b8fa3]">
+            {getUserDirectory().length} account{getUserDirectory().length === 1 ? "" : "s"} on this browser &middot; grant or revoke roles.
+          </p>
+        </Card>
+        <Card href="/dashboard/audit">
+          <p className="text-lg font-bold text-[#171a2b]">Audit log &rarr;</p>
+          <p className="mt-2 text-[13px] text-[#8b8fa3]">See every permission-relevant action across every module.</p>
+        </Card>
+      </div>
 
       <div>
         <SectionHeading>Needs your attention</SectionHeading>
@@ -294,15 +329,18 @@ export function AdminOverview({ session, bump }: OverviewProps) {
                 </Link>
               </div>
             ))}
-            {pendingPublications.map((d) => (
-              <div key={`pub-${d.id}`} className="flex items-center justify-between gap-4 rounded-lg border border-[#e6e8f0] bg-white px-5 py-4">
+            {pendingContent.map((r) => (
+              <div key={`content-${r.type}-${r.id}`} className="flex items-center justify-between gap-4 rounded-lg border border-[#e6e8f0] bg-white px-5 py-4">
                 <div className="min-w-0">
-                  <p className="text-[15px] text-[#171a2b]">Publication draft &middot; {d.title}</p>
-                  <p className="mt-1 text-[13px] text-[#8b8fa3]">submitted by {d.submittedByName}</p>
+                  <p className="text-[15px] text-[#171a2b]">{contentTypeLabel[r.type]} &middot; {titleOf(r.data as Record<string, unknown>)}</p>
+                  <p className="mt-1 text-[13px] text-[#8b8fa3]">submitted by {r.submittedByName}</p>
                 </div>
-                <Link href="/dashboard/manage" className="shrink-0 rounded-full border border-[#253D9A] px-3 py-1.5 text-[12px] font-semibold text-[#253D9A] hover:bg-[#253D9A] hover:text-white">
-                  Review in Manage &rarr;
-                </Link>
+                <button
+                  onClick={() => { transition(r.type, r.id, "approved", session); bump(); }}
+                  className="shrink-0 rounded-full border border-[#253D9A] px-3 py-1.5 text-[12px] font-semibold text-[#253D9A] hover:bg-[#253D9A] hover:text-white"
+                >
+                  Approve
+                </button>
               </div>
             ))}
           </div>
@@ -318,14 +356,14 @@ export function AdminOverview({ session, bump }: OverviewProps) {
             {recentActivity.map((item, i) => (
               <li key={i} className="flex items-center justify-between gap-4 px-5 py-4">
                 <p className="text-[14px] text-[#171a2b]">{item.summary}</p>
-                <span className={`shrink-0 rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wide ${statusColor[item.status as DraftStatus] ?? "bg-[#8b8fa3]/10 text-[#5b5f74]"}`}>
-                  {statusLabel[item.status as DraftStatus] ?? item.status}
+                <span className={`shrink-0 rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wide ${statusColor[item.status] ?? "bg-[#8b8fa3]/10 text-[#5b5f74]"}`}>
+                  {statusLabel[item.status] ?? item.status}
                 </span>
               </li>
             ))}
           </ul>
         )}
-        <p className="mt-3 text-[12px] text-[#8b8fa3]">A lightweight activity feed from this browser&rsquo;s mock data — not a real, cross-device audit log.</p>
+        <p className="mt-3 text-[12px] text-[#8b8fa3]">A lightweight activity feed from this browser&rsquo;s mock data — not a real, cross-device audit log. See <Link href="/dashboard/audit" className="underline">the full audit log</Link>.</p>
       </div>
 
       <div className="border-t border-[#e6e8f0] pt-10 space-y-12">
@@ -340,7 +378,7 @@ export function EditorOverview({ session, bump }: OverviewProps) {
   return (
     <div className="space-y-12">
       <DatasetsAwaitingReview bump={bump} />
-      <PublicationsAwaitingReview bump={bump} />
+      <ContentAwaitingReview session={session} bump={bump} />
       <AccessRequestsToReview session={session} bump={bump} />
       <div className="border-t border-[#e6e8f0] pt-10 space-y-12">
         <BrowseDatasetsGrid session={session} />
@@ -352,10 +390,14 @@ export function EditorOverview({ session, bump }: OverviewProps) {
 
 export function ResearcherOverview({ session }: OverviewProps) {
   const myDatasets = getDraftDatasets().filter((d) => d.submittedByEmail === session.email);
-  const myPublications = getDraftPublications().filter((d) => d.submittedByEmail === session.email);
+  const myContent = ALL_CONTENT_TYPES.flatMap((type) =>
+    listRecords(type)
+      .filter((r) => r.submittedByEmail === session.email)
+      .map((r) => ({ id: r.id, title: titleOf(r.data as Record<string, unknown>), kind: contentTypeLabel[type], status: r.workflowStatus, at: r.submittedAt }))
+  );
   const mySubmissions = [
     ...myDatasets.map((d) => ({ id: d.id, title: d.title, kind: "Dataset", status: d.status, at: d.submittedAt })),
-    ...myPublications.map((d) => ({ id: d.id, title: d.title, kind: "Publication", status: d.status, at: d.submittedAt })),
+    ...myContent,
   ].sort((a, b) => b.at.localeCompare(a.at));
 
   return (
@@ -372,21 +414,25 @@ export function ResearcherOverview({ session }: OverviewProps) {
                   <p className="text-[15px] font-semibold text-[#171a2b]">{s.title}</p>
                   <p className="mt-1 text-[12px] text-[#8b8fa3]">{s.kind}</p>
                 </div>
-                <span className={`shrink-0 rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wide ${statusColor[s.status]}`}>{statusLabel[s.status]}</span>
+                <span className={`shrink-0 rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wide ${statusColor[s.status] ?? "bg-[#8b8fa3]/10 text-[#5b5f74]"}`}>{statusLabel[s.status] ?? s.status}</span>
               </li>
             ))}
           </ul>
         )}
       </div>
 
-      <div className="grid gap-5 sm:grid-cols-2">
+      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         <Card href="/dashboard/manage">
           <p className="text-lg font-bold text-[#171a2b]">Submit a new dataset &rarr;</p>
           <p className="mt-2 text-[13px] text-[#8b8fa3]">Upload a dataset for Editor/Admin review.</p>
         </Card>
-        <Card href="/dashboard/manage">
+        <Card href="/dashboard/research">
           <p className="text-lg font-bold text-[#171a2b]">Submit a new publication &rarr;</p>
           <p className="mt-2 text-[13px] text-[#8b8fa3]">Draft a publication for Editor/Admin review.</p>
+        </Card>
+        <Card href="/dashboard/content">
+          <p className="text-lg font-bold text-[#171a2b]">Draft content &rarr;</p>
+          <p className="mt-2 text-[13px] text-[#8b8fa3]">Pages, testimonials, documents, team, projects.</p>
         </Card>
       </div>
 

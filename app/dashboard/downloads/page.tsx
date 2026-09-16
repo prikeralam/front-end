@@ -6,7 +6,6 @@ import Link from "next/link";
 import { useDatasets } from "../../_lib/useDatasetsApi";
 import { getSession, getDownloadHistory, type MockSession } from "../../_lib/mockAuth";
 import { PageHeader, EmptyState } from "../../_ui/kit";
-import DashboardTabs from "../_ui/DashboardTabs";
 
 export default function DownloadsV2() {
   const router = useRouter();
@@ -30,7 +29,6 @@ export default function DownloadsV2() {
   return (
     <>
       <PageHeader kicker="Your dashboard" title="Download history" intro="Every file you've downloaded through your account." />
-      <DashboardTabs />
       <section className="mx-auto max-w-3xl px-6 py-16">
         <div>
           {history.length === 0 ? (

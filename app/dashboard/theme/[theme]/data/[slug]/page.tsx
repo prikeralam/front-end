@@ -2,7 +2,6 @@ import { notFound } from "next/navigation";
 import { getDatasetDetail, getDatasetPreview } from "../../../../../_lib/datasetsService";
 import { PageHeader } from "../../../../../_ui/kit";
 import DatasetTabs from "../../../../../data/_ui/DatasetTabs";
-import DashboardTabs from "../../../../_ui/DashboardTabs";
 import PortalDownloadPanel from "../../../../_ui/PortalDownloadPanel";
 
 export default async function DashboardDatasetDetailV2({ params }: { params: Promise<{ theme: string; slug: string }> }) {
@@ -80,7 +79,6 @@ export default async function DashboardDatasetDetailV2({ params }: { params: Pro
   return (
     <>
       <PageHeader kicker="Your dashboard" title={ds.title} />
-      <DashboardTabs />
       <section className="mx-auto max-w-3xl px-6 py-16">
         <DatasetTabs
           tabs={[

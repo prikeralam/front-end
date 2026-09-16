@@ -15,7 +15,6 @@ import {
 } from "../../../_lib/mockAuth";
 import { PageHeader, EmptyState } from "../../../_ui/kit";
 import DatasetMeta from "../../../data/_ui/DatasetMeta";
-import DashboardTabs from "../../_ui/DashboardTabs";
 
 function FacetGroup({ label, options, value, onChange }: { label: string; options: string[]; value: string; onChange: (v: string) => void }) {
   return (
@@ -78,7 +77,6 @@ export default function DashboardThemeV2({ params }: { params: Promise<{ theme: 
     return (
       <>
         <PageHeader kicker="Your dashboard" title="Theme not found" />
-        <DashboardTabs />
         <section className="mx-auto max-w-6xl px-6 pb-16" />
       </>
     );
@@ -95,7 +93,6 @@ export default function DashboardThemeV2({ params }: { params: Promise<{ theme: 
   return (
     <>
       <PageHeader kicker="Your dashboard" title={theme} intro={`${themeDatasets.length} ${themeDatasets.length === 1 ? "dataset" : "datasets"} in this theme.`} />
-      <DashboardTabs />
       <section className="mx-auto max-w-6xl px-6 py-16">
         <div className="grid gap-10 lg:grid-cols-[220px_1fr]">
           <aside className="space-y-8 lg:border-r lg:border-[#e6e8f0] lg:pr-8">

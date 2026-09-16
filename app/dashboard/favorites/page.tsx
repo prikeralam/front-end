@@ -7,7 +7,6 @@ import { useDatasets } from "../../_lib/useDatasetsApi";
 import { getSession, getFavorites, toggleFavorite, type MockSession } from "../../_lib/mockAuth";
 import { PageHeader, EmptyState } from "../../_ui/kit";
 import DatasetMeta from "../../data/_ui/DatasetMeta";
-import DashboardTabs from "../_ui/DashboardTabs";
 
 export default function FavoritesV2() {
   const router = useRouter();
@@ -33,7 +32,6 @@ export default function FavoritesV2() {
   return (
     <>
       <PageHeader kicker="Your dashboard" title="Favorites" intro="Datasets you've starred for quick access." />
-      <DashboardTabs />
       <section className="mx-auto max-w-6xl px-6 py-16">
         <div>
           {favorited.length === 0 ? (

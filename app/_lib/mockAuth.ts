@@ -7,6 +7,7 @@
  * Nothing here is secure or persisted beyond one browser's localStorage.
  */
 import type { Dataset } from "./types";
+import { ALL_CONTENT_TYPES, contentTypeLabel, listRecords, type ContentTypeKey } from "./mockContentStore";
 
 export type Role = "public" | "researcher" | "editor" | "fellow" | "admin";
 
@@ -283,61 +284,23 @@ export function decideDraftDataset(id: string, decision: "approved" | "rejected"
 }
 
 // ---------------------------------------------------------------------------
-// Draft publication submissions (Researcher/Editor/Admin draft → Editor/Admin
-// review). Demonstrates Module A's shared Draft→Review→Approve→Publish
-// workflow applied to a publication-shaped submission — this is NOT Module
-// B's full Publication Repository (no versioning, DOI, or citation export);
-// that module is Future-phase/unbuilt. This is a lightweight stand-in scoped
-// to the workflow state machine only.
-// ---------------------------------------------------------------------------
-const PUBLICATION_DRAFTS_KEY = "pri_mock_publication_drafts";
-
-export type DraftPublication = {
-  id: string;
-  title: string;
-  abstract: string;
-  format: string;
-  theme: string;
-  language: string;
-  submittedByEmail: string;
-  submittedByName: string;
-  submittedAt: string;
-  status: DraftStatus;
-};
-
-export function getDraftPublications(): DraftPublication[] {
-  return readJSON<DraftPublication[]>(PUBLICATION_DRAFTS_KEY, []);
-}
-
-export function submitDraftPublication(input: Omit<DraftPublication, "id" | "submittedAt" | "status">) {
-  const drafts = getDraftPublications();
-  drafts.push({
-    ...input,
-    id: `pubdraft-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
-    submittedAt: new Date().toISOString(),
-    status: "pending",
-  });
-  writeJSON(PUBLICATION_DRAFTS_KEY, drafts);
-}
-
-export function decideDraftPublication(id: string, decision: "approved" | "rejected") {
-  const drafts = getDraftPublications().map((d) => (d.id === id ? { ...d, status: decision } : d));
-  writeJSON(PUBLICATION_DRAFTS_KEY, drafts);
-}
-
-// ---------------------------------------------------------------------------
 // Recent activity — a lightweight, honest activity feed derived from records
-// that already exist (access requests, dataset drafts, publication drafts),
-// merged by timestamp. Not a real audit log: Module H's cross-module,
-// server-side audit log (GET /api/audit-log/) is Future-phase/unbuilt. This
-// stores nothing new — it only reads and merges what's already there.
+// that already exist (access requests, dataset drafts, content-store
+// records), merged by timestamp. Not a real audit log: Module H's
+// cross-module, server-side audit log (GET /api/audit-log/) is
+// Future-phase/unbuilt. This stores nothing new — it only reads and merges
+// what's already there.
 // ---------------------------------------------------------------------------
 export type ActivityItem = {
   at: string;
-  kind: "access-request" | "dataset-draft" | "publication-draft";
+  kind: "access-request" | "dataset-draft" | ContentTypeKey;
   summary: string;
   status: string;
 };
+
+function titleFromContentData(type: ContentTypeKey, data: Record<string, unknown>): string {
+  return (data.title as string) ?? (data.name as string) ?? (data.quote as string) ?? String(data.slug ?? type);
+}
 
 export function getRecentActivity(limit = 8): ActivityItem[] {
   const items: ActivityItem[] = [
@@ -353,12 +316,14 @@ export function getRecentActivity(limit = 8): ActivityItem[] {
       summary: `${d.submittedByName} submitted dataset "${d.title}"`,
       status: d.status,
     })),
-    ...getDraftPublications().map((d) => ({
-      at: d.submittedAt,
-      kind: "publication-draft" as const,
-      summary: `${d.submittedByName} submitted publication "${d.title}"`,
-      status: d.status,
-    })),
+    ...ALL_CONTENT_TYPES.flatMap((type) =>
+      listRecords(type).map((r) => ({
+        at: r.submittedAt,
+        kind: type,
+        summary: `${r.submittedByName} submitted ${contentTypeLabel[type].toLowerCase()} "${titleFromContentData(type, r.data as Record<string, unknown>)}"`,
+        status: r.workflowStatus,
+      }))
+    ),
   ];
   return items.sort((a, b) => b.at.localeCompare(a.at)).slice(0, limit);
 }
