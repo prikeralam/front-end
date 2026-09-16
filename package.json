@@ -3,8 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "predev": "node scripts/start-services.mjs",
     "dev": "next dev",
-    "build": "next build",
+    "prestart": "node scripts/start-services.mjs",
     "start": "next start",
     "lint": "eslint"
   },
