@@ -119,7 +119,7 @@ export default function DashboardSidebar({ mobileOpen, onCloseMobile }: { mobile
     <nav className="flex h-full flex-col gap-6 overflow-y-auto px-3 py-6">
       {sections.map((section, i) => (
         <div key={i}>
-          {section.label && !collapsed && (
+          {section.label && !collapsed && section.items.length > 1 && (
             <p className="mb-2 px-3 text-[11px] font-bold uppercase tracking-wider text-[#8b8fa3]">{section.label}</p>
           )}
           <div className="space-y-1">

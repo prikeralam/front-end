@@ -26,6 +26,26 @@ export default function ManageProjects() {
   if (!session) return null;
   const bump = () => setTick((t) => t + 1);
 
+  const fields = [
+    { key: "slug", label: "Slug", kind: "text" as const },
+    { key: "title", label: "Title", kind: "text" as const },
+    { key: "blurb", label: "Blurb", kind: "textarea" as const },
+  ];
+  function buildData(values: Record<string, string>, existing?: HeroProject): HeroProject {
+    return {
+      slug: values.slug,
+      title: values.title,
+      blurb: values.blurb,
+      status: existing?.status ?? "placeholder",
+      image: existing?.image ?? { label: `${values.title} photograph`, ratio: "3:2", kind: "photo" },
+      ctaLabel: existing?.ctaLabel,
+      ctaHref: existing?.ctaHref,
+    };
+  }
+  function toFormValues(data: HeroProject): Record<string, string> {
+    return { slug: data.slug, title: data.title, blurb: data.blurb };
+  }
+
   return (
     <>
       <PageHeader
@@ -41,21 +61,10 @@ export default function ManageProjects() {
             {canContributeContent(session) && (
               <SimpleDraftForm
                 title="New project"
-                fields={[
-                  { key: "slug", label: "Slug", kind: "text" },
-                  { key: "title", label: "Title", kind: "text" },
-                  { key: "blurb", label: "Blurb", kind: "textarea" },
-                ]}
+                fields={fields}
                 note="Mock draft — doesn't change any live page yet; demos the review workflow only."
                 onSubmit={(values) => {
-                  const data: HeroProject = {
-                    slug: values.slug,
-                    title: values.title,
-                    blurb: values.blurb,
-                    status: "placeholder",
-                    image: { label: `${values.title} photograph`, ratio: "3:2", kind: "photo" },
-                  };
-                  createDraft("project", data, session);
+                  createDraft("project", buildData(values), session);
                   bump();
                 }}
               />
@@ -65,6 +74,9 @@ export default function ManageProjects() {
                 contentType="project"
                 session={session}
                 bump={bump}
+                fields={fields}
+                toFormValues={toFormValues}
+                buildData={buildData}
                 renderSummary={(r: WorkflowRecord) => {
                   const d = r.data as HeroProject;
                   return (

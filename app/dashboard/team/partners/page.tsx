@@ -26,6 +26,25 @@ export default function ManagePartners() {
   if (!session) return null;
   const bump = () => setTick((t) => t + 1);
 
+  const fields = [
+    { key: "name", label: "Name", kind: "text" as const },
+    { key: "type", label: "Type", kind: "select" as const, options: ["institution", "researcher"] },
+    { key: "description", label: "Description", kind: "textarea" as const },
+  ];
+  function buildData(values: Record<string, string>, existing?: Partner): Partner {
+    return {
+      slug: existing?.slug ?? `${values.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${Date.now()}`,
+      name: values.name,
+      description: values.description,
+      type: values.type as Partner["type"],
+      status: existing?.status ?? "placeholder",
+      logo: existing?.logo ?? null,
+    };
+  }
+  function toFormValues(data: Partner): Record<string, string> {
+    return { name: data.name, type: data.type, description: data.description };
+  }
+
   return (
     <>
       <PageHeader
@@ -41,22 +60,10 @@ export default function ManagePartners() {
             {canContributeContent(session) && (
               <SimpleDraftForm
                 title="New partner"
-                fields={[
-                  { key: "name", label: "Name", kind: "text" },
-                  { key: "type", label: "Type", kind: "select", options: ["institution", "researcher"] },
-                  { key: "description", label: "Description", kind: "textarea" },
-                ]}
+                fields={fields}
                 note="Mock draft — doesn't change any live page yet; demos the review workflow only."
                 onSubmit={(values) => {
-                  const data: Partner = {
-                    slug: `${values.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${Date.now()}`,
-                    name: values.name,
-                    description: values.description,
-                    type: values.type as Partner["type"],
-                    status: "placeholder",
-                    logo: null,
-                  };
-                  createDraft("partner", data, session);
+                  createDraft("partner", buildData(values), session);
                   bump();
                 }}
               />
@@ -66,6 +73,9 @@ export default function ManagePartners() {
                 contentType="partner"
                 session={session}
                 bump={bump}
+                fields={fields}
+                toFormValues={toFormValues}
+                buildData={buildData}
                 renderSummary={(r: WorkflowRecord) => {
                   const d = r.data as Partner;
                   return (

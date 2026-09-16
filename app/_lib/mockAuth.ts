@@ -283,6 +283,15 @@ export function decideDraftDataset(id: string, decision: "approved" | "rejected"
   writeJSON(DRAFTS_KEY, drafts);
 }
 
+export function updateDraftDataset(id: string, data: Partial<Omit<DraftDataset, "id" | "submittedAt" | "status">>) {
+  const drafts = getDraftDatasets().map((d) => (d.id === id ? { ...d, ...data } : d));
+  writeJSON(DRAFTS_KEY, drafts);
+}
+
+export function deleteDraftDataset(id: string) {
+  writeJSON(DRAFTS_KEY, getDraftDatasets().filter((d) => d.id !== id));
+}
+
 // ---------------------------------------------------------------------------
 // Recent activity — a lightweight, honest activity feed derived from records
 // that already exist (access requests, dataset drafts, content-store

@@ -26,6 +26,24 @@ export default function ManageDocuments() {
   if (!session) return null;
   const bump = () => setTick((t) => t + 1);
 
+  const fields = [
+    { key: "title", label: "Title", kind: "text" as const },
+    { key: "kind", label: "Kind", kind: "select" as const, options: ["Annual Report", "Strategic Plan", "Policy Brief", "Issue"] },
+    { key: "year", label: "Year", kind: "text" as const },
+  ];
+  function buildData(values: Record<string, string>, existing?: PRIDocument): PRIDocument {
+    return {
+      title: values.title,
+      kind: values.kind,
+      year: values.year,
+      status: existing?.status ?? "placeholder",
+      href: existing?.href,
+    };
+  }
+  function toFormValues(data: PRIDocument): Record<string, string> {
+    return { title: data.title, kind: data.kind, year: data.year ?? "" };
+  }
+
   return (
     <>
       <PageHeader
@@ -41,20 +59,10 @@ export default function ManageDocuments() {
             {canContributeContent(session) && (
               <SimpleDraftForm
                 title="New document"
-                fields={[
-                  { key: "title", label: "Title", kind: "text" },
-                  { key: "kind", label: "Kind", kind: "select", options: ["Annual Report", "Strategic Plan", "Policy Brief", "Issue"] },
-                  { key: "year", label: "Year", kind: "text" },
-                ]}
+                fields={fields}
                 note="Mock draft — no real file upload happens yet; this demos the review workflow only."
                 onSubmit={(values) => {
-                  const data: PRIDocument = {
-                    title: values.title,
-                    kind: values.kind,
-                    year: values.year,
-                    status: "placeholder",
-                  };
-                  createDraft("document", data, session);
+                  createDraft("document", buildData(values), session);
                   bump();
                 }}
               />
@@ -64,6 +72,9 @@ export default function ManageDocuments() {
                 contentType="document"
                 session={session}
                 bump={bump}
+                fields={fields}
+                toFormValues={toFormValues}
+                buildData={buildData}
                 renderSummary={(r: WorkflowRecord) => {
                   const d = r.data as PRIDocument;
                   return (

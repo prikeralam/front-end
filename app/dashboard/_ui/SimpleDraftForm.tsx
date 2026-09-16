@@ -8,21 +8,29 @@ export default function SimpleDraftForm({
   title,
   fields,
   note,
+  initialValues,
+  submitLabel,
   onSubmit,
+  onCancel,
 }: {
   title: string;
   fields: FieldConfig[];
   note?: string;
+  initialValues?: Record<string, string>;
+  submitLabel?: string;
   onSubmit: (values: Record<string, string>) => void;
+  onCancel?: () => void;
 }) {
-  const blank = () => Object.fromEntries(fields.map((f) => [f.key, f.kind === "select" ? f.options?.[0] ?? "" : ""]));
+  const isEdit = !!initialValues;
+  const blank = () =>
+    initialValues ?? Object.fromEntries(fields.map((f) => [f.key, f.kind === "select" ? f.options?.[0] ?? "" : ""]));
   const [values, setValues] = useState<Record<string, string>>(blank);
   const [submitted, setSubmitted] = useState(false);
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
     onSubmit(values);
-    setValues(blank());
+    if (!isEdit) setValues(blank());
     setSubmitted(true);
     setTimeout(() => setSubmitted(false), 3000);
   }
@@ -59,10 +67,21 @@ export default function SimpleDraftForm({
           )}
         </div>
       ))}
-      <button type="submit" className="rounded-full bg-[#253D9A] px-6 py-2.5 text-sm font-semibold text-white hover:bg-[#1B2C70]">
-        Save as draft
-      </button>
-      {submitted && <p className="text-[13px] font-semibold text-[#253D9A]">Saved as a draft — use &ldquo;Submit for review&rdquo; below when ready.</p>}
+      <div className="flex items-center gap-3">
+        <button type="submit" className="rounded-full bg-[#253D9A] px-6 py-2.5 text-sm font-semibold text-white hover:bg-[#1B2C70]">
+          {submitLabel ?? "Save as draft"}
+        </button>
+        {onCancel && (
+          <button
+            type="button"
+            onClick={onCancel}
+            className="rounded-full border border-[#dcdee8] px-6 py-2.5 text-sm font-semibold text-[#5b5f74] hover:bg-[#f0f1f5]"
+          >
+            Cancel
+          </button>
+        )}
+      </div>
+      {submitted && <p className="text-[13px] font-semibold text-[#253D9A]">{isEdit ? "Saved." : "Saved as a draft — use “Submit for review” below when ready."}</p>}
       {note && <p className="text-[11px] text-[#8b8fa3]">{note}</p>}
     </form>
   );

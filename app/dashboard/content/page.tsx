@@ -26,6 +26,25 @@ export default function ManageContentBlocks() {
   if (!session) return null;
   const bump = () => setTick((t) => t + 1);
 
+  const fields = [
+    { key: "slug", label: "Slug", kind: "text" as const },
+    { key: "title", label: "Title", kind: "text" as const },
+    { key: "body", label: "Body", kind: "textarea" as const },
+  ];
+  function buildData(values: Record<string, string>, existing?: ContentBlock): ContentBlock {
+    return {
+      slug: values.slug,
+      title: values.title,
+      body: values.body,
+      seoTitle: existing?.seoTitle,
+      seoDescription: existing?.seoDescription,
+      updatedAt: new Date().toISOString(),
+    };
+  }
+  function toFormValues(data: ContentBlock): Record<string, string> {
+    return { slug: data.slug, title: data.title, body: data.body };
+  }
+
   return (
     <>
       <PageHeader
@@ -41,20 +60,10 @@ export default function ManageContentBlocks() {
             {canContributeContent(session) && (
               <SimpleDraftForm
                 title="New content block"
-                fields={[
-                  { key: "slug", label: "Slug", kind: "text" },
-                  { key: "title", label: "Title", kind: "text" },
-                  { key: "body", label: "Body", kind: "textarea" },
-                ]}
+                fields={fields}
                 note="Mock draft — doesn't change any live page yet; demos the review workflow only."
                 onSubmit={(values) => {
-                  const data: ContentBlock = {
-                    slug: values.slug,
-                    title: values.title,
-                    body: values.body,
-                    updatedAt: new Date().toISOString(),
-                  };
-                  createDraft("content-block", data, session);
+                  createDraft("content-block", buildData(values), session);
                   bump();
                 }}
               />
@@ -64,6 +73,9 @@ export default function ManageContentBlocks() {
                 contentType="content-block"
                 session={session}
                 bump={bump}
+                fields={fields}
+                toFormValues={toFormValues}
+                buildData={buildData}
                 renderSummary={(r: WorkflowRecord) => {
                   const d = r.data as ContentBlock;
                   return (

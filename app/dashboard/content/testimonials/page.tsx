@@ -26,6 +26,24 @@ export default function ManageTestimonials() {
   if (!session) return null;
   const bump = () => setTick((t) => t + 1);
 
+  const fields = [
+    { key: "quote", label: "Quote", kind: "textarea" as const },
+    { key: "name", label: "Attributed name", kind: "text" as const },
+    { key: "role", label: "Role / affiliation", kind: "text" as const },
+  ];
+  function buildData(values: Record<string, string>, existing?: Testimonial): Testimonial {
+    return {
+      slug: existing?.slug ?? `testimonial-${Date.now()}`,
+      quote: values.quote,
+      name: values.name,
+      role: values.role,
+      status: existing?.status ?? "placeholder",
+    };
+  }
+  function toFormValues(data: Testimonial): Record<string, string> {
+    return { quote: data.quote, name: data.name, role: data.role };
+  }
+
   return (
     <>
       <PageHeader
@@ -41,21 +59,10 @@ export default function ManageTestimonials() {
             {canContributeContent(session) && (
               <SimpleDraftForm
                 title="New testimonial"
-                fields={[
-                  { key: "quote", label: "Quote", kind: "textarea" },
-                  { key: "name", label: "Attributed name", kind: "text" },
-                  { key: "role", label: "Role / affiliation", kind: "text" },
-                ]}
+                fields={fields}
                 note="Mock draft — doesn't change any live page yet; demos the review workflow only."
                 onSubmit={(values) => {
-                  const data: Testimonial = {
-                    slug: `testimonial-${Date.now()}`,
-                    quote: values.quote,
-                    name: values.name,
-                    role: values.role,
-                    status: "placeholder",
-                  };
-                  createDraft("testimonial", data, session);
+                  createDraft("testimonial", buildData(values), session);
                   bump();
                 }}
               />
@@ -65,6 +72,9 @@ export default function ManageTestimonials() {
                 contentType="testimonial"
                 session={session}
                 bump={bump}
+                fields={fields}
+                toFormValues={toFormValues}
+                buildData={buildData}
                 renderSummary={(r: WorkflowRecord) => {
                   const d = r.data as Testimonial;
                   return (

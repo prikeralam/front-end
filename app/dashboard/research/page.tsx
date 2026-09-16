@@ -27,6 +27,40 @@ export default function ManageResearch() {
   if (!session) return null;
   const bump = () => setTick((t) => t + 1);
 
+  const fields = [
+    { key: "title", label: "Title", kind: "text" as const },
+    { key: "abstract", label: "Abstract", kind: "textarea" as const },
+    { key: "format", label: "Format", kind: "select" as const, options: publicationFormats },
+    { key: "theme", label: "Theme", kind: "select" as const, options: publicationThemes },
+    { key: "language", label: "Language", kind: "select" as const, options: publicationLanguages },
+    { key: "authorSlug", label: "Primary author (Person slug)", kind: "text" as const },
+  ];
+  function buildData(values: Record<string, string>, existing?: Publication): Publication {
+    return {
+      slug: existing?.slug ?? `${values.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${Date.now()}`,
+      title: values.title,
+      abstract: values.abstract,
+      format: values.format as Publication["format"],
+      theme: values.theme,
+      date: existing?.date ?? new Date().toISOString().slice(0, 10),
+      authors: values.authorSlug ? [values.authorSlug] : [],
+      language: values.language as Publication["language"],
+      views: existing?.views ?? 0,
+      status: existing?.status ?? "placeholder",
+      cover: existing?.cover ?? null,
+    };
+  }
+  function toFormValues(data: Publication): Record<string, string> {
+    return {
+      title: data.title,
+      abstract: data.abstract,
+      format: data.format,
+      theme: data.theme,
+      language: data.language,
+      authorSlug: data.authors[0] ?? "",
+    };
+  }
+
   return (
     <>
       <PageHeader
@@ -42,30 +76,10 @@ export default function ManageResearch() {
             {canContributeContent(session) && (
               <SimpleDraftForm
                 title="New publication"
-                fields={[
-                  { key: "title", label: "Title", kind: "text" },
-                  { key: "abstract", label: "Abstract", kind: "textarea" },
-                  { key: "format", label: "Format", kind: "select", options: publicationFormats },
-                  { key: "theme", label: "Theme", kind: "select", options: publicationThemes },
-                  { key: "language", label: "Language", kind: "select", options: publicationLanguages },
-                  { key: "authorSlug", label: "Primary author (Person slug)", kind: "text" },
-                ]}
+                fields={fields}
                 note="Mock draft — demos the Draft→Review→Approve→Publish workflow only; full publication-repository features (versioning, DOI, citation export) belong to a separate, future-phase module."
                 onSubmit={(values) => {
-                  const data: Publication = {
-                    slug: `${values.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${Date.now()}`,
-                    title: values.title,
-                    abstract: values.abstract,
-                    format: values.format as Publication["format"],
-                    theme: values.theme,
-                    date: new Date().toISOString().slice(0, 10),
-                    authors: values.authorSlug ? [values.authorSlug] : [],
-                    language: values.language as Publication["language"],
-                    views: 0,
-                    status: "placeholder",
-                    cover: null,
-                  };
-                  createDraft("publication", data, session);
+                  createDraft("publication", buildData(values), session);
                   bump();
                 }}
               />
@@ -75,6 +89,9 @@ export default function ManageResearch() {
                 contentType="publication"
                 session={session}
                 bump={bump}
+                fields={fields}
+                toFormValues={toFormValues}
+                buildData={buildData}
                 renderSummary={(r: WorkflowRecord) => {
                   const d = r.data as Publication;
                   return (

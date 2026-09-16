@@ -28,6 +28,29 @@ export default function ManageTeam() {
   if (!session) return null;
   const bump = () => setTick((t) => t + 1);
 
+  const fields = [
+    { key: "name", label: "Name", kind: "text" as const },
+    { key: "role", label: "Role / title", kind: "text" as const },
+    { key: "group", label: "Group", kind: "select" as const, options: GROUPS },
+    { key: "bio", label: "Bio", kind: "textarea" as const },
+  ];
+  function buildData(values: Record<string, string>, existing?: Person): Person {
+    return {
+      slug: existing?.slug ?? `${values.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${Date.now()}`,
+      name: values.name,
+      role: values.role,
+      group: values.group as Person["group"],
+      bio: values.bio,
+      topic: existing?.topic,
+      objectives: existing?.objectives,
+      status: existing?.status ?? "placeholder",
+      photo: existing?.photo ?? null,
+    };
+  }
+  function toFormValues(data: Person): Record<string, string> {
+    return { name: data.name, role: data.role, group: data.group, bio: data.bio ?? "" };
+  }
+
   return (
     <>
       <PageHeader
@@ -43,24 +66,10 @@ export default function ManageTeam() {
             {canContributeContent(session) && (
               <SimpleDraftForm
                 title="New person profile"
-                fields={[
-                  { key: "name", label: "Name", kind: "text" },
-                  { key: "role", label: "Role / title", kind: "text" },
-                  { key: "group", label: "Group", kind: "select", options: GROUPS },
-                  { key: "bio", label: "Bio", kind: "textarea" },
-                ]}
+                fields={fields}
                 note="Mock draft — doesn't change any live page yet; demos the review workflow only."
                 onSubmit={(values) => {
-                  const data: Person = {
-                    slug: `${values.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${Date.now()}`,
-                    name: values.name,
-                    role: values.role,
-                    group: values.group as Person["group"],
-                    bio: values.bio,
-                    status: "placeholder",
-                    photo: null,
-                  };
-                  createDraft("person-profile", data, session);
+                  createDraft("person-profile", buildData(values), session);
                   bump();
                 }}
               />
@@ -70,6 +79,9 @@ export default function ManageTeam() {
                 contentType="person-profile"
                 session={session}
                 bump={bump}
+                fields={fields}
+                toFormValues={toFormValues}
+                buildData={buildData}
                 renderSummary={(r: WorkflowRecord) => {
                   const d = r.data as Person;
                   return (
