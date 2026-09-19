@@ -1,15 +1,27 @@
 import "server-only";
-import { searchDatasets, getDataset, extraValue, CkanError, type CkanPackage } from "./ckan";
-import { isVisibleInListing, canAccessDataset, extraFields, type MockRequestSession } from "./datasetAccess";
-import { parseCsvPreview } from "./csv";
+import { datasets as contentDatasets } from "../_content/datasets";
+import type { Dataset } from "./types";
+import { prisma } from "./prisma";
+import { readCsvPreview } from "./csv";
+import type { Role } from "./datasetAccess";
+
+// Reads from app/_content/datasets.ts (files under /public/datasets) rather
+// than a real backend — see that file's header comment and the 2026-09-19
+// amendment in docs/PRDs/backend/C-data-repository-dashboard-integration.md.
+// Every exported function/type here keeps its previous (CKAN-era) shape so
+// none of the ~10 call sites (pages, API routes, dashboard views) need to
+// change again once this is swapped for a real API.
 
 export type AccessState = "full" | "requestable" | "locked";
+export type MockRequestSession = { email: string; name: string; role: Role } | null;
+
+const STAFF_ROLES: Role[] = ["researcher", "editor", "admin"];
 
 export type DatasetSummary = {
   slug: string;
   title: string;
   description: string;
-  visibility: string;
+  visibility: Dataset["visibility"];
   accessState: AccessState;
   theme: string | null;
   geography?: string;
@@ -22,18 +34,46 @@ export type DatasetSummary = {
   fileFormat: string | null;
 };
 
-async function toSummary(pkg: CkanPackage, session: MockRequestSession): Promise<DatasetSummary> {
-  const fields = extraFields(pkg);
-  const { tier, state } = await canAccessDataset(pkg, session);
+function isVisibleInListing(dataset: Dataset, session: MockRequestSession): boolean {
+  if (dataset.visibility !== "internal") return true;
+  return !!session && STAFF_ROLES.includes(session.role);
+}
+
+/** `on-request` datasets aren't part of the current local content set (see
+ * app/_content/datasets.ts) — this stays wired to Prisma's AccessRequest
+ * table for when one is added, exactly mirroring the pre-migration logic. */
+async function accessStateFor(dataset: Dataset, session: MockRequestSession): Promise<AccessState> {
+  if (dataset.visibility === "public") return "full";
+
+  if (dataset.visibility === "on-request") {
+    if (!session) return "requestable";
+    const approved = await prisma.accessRequest.findFirst({
+      where: { datasetSlug: dataset.slug, requesterEmail: session.email, status: "approved" },
+    });
+    return approved ? "full" : "requestable";
+  }
+
+  // internal
+  if (!session) return "locked";
+  return STAFF_ROLES.includes(session.role) ? "full" : "locked";
+}
+
+function toSummary(dataset: Dataset, accessState: AccessState): DatasetSummary {
   return {
-    slug: pkg.name,
-    title: pkg.title,
-    description: pkg.notes,
-    visibility: tier,
-    accessState: state,
-    theme: pkg.groups[0]?.title ?? null,
-    ...fields,
-    fileFormat: extraValue(pkg, "fileFormat") ?? pkg.resources[0]?.format ?? null,
+    slug: dataset.slug,
+    title: dataset.title,
+    description: dataset.description,
+    visibility: dataset.visibility,
+    accessState,
+    theme: dataset.theme,
+    geography: dataset.geography,
+    year: dataset.year,
+    type: dataset.type,
+    source: dataset.source,
+    coverage: dataset.coverage,
+    frequency: dataset.frequency,
+    lastUpdated: dataset.lastUpdated,
+    fileFormat: dataset.fileFormat ?? null,
   };
 }
 
@@ -45,20 +85,20 @@ export async function listDatasets(opts: {
   type?: string;
   session: MockRequestSession;
 }): Promise<DatasetSummary[]> {
-  const { results } = await searchDatasets({ q: opts.q, theme: opts.theme, rows: 200 });
+  const q = opts.q?.toLowerCase();
+  const results: DatasetSummary[] = [];
 
-  const visible: DatasetSummary[] = [];
-  for (const pkg of results) {
-    if (!(await isVisibleInListing(pkg, opts.session))) continue;
+  for (const dataset of contentDatasets) {
+    if (!isVisibleInListing(dataset, opts.session)) continue;
+    if (opts.theme && dataset.theme !== opts.theme) continue;
+    if (opts.geography && dataset.geography !== opts.geography) continue;
+    if (opts.year && dataset.year !== opts.year) continue;
+    if (opts.type && dataset.type !== opts.type) continue;
+    if (q && !dataset.title.toLowerCase().includes(q) && !dataset.description.toLowerCase().includes(q)) continue;
 
-    const fields = extraFields(pkg);
-    if (opts.geography && fields.geography !== opts.geography) continue;
-    if (opts.year && fields.year !== opts.year) continue;
-    if (opts.type && fields.type !== opts.type) continue;
-
-    visible.push(await toSummary(pkg, opts.session));
+    results.push(toSummary(dataset, await accessStateFor(dataset, opts.session)));
   }
-  return visible;
+  return results;
 }
 
 export type DatasetDetail = DatasetSummary & {
@@ -67,58 +107,34 @@ export type DatasetDetail = DatasetSummary & {
 };
 
 export async function getDatasetDetail(slug: string, session: MockRequestSession): Promise<DatasetDetail | null> {
-  let pkg: CkanPackage;
-  try {
-    pkg = await getDataset(slug);
-  } catch (err) {
-    if (err instanceof CkanError && err.status === 404) return null;
-    throw err;
-  }
+  const dataset = contentDatasets.find((d) => d.slug === slug);
+  if (!dataset) return null;
+  if (!isVisibleInListing(dataset, session)) return null;
 
-  if (!(await isVisibleInListing(pkg, session))) return null;
-
-  const summary = await toSummary(pkg, session);
+  const accessState = await accessStateFor(dataset, session);
   return {
-    ...summary,
-    tags: pkg.tags.map((t) => t.name),
-    files:
-      summary.accessState === "full"
-        ? pkg.resources.map((r) => ({ label: r.name, path: `/api/datasets/${slug}/download?resource=${r.id}` }))
-        : [],
+    ...toSummary(dataset, accessState),
+    tags: dataset.tags ?? [],
+    files: accessState === "full" ? dataset.files ?? [] : [],
   };
 }
 
 export type ResourcePreview = { label: string; format: string; columns: string[]; rows: string[][] };
 
-/** Fetches each resource's file from CKAN and parses a few sample rows —
- * real preview data, not synthesized. Only for CSV-ish formats; other
- * formats are listed with empty columns/rows so the UI can say "preview not
- * available" rather than trying to render binary content as a table. */
+/** Reads sample rows straight off the CSV under /public — no network round trip. */
 export async function getDatasetPreview(slug: string, session: MockRequestSession): Promise<ResourcePreview[] | null> {
-  let pkg: CkanPackage;
-  try {
-    pkg = await getDataset(slug);
-  } catch (err) {
-    if (err instanceof CkanError && err.status === 404) return null;
-    throw err;
-  }
+  const dataset = contentDatasets.find((d) => d.slug === slug);
+  if (!dataset) return null;
+  if (!isVisibleInListing(dataset, session)) return null;
 
-  if (!(await isVisibleInListing(pkg, session))) return null;
+  const accessState = await accessStateFor(dataset, session);
+  if (accessState === "locked") return null;
 
-  const { state } = await canAccessDataset(pkg, session);
-  if (state === "locked") return null;
+  return (dataset.files ?? []).map((f): ResourcePreview => {
+    const format = dataset.fileFormat ?? "";
+    if (!/\.csv$/i.test(f.path)) return { label: f.label, format, columns: [], rows: [] };
 
-  return Promise.all(
-    pkg.resources.map(async (r): Promise<ResourcePreview> => {
-      if (!/csv/i.test(r.format)) return { label: r.name, format: r.format, columns: [], rows: [] };
-      try {
-        const res = await fetch(r.url, { cache: "no-store" });
-        const text = await res.text();
-        const { columns, rows } = parseCsvPreview(text);
-        return { label: r.name, format: r.format, columns, rows };
-      } catch {
-        return { label: r.name, format: r.format, columns: [], rows: [] };
-      }
-    })
-  );
+    const { columns, rows } = readCsvPreview(f.path.replace(/^\//, ""));
+    return { label: f.label, format: format || "CSV", columns, rows };
+  });
 }
