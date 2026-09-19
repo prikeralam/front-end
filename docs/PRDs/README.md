@@ -33,7 +33,7 @@ Phase 1 covers 3 frontend sections and 2 backend modules, chosen because they're
 |---|---|---|---|
 | A | Content Management System | **Drafted — Phase 1** | [backend/A-content-management-system.md](backend/A-content-management-system.md) |
 | B | Publication Repository Module | Drafted · Future phase | [backend/B-publication-repository-module.md](backend/B-publication-repository-module.md) |
-| C | Data Repository & Dashboard Integration | **Drafted — Phase 1 · CKAN-backed (see amendment)** | [backend/C-data-repository-dashboard-integration.md](backend/C-data-repository-dashboard-integration.md) |
+| C | Data Repository & Dashboard Integration | **Drafted — Phase 1 · Django+DRF in `pri-backend` (CKAN pivot reversed, see amendment)** | [backend/C-data-repository-dashboard-integration.md](backend/C-data-repository-dashboard-integration.md) |
 | D | Fellowship / Internship Management System | Drafted · Future phase | [backend/D-fellowship-internship-management-system.md](backend/D-fellowship-internship-management-system.md) |
 | E | Media Watch & Rapid Response Module | Drafted · Future phase | [backend/E-media-watch-rapid-response-module.md](backend/E-media-watch-rapid-response-module.md) |
 | F | Donor & Fundraising Backend | Drafted · Future phase | [backend/F-donor-fundraising-backend.md](backend/F-donor-fundraising-backend.md) |

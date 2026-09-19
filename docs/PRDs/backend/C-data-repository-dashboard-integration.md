@@ -88,6 +88,30 @@ user alongside the v1/v3 → v2 site consolidation. What changes and what doesn'
   "embedded Datawrapper/Tableau/D3 reference" — they remain hand-authored content in the frontend repo, as
   already scoped under Out of Scope above.
 
+## Amendment — 2026-09-19
+
+**The CKAN pivot above (2026-09-15) is reversed.** Module C moves back to being a bespoke
+Django + DRF app — the Implementation Decisions section at the top of this spec (data model,
+visibility enforcement, API surface) is canonical again, unamended, and now lives in the
+`pri-backend` repo alongside Modules A/B/D–H (rather than in `pri-website`), using the same
+`workflow.WorkflowMixin`, permission classes, and role model that Module A/H already established
+there — not the standalone Next.js/Prisma "Module C v0" layer described in the 2026-09-15
+amendment.
+
+- **`pri-ckan` is decommissioned.** The CKAN + Postgres + Solr + Redis stack is no longer part of
+  the plan; that repo is retired, not left running unused.
+- **What carries over from the CKAN pass:** the three-tier visibility model
+  (`public`/`on_request`/`internal_only`) and the `AccessRequest` approve/deny workflow are
+  unchanged in shape — they just move from `prisma/schema.prisma` in this repo into Django models
+  in `pri-backend`, matching the original Implementation Decisions above rather than the amended
+  CKAN split.
+- **Not yet migrated (as of 2026-09-19):** `pri-website`'s `app/api/datasets/*` route handlers,
+  `app/_lib/ckan.ts`, and `prisma/schema.prisma` are still the CKAN-era code and still call a CKAN
+  instance (`CKAN_URL`, unset in production) — this is a live bug, not just stale docs: the `/data`
+  route is currently broken in production because of it. Cutting the frontend over to call
+  `pri-backend`'s new datasets API instead is unstarted follow-up work, tracked separately from
+  this doc update.
+
 ## Further Notes
 
 - Source: docx Backend §2.C "Data Repository & Dashboard Integration" — "Upload/host structured datasets (CSV, XLSX, GeoJSON, SPSS); Visualize through APIs with Datawrapper, Tableau Public, or D3.js; Metadata tagging for filters: theme, geography, year, type; Option to make datasets 'public,' 'on request,' or 'internal-only'; Preview options (table view, map view)."
