@@ -4,6 +4,7 @@ import type { Dataset } from "./types";
 import { prisma } from "./prisma";
 import { readCsvPreview } from "./csv";
 import type { Role } from "./datasetAccess";
+import type { AccessState, DatasetDetail, DatasetSummary, ResourcePreview } from "./datasetTypes";
 
 // Reads from app/_content/datasets.ts (files under /public/datasets) rather
 // than a real backend — see that file's header comment and the 2026-09-19
@@ -12,27 +13,10 @@ import type { Role } from "./datasetAccess";
 // none of the ~10 call sites (pages, API routes, dashboard views) need to
 // change again once this is swapped for a real API.
 
-export type AccessState = "full" | "requestable" | "locked";
+export type { AccessState, DatasetSummary, DatasetDetail, ResourcePreview } from "./datasetTypes";
 export type MockRequestSession = { email: string; name: string; role: Role } | null;
 
 const STAFF_ROLES: Role[] = ["researcher", "editor", "admin"];
-
-export type DatasetSummary = {
-  slug: string;
-  title: string;
-  description: string;
-  visibility: Dataset["visibility"];
-  accessState: AccessState;
-  theme: string | null;
-  geography?: string;
-  year?: string;
-  type?: string;
-  source?: string;
-  coverage?: string;
-  frequency?: string;
-  lastUpdated?: string;
-  fileFormat: string | null;
-};
 
 function isVisibleInListing(dataset: Dataset, session: MockRequestSession): boolean {
   if (dataset.visibility !== "internal") return true;
@@ -101,11 +85,6 @@ export async function listDatasets(opts: {
   return results;
 }
 
-export type DatasetDetail = DatasetSummary & {
-  tags: string[];
-  files: { label: string; path: string }[];
-};
-
 export async function getDatasetDetail(slug: string, session: MockRequestSession): Promise<DatasetDetail | null> {
   const dataset = contentDatasets.find((d) => d.slug === slug);
   if (!dataset) return null;
@@ -118,8 +97,6 @@ export async function getDatasetDetail(slug: string, session: MockRequestSession
     files: accessState === "full" ? dataset.files ?? [] : [],
   };
 }
-
-export type ResourcePreview = { label: string; format: string; columns: string[]; rows: string[][] };
 
 /** Reads sample rows straight off the CSV under /public — no network round trip. */
 export async function getDatasetPreview(slug: string, session: MockRequestSession): Promise<ResourcePreview[] | null> {
