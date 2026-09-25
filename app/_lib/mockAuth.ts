@@ -391,16 +391,3 @@ export function setUserRole(email: string, role: Role) {
     writeJSON(SESSION_KEY, { ...current, role });
   }
 }
-
-/** Headers that carry this mock session to the server-side dataset API
- * routes (app/api/datasets/*, app/api/access-requests) — see
- * app/_lib/datasetAccess.ts's readMockSession for the server-side half of
- * this insecure-by-design bridge. */
-export function mockSessionHeaders(session: MockSession | null): HeadersInit {
-  if (!session) return {};
-  return {
-    "x-pri-user-email": session.email,
-    "x-pri-user-name": session.name,
-    "x-pri-user-role": session.role,
-  };
-}

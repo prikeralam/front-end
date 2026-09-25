@@ -1,7 +1,10 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { dashboards, datasetThemes } from "../../_content/dashboards";
+import { listDashboardsAction } from "../../_lib/dashboard/datasetActions";
+import type { DashboardCard } from "../../_lib/api/datasetAdapter";
+import DashboardEmbed from "../../data/_ui/DashboardEmbed";
 import { useDatasets, usePendingAccessRequests, useMyAccessRequests, decideAccessRequestApi, type AccessRequestRow } from "../../_lib/useDatasetsApi";
 import {
   getDraftDatasets,
@@ -21,8 +24,7 @@ import {
   type ContentTypeKey,
   type WorkflowStatus,
 } from "../../_lib/mockContentStore";
-import { SectionHeading, Stat, Card, EmptyState, StatusTag } from "../../_ui/kit";
-import MediaSlot from "../../_ui/MediaSlot";
+import { SectionHeading, Stat, Card, EmptyState } from "../../_ui/kit";
 
 type OverviewProps = { session: MockSession; bump: () => void };
 
@@ -47,9 +49,8 @@ function titleOf(data: Record<string, unknown>): string {
 
 function BrowseDatasetsGrid({ session }: { session: MockSession | null }) {
   const datasets = useDatasets(session);
-  const themeCounts = datasetThemes
-    .map((theme) => ({ theme, count: datasets.filter((d) => d.theme === theme).length }))
-    .filter((t) => t.count > 0);
+  const themes = Array.from(new Set(datasets.map((d) => d.theme).filter((t): t is string => !!t)));
+  const themeCounts = themes.map((theme) => ({ theme, count: datasets.filter((d) => d.theme === theme).length }));
 
   return (
     <div>
@@ -72,16 +73,25 @@ function BrowseDatasetsGrid({ session }: { session: MockSession | null }) {
 }
 
 function DashboardsList() {
+  const [dashboards, setDashboards] = useState<DashboardCard[]>([]);
+  useEffect(() => {
+    let current = true;
+    listDashboardsAction()
+      .then((list) => current && setDashboards(list))
+      .catch(() => current && setDashboards([]));
+    return () => {
+      current = false;
+    };
+  }, []);
+
   return (
     <div>
       <SectionHeading>Dashboards</SectionHeading>
       <div className="mt-6 grid gap-5 sm:grid-cols-2">
         {dashboards.map((d) => (
           <div key={d.slug} className="rounded-xl border border-[#e6e8f0] bg-white p-5">
-            {d.embed && <MediaSlot need={d.embed} />}
-            <h3 className="mt-4 flex items-center gap-2 text-lg font-bold text-[#171a2b]">
-              {d.title} <StatusTag status={d.status} />
-            </h3>
+            <DashboardEmbed url={d.embedUrl} title={d.title} type={d.embedType} />
+            <h3 className="mt-4 text-lg font-bold text-[#171a2b]">{d.title}</h3>
             <p className="mt-2 text-sm text-[#5b5f74]">{d.description}</p>
           </div>
         ))}
@@ -114,17 +124,17 @@ function MyPendingRequests({ session }: { session: MockSession }) {
   );
 }
 
-function AccessRequestRowActions({ session, r, bump }: { session: MockSession; r: AccessRequestRow; bump: () => void }) {
+function AccessRequestRowActions({ r, bump }: { r: AccessRequestRow; bump: () => void }) {
   return (
     <div className="flex shrink-0 gap-2">
       <button
-        onClick={async () => { await decideAccessRequestApi(session, r.datasetSlug, r.requesterEmail, "approved"); bump(); }}
+        onClick={async () => { await decideAccessRequestApi(r.id, "approved"); bump(); }}
         className="rounded-full border border-[#253D9A] px-3 py-1.5 text-[12px] font-semibold text-[#253D9A] hover:bg-[#253D9A] hover:text-white"
       >
         Approve
       </button>
       <button
-        onClick={async () => { await decideAccessRequestApi(session, r.datasetSlug, r.requesterEmail, "denied"); bump(); }}
+        onClick={async () => { await decideAccessRequestApi(r.id, "denied"); bump(); }}
         className="rounded-full border border-[#8b8fa3]/40 px-3 py-1.5 text-[12px] font-semibold text-[#8b8fa3] hover:bg-[#8b8fa3]/10"
       >
         Deny
@@ -145,12 +155,12 @@ function AccessRequestsToReview({ session, bump }: { session: MockSession; bump:
         {toReview.map((r) => {
           const d = datasets.find((ds) => ds.slug === r.datasetSlug);
           return (
-            <div key={`${r.datasetSlug}-${r.requesterEmail}`} className="flex items-center justify-between gap-4 rounded-lg border border-[#e6e8f0] bg-white px-5 py-4">
+            <div key={r.id} className="flex items-center justify-between gap-4 rounded-lg border border-[#e6e8f0] bg-white px-5 py-4">
               <div>
                 <p className="text-[15px] text-[#171a2b]">{d?.title ?? r.datasetSlug}</p>
-                <p className="mt-1 text-[13px] text-[#8b8fa3]">{r.requesterName} &middot; {r.requesterEmail}</p>
+                <p className="mt-1 text-[13px] text-[#8b8fa3]">{[r.requesterName, r.requesterEmail].filter(Boolean).join(" · ")}</p>
               </div>
-              <AccessRequestRowActions session={session} r={r} bump={bump} />
+              <AccessRequestRowActions r={r} bump={bump} />
             </div>
           );
         })}
@@ -309,12 +319,12 @@ export function AdminOverview({ session, bump }: OverviewProps) {
             {pendingAccessRequests.map((r) => {
               const d = datasets.find((ds) => ds.slug === r.datasetSlug);
               return (
-                <div key={`ar-${r.datasetSlug}-${r.requesterEmail}`} className="flex items-center justify-between gap-4 rounded-lg border border-[#e6e8f0] bg-white px-5 py-4">
+                <div key={`ar-${r.id}`} className="flex items-center justify-between gap-4 rounded-lg border border-[#e6e8f0] bg-white px-5 py-4">
                   <div>
                     <p className="text-[15px] text-[#171a2b]">Access request &middot; {d?.title ?? r.datasetSlug}</p>
-                    <p className="mt-1 text-[13px] text-[#8b8fa3]">{r.requesterName} &middot; {r.requesterEmail}</p>
+                    <p className="mt-1 text-[13px] text-[#8b8fa3]">{[r.requesterName, r.requesterEmail].filter(Boolean).join(" · ")}</p>
                   </div>
-                  <AccessRequestRowActions session={session} r={r} bump={bump} />
+                  <AccessRequestRowActions r={r} bump={bump} />
                 </div>
               );
             })}

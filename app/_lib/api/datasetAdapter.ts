@@ -45,6 +45,7 @@ export function themeNameById(themes: readonly ApiTheme[]): Map<number, string> 
 
 export function toDatasetSummary(dataset: ApiDataset, topLevelBySubTheme: ReadonlyMap<number, string>): DatasetSummary {
   return {
+    id: dataset.id,
     slug: dataset.slug,
     title: dataset.title,
     description: dataset.description ?? "",

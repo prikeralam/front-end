@@ -1,6 +1,6 @@
 import "server-only";
 import type { DatasetDetail, DatasetSummary, ResourcePreview } from "../datasetTypes";
-import { api } from "./client";
+import { api, uncachedApi } from "./client";
 import {
   isFeatureCollection,
   isTablePreview,
@@ -17,16 +17,23 @@ import { collectAllPages } from "./pagination";
 import { unwrap } from "./request";
 import { listThemes } from "./themes";
 
+export type { DashboardCard };
+
 const DATASETS_PATH = "/api/v1/datasets/";
 const DATASET_PATH = "/api/v1/datasets/{slug}/";
 const TABLE_PREVIEW_PATH = "/api/v1/datasets/{slug}/preview/table/";
 const MAP_PREVIEW_PATH = "/api/v1/datasets/{slug}/preview/map/";
 const DASHBOARDS_PATH = "/api/v1/dashboards/";
 
+/** Anonymous reads share the cached client; a token means the answer depends on the caller, so it is never cached. */
+export type Caller = { accessToken?: string | null };
+const clientFor = ({ accessToken }: Caller = {}) => (accessToken ? uncachedApi(accessToken) : api);
+
 /** Published datasets the caller may see (anonymous: `public` and `on_request`), oldest first. */
-export async function listDatasets(): Promise<DatasetSummary[]> {
+export async function listDatasets(caller: Caller = {}): Promise<DatasetSummary[]> {
+  const client = clientFor(caller);
   const [datasets, themes] = await Promise.all([
-    collectAllPages(async (page) => unwrap(await api.GET(DATASETS_PATH, { params: { query: { page } } }), DATASETS_PATH)),
+    collectAllPages(async (page) => unwrap(await client.GET(DATASETS_PATH, { params: { query: { page } } }), DATASETS_PATH)),
     listThemes(),
   ]);
   const topLevel = topLevelNameBySubTheme(themes);
@@ -34,8 +41,8 @@ export async function listDatasets(): Promise<DatasetSummary[]> {
 }
 
 /** `null` when the dataset is not visible to the caller (the API answers 404 for hidden objects too). */
-export async function getDatasetDetail(slug: string): Promise<DatasetDetail | null> {
-  const [result, themes] = await Promise.all([api.GET(DATASET_PATH, { params: { path: { slug } } }), listThemes()]);
+export async function getDatasetDetail(slug: string, caller: Caller = {}): Promise<DatasetDetail | null> {
+  const [result, themes] = await Promise.all([clientFor(caller).GET(DATASET_PATH, { params: { path: { slug } } }), listThemes()]);
   if (result.response.status === 404) return null;
   return toDatasetDetail(unwrap(result, DATASET_PATH), topLevelNameBySubTheme(themes));
 }
@@ -49,15 +56,16 @@ export type DatasetPreviews = {
  * First page of the table preview (csv, parquet, zip) or the parsed GeoJSON (geojson datasets). A preview the backend
  * cannot produce (unreadable or oversized file, 422/413), refuses, or fails to fetch is `null`, so the rest of the page still renders.
  */
-export async function getDatasetPreviews(dataset: Pick<DatasetDetail, "slug" | "title" | "fileFormat">): Promise<DatasetPreviews> {
+export async function getDatasetPreviews(dataset: Pick<DatasetDetail, "slug" | "title" | "fileFormat">, caller: Caller = {}): Promise<DatasetPreviews> {
   const { slug } = dataset;
+  const client = clientFor(caller);
   try {
     if (dataset.fileFormat === "GeoJSON") {
-      const result = await api.GET(MAP_PREVIEW_PATH, { params: { path: { slug } } });
+      const result = await client.GET(MAP_PREVIEW_PATH, { params: { path: { slug } } });
       const body: unknown = result.data;
       return { table: null, map: result.response.ok && isFeatureCollection(body) ? body : null };
     }
-    const result = await api.GET(TABLE_PREVIEW_PATH, { params: { path: { slug } } });
+    const result = await client.GET(TABLE_PREVIEW_PATH, { params: { path: { slug } } });
     const body: unknown = result.data;
     return { table: result.response.ok && isTablePreview(body) ? toResourcePreview(dataset.title, dataset.fileFormat ?? "", body) : null, map: null };
   } catch (error) {

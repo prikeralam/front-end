@@ -3,11 +3,11 @@
 import { use, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { datasetThemes, datasetGeographies, datasetYears, datasetFormats } from "../../../_content/dashboards";
 import { useDatasets, useMyAccessRequests } from "../../../_lib/useDatasetsApi";
+import { requestAccessAction } from "../../../_lib/dashboard/datasetActions";
+import { rememberRequestedDataset } from "../../../_lib/requestedAccess";
 import {
   getSession,
-  mockSessionHeaders,
   isFavorite,
   toggleFavorite,
   watchTheme,
@@ -17,6 +17,7 @@ import { PageHeader, EmptyState } from "../../../_ui/kit";
 import DatasetMeta from "../../../data/_ui/DatasetMeta";
 
 function FacetGroup({ label, options, value, onChange }: { label: string; options: string[]; value: string; onChange: (v: string) => void }) {
+  if (options.length === 0) return null;
   return (
     <div>
       <p className="mb-2 text-[11px] font-bold uppercase tracking-wider text-[#8b8fa3]">{label}</p>
@@ -69,19 +70,14 @@ export default function DashboardThemeV2({ params }: { params: Promise<{ theme: 
   const datasets = useDatasets(session ?? null, [tick]);
   const myRequests = useMyAccessRequests(session ?? null, [tick]);
   const themeDatasets = useMemo(() => datasets.filter((d) => d.theme === theme), [datasets, theme]);
-  const types = useMemo(() => Array.from(new Set(themeDatasets.map((d) => d.type).filter((t): t is string => !!t))), [themeDatasets]);
+  const distinct = (values: (string | null | undefined)[]) => Array.from(new Set(values.filter((v): v is string => !!v)));
+  const types = useMemo(() => distinct(themeDatasets.map((d) => d.type)), [themeDatasets]);
+  const formats = useMemo(() => distinct(themeDatasets.map((d) => d.fileFormat)), [themeDatasets]);
+  const geographies = useMemo(() => distinct(themeDatasets.map((d) => d.geography)), [themeDatasets]);
+  const years = useMemo(() => distinct(themeDatasets.map((d) => d.year)).sort().reverse(), [themeDatasets]);
 
   if (session === undefined) return null;
   if (!session) return null;
-  if (!datasetThemes.includes(theme)) {
-    return (
-      <>
-        <PageHeader kicker="Your dashboard" title="Theme not found" />
-        <section className="mx-auto max-w-6xl px-6 pb-16" />
-      </>
-    );
-  }
-
   const filtered = themeDatasets.filter(
     (d) =>
       (!fileFormat || d.fileFormat === fileFormat) &&
@@ -96,10 +92,10 @@ export default function DashboardThemeV2({ params }: { params: Promise<{ theme: 
       <section className="mx-auto max-w-6xl px-6 py-16">
         <div className="grid gap-10 lg:grid-cols-[220px_1fr]">
           <aside className="space-y-8 lg:border-r lg:border-[#e6e8f0] lg:pr-8">
-            <FacetGroup label="File format" options={datasetFormats} value={fileFormat} onChange={setFileFormat} />
+            <FacetGroup label="File format" options={formats} value={fileFormat} onChange={setFileFormat} />
             <FacetGroup label="Type" options={types} value={type} onChange={setType} />
-            <FacetGroup label="Geography" options={datasetGeographies} value={geography} onChange={setGeography} />
-            <FacetGroup label="Year" options={datasetYears} value={year} onChange={setYear} />
+            <FacetGroup label="Geography" options={geographies} value={geography} onChange={setGeography} />
+            <FacetGroup label="Year" options={years} value={year} onChange={setYear} />
           </aside>
 
           <div>
@@ -148,7 +144,8 @@ export default function DashboardThemeV2({ params }: { params: Promise<{ theme: 
                         {d.accessState === "requestable" && !pending && (
                           <button
                             onClick={async () => {
-                              await fetch(`/api/datasets/${d.slug}/request-access`, { method: "POST", headers: mockSessionHeaders(session) });
+                              const result = await requestAccessAction(d.slug).catch(() => "error" as const);
+                              if (result === "requested" && session) rememberRequestedDataset(session.email, d.slug);
                               setTick((t) => t + 1);
                             }}
                             className="rounded-full border border-[#253D9A] px-3 py-1.5 text-[12px] font-semibold text-[#253D9A] hover:bg-[#253D9A] hover:text-white"
