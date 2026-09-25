@@ -1,10 +1,33 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { checkSession } from "../_lib/auth/authClient";
 import DashboardSidebar from "./_ui/DashboardSidebar";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
+  // Children read the session from local storage, so they only render once the server has confirmed it.
+  const [verified, setVerified] = useState(false);
+
+  useEffect(() => {
+    checkSession().then((check) => {
+      if (check.status === "signed-out" || (check.status === "unreachable" && !check.session)) {
+        router.replace("/account");
+        return;
+      }
+      setVerified(true);
+    });
+  }, [router]);
+
+  if (!verified) {
+    return (
+      <p role="status" className="p-8 text-[14px] text-[#8b8fa3]">
+        Checking your session…
+      </p>
+    );
+  }
 
   return (
     <div className="flex min-h-[calc(100vh-73px)]">

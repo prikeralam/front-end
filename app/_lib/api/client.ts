@@ -16,3 +16,25 @@ export const api = createClient<paths>({
   // Public content changes rarely; let Next cache responses and refresh them in the background.
   fetch: (request) => fetch(request, { next: { revalidate: REVALIDATE_SECONDS } }),
 });
+
+/**
+ * Client for calls made on behalf of a signed-in user (or the login endpoints themselves). Never cached: responses
+ * depend on who is asking, and the Next data cache must not serve one user's response to another.
+ */
+export function uncachedApi(accessToken?: string) {
+  return createClient<paths>({
+    baseUrl: apiBaseUrl(),
+    headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : undefined,
+    // Next's patched `fetch` drops a Request's body when it is also given an init object, so the request is rebuilt
+    // explicitly. Without this, every POST reaches the backend empty.
+    fetch: async (request) => {
+      const hasBody = request.method !== "GET" && request.method !== "HEAD";
+      return fetch(request.url, {
+        method: request.method,
+        headers: request.headers,
+        body: hasBody ? await request.text() : undefined,
+        cache: "no-store",
+      });
+    },
+  });
+}
