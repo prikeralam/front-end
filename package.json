@@ -3,16 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "predev": "node scripts/start-services.mjs",
     "dev": "next dev",
-    "prestart": "node scripts/start-services.mjs",
     "start": "next start",
     "lint": "eslint",
     "api:types": "node scripts/generate-api-types.mjs",
     "test": "vitest run"
   },
   "dependencies": {
-    "@prisma/client": "^6.19.3",
     "next": "16.3.4",
     "openapi-fetch": "^0.17.0",
     "plotly.js-dist-min": "^4.0.0",
@@ -29,15 +26,11 @@
     "eslint": "^9",
     "eslint-config-next": "16.3.4",
     "openapi-typescript": "^7.13.0",
-    "prisma": "^6.19.3",
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^3.2.7"
   },
   "allowScripts": {
-    "unrs-resolver@1.12.2": true,
-    "@prisma/engines@6.19.3": true,
-    "prisma@6.19.3": true,
-    "@prisma/client@6.19.3": true
+    "unrs-resolver@1.12.2": true
   }
 }

@@ -38,8 +38,6 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      # Prisma still backs the CKAN-era dataset routes; remove this step when those are retired.
-      - run: npx prisma generate
       # Next generates global types such as LayoutProps into .next/types; a fresh checkout has none yet.
       - run: npx next typegen
       - run: npx tsc --noEmit
@@ -67,5 +65,4 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npx prisma generate
       - run: npx next build
