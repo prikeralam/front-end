@@ -78,7 +78,7 @@ export const auditSections: SectionAudit[] = [
     ],
   },
   {
-    // Datasets now live in CKAN (a real backend, not static placeholder
+    // Datasets and dashboards come from the backend (not static placeholder
     // content in this repo), so this section is no longer measured the
     // same way as the rest of this audit — see /data for live counts.
     section: "4 · Data Repository",

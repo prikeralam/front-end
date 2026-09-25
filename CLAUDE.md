@@ -8,14 +8,14 @@ Source spec: `12. Website Development.docx` (project root) — a two-part docume
 
 ## Tech stack (fixed)
 
-- **Frontend:** Next.js
-- **Backend:** Django
-- **API layer:** Django REST Framework by default. **Open decision** — whether to add FastAPI as a hybrid service for specific async/high-throughput endpoints (e.g. dataset queries, dashboards), or stay Django+DRF only. Not resolved yet; revisit when coding starts on the first backend module. See "Open decisions" below.
+- **Frontend:** Next.js (this repo, `prikeralam/front-end`), deployed by Vercel's Git integration
+- **Backend:** Django (repo `website-backend`); the frontend talks to it over the versioned REST contract in that repo's `docs/api/` (see "Backend integration" below)
+- **API layer:** Django REST Framework only. The FastAPI hybrid that was once an open question was never adopted: `website-backend` is Django + DRF end to end.
 - **Database:** PostgreSQL
 - **File storage:** AWS S3 or DigitalOcean Spaces (datasets, publications, media)
 - **Hosting:** VPS (DigitalOcean/AWS Lightsail) or Docker containers
 - **Search:** ElasticSearch or Postgres full-text search (repository/publications/media-watch tagging)
-- **Version control / CI:** GitHub or GitLab with CI/CD — **repo not created yet**, deliberately deferred until code writing begins
+- **Version control / CI:** GitHub (`prikeralam/front-end`, private) with GitHub Actions CI — see "Git workflow" below
 - **Security baseline:** SSL, 2FA/OAuth on admin panels, rate limiting, encrypted backups
 
 ## Workflow rule
@@ -66,11 +66,10 @@ Content workflow (Module A): **Draft → Review → Approve → Publish**.
 
 ## Open decisions
 
-- **Django/DRF vs. FastAPI hybrid vs. pure FastAPI** — deferred until coding starts on the first backend module (likely Module A). Django+DRF is the default for all modules, **including Module C again** — see below.
-- **Module C's CKAN pivot (2026-09-15) is reversed as of 2026-09-19.** Module C is back to being a bespoke Django + DRF app, built in `pri-backend` alongside Modules A/B/D–H (not a standalone service). `pri-ckan` (the CKAN + Postgres + Solr + Redis stack) is **decommissioned**. See `docs/PRDs/backend/C-data-repository-dashboard-integration.md`'s 2026-09-19 amendment for the full detail, including the `internal_only`/`on_request` visibility model and `AccessRequest` workflow carrying over unchanged in shape into Django models.
-  - **Code has not caught up to this decision yet.** `pri-website`'s `app/api/datasets/*` route handlers, `app/_lib/ckan.ts`, and `prisma/schema.prisma` are still the CKAN-era "Module C v0" implementation and still call a CKAN instance via `CKAN_URL` — which is unset in production, so **the live `/data` route is currently broken** (falls back to `http://localhost:5000`, unreachable from Vercel). Migrating the frontend to call `pri-backend`'s new datasets API instead is unstarted follow-up work.
-- **Git/GitHub repo** — this repo (`sinankmuriyanal/pri-website`) has existed since 2026-09-08; it holds the frontend and, for now, the still-unmigrated CKAN-era Module C v0 layer (Prisma) described above. As of 2026-09-16 it is being renamed on disk from `Website` to `frontend`, now that a separate `pri-backend` repo (Django, Modules A/B/D–H, and — as of 2026-09-19 — C too) exists as its sibling — see the 2026-09-16 changelog entry.
-- **Issue tracker** — none configured yet, so specs are local Markdown files under `docs/PRDs/` rather than tracker issues. Migrate them once a tracker exists.
+- **Django/DRF vs. FastAPI** — settled in practice: the backend is Django + DRF only (see Tech stack).
+- **Module C's CKAN pivot (2026-09-15) was reversed on 2026-09-19, and the frontend has now caught up.** Module C is a bespoke Django + DRF app in `website-backend`; `pri-ckan` is decommissioned. This repo no longer contains any CKAN or Prisma code: `/data`, dataset access requests and the dashboard's dataset screens all use the backend API (see the 2026-09-25 changelog entries). See `docs/PRDs/backend/C-data-repository-dashboard-integration.md`'s 2026-09-19 amendment for the original decision.
+- **Git/GitHub repo** — this repo now lives at `github.com/prikeralam/front-end` (private). It began as `sinankmuriyanal/pri-website` (2026-09-08), which is kept locally as the `legacy` remote. The backend is the sibling repo `website-backend`.
+- **Issue tracker** — GitHub Issues on this repo (conventions in `docs/agents/issue-tracker.md`). The backend-integration plan is issues #2–#16; product specs remain local Markdown under `docs/PRDs/`.
 
 ## Phase 1 scope (current)
 
@@ -82,6 +81,17 @@ Only these get full specs and, later, code, in this order:
 5. Backend: Module C — Data Repository & Dashboard Integration
 
 Everything else in the site map above is deliberately out of scope until Phase 1 is specced and reviewed.
+
+## Backend integration
+
+How the frontend talks to `website-backend` (contract: that repo's `docs/api/`, `openapi.yaml`). Details and reasons are in the 2026-09-25 changelog entries.
+
+- **Config:** `API_URL` (server-side only; see `.env.example`). Types are generated, not hand-written: `npm run api:types` rewrites `app/_lib/api/schema.d.ts` from the contract (override the source with `API_SCHEMA`). Run it whenever the backend changes an endpoint, and commit the result with the frontend change that needs it.
+- **Public pages** (server components) read through `app/_lib/api/*`: a server-only typed client (cached, 5 min), pure adapters that map API shapes onto the types in `_lib/types.ts` (so UI components did not change), and `load()` + `ApiMessage` for explicit error and empty states. Never fall back to mock content.
+- **Signed-in features** use the JWT flow behind `app/api/auth/[[...action]]`: tokens live only in httpOnly cookies; browser code asks `/api/auth/session` and mirrors `{id, name, email, role}` into `mockAuth`'s session shape. Calls that need the user's token are **Server Actions** (`_lib/dashboard/*Actions.ts`, using `getAccessToken()`), which validate every argument and rely on the backend to enforce roles. Use `uncachedApi` / `backendRequest` for anything per-user, and for every write.
+- **Vercel Hobby caps serverless functions per deployment.** Prefer Server Actions and one catch-all route over new route handlers, and verify the function count on the first preview deploy.
+- **Backend gaps that shape the UI** (raise with the backend, do not paper over): people, projects, documents and testimonials are addressed by id only (slugs are resolved from the cached list); no list-users endpoint or display names (creators show as "user #9"); no "my access requests" endpoint; one file per dataset; no publication body/chart data (data stories keep hand-built bodies); no login throttling or refresh-token revocation (issue #21).
+- **Still mock:** events, careers, fellowship programmes, donations and the contact form (Modules D–G are unbuilt), and the dashboard's favorites, download history, API keys, watched themes and users screens, which have no endpoint (issue #15).
 
 ## Git workflow
 
@@ -118,6 +128,8 @@ Same as the backend repo (`website-backend`); full description in `.github/CONTR
 - **2026-09-25** — `/dashboard/audit` now shows the backend's real, server-side audit log instead of a localStorage feed synthesised from the mock stores. A Server Action (`_lib/dashboard/auditActions.ts`) pages `GET /audit-log/` with optional module and actor filters, validates them, and reports `forbidden` (not an empty list) when the backend answers 403, since the log is admin-only. Entries are described in plain language (`auditAdapter.ts`: status transitions, role changes, access-request reviews, and a generic fallback for any action it does not know). The API records only an actor's user id, so rows read "User #12"; the module filter is free text with suggestions because the API has no endpoint listing modules. The OpenAPI schema (paginated) is right and the module-h doc ("unpaginated") is stale.
 
 - **2026-09-25** — The dashboard's content screens now create, edit, review and publish real objects on the backend instead of localStorage. Eight content types — content blocks, testimonials, people, partners, documents, projects, publications and datasets (the old "Manage datasets" mock) — share one generic layer: `_lib/cms/resources.ts` is a pure table of what each type is on the API (path, lookup by slug or id, form fields, form-to-payload mapping, auto-generated slugs, people vs partners sharing `/people/`), `_lib/dashboard/cmsActions.ts` holds the Server Actions (list, create, update, transition, delete), and one `CmsScreen` + `ContentWorkflowPanel` + `SimpleDraftForm` render every type, so each of the eight pages is a four-line configuration. Forms are uncontrolled and submit `FormData`, which is how documents and datasets upload real files (multipart; extension allowlist and a 10 MB cap checked in the action, `serverActions.bodySizeLimit` raised to 11 MB). The workflow is the backend's: contributors create and submit their own drafts, editors and admins approve, publish, unpublish and delete; the UI mirrors that to decide which buttons to show, but every call is re-checked by the backend and refusals appear inline ("Your role isn't allowed to do that."). An auto-generated slug that collides is retried once with a random suffix. The review widgets on the dashboard home (awaiting review, my submissions, admin recent activity) now read the same records and the real audit log. Deleted: `mockContentStore`, the mock draft-dataset and access-request stores, the activity feed and other dead code in `mockAuth` (about a third of the file). Verified end to end against the live backend with React's own reply encoder: a researcher submits, is refused publishing and deleting; an editor approves, publishes (the public API then shows it) and deletes; a PDF and a CSV upload, and the published CSV's rows come back through the public preview endpoint. What the API does not offer: no way to list users (so creators show as "user #9"), no per-object history, and the backend accepts any `role_title` for partners, so institution vs researcher is a convention (gap G5).
+
+- **2026-09-25** — Retired the CKAN/Prisma-era layer now that nothing uses it: deleted `prisma/`, `docker-compose.yml`, `scripts/start-services.mjs` (the `predev`/`prestart` hook that started Docker and Prisma before every `npm run dev`, which is why the dev server had to be started with `npx next dev`) and `scripts/sync-ckan-visibility.mjs`; removed `@prisma/client` and `prisma` (which also clears the audit's Prisma advisory chain); dropped the `prisma generate` CI steps. `npm run dev` now just runs Next. Updated the stale Tech stack and Open decisions sections (CKAN reversal complete, FastAPI never adopted, repo moved) and added a "Backend integration" section describing how the API layer, auth and Server Actions fit together and what is still mock. Left in place on purpose: `public/datasets/` (the Sametham and Udise CSVs supplied by PRI), which no page references any more but which Vercel still serves as public static files — see #27: `staff.csv` there lists 7,301 named employees and is publicly downloadable, so where that data should live is a privacy decision.
 
 ## Agent skills
 

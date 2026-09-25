@@ -119,7 +119,7 @@ origin in its `CORS_ALLOWED_ORIGINS`, and media hosts the backend returns must b
 
 | Workflow | Runs on | What it does |
 |---|---|---|
-| `ci.yml` | every PR, push to `dev` | `typecheck` (`prisma generate`, `tsc --noEmit`), `test` (Vitest), `build` (`next build` with no backend reachable), `lint` (ESLint; **not blocking yet**, see below) |
+| `ci.yml` | every PR, push to `dev` | `typecheck` (`next typegen`, `tsc --noEmit`), `test` (Vitest), `build` (`next build` with no backend reachable), `lint` (ESLint; **not blocking yet**, see below) |
 | `pr-guard.yml` | PRs into `dev`, `staging`, `main` | `branch-flow` fails a PR whose source/target pair is not an allowed promotion path (section 1) |
 | `hotfix-backport.yml` | push to `main` from a `fix/*` PR | opens backport PRs into `staging` and `dev` |
 
