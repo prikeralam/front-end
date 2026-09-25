@@ -3,20 +3,21 @@ import { mottoSlide } from "./_content/projects";
 import { heroProjectPhotos } from "./_lib/stockPhotos";
 import { load } from "./_lib/api/load";
 import { listProjects } from "./_lib/api/projects";
-import { publications } from "./_content/publications";
+import { listPublications } from "./_lib/api/publications";
+import { LoadError, EmptyState } from "./_ui/ApiMessage";
 import { upcomingEvents, pastEvents } from "./_content/events";
 import { SectionHeading, StatusTag } from "./_ui/kit";
 import HeroCarousel from "./_ui/HeroCarousel";
 import MediaSlot from "./_ui/MediaSlot";
 
-const featuredResearch = publications.slice(0, 3);
 const featuredEvents = [...upcomingEvents, ...pastEvents].slice(0, 3);
 
 /** Slugs of the projects shown after the motto slide, in order. */
 const HERO_PROJECT_SLUGS = ["education", "demography-migration"];
 
 export default async function HomeV2() {
-  const projects = await load("projects", listProjects);
+  const [projects, research] = await Promise.all([load("projects", listProjects), load("research", listPublications)]);
+  const featuredResearch = research.ok ? research.data.publications.slice(0, 3) : [];
   const heroProjects = [
     mottoSlide,
     ...HERO_PROJECT_SLUGS.flatMap((slug) => (projects.ok ? projects.data.filter((p) => p.slug === slug) : [])),
@@ -36,6 +37,8 @@ export default async function HomeV2() {
           <SectionHeading>Featured research</SectionHeading>
           <Link href="/research" className="text-sm font-semibold text-[#E4633F] hover:underline">View all research &rarr;</Link>
         </div>
+        {!research.ok && <LoadError what="our research" />}
+        {research.ok && featuredResearch.length === 0 && <EmptyState>Research will be published here soon.</EmptyState>}
         <div className="mt-8 grid gap-5 sm:grid-cols-3">
           {featuredResearch.map((p) => (
             <Link key={p.slug} href={`/research/${p.slug}`} className="block overflow-hidden rounded-xl border border-[#e6e8f0] bg-white transition-shadow hover:shadow-[0_2px_16px_rgba(15,107,92,0.10)]">

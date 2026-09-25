@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { publications } from "../../_content/publications";
+import { listPublications } from "../../_lib/api/publications";
+import { formatPublicationDate } from "../../_lib/api/publicationAdapter";
 import { LoadError } from "../../_ui/ApiMessage";
 import { PageHeader, StatusTag } from "../../_ui/kit";
 import MediaSlot from "../../_ui/MediaSlot";
@@ -42,7 +43,9 @@ export default async function PersonDetailV2({ params }: { params: Promise<{ slu
   }
   const person = result.data;
   if (!person) notFound();
-  const authoredPublications = publications.filter((p) => p.authors.includes(person.slug));
+  // Only authors have a publications list; a failed read just shows the empty copy rather than hiding the profile.
+  const research = person.group === "author" ? await load("publications", listPublications) : null;
+  const authoredPublications = research?.ok ? research.data.publications.filter((p) => p.authors.includes(person.slug)) : [];
 
   return (
     <>
@@ -68,7 +71,7 @@ export default async function PersonDetailV2({ params }: { params: Promise<{ slu
                     <Link href={`/research/${p.slug}`} className="text-[15px] font-semibold text-[#171a2b] hover:text-[#253D9A]">
                       {p.title}
                     </Link>
-                    <p className="mt-1 text-[13px] text-[#8b8fa3]">{p.format} &middot; {p.date}</p>
+                    <p className="mt-1 text-[13px] text-[#8b8fa3]">{p.format} &middot; {formatPublicationDate(p.date)}</p>
                   </li>
                 ))}
               </ul>

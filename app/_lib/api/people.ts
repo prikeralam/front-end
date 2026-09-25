@@ -32,3 +32,12 @@ export async function getPersonBySlug(slug: string): Promise<Person | null> {
 export async function listPartners(): Promise<Partner[]> {
   return (await fetchProfiles("partner")).map(toPartner);
 }
+
+/** Every published person keyed by API id (publications reference authors by id). Partners are organisations, so excluded. */
+export async function listPeopleById(): Promise<Map<number, Person>> {
+  const index = new Map<number, Person>();
+  for (const profile of await fetchProfiles()) {
+    if (isPersonGroup(profile.group)) index.set(profile.id, toPerson(profile, profile.group));
+  }
+  return index;
+}
