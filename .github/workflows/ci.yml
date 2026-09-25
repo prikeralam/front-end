@@ -40,6 +40,8 @@ jobs:
       - run: npm ci
       # Prisma still backs the CKAN-era dataset routes; remove this step when those are retired.
       - run: npx prisma generate
+      # Next generates global types such as LayoutProps into .next/types; a fresh checkout has none yet.
+      - run: npx next typegen
       - run: npx tsc --noEmit
 
   test:
@@ -51,7 +53,8 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npm test
+      # `--if-present` only until the first tests land (the API-client PR adds Vitest and removes this flag).
+      - run: npm test --if-present
 
   build:
     runs-on: ubuntu-latest
