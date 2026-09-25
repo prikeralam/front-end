@@ -2,7 +2,7 @@ import "server-only";
 import { uncachedApi } from "../api/client";
 import { ApiError, describeErrorBody } from "../api/errors";
 import type { components } from "../api/schema";
-import type { Role } from "../mockAuth";
+import type { Role } from "../session";
 
 export type SessionUser = { id: number; email: string; role: Role; name: string };
 export type Tokens = { access?: string; refresh?: string };

@@ -6,13 +6,13 @@ import { listDashboardsAction } from "../../_lib/dashboard/datasetActions";
 import type { DashboardCard } from "../../_lib/api/datasetAdapter";
 import DashboardEmbed from "../../data/_ui/DashboardEmbed";
 import { useDatasets, usePendingAccessRequests, useMyAccessRequests, decideAccessRequestApi, type AccessRequestRow } from "../../_lib/useDatasetsApi";
-import { getFavorites, getDownloadHistory, getUserDirectory, type MockSession } from "../../_lib/mockAuth";
+import type { Session } from "../../_lib/session";
 import { transitionCmsAction } from "../../_lib/dashboard/cmsActions";
 import { contentTypeLabel, workflowStatusLabel, type CmsRecord } from "../../_lib/cms/types";
 import { useCmsRecords, useRecentAudit } from "../../_lib/useCmsApi";
 import { SectionHeading, Stat, Card, EmptyState } from "../../_ui/kit";
 
-type OverviewProps = { session: MockSession; bump: () => void };
+type OverviewProps = { session: Session; bump: () => void };
 
 const statusLabel: Record<string, string> = { pending: "Pending review", rejected: "Rejected", ...workflowStatusLabel };
 const statusColor: Record<string, string> = {
@@ -29,7 +29,7 @@ const statusColor: Record<string, string> = {
 // Shared building blocks reused across role views
 // ---------------------------------------------------------------------------
 
-function BrowseDatasetsGrid({ session }: { session: MockSession | null }) {
+function BrowseDatasetsGrid({ session }: { session: Session | null }) {
   const datasets = useDatasets(session);
   const themes = Array.from(new Set(datasets.map((d) => d.theme).filter((t): t is string => !!t)));
   const themeCounts = themes.map((theme) => ({ theme, count: datasets.filter((d) => d.theme === theme).length }));
@@ -82,7 +82,7 @@ function DashboardsList() {
   );
 }
 
-function MyPendingRequests({ session }: { session: MockSession }) {
+function MyPendingRequests({ session }: { session: Session }) {
   const datasets = useDatasets(session);
   const mine = useMyAccessRequests(session);
   const myPending = mine.filter((r) => r.status === "pending");
@@ -125,7 +125,7 @@ function AccessRequestRowActions({ r, bump }: { r: AccessRequestRow; bump: () =>
   );
 }
 
-function AccessRequestsToReview({ session, bump }: { session: MockSession; bump: () => void }) {
+function AccessRequestsToReview({ session, bump }: { session: Session; bump: () => void }) {
   const datasets = useDatasets(session);
   const toReview = usePendingAccessRequests(session).filter((r) => r.status === "pending");
   if (toReview.length === 0) return null;
@@ -152,7 +152,7 @@ function AccessRequestsToReview({ session, bump }: { session: MockSession; bump:
 }
 
 /** Everything awaiting review across all content types, datasets included. Approve or send back; the backend checks the role. */
-function ContentAwaitingReview({ session, bump }: { session: MockSession; bump: () => void }) {
+function ContentAwaitingReview({ session, bump }: { session: Session; bump: () => void }) {
   const toReview = useCmsRecords(session, [bump]).filter((r) => r.status === "in_review");
   const [error, setError] = useState<string | null>(null);
   if (toReview.length === 0) return null;
@@ -195,26 +195,6 @@ function ContentAwaitingReview({ session, bump }: { session: MockSession; bump: 
   );
 }
 
-function FavoritesDownloadsShortcuts({ session }: { session: MockSession }) {
-  const favoriteCount = getFavorites(session.email).length;
-  const downloadCount = getDownloadHistory(session.email).length;
-
-  return (
-    <div className="grid gap-5 sm:grid-cols-2">
-      <Card href="/dashboard/favorites">
-        <p className="text-3xl font-bold text-[#253D9A]">{favoriteCount}</p>
-        <p className="mt-2 text-lg font-bold text-[#171a2b]">Saved datasets</p>
-        <p className="mt-1 text-[13px] text-[#8b8fa3]">View your favorites &rarr;</p>
-      </Card>
-      <Card href="/dashboard/downloads">
-        <p className="text-3xl font-bold text-[#253D9A]">{downloadCount}</p>
-        <p className="mt-2 text-lg font-bold text-[#171a2b]">Downloads</p>
-        <p className="mt-1 text-[13px] text-[#8b8fa3]">View your download history &rarr;</p>
-      </Card>
-    </div>
-  );
-}
-
 // ---------------------------------------------------------------------------
 // Role overviews
 // ---------------------------------------------------------------------------
@@ -238,12 +218,6 @@ export function AdminOverview({ session, bump }: OverviewProps) {
       </div>
 
       <div className="grid gap-5 sm:grid-cols-2">
-        <Card href="/dashboard/users">
-          <p className="text-lg font-bold text-[#171a2b]">Manage users &rarr;</p>
-          <p className="mt-2 text-[13px] text-[#8b8fa3]">
-            {getUserDirectory().length} account{getUserDirectory().length === 1 ? "" : "s"} on this browser &middot; grant or revoke roles.
-          </p>
-        </Card>
         <Card href="/dashboard/audit">
           <p className="text-lg font-bold text-[#171a2b]">Audit log &rarr;</p>
           <p className="mt-2 text-[13px] text-[#8b8fa3]">See every permission-relevant action across every module.</p>
@@ -403,13 +377,6 @@ export function FellowOverview({ session }: OverviewProps) {
 
       <MyPendingRequests session={session} />
 
-      <div>
-        <SectionHeading>Your library</SectionHeading>
-        <div className="mt-6">
-          <FavoritesDownloadsShortcuts session={session} />
-        </div>
-      </div>
-
       <div className="border-t border-[#e6e8f0] pt-10 space-y-12">
         <BrowseDatasetsGrid session={session} />
         <DashboardsList />
@@ -427,13 +394,6 @@ export function DonorOverview({ session }: OverviewProps) {
       </Card>
 
       <MyPendingRequests session={session} />
-
-      <div>
-        <SectionHeading>Your library</SectionHeading>
-        <div className="mt-6">
-          <FavoritesDownloadsShortcuts session={session} />
-        </div>
-      </div>
 
       <div className="border-t border-[#e6e8f0] pt-10 space-y-12">
         <BrowseDatasetsGrid session={session} />

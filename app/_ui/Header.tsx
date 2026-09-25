@@ -5,19 +5,17 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { nav, org } from "../_content/org";
-import { getSession, type MockSession } from "../_lib/mockAuth";
-import { checkSession, onSessionChanged, signOut } from "../_lib/auth/authClient";
+import { useSession } from "../_lib/useSession";
+import { checkSession, signOut } from "../_lib/auth/authClient";
 
 function PortalHeader() {
   const pathname = usePathname();
   const router = useRouter();
-  const [session, setSession] = useState<MockSession | null>(null);
+  const session = useSession() ?? null;
 
-  // The server is the source of truth: ask it, and follow later sign-ins and sign-outs in this tab.
+  // The server is the source of truth: asking it refreshes the mirrored session, which `useSession` then follows.
   useEffect(() => {
-    const unsubscribe = onSessionChanged(() => setSession(getSession()));
-    checkSession().then((check) => setSession(check.status === "signed-out" ? null : check.session));
-    return unsubscribe;
+    void checkSession();
   }, [pathname]);
 
   async function handleSignOut() {

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { deleteCmsAction, transitionCmsAction, updateCmsAction } from "../../_lib/dashboard/cmsActions";
 import { RESOURCES } from "../../_lib/cms/resources";
 import { workflowStatusLabel, type CmsMutation, type CmsRecord, type FieldOption, type WorkflowStatus } from "../../_lib/cms/types";
-import { canContributeContent, canReviewDrafts, type MockSession } from "../../_lib/mockAuth";
+import { canContributeContent, canReviewDrafts, type Session } from "../../_lib/session";
 import { SectionHeading, EmptyState } from "../../_ui/kit";
 import SimpleDraftForm from "./SimpleDraftForm";
 
@@ -41,7 +41,7 @@ export default function ContentWorkflowPanel({
   onChanged,
 }: {
   records: CmsRecord[];
-  session: MockSession;
+  session: Session;
   dynamicOptions?: Record<string, FieldOption[]>;
   onChanged: () => void;
 }) {

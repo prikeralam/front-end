@@ -5,10 +5,10 @@ import type { AuditRow } from "./api/auditAdapter";
 import type { CmsRecord } from "./cms/types";
 import { listAuditLogAction } from "./dashboard/auditActions";
 import { listAllCmsAction } from "./dashboard/cmsActions";
-import type { MockSession } from "./mockAuth";
+import type { Session } from "./session";
 
 /** Every CMS object of every type the signed-in user may see. Empty until loaded, and on any failure. */
-export function useCmsRecords(session: MockSession | null, deps: unknown[] = []): CmsRecord[] {
+export function useCmsRecords(session: Session | null, deps: unknown[] = []): CmsRecord[] {
   const [records, setRecords] = useState<CmsRecord[]>([]);
   useEffect(() => {
     if (!session) return;
@@ -25,7 +25,7 @@ export function useCmsRecords(session: MockSession | null, deps: unknown[] = [])
 }
 
 /** The latest audit-log entries. Admin-only on the backend, so anyone else simply gets none. */
-export function useRecentAudit(session: MockSession | null, limit = 8): AuditRow[] {
+export function useRecentAudit(session: Session | null, limit = 8): AuditRow[] {
   const [rows, setRows] = useState<AuditRow[]>([]);
   useEffect(() => {
     if (!session) return;

@@ -1,11 +1,11 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { createCmsAction, getFormOptionsAction, listCmsAction, type FormOptions } from "../../_lib/dashboard/cmsActions";
 import { RESOURCES } from "../../_lib/cms/resources";
 import { contentTypeLabel, type CmsListResult, type CmsMutation, type ContentTypeKey } from "../../_lib/cms/types";
-import { getSession, canContributeContent, canReviewDrafts, type MockSession } from "../../_lib/mockAuth";
+import { canContributeContent, canReviewDrafts } from "../../_lib/session";
+import { useRequireSession } from "../../_lib/useSession";
 import { PageHeader } from "../../_ui/kit";
 import ContentWorkflowPanel from "./ContentWorkflowPanel";
 import SimpleDraftForm from "./SimpleDraftForm";
@@ -15,21 +15,11 @@ import SimpleDraftForm from "./SimpleDraftForm";
  * pages are just configurations of this component.
  */
 export default function CmsScreen({ type, kicker, title, intro, createTitle, note }: { type: ContentTypeKey; kicker: string; title: string; intro: string; createTitle?: string; note?: string }) {
-  const router = useRouter();
-  const [session, setSession] = useState<MockSession | null | undefined>(undefined);
+  const session = useRequireSession();
   const [list, setList] = useState<CmsListResult | "loading">("loading");
   const [options, setOptions] = useState<FormOptions | undefined>(undefined);
   const resource = RESOURCES[type];
   const needsOptions = resource.fields.some((f) => f.optionsFrom);
-
-  useEffect(() => {
-    const s = getSession();
-    if (!s) {
-      router.replace("/account");
-      return;
-    }
-    setSession(s);
-  }, [router]);
 
   const reload = useCallback(() => {
     listCmsAction(type)
