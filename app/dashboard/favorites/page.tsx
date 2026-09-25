@@ -59,7 +59,7 @@ export default function FavoritesV2() {
                       </Link>
                       <p className="mt-1 line-clamp-2 max-w-xl text-[13px] leading-relaxed text-[#5b5f74]">{d.description}</p>
                       <p className="mt-1.5 text-[12px] text-[#8b8fa3]">{d.geography} &middot; {d.year} &middot; {d.theme}</p>
-                      <DatasetMeta slug={d.slug} lastUpdated={d.lastUpdated ?? "To be confirmed"} frequency={d.frequency ?? "To be confirmed"} />
+                      <DatasetMeta lastUpdated={d.lastUpdated ?? "To be confirmed"} frequency={d.frequency ?? "To be confirmed"} />
                     </div>
                   </div>
 

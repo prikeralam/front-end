@@ -1,15 +1,27 @@
 import { notFound } from "next/navigation";
-import { getDatasetDetail, getDatasetPreview } from "../../_lib/datasetsService";
+import { LoadError } from "../../_ui/ApiMessage";
 import { PageHeader } from "../../_ui/kit";
+import { getDatasetDetail, getDatasetPreviews } from "../../_lib/api/datasets";
+import { load } from "../../_lib/api/load";
 import DatasetAccessPanel from "../_ui/DatasetAccessPanel";
 import DatasetTabs from "../_ui/DatasetTabs";
+import GeoPreview from "../_ui/GeoPreview";
 
 export default async function DatasetDetailV2({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const ds = await getDatasetDetail(slug, null);
+  const result = await load("this dataset", () => getDatasetDetail(slug));
+  if (!result.ok) {
+    return (
+      <>
+        <PageHeader kicker="Data Repository & Library" title="Dataset" />
+        <section className="mx-auto max-w-3xl px-6 py-16"><LoadError what="this dataset" /></section>
+      </>
+    );
+  }
+  const ds = result.data;
   if (!ds) notFound();
 
-  const previews = (await getDatasetPreview(slug, null)) ?? [];
+  const previews = await getDatasetPreviews(ds);
 
   const descriptionTab = <p className="max-w-2xl text-lg leading-relaxed text-[#4b4f66]">{ds.description}</p>;
 
@@ -42,42 +54,39 @@ export default async function DatasetDetailV2({ params }: { params: Promise<{ sl
 
   const previewTab = (
     <div className="space-y-8">
-      {previews.map((p) => (
-        <div key={p.label} className="overflow-hidden rounded-lg border border-[#e6e8f0]">
-          <p className="border-b border-[#e6e8f0] bg-[#fafbfc] px-4 py-2 text-[13px] font-bold text-[#171a2b]">{p.label}</p>
-          {p.columns.length === 0 ? (
-            <p className="px-4 py-4 text-[13px] text-[#8b8fa3]">Preview not available for this file format.</p>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse text-left">
-                <thead>
-                  <tr>
-                    {p.columns.map((c) => (
-                      <th key={c} className="whitespace-nowrap border-b border-[#e6e8f0] px-3 py-2 font-mono text-[11px] font-semibold text-[#5b5f74]">{c}</th>
+      {previews.map && <GeoPreview collection={previews.map} title={ds.title} />}
+      {previews.table && (
+        <div className="overflow-hidden rounded-lg border border-[#e6e8f0]">
+          <p className="border-b border-[#e6e8f0] bg-[#fafbfc] px-4 py-2 text-[13px] font-bold text-[#171a2b]">{previews.table.label}</p>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse text-left">
+              <thead>
+                <tr>
+                  {previews.table.columns.map((c) => (
+                    <th key={c} className="whitespace-nowrap border-b border-[#e6e8f0] px-3 py-2 font-mono text-[11px] font-semibold text-[#5b5f74]">{c}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {previews.table.rows.map((row, i) => (
+                  <tr key={i}>
+                    {row.map((cell, j) => (
+                      <td key={j} className="whitespace-nowrap border-b border-[#e6e8f0] px-3 py-2 text-[12px] text-[#171a2b]">{cell}</td>
                     ))}
                   </tr>
-                </thead>
-                <tbody>
-                  {p.rows.map((row, i) => (
-                    <tr key={i}>
-                      {row.map((cell, j) => (
-                        <td key={j} className="whitespace-nowrap border-b border-[#e6e8f0] px-3 py-2 text-[12px] text-[#171a2b]">{cell}</td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
-      ))}
-      {previews.length === 0 && <p className="text-[13px] text-[#8b8fa3]">No files uploaded yet.</p>}
+      )}
+      {!previews.map && !previews.table && <p className="text-[13px] text-[#8b8fa3]">Preview not available for this dataset.</p>}
     </div>
   );
 
   return (
     <>
-      <PageHeader kicker={`${ds.type ?? "Dataset"} · ${ds.theme}`} title={ds.title} />
+      <PageHeader kicker={`${ds.type ?? "Dataset"} · ${ds.theme ?? "Uncategorised"}`} title={ds.title} />
       <section className="mx-auto max-w-3xl px-6 py-16">
         <DatasetTabs
           tabs={[
@@ -87,7 +96,7 @@ export default async function DatasetDetailV2({ params }: { params: Promise<{ sl
           ]}
         />
 
-        <DatasetAccessPanel slug={ds.slug} theme={ds.theme} />
+        <DatasetAccessPanel accessState={ds.accessState} downloadUrl={ds.files[0]?.path ?? null} />
       </section>
     </>
   );

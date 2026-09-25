@@ -61,10 +61,11 @@ export function toPublication(publication: ApiPublication, lookups: PublicationL
   };
 }
 
-/** "2026-03-01" -> "1 Mar 2026". Anything unparseable is shown as sent. */
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+/** "2026-03-01" -> "1 Mar 2026". Fixed month names, since `Intl` abbreviations differ between Node/ICU versions. Anything unparseable is shown as sent. */
 export function formatPublicationDate(iso: string): string {
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
-  if (!match) return iso;
-  const date = new Date(Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3])));
-  return date.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
+  const month = match ? MONTHS[Number(match[2]) - 1] : undefined;
+  return match && month ? `${Number(match[3])} ${month} ${match[1]}` : iso;
 }
