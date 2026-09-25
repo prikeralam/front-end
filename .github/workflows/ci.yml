@@ -53,8 +53,7 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      # `--if-present` only until the first tests land (the API-client PR adds Vitest and removes this flag).
-      - run: npm test --if-present
+      - run: npm test
 
   build:
     runs-on: ubuntu-latest
