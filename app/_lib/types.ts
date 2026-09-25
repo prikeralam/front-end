@@ -32,7 +32,7 @@ export type Publication = {
   slug: string;
   title: string;
   abstract: string;
-  format: "Report" | "Working Paper" | "Data Story";
+  format: "Report" | "Working Paper" | "Brief" | "Explainer" | "Infographic" | "Video" | "Data Story";
   theme: string;
   date: string;
   /** `Person.slug` references, not raw display names. */
