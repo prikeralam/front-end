@@ -26,7 +26,7 @@ so new PRs target it automatically.
 
 Settings → Branches → Add rule → branch name pattern `main`:
 - [ ] Require a pull request before merging
-- [ ] Require status checks to pass before merging (`typecheck`, `test`, `build`, `branch-flow`)
+- [ ] Require status checks to pass before merging (`lint`, `typecheck`, `test`, `build`, `branch-flow`)
 - [ ] Do not allow bypassing the above settings (include yourself)
 - [ ] Block force pushes
 - [ ] Block deletions
@@ -38,7 +38,7 @@ Same rule pattern as `main`, target `staging`.
 ## 4. Protect `dev`
 
 - [ ] Require a pull request before merging
-- [ ] Require status checks to pass (`typecheck`, `test`, `build`, `branch-flow`)
+- [ ] Require status checks to pass (`lint`, `typecheck`, `test`, `build`, `branch-flow`)
 - [ ] Block force pushes
 - [ ] Block deletions
 - [ ] (Leave "require approvals" at 0 for now — solo dev. Set to 1 when the team grows.)
@@ -61,4 +61,3 @@ Same rule pattern as `main`, target `staging`.
 - [ ] Add `CODEOWNERS` mapping areas to owners
 - [ ] Raise `dev` required approvals from 0 to 1
 - [ ] Raise `main`/`staging` required approvals to 1 (or 2 for `main`)
-- [ ] Make `lint` a required check once the mock-era lint errors are gone

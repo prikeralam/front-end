@@ -16,10 +16,6 @@ concurrency:
 jobs:
   lint:
     runs-on: ubuntu-latest
-    # Known-red baseline: 24 lint errors in the mock-era dashboard code (mockAuth / mockContentStore), which the
-    # backend-integration issues delete. Not a required check until then; drop `continue-on-error` and add
-    # `lint` to scripts/setup-github-protection.sh once it is green.
-    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

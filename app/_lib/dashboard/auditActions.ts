@@ -24,9 +24,9 @@ export type AuditPage =
 export async function listAuditLogAction(filters: AuditFilters = {}): Promise<AuditPage> {
   const { page = 1 } = filters ?? {};
   // An empty filter means "no filter".
-  const module = filters?.module || undefined;
+  const moduleName = filters?.module || undefined;
   const actor = filters?.actor || undefined;
-  if (module !== undefined && (typeof module !== "string" || !MODULE.test(module))) return { status: "invalid" };
+  if (moduleName !== undefined && (typeof moduleName !== "string" || !MODULE.test(moduleName))) return { status: "invalid" };
   if (actor !== undefined && (typeof actor !== "string" || !/^\d{1,9}$/.test(actor))) return { status: "invalid" };
   if (!Number.isInteger(page) || page < 1 || page > MAX_PAGE) return { status: "invalid" };
 
@@ -34,7 +34,7 @@ export async function listAuditLogAction(filters: AuditFilters = {}): Promise<Au
   if (!accessToken) return { status: "signed-out" };
 
   const result = await uncachedApi(accessToken).GET(AUDIT_PATH, {
-    params: { query: { module: module || undefined, actor: actor ? Number(actor) : undefined, page } },
+    params: { query: { module: moduleName, actor: actor ? Number(actor) : undefined, page } },
   });
   if (result.response.status === 401) return { status: "signed-out" };
   if (result.response.status === 403) return { status: "forbidden" };

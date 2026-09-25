@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { roleLabels, type MockSession } from "../_lib/mockAuth";
+import { roleLabels, type Session } from "../_lib/session";
 import { checkSession, signIn, signOut, type SignInResult } from "../_lib/auth/authClient";
 import { PageHeader } from "../_ui/kit";
 
@@ -24,7 +24,7 @@ function Spinner() {
   return <span aria-hidden="true" className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white motion-reduce:animate-none" />;
 }
 
-function SignedIn({ session, onSignOut }: { session: MockSession; onSignOut: () => void }) {
+function SignedIn({ session, onSignOut }: { session: Session; onSignOut: () => void }) {
   return (
     <div className={cardClass}>
       <p className="text-xs font-bold uppercase tracking-wider text-[#8b8fa3]">Signed in</p>
@@ -52,7 +52,7 @@ export default function AccountV2() {
   const usernameRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
 
-  const [existing, setExisting] = useState<MockSession | null | "checking">("checking");
+  const [existing, setExisting] = useState<Session | null | "checking">("checking");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);

@@ -119,15 +119,12 @@ origin in its `CORS_ALLOWED_ORIGINS`, and media hosts the backend returns must b
 
 | Workflow | Runs on | What it does |
 |---|---|---|
-| `ci.yml` | every PR, push to `dev` | `typecheck` (`next typegen`, `tsc --noEmit`), `test` (Vitest), `build` (`next build` with no backend reachable), `lint` (ESLint; **not blocking yet**, see below) |
+| `ci.yml` | every PR, push to `dev` | `typecheck` (`next typegen`, `tsc --noEmit`), `test` (Vitest), `build` (`next build` with no backend reachable), `lint` (ESLint) |
 | `pr-guard.yml` | PRs into `dev`, `staging`, `main` | `branch-flow` fails a PR whose source/target pair is not an allowed promotion path (section 1) |
 | `hotfix-backport.yml` | push to `main` from a `fix/*` PR | opens backport PRs into `staging` and `dev` |
 
 There are no deploy workflows: Vercel's Git integration deploys `main` to production and builds a Preview for
 every other branch and PR.
-
-`lint` runs with `continue-on-error` because the mock-era dashboard code (`mockAuth` / `mockContentStore`) has
-24 known lint errors that the backend-integration work deletes. Make it blocking once it is green.
 
 ### Release flow
 
@@ -155,7 +152,7 @@ The rulesets that would block merging on red checks, direct pushes, force-pushes
 and the wrong merge method need GitHub Pro/Team on a private repo, so they may **not be applied** on this
 repo. Until they are, the flow is followed by convention, and CI and `pr-guard` run but do not block:
 
-- Merge only when `typecheck`, `test`, `build` and `branch-flow` are green.
+- Merge only when `lint`, `typecheck`, `test`, `build` and `branch-flow` are green.
 - Never push directly to `dev`, `staging` or `main`; a push to `main` deploys to production.
 - Never force-push or delete the long-lived branches.
 - Use the merge methods in section 1.

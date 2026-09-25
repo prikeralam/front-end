@@ -2,15 +2,16 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
-import { getSession, canContributeContent, isAdmin, type MockSession } from "../../_lib/mockAuth";
+import { canContributeContent, isAdmin, type Session } from "../../_lib/session";
+import { useLocalFlag } from "../../_lib/useLocalFlag";
+import { useSession } from "../../_lib/useSession";
 
 type NavItem = { label: string; href: string };
 type NavSection = { label: string; items: NavItem[] };
 
 const COLLAPSE_KEY = "pri_sidebar_collapsed";
 
-function buildSections(session: MockSession | null): NavSection[] {
+function buildSections(session: Session | null): NavSection[] {
   const canManageContent = canContributeContent(session);
   const admin = isAdmin(session);
 
@@ -43,20 +44,10 @@ function buildSections(session: MockSession | null): NavSection[] {
     sections.push({
       label: "Administration",
       items: [
-        { label: "Users & Roles", href: "/dashboard/users" },
         { label: "Audit Log", href: "/dashboard/audit" },
       ],
     });
   }
-
-  sections.push({
-    label: "My Tools",
-    items: [
-      { label: "Favorites", href: "/dashboard/favorites" },
-      { label: "Downloads", href: "/dashboard/downloads" },
-      { label: "API Access", href: "/dashboard/api" },
-    ],
-  });
 
   return sections;
 }
@@ -86,31 +77,11 @@ function SidebarLink({ item, collapsed, active, onNavigate }: { item: NavItem; c
 
 export default function DashboardSidebar({ mobileOpen, onCloseMobile }: { mobileOpen: boolean; onCloseMobile: () => void }) {
   const pathname = usePathname();
-  const [session, setSession] = useState<MockSession | null>(null);
-  const [collapsed, setCollapsed] = useState(false);
-
-  useEffect(() => {
-    setSession(getSession());
-  }, [pathname]);
-
-  useEffect(() => {
-    try {
-      setCollapsed(window.localStorage.getItem(COLLAPSE_KEY) === "1");
-    } catch {
-      // ignore
-    }
-  }, []);
+  const session = useSession() ?? null;
+  const [collapsed, setCollapsed] = useLocalFlag(COLLAPSE_KEY);
 
   function toggleCollapsed() {
-    setCollapsed((c) => {
-      const next = !c;
-      try {
-        window.localStorage.setItem(COLLAPSE_KEY, next ? "1" : "0");
-      } catch {
-        // ignore
-      }
-      return next;
-    });
+    setCollapsed(!collapsed);
   }
 
   const sections = buildSections(session);

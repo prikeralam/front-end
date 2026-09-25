@@ -18,9 +18,8 @@ failed=0
 step() { printf '\n== %s\n' "$1"; }
 warn() { printf 'FAILED: %s\n' "$1" >&2; failed=1; }
 
-# Required status checks: the job names from ci.yml and pr-guard.yml. `lint` is added once it is green
-# (see the note on the lint job in ci.yml).
-checks='[{"context":"typecheck"},{"context":"test"},{"context":"build"},{"context":"branch-flow"}]'
+# Required status checks: the job names from ci.yml and pr-guard.yml.
+checks='[{"context":"lint"},{"context":"typecheck"},{"context":"test"},{"context":"build"},{"context":"branch-flow"}]'
 
 step "Repo settings"
 gh api -X PATCH "repos/$repo" -F delete_branch_on_merge=true --silent \

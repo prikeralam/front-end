@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { MockSession } from "./mockAuth";
+import type { Session } from "./session";
 import type { AccessRequestRow, DatasetSummary } from "./datasetTypes";
 import { decideAccessRequestAction, listAccessRequestsAction, listDatasetsAction } from "./dashboard/datasetActions";
 import { getRequestedDatasets } from "./requestedAccess";
@@ -9,7 +9,7 @@ import { getRequestedDatasets } from "./requestedAccess";
 export type { AccessRequestRow } from "./datasetTypes";
 
 /** All datasets visible to this session (or the public set, if session is null). */
-export function useDatasets(session: MockSession | null, deps: unknown[] = []): DatasetSummary[] {
+export function useDatasets(session: Session | null, deps: unknown[] = []): DatasetSummary[] {
   const [datasets, setDatasets] = useState<DatasetSummary[]>([]);
   useEffect(() => {
     let current = true;
@@ -25,7 +25,7 @@ export function useDatasets(session: MockSession | null, deps: unknown[] = []): 
 }
 
 /** Reviewer-only: the pending access-request queue. Empty for anyone the backend does not treat as staff. */
-export function usePendingAccessRequests(session: MockSession | null, deps: unknown[] = []): AccessRequestRow[] {
+export function usePendingAccessRequests(session: Session | null, deps: unknown[] = []): AccessRequestRow[] {
   const [rows, setRows] = useState<AccessRequestRow[]>([]);
   useEffect(() => {
     if (!session) return;
@@ -45,7 +45,7 @@ export function usePendingAccessRequests(session: MockSession | null, deps: unkn
  * The datasets this browser's user has asked for. The API cannot list a requester's own requests (gap G4), so this is
  * a local hint; see `requestedAccess.ts`.
  */
-export function useMyAccessRequests(session: MockSession | null, deps: unknown[] = []): AccessRequestRow[] {
+export function useMyAccessRequests(session: Session | null, deps: unknown[] = []): AccessRequestRow[] {
   const [rows, setRows] = useState<AccessRequestRow[]>([]);
   useEffect(() => {
     if (!session) return;

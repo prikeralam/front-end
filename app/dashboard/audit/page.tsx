@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState, type FormEvent } from "react";
-import { useRouter } from "next/navigation";
-import { getSession, isAdmin, type MockSession } from "../../_lib/mockAuth";
+import { isAdmin } from "../../_lib/session";
+import { useRequireSession } from "../../_lib/useSession";
 import { listAuditLogAction, type AuditPage } from "../../_lib/dashboard/auditActions";
 import { PageHeader, SectionHeading, EmptyState } from "../../_ui/kit";
 
@@ -11,22 +11,12 @@ const pagerClass =
   "rounded-full border border-[#dcdee8] px-4 py-1.5 text-[13px] font-semibold text-[#3a3f55] enabled:hover:border-[#253D9A] enabled:hover:text-[#253D9A] disabled:cursor-not-allowed disabled:opacity-50";
 
 export default function AuditLog() {
-  const router = useRouter();
-  const [session, setSession] = useState<MockSession | null | undefined>(undefined);
+  const session = useRequireSession();
   const [moduleInput, setModuleInput] = useState("");
   const [actorInput, setActorInput] = useState("");
   const [applied, setApplied] = useState({ module: "", actor: "" });
   const [page, setPage] = useState(1);
   const [result, setResult] = useState<AuditPage | "loading">("loading");
-
-  useEffect(() => {
-    const s = getSession();
-    if (!s) {
-      router.replace("/account");
-      return;
-    }
-    setSession(s);
-  }, [router]);
 
   const admin = !!session && isAdmin(session);
 
