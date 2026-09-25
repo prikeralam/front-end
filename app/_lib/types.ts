@@ -66,15 +66,6 @@ export type Dataset = {
   fileFormat?: "CSV" | "Parquet" | "ZIP";
 };
 
-export type Dashboard = {
-  slug: string;
-  title: string;
-  description: string;
-  theme: string;
-  status: ContentStatus;
-  embed: MediaNeed | null;
-};
-
 export type PRIEvent = {
   slug: string;
   title: string;

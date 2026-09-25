@@ -2,7 +2,6 @@ import type { MediaNeed } from "../_lib/types";
 import { org, vision } from "./org";
 import { people, teamMembers, patrons, executiveCouncil, reports, testimonials, directorsNote } from "./people";
 import { publications } from "./publications";
-import { dashboards } from "./dashboards";
 import { fellows, programmes } from "./fellows";
 import { events, pastEvents, pastEventArchive } from "./events";
 import { partners } from "./partners";
@@ -85,13 +84,13 @@ export const auditSections: SectionAudit[] = [
     section: "4 · Data Repository",
     href: "/data",
     real: 0,
-    placeholder: count(dashboards, "placeholder"),
-    media: media(...dashboards.map((d) => d.embed)),
+    placeholder: 0,
+    media: media(),
     documents: [],
     notes: [
-      "Datasets are now served live from CKAN — see the pri-ckan repo, not this audit.",
-      "Some seeded datasets still have unconfirmed source/coverage/frequency metadata in CKAN itself.",
-      "No dashboards built; embeds are empty slots.",
+      "Datasets and dashboards are served live from the backend — see /data, not this audit.",
+      "Some seeded datasets still have unconfirmed source/update-frequency metadata in the backend.",
+      "Seeded dashboards embed placeholder URLs until real Datawrapper/Tableau embeds are published.",
     ],
   },
   {
