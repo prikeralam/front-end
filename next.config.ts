@@ -4,6 +4,11 @@ const isDev = process.env.NODE_ENV !== "production";
 const apiUrl = new URL(process.env.API_URL ?? "http://localhost:8000");
 
 const nextConfig: NextConfig = {
+  experimental: {
+    // CMS uploads (documents, datasets) go through Server Actions; the default 1 MB limit would reject any real file.
+    // The actions cap files at 10 MB, so this leaves room for the form fields around one.
+    serverActions: { bodySizeLimit: "11mb" },
+  },
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "images.unsplash.com" },

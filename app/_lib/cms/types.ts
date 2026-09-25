@@ -1,0 +1,72 @@
+/** Shapes shared by the CMS screens (client) and the CMS Server Actions (server). No runtime imports: safe anywhere. */
+
+export type WorkflowStatus = "draft" | "in_review" | "approved" | "published" | "unpublished";
+
+export const workflowStatusLabel: Record<WorkflowStatus, string> = {
+  draft: "Draft",
+  in_review: "In review",
+  approved: "Approved",
+  published: "Published",
+  unpublished: "Unpublished",
+};
+
+export const WORKFLOW_STATUSES = Object.keys(workflowStatusLabel) as WorkflowStatus[];
+
+export type ContentTypeKey = "content-block" | "testimonial" | "person-profile" | "partner" | "document" | "project" | "publication" | "dataset";
+
+export const contentTypeLabel: Record<ContentTypeKey, string> = {
+  "content-block": "Content block",
+  testimonial: "Testimonial",
+  "person-profile": "Person profile",
+  partner: "Partner",
+  document: "Document",
+  project: "Project",
+  publication: "Publication",
+  dataset: "Dataset",
+};
+
+export const ALL_CONTENT_TYPES = Object.keys(contentTypeLabel) as ContentTypeKey[];
+
+export type FieldOption = { value: string; label: string };
+
+/** Fields whose options come from the backend (`getFormOptionsAction`) rather than a fixed list. */
+export type DynamicOptions = "sub-themes" | "authors";
+
+export type FieldConfig = {
+  key: string;
+  label: string;
+  kind: "text" | "textarea" | "select" | "date" | "number" | "file";
+  options?: FieldOption[];
+  optionsFrom?: DynamicOptions;
+  /** Not required to submit. */
+  optional?: boolean;
+  /** Set when creating, then fixed (a slug is part of the object's address). */
+  createOnly?: boolean;
+  /** Extensions offered by the file picker, e.g. ".pdf,.docx". */
+  accept?: string;
+  help?: string;
+};
+
+/** One content object as the CMS screens see it, whatever resource it came from. */
+export type CmsRecord = {
+  /** What the API addresses this object by: the slug for content blocks, publications and datasets, else the id. */
+  key: string;
+  type: ContentTypeKey;
+  status: WorkflowStatus;
+  /** User id of the creator, for "is this mine?" checks. The backend enforces the real rules. */
+  createdBy: number;
+  updatedAt: string;
+  title: string;
+  subtitle: string;
+  /** Form values, keyed by `FieldConfig.key`. File fields are always empty here. */
+  values: Record<string, string>;
+  fileUrl?: string;
+};
+
+export type CmsListResult =
+  | { status: "ok"; records: CmsRecord[] }
+  | { status: "signed-out" }
+  | { status: "forbidden" }
+  | { status: "error" };
+
+export type CmsMutation = { ok: true; record?: CmsRecord } | { ok: false; message: string };

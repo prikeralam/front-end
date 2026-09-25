@@ -1,12 +1,20 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
+import type { CmsMutation, FieldConfig, FieldOption } from "../../_lib/cms/types";
 
-export type FieldConfig = { key: string; label: string; kind: "text" | "textarea" | "select"; options?: string[] };
+const controlClass =
+  "w-full rounded-lg border border-[#dcdee8] bg-white px-3 text-[14px] text-[#171a2b] outline-none focus:border-[#253D9A] focus:ring-2 focus:ring-[#253D9A]/20 read-only:bg-[#fafbfc] read-only:text-[#8b8fa3]";
 
+/**
+ * A form for one CMS object. Inputs are uncontrolled and the whole form goes to the caller as `FormData` (which is how
+ * a file reaches a Server Action), so there is no per-field state to keep in step. Errors from the server appear
+ * inline; the form only resets after a successful create.
+ */
 export default function SimpleDraftForm({
   title,
   fields,
+  dynamicOptions,
   note,
   initialValues,
   submitLabel,
@@ -15,74 +23,98 @@ export default function SimpleDraftForm({
 }: {
   title: string;
   fields: FieldConfig[];
+  /** Options for fields that get them from the backend, keyed by `FieldConfig.optionsFrom`. */
+  dynamicOptions?: Record<string, FieldOption[]>;
   note?: string;
   initialValues?: Record<string, string>;
   submitLabel?: string;
-  onSubmit: (values: Record<string, string>) => void;
+  onSubmit: (form: FormData) => Promise<CmsMutation>;
   onCancel?: () => void;
 }) {
+  const formRef = useRef<HTMLFormElement>(null);
   const isEdit = !!initialValues;
-  const blank = () =>
-    initialValues ?? Object.fromEntries(fields.map((f) => [f.key, f.kind === "select" ? f.options?.[0] ?? "" : ""]));
-  const [values, setValues] = useState<Record<string, string>>(blank);
-  const [submitted, setSubmitted] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [saved, setSaved] = useState(false);
 
-  function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    onSubmit(values);
-    if (!isEdit) setValues(blank());
-    setSubmitted(true);
-    setTimeout(() => setSubmitted(false), 3000);
+    if (busy) return;
+    setBusy(true);
+    setError(null);
+    setSaved(false);
+
+    const result = await onSubmit(new FormData(e.currentTarget)).catch((): CmsMutation => ({ ok: false, message: "We couldn't reach the server. Please try again." }));
+    setBusy(false);
+    if (!result.ok) {
+      setError(result.message);
+      return;
+    }
+    if (!isEdit) formRef.current?.reset();
+    setSaved(true);
+    setTimeout(() => setSaved(false), 3000);
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mt-6 space-y-4 rounded-xl border border-[#e6e8f0] bg-white p-6">
+    <form ref={formRef} onSubmit={handleSubmit} className="mt-6 space-y-4 rounded-xl border border-[#e6e8f0] bg-white p-6" aria-busy={busy}>
       <h3 className="text-lg font-bold text-[#171a2b]">{title}</h3>
-      {fields.map((f) => (
-        <div key={f.key}>
-          <label className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-[#8b8fa3]">{f.label}</label>
-          {f.kind === "textarea" ? (
-            <textarea
-              value={values[f.key]}
-              onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))}
-              required
-              rows={3}
-              className="w-full rounded-lg border border-[#dcdee8] px-3 py-2 text-[14px]"
-            />
-          ) : f.kind === "select" ? (
-            <select
-              value={values[f.key]}
-              onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))}
-              className="h-10 w-full rounded-lg border border-[#dcdee8] px-2 text-[14px]"
-            >
-              {f.options?.map((o) => <option key={o} value={o}>{o}</option>)}
-            </select>
-          ) : (
-            <input
-              value={values[f.key]}
-              onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))}
-              required
-              className="h-10 w-full rounded-lg border border-[#dcdee8] px-3 text-[14px]"
-            />
-          )}
-        </div>
-      ))}
+      {note && <p className="text-[13px] text-[#8b8fa3]">{note}</p>}
+
+      {fields.map((f) => {
+        const id = `${title}-${f.key}`.replace(/\s+/g, "-").toLowerCase();
+        const required = !f.optional && !(f.kind === "file" && isEdit);
+        const readOnly = isEdit && f.createOnly;
+        const opts = f.options ?? (f.optionsFrom ? dynamicOptions?.[f.optionsFrom] : undefined) ?? [];
+        const initial = initialValues?.[f.key];
+
+        return (
+          <div key={f.key}>
+            <label htmlFor={id} className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-[#8b8fa3]">
+              {f.label}
+              {f.optional && <span className="ml-1 font-normal normal-case tracking-normal">(optional)</span>}
+            </label>
+            {f.kind === "textarea" ? (
+              <textarea id={id} name={f.key} defaultValue={initial ?? ""} required={required} readOnly={readOnly} rows={3} className={`${controlClass} py-2`} />
+            ) : f.kind === "select" ? (
+              <select id={id} name={f.key} defaultValue={initial ?? ""} required={required} className={`${controlClass} h-10 px-2`}>
+                {(f.optional || !initial) && <option value="">{f.optional ? "None" : "Choose…"}</option>}
+                {opts.map((o) => (
+                  <option key={o.value} value={o.value}>{o.label}</option>
+                ))}
+              </select>
+            ) : f.kind === "file" ? (
+              <input id={id} name={f.key} type="file" accept={f.accept} required={required} className="block w-full text-[13px] text-[#5b5f74] file:mr-3 file:rounded-full file:border-0 file:bg-[#253D9A]/10 file:px-4 file:py-2 file:text-[13px] file:font-semibold file:text-[#253D9A]" />
+            ) : (
+              <input
+                id={id}
+                name={f.key}
+                type={f.kind === "date" ? "date" : f.kind === "number" ? "number" : "text"}
+                defaultValue={initial ?? ""}
+                required={required}
+                readOnly={readOnly}
+                className={`${controlClass} h-10`}
+              />
+            )}
+            {f.help && <p className="mt-1 text-[12px] text-[#8b8fa3]">{f.help}</p>}
+          </div>
+        );
+      })}
+
+      <div role="alert" className={error ? "rounded-lg border border-[#E4633F]/30 bg-[#E4633F]/8 p-3 text-[13px] text-[#5b5f74]" : "sr-only"}>
+        {error ?? ""}
+      </div>
+
       <div className="flex items-center gap-3">
-        <button type="submit" className="rounded-full bg-[#253D9A] px-6 py-2.5 text-sm font-semibold text-white hover:bg-[#1B2C70]">
-          {submitLabel ?? "Save as draft"}
+        <button type="submit" disabled={busy} className="rounded-full bg-[#253D9A] px-6 py-2.5 text-sm font-semibold text-white hover:bg-[#1B2C70] disabled:cursor-not-allowed disabled:opacity-70">
+          {busy ? "Saving…" : (submitLabel ?? "Save as draft")}
         </button>
         {onCancel && (
-          <button
-            type="button"
-            onClick={onCancel}
-            className="rounded-full border border-[#dcdee8] px-6 py-2.5 text-sm font-semibold text-[#5b5f74] hover:bg-[#f0f1f5]"
-          >
+          <button type="button" onClick={onCancel} className="rounded-full border border-[#dcdee8] px-6 py-2.5 text-sm font-semibold text-[#5b5f74] hover:bg-[#f0f1f5]">
             Cancel
           </button>
         )}
+        {saved && <span role="status" className="text-[13px] font-semibold text-[#253D9A]">Saved</span>}
       </div>
-      {submitted && <p className="text-[13px] font-semibold text-[#253D9A]">{isEdit ? "Saved." : "Saved as a draft — use “Submit for review” below when ready."}</p>}
-      {note && <p className="text-[11px] text-[#8b8fa3]">{note}</p>}
     </form>
   );
 }

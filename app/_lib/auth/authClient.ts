@@ -8,7 +8,7 @@ import { clearSession, getSession, setSession, type MockSession, type Role } fro
 
 const SESSION_CHANGED = "pri-session-changed";
 
-type SessionUser = { name: string; email: string; role: Role };
+type SessionUser = { id: number; name: string; email: string; role: Role };
 
 export type SignInResult = { ok: true; session: MockSession } | { ok: false; reason: "invalid" | "input" | "unreachable" };
 
@@ -19,7 +19,7 @@ export type SessionCheck =
   | { status: "unreachable"; session: MockSession | null };
 
 function mirror(user: SessionUser): MockSession {
-  const session = { name: user.name, email: user.email, role: user.role };
+  const session = { id: user.id, name: user.name, email: user.email, role: user.role };
   setSession(session);
   window.dispatchEvent(new Event(SESSION_CHANGED));
   return session;

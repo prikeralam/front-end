@@ -6,24 +6,10 @@ import { listDashboardsAction } from "../../_lib/dashboard/datasetActions";
 import type { DashboardCard } from "../../_lib/api/datasetAdapter";
 import DashboardEmbed from "../../data/_ui/DashboardEmbed";
 import { useDatasets, usePendingAccessRequests, useMyAccessRequests, decideAccessRequestApi, type AccessRequestRow } from "../../_lib/useDatasetsApi";
-import {
-  getDraftDatasets,
-  decideDraftDataset,
-  getRecentActivity,
-  getFavorites,
-  getDownloadHistory,
-  getUserDirectory,
-  type MockSession,
-} from "../../_lib/mockAuth";
-import {
-  ALL_CONTENT_TYPES,
-  contentTypeLabel,
-  listRecords,
-  transition,
-  workflowStatusLabel,
-  type ContentTypeKey,
-  type WorkflowStatus,
-} from "../../_lib/mockContentStore";
+import { getFavorites, getDownloadHistory, getUserDirectory, type MockSession } from "../../_lib/mockAuth";
+import { transitionCmsAction } from "../../_lib/dashboard/cmsActions";
+import { contentTypeLabel, workflowStatusLabel, type CmsRecord } from "../../_lib/cms/types";
+import { useCmsRecords, useRecentAudit } from "../../_lib/useCmsApi";
 import { SectionHeading, Stat, Card, EmptyState } from "../../_ui/kit";
 
 type OverviewProps = { session: MockSession; bump: () => void };
@@ -38,10 +24,6 @@ const statusColor: Record<string, string> = {
   draft: "bg-[#8b8fa3]/10 text-[#5b5f74]",
   unpublished: "bg-[#8b8fa3]/10 text-[#5b5f74]",
 };
-
-function titleOf(data: Record<string, unknown>): string {
-  return (data.title as string) ?? (data.name as string) ?? (data.quote as string) ?? String(data.slug ?? "");
-}
 
 // ---------------------------------------------------------------------------
 // Shared building blocks reused across role views
@@ -169,77 +151,38 @@ function AccessRequestsToReview({ session, bump }: { session: MockSession; bump:
   );
 }
 
-function DatasetsAwaitingReview({ bump }: { bump: () => void }) {
-  const toReview = getDraftDatasets().filter((d) => d.status === "pending");
-  if (toReview.length === 0) return null;
-
-  return (
-    <div>
-      <SectionHeading>Datasets awaiting review</SectionHeading>
-      <ul className="mt-6 divide-y divide-[#e6e8f0] rounded-xl border border-[#e6e8f0] bg-white">
-        {toReview.map((d) => (
-          <li key={d.id} className="flex items-center justify-between gap-4 px-5 py-4">
-            <div className="min-w-0">
-              <p className="text-[15px] font-semibold text-[#171a2b]">{d.title}</p>
-              <p className="mt-1 line-clamp-1 text-[13px] text-[#5b5f74]">{d.description}</p>
-              <p className="mt-1 text-[12px] text-[#8b8fa3]">{d.theme} &middot; {d.geography} &middot; {d.year} &middot; submitted by {d.submittedByName}</p>
-            </div>
-            <div className="flex shrink-0 gap-2">
-              <button
-                onClick={() => { decideDraftDataset(d.id, "approved"); bump(); }}
-                className="rounded-full border border-[#253D9A] px-3 py-1.5 text-[12px] font-semibold text-[#253D9A] hover:bg-[#253D9A] hover:text-white"
-              >
-                Approve
-              </button>
-              <button
-                onClick={() => { decideDraftDataset(d.id, "rejected"); bump(); }}
-                className="rounded-full border border-[#8b8fa3]/40 px-3 py-1.5 text-[12px] font-semibold text-[#8b8fa3] hover:bg-[#8b8fa3]/10"
-              >
-                Reject
-              </button>
-            </div>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-
-/** Generalized across all Module A/B content types (content blocks, testimonials,
- * people, partners, documents, projects, publications) — replaces the old
- * type-specific "PublicationsAwaitingReview" block. */
+/** Everything awaiting review across all content types, datasets included. Approve or send back; the backend checks the role. */
 function ContentAwaitingReview({ session, bump }: { session: MockSession; bump: () => void }) {
-  const toReview = ALL_CONTENT_TYPES.flatMap((type) =>
-    listRecords(type)
-      .filter((r) => r.workflowStatus === "in_review")
-      .map((r) => ({ type, ...r }))
-  );
+  const toReview = useCmsRecords(session, [bump]).filter((r) => r.status === "in_review");
+  const [error, setError] = useState<string | null>(null);
   if (toReview.length === 0) return null;
 
-  function decide(type: ContentTypeKey, id: string, next: WorkflowStatus) {
-    transition(type, id, next, session);
+  async function decide(r: CmsRecord, next: "approved" | "draft") {
+    const result = await transitionCmsAction(r.type, r.key, next).catch(() => null);
+    setError(result && result.ok ? null : result ? result.message : "We couldn't reach the server. Please try again.");
     bump();
   }
 
   return (
     <div>
-      <SectionHeading>Content awaiting review</SectionHeading>
+      <SectionHeading>Awaiting review</SectionHeading>
+      {error && <p role="alert" className="mt-4 rounded-lg border border-[#E4633F]/30 bg-[#E4633F]/8 p-3 text-[13px] text-[#5b5f74]">{error}</p>}
       <ul className="mt-6 divide-y divide-[#e6e8f0] rounded-xl border border-[#e6e8f0] bg-white">
         {toReview.map((r) => (
-          <li key={`${r.type}-${r.id}`} className="flex items-center justify-between gap-4 px-5 py-4">
+          <li key={`${r.type}-${r.key}`} className="flex items-center justify-between gap-4 px-5 py-4">
             <div className="min-w-0">
-              <p className="text-[15px] font-semibold text-[#171a2b]">{titleOf(r.data as Record<string, unknown>)}</p>
-              <p className="mt-1 text-[12px] text-[#8b8fa3]">{contentTypeLabel[r.type]} &middot; submitted by {r.submittedByName}</p>
+              <p className="text-[15px] font-semibold text-[#171a2b]">{r.title}</p>
+              <p className="mt-1 text-[12px] text-[#8b8fa3]">{contentTypeLabel[r.type]} &middot; created by user #{r.createdBy}</p>
             </div>
             <div className="flex shrink-0 gap-2">
               <button
-                onClick={() => decide(r.type, r.id, "approved")}
+                onClick={() => decide(r, "approved")}
                 className="rounded-full border border-[#253D9A] px-3 py-1.5 text-[12px] font-semibold text-[#253D9A] hover:bg-[#253D9A] hover:text-white"
               >
                 Approve
               </button>
               <button
-                onClick={() => decide(r.type, r.id, "draft")}
+                onClick={() => decide(r, "draft")}
                 className="rounded-full border border-[#8b8fa3]/40 px-3 py-1.5 text-[12px] font-semibold text-[#8b8fa3] hover:bg-[#8b8fa3]/10"
               >
                 Send back
@@ -279,13 +222,10 @@ function FavoritesDownloadsShortcuts({ session }: { session: MockSession }) {
 export function AdminOverview({ session, bump }: OverviewProps) {
   const datasets = useDatasets(session);
   const pendingAccessRequests = usePendingAccessRequests(session).filter((r) => r.status === "pending");
-  const pendingDatasets = getDraftDatasets().filter((d) => d.status === "pending");
-  const pendingContent = ALL_CONTENT_TYPES.flatMap((type) =>
-    listRecords(type)
-      .filter((r) => r.workflowStatus === "in_review")
-      .map((r) => ({ type, ...r }))
-  );
-  const recentActivity = getRecentActivity();
+  const cms = useCmsRecords(session, [bump]);
+  const pendingDatasets = cms.filter((r) => r.type === "dataset" && r.status === "in_review");
+  const pendingContent = cms.filter((r) => r.type !== "dataset" && r.status === "in_review");
+  const recentActivity = useRecentAudit(session);
   const needsAttentionCount = pendingAccessRequests.length + pendingDatasets.length + pendingContent.length;
 
   return (
@@ -329,10 +269,10 @@ export function AdminOverview({ session, bump }: OverviewProps) {
               );
             })}
             {pendingDatasets.map((d) => (
-              <div key={`ds-${d.id}`} className="flex items-center justify-between gap-4 rounded-lg border border-[#e6e8f0] bg-white px-5 py-4">
+              <div key={`ds-${d.key}`} className="flex items-center justify-between gap-4 rounded-lg border border-[#e6e8f0] bg-white px-5 py-4">
                 <div className="min-w-0">
-                  <p className="text-[15px] text-[#171a2b]">Dataset draft &middot; {d.title}</p>
-                  <p className="mt-1 text-[13px] text-[#8b8fa3]">submitted by {d.submittedByName}</p>
+                  <p className="text-[15px] text-[#171a2b]">Dataset &middot; {d.title}</p>
+                  <p className="mt-1 text-[13px] text-[#8b8fa3]">created by user #{d.createdBy}</p>
                 </div>
                 <Link href="/dashboard/manage" className="shrink-0 rounded-full border border-[#253D9A] px-3 py-1.5 text-[12px] font-semibold text-[#253D9A] hover:bg-[#253D9A] hover:text-white">
                   Review in Manage &rarr;
@@ -340,13 +280,13 @@ export function AdminOverview({ session, bump }: OverviewProps) {
               </div>
             ))}
             {pendingContent.map((r) => (
-              <div key={`content-${r.type}-${r.id}`} className="flex items-center justify-between gap-4 rounded-lg border border-[#e6e8f0] bg-white px-5 py-4">
+              <div key={`content-${r.type}-${r.key}`} className="flex items-center justify-between gap-4 rounded-lg border border-[#e6e8f0] bg-white px-5 py-4">
                 <div className="min-w-0">
-                  <p className="text-[15px] text-[#171a2b]">{contentTypeLabel[r.type]} &middot; {titleOf(r.data as Record<string, unknown>)}</p>
-                  <p className="mt-1 text-[13px] text-[#8b8fa3]">submitted by {r.submittedByName}</p>
+                  <p className="text-[15px] text-[#171a2b]">{contentTypeLabel[r.type]} &middot; {r.title}</p>
+                  <p className="mt-1 text-[13px] text-[#8b8fa3]">created by user #{r.createdBy}</p>
                 </div>
                 <button
-                  onClick={() => { transition(r.type, r.id, "approved", session); bump(); }}
+                  onClick={async () => { await transitionCmsAction(r.type, r.key, "approved").catch(() => null); bump(); }}
                   className="shrink-0 rounded-full border border-[#253D9A] px-3 py-1.5 text-[12px] font-semibold text-[#253D9A] hover:bg-[#253D9A] hover:text-white"
                 >
                   Approve
@@ -360,20 +300,18 @@ export function AdminOverview({ session, bump }: OverviewProps) {
       <div>
         <SectionHeading>Recent activity</SectionHeading>
         {recentActivity.length === 0 ? (
-          <div className="mt-6"><EmptyState message="No activity recorded yet in this browser." /></div>
+          <div className="mt-6"><EmptyState message="No activity recorded yet." /></div>
         ) : (
           <ul className="mt-6 divide-y divide-[#e6e8f0] rounded-xl border border-[#e6e8f0] bg-white">
-            {recentActivity.map((item, i) => (
-              <li key={i} className="flex items-center justify-between gap-4 px-5 py-4">
+            {recentActivity.map((item) => (
+              <li key={item.id} className="flex items-center justify-between gap-4 px-5 py-4">
                 <p className="text-[14px] text-[#171a2b]">{item.summary}</p>
-                <span className={`shrink-0 rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wide ${statusColor[item.status] ?? "bg-[#8b8fa3]/10 text-[#5b5f74]"}`}>
-                  {statusLabel[item.status] ?? item.status}
-                </span>
+                <span className="shrink-0 rounded-full bg-[#8b8fa3]/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-[#5b5f74]">{item.module}</span>
               </li>
             ))}
           </ul>
         )}
-        <p className="mt-3 text-[12px] text-[#8b8fa3]">A lightweight activity feed from this browser&rsquo;s mock data — not a real, cross-device audit log. See <Link href="/dashboard/audit" className="underline">the full audit log</Link>.</p>
+        <p className="mt-3 text-[12px] text-[#8b8fa3]">The latest entries from the platform&rsquo;s audit log. See <Link href="/dashboard/audit" className="underline">the full audit log</Link>.</p>
       </div>
 
       <div className="border-t border-[#e6e8f0] pt-10 space-y-12">
@@ -387,7 +325,6 @@ export function AdminOverview({ session, bump }: OverviewProps) {
 export function EditorOverview({ session, bump }: OverviewProps) {
   return (
     <div className="space-y-12">
-      <DatasetsAwaitingReview bump={bump} />
       <ContentAwaitingReview session={session} bump={bump} />
       <AccessRequestsToReview session={session} bump={bump} />
       <div className="border-t border-[#e6e8f0] pt-10 space-y-12">
@@ -399,16 +336,11 @@ export function EditorOverview({ session, bump }: OverviewProps) {
 }
 
 export function ResearcherOverview({ session }: OverviewProps) {
-  const myDatasets = getDraftDatasets().filter((d) => d.submittedByEmail === session.email);
-  const myContent = ALL_CONTENT_TYPES.flatMap((type) =>
-    listRecords(type)
-      .filter((r) => r.submittedByEmail === session.email)
-      .map((r) => ({ id: r.id, title: titleOf(r.data as Record<string, unknown>), kind: contentTypeLabel[type], status: r.workflowStatus, at: r.submittedAt }))
-  );
-  const mySubmissions = [
-    ...myDatasets.map((d) => ({ id: d.id, title: d.title, kind: "Dataset", status: d.status, at: d.submittedAt })),
-    ...myContent,
-  ].sort((a, b) => b.at.localeCompare(a.at));
+  const cms = useCmsRecords(session);
+  // Contributors see published items and their own drafts; only the latter are "theirs".
+  const mySubmissions = cms
+    .filter((r) => session.id !== undefined && r.createdBy === session.id)
+    .map((r) => ({ id: r.key, title: r.title, kind: contentTypeLabel[r.type], status: r.status, at: r.updatedAt }));
 
   return (
     <div className="space-y-12">
