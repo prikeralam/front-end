@@ -1,37 +1,45 @@
-import { institutions, researchers, partnerForms } from "../_content/partners";
+import { partnerForms } from "../_content/partners";
+import { LoadError, EmptyState } from "../_ui/ApiMessage";
+import { load } from "../_lib/api/load";
+import { listPartners } from "../_lib/api/people";
+import type { Partner } from "../_lib/types";
 import { PageHeader, SectionHeading, FormMock, StatusTag } from "../_ui/kit";
 import MediaSlot from "../_ui/MediaSlot";
 
-export default function PartnersV2() {
+function PartnerGrid({ partners, emptyCopy }: { partners: Partner[]; emptyCopy: string }) {
+  if (partners.length === 0) return <EmptyState>{emptyCopy}</EmptyState>;
+  return (
+    <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      {partners.map((p) => (
+        <div key={p.slug} className="rounded-xl border border-[#e6e8f0] bg-white p-5">
+          {p.logo && <MediaSlot need={p.logo} />}
+          <h3 className="mt-4 flex items-center gap-2 text-[15px] font-semibold text-[#171a2b]">{p.name} <StatusTag status={p.status} /></h3>
+          <p className="mt-2 text-sm text-[#5b5f74]">{p.description}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export default async function PartnersV2() {
+  const result = await load("partners", listPartners);
+  const partners = result.ok ? result.data : [];
+  const institutions = partners.filter((p) => p.type === "institution");
+  const researchers = partners.filter((p) => p.type === "researcher");
+
   return (
     <>
       <PageHeader kicker="Partner & Consortium Network" title="Institutions and collaborators working with PRI" />
 
       <section className="mx-auto max-w-6xl px-6 py-16">
         <SectionHeading>Institutions</SectionHeading>
-        <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {institutions.map((p) => (
-            <div key={p.slug} className="rounded-xl border border-[#e6e8f0] bg-white p-5">
-              {p.logo && <MediaSlot need={p.logo} />}
-              <h3 className="mt-4 flex items-center gap-2 text-[15px] font-semibold text-[#171a2b]">{p.name} <StatusTag status={p.status} /></h3>
-              <p className="mt-2 text-sm text-[#5b5f74]">{p.description}</p>
-            </div>
-          ))}
-        </div>
+        {result.ok ? <PartnerGrid partners={institutions} emptyCopy="Partner institutions will be listed here soon." /> : <LoadError what="our partners" />}
       </section>
 
       <section className="border-y border-[#e6e8f0] bg-[#fafbfc]">
         <div className="mx-auto max-w-6xl px-6 py-16">
           <SectionHeading>Researchers</SectionHeading>
-          <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {researchers.map((p) => (
-              <div key={p.slug} className="rounded-xl border border-[#e6e8f0] bg-white p-5">
-                {p.logo && <MediaSlot need={p.logo} />}
-                <h3 className="mt-4 flex items-center gap-2 text-[15px] font-semibold text-[#171a2b]">{p.name} <StatusTag status={p.status} /></h3>
-                <p className="mt-2 text-sm text-[#5b5f74]">{p.description}</p>
-              </div>
-            ))}
-          </div>
+          {result.ok ? <PartnerGrid partners={researchers} emptyCopy="Collaborating researchers will be listed here soon." /> : <LoadError what="our partners" />}
         </div>
       </section>
 

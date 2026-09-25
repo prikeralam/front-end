@@ -1,6 +1,8 @@
 import Link from "next/link";
-import { heroProjects } from "./_content/projects";
+import { mottoSlide } from "./_content/projects";
 import { heroProjectPhotos } from "./_lib/stockPhotos";
+import { load } from "./_lib/api/load";
+import { listProjects } from "./_lib/api/projects";
 import { publications } from "./_content/publications";
 import { upcomingEvents, pastEvents } from "./_content/events";
 import { SectionHeading, StatusTag } from "./_ui/kit";
@@ -10,12 +12,22 @@ import MediaSlot from "./_ui/MediaSlot";
 const featuredResearch = publications.slice(0, 3);
 const featuredEvents = [...upcomingEvents, ...pastEvents].slice(0, 3);
 
-export default function HomeV2() {
+/** Slugs of the projects shown after the motto slide, in order. */
+const HERO_PROJECT_SLUGS = ["education", "demography-migration"];
+
+export default async function HomeV2() {
+  const projects = await load("projects", listProjects);
+  const heroProjects = [
+    mottoSlide,
+    ...HERO_PROJECT_SLUGS.flatMap((slug) => (projects.ok ? projects.data.filter((p) => p.slug === slug) : [])),
+  ];
+  const heroPhotos = { ...heroProjectPhotos, ...Object.fromEntries(heroProjects.flatMap((p) => (p.image.src ? [[p.slug, p.image.src]] : []))) };
+
   return (
     <>
       {/* Hero banners */}
       <div className="mx-auto max-w-6xl px-6 pt-8">
-        <HeroCarousel projects={heroProjects} photos={heroProjectPhotos} />
+        <HeroCarousel projects={heroProjects} photos={heroPhotos} />
       </div>
 
       {/* Featured Research */}

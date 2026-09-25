@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { components } from "./schema";
-import { toPerson } from "./personAdapter";
+import { isPersonGroup, toPartner, toPerson } from "./personAdapter";
 
 type ApiPerson = components["schemas"]["PersonProfile"];
 
@@ -42,5 +42,24 @@ describe("toPerson", () => {
 
     expect(person.bio).toBeUndefined();
     expect(person.photo?.src).toBeUndefined();
+  });
+});
+
+describe("isPersonGroup", () => {
+  it("accepts people groups and rejects partner", () => {
+    expect(isPersonGroup("executive")).toBe(true);
+    expect(isPersonGroup("partner")).toBe(false);
+  });
+});
+
+describe("toPartner", () => {
+  it("treats a role_title containing institution as an institution, anything else as a researcher", () => {
+    const institution = toPartner({ ...apiPerson, group: "partner", role_title: "Partner institution" });
+    const researcher = toPartner({ ...apiPerson, group: "partner", role_title: "Research fellow" });
+
+    expect(institution.type).toBe("institution");
+    expect(researcher.type).toBe("researcher");
+    expect(institution.logo?.src).toBe("https://cdn.example.org/people/noushad.jpg");
+    expect(institution.description).toBe("Leads operations.");
   });
 });

@@ -1,13 +1,16 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { people } from "../../_content/people";
 import { publications } from "../../_content/publications";
+import { LoadError } from "../../_ui/ApiMessage";
 import { PageHeader, StatusTag } from "../../_ui/kit";
 import MediaSlot from "../../_ui/MediaSlot";
+import { load } from "../../_lib/api/load";
+import { getPersonBySlug } from "../../_lib/api/people";
 
 const groupLabel: Record<string, string> = {
   team: "Team",
   patron: "Patron",
+  advisory: "Advisory Body",
   executive: "Executive Council",
   fellow: "Fellow",
   "past-fellow": "Past Fellow",
@@ -17,6 +20,7 @@ const groupLabel: Record<string, string> = {
 const groupHref: Record<string, string> = {
   team: "/people/team",
   patron: "/people/patrons",
+  advisory: "/people/advisory",
   executive: "/people/executive",
   author: "/research",
 };
@@ -25,13 +29,18 @@ const groupBackLabel: Record<string, string> = {
   author: "Research",
 };
 
-export function generateStaticParams() {
-  return people.map((p) => ({ slug: p.slug }));
-}
-
 export default async function PersonDetailV2({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const person = people.find((p) => p.slug === slug);
+  const result = await load("this profile", () => getPersonBySlug(slug));
+  if (!result.ok) {
+    return (
+      <>
+        <PageHeader kicker="People" title="Profile" />
+        <section className="mx-auto max-w-3xl px-6 py-16"><LoadError what="this profile" /></section>
+      </>
+    );
+  }
+  const person = result.data;
   if (!person) notFound();
   const authoredPublications = publications.filter((p) => p.authors.includes(person.slug));
 
