@@ -7,7 +7,7 @@ export function generateStaticParams() {
   return fellows.map((f) => ({ slug: f.slug }));
 }
 
-export default async function FellowDetailV2({ params }: { params: Promise<{ slug: string }> }) {
+export default async function FellowDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const fellow = fellows.find((f) => f.slug === slug);
   if (!fellow) notFound();

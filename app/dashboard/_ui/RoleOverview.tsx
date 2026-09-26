@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { listDashboardsAction } from "../../_lib/dashboard/datasetActions";
+import { decideAccessRequestAction, listDashboardsAction } from "../../_lib/dashboard/datasetActions";
 import type { DashboardCard } from "../../_lib/api/datasetAdapter";
 import DashboardEmbed from "../../data/_ui/DashboardEmbed";
-import { useDatasets, usePendingAccessRequests, useMyAccessRequests, decideAccessRequestApi, type AccessRequestRow } from "../../_lib/useDatasetsApi";
+import { useDatasets, usePendingAccessRequests, useMyAccessRequests } from "../../_lib/useDatasetsApi";
+import type { AccessRequestRow } from "../../_lib/datasetTypes";
 import type { Session } from "../../_lib/session";
 import { transitionCmsAction } from "../../_lib/dashboard/cmsActions";
 import { contentTypeLabel, workflowStatusLabel, type CmsRecord } from "../../_lib/cms/types";
@@ -110,13 +111,13 @@ function AccessRequestRowActions({ r, bump }: { r: AccessRequestRow; bump: () =>
   return (
     <div className="flex shrink-0 gap-2">
       <button
-        onClick={async () => { await decideAccessRequestApi(r.id, "approved"); bump(); }}
+        onClick={async () => { await decideAccessRequestAction(r.id, "approved"); bump(); }}
         className="rounded-full border border-[#253D9A] px-3 py-1.5 text-[12px] font-semibold text-[#253D9A] hover:bg-[#253D9A] hover:text-white"
       >
         Approve
       </button>
       <button
-        onClick={async () => { await decideAccessRequestApi(r.id, "denied"); bump(); }}
+        onClick={async () => { await decideAccessRequestAction(r.id, "denied"); bump(); }}
         className="rounded-full border border-[#8b8fa3]/40 px-3 py-1.5 text-[12px] font-semibold text-[#8b8fa3] hover:bg-[#8b8fa3]/10"
       >
         Deny

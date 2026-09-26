@@ -2,7 +2,7 @@ import { org } from "../_content/org";
 import { contactCategories } from "../_content/jobs";
 import { PageHeader, FormMock } from "../_ui/kit";
 
-export default function ContactV2() {
+export default function ContactPage() {
   return (
     <>
       <PageHeader kicker="Contact" title="Get in touch" intro="Get in touch with our team to learn more about our research, explore collaboration opportunities, or join our mission for inclusive development." />

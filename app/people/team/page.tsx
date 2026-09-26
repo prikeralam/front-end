@@ -1,7 +1,7 @@
 import { PageHeader } from "../../_ui/kit";
 import PeopleGroupSection from "../_ui/PeopleGroupSection";
 
-export default function TeamV2() {
+export default function TeamPage() {
   return (
     <>
       <PageHeader kicker="People" title="Our Team" intro="PRI's staff, who run the day-to-day work of the institute." />

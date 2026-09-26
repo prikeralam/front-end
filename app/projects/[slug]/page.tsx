@@ -7,7 +7,7 @@ import { getProjectBySlug } from "../../_lib/api/projects";
 import { heroProjectPhotos } from "../../_lib/stockPhotos";
 import { PageHeader, StatusTag } from "../../_ui/kit";
 
-export default async function ProjectDetailV2({ params }: { params: Promise<{ slug: string }> }) {
+export default async function ProjectDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const result = await load("this project", () => getProjectBySlug(slug));
   if (!result.ok) {

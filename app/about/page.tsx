@@ -1,7 +1,7 @@
 import { org, vision, missionPoints, departments } from "../_content/org";
 import { PageHeader, SectionHeading } from "../_ui/kit";
 
-export default function AboutV2() {
+export default function AboutPage() {
   return (
     <>
       <PageHeader kicker="Who we are" title={org.tagline} intro={org.summary} />

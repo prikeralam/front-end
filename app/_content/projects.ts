@@ -1,15 +1,4 @@
-import type { ContentStatus, MediaNeed } from "../_lib/types";
-
-export type HeroProject = {
-  slug: string;
-  title: string;
-  blurb: string;
-  status: ContentStatus;
-  image: MediaNeed;
-  /** Overrides the default "Explore project →" / `/projects/{slug}` link — used by the motto slide. */
-  ctaLabel?: string;
-  ctaHref?: string;
-};
+import type { HeroProject } from "../_lib/types";
 
 /** First homepage hero slide: PRI's motto. Not a project, so it isn't served by the projects API. */
 export const mottoSlide: HeroProject = {

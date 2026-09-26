@@ -1,5 +1,5 @@
 import "server-only";
-import type { HeroProject } from "../../_content/projects";
+import type { HeroProject } from "../types";
 import { api } from "./client";
 import { toProject } from "./contentAdapters";
 import { collectAllPages } from "./pagination";

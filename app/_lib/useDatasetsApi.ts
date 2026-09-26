@@ -3,10 +3,8 @@
 import { useEffect, useState } from "react";
 import type { Session } from "./session";
 import type { AccessRequestRow, DatasetSummary } from "./datasetTypes";
-import { decideAccessRequestAction, listAccessRequestsAction, listDatasetsAction } from "./dashboard/datasetActions";
+import { listAccessRequestsAction, listDatasetsAction } from "./dashboard/datasetActions";
 import { getRequestedDatasets } from "./requestedAccess";
-
-export type { AccessRequestRow } from "./datasetTypes";
 
 /** All datasets visible to this session (or the public set, if session is null). */
 export function useDatasets(session: Session | null, deps: unknown[] = []): DatasetSummary[] {
@@ -69,8 +67,4 @@ export function useMyAccessRequests(session: Session | null, deps: unknown[] = [
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session?.email, ...deps]);
   return rows;
-}
-
-export async function decideAccessRequestApi(requestId: string, decision: "approved" | "denied"): Promise<boolean> {
-  return decideAccessRequestAction(requestId, decision);
 }

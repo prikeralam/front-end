@@ -8,7 +8,7 @@ import { getPublicationBySlug } from "../../_lib/api/publications";
 import { formatPublicationDate } from "../../_lib/api/publicationAdapter";
 import { stockPhotoFor } from "../../_lib/stockPhotos";
 import { dataStories, educationCharts, demographyCharts, healthCharts, migrationCharts } from "../../_content/dataStories";
-import { HBarChart, GroupedBarChart, DivergingBarChart, ScatterChart, LineChart, VBarChart, HBarSimpleChart, type ChartPalette } from "../../_lib/dataStoryCharts";
+import { HBarChart, GroupedBarChart, DivergingBarChart, ScatterChart, LineChart, VBarChart, HBarSimpleChart, type ChartPalette } from "../_ui/dataStoryCharts";
 import { PageHeader, SectionHeading, StatusTag } from "../../_ui/kit";
 import MediaSlot from "../../_ui/MediaSlot";
 
@@ -288,7 +288,7 @@ function StoryBody({ slug }: { slug: string }) {
   );
 }
 
-export default async function PublicationDetailV2({ params }: { params: Promise<{ slug: string }> }) {
+export default async function PublicationDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const result = await load("this publication", () => getPublicationBySlug(slug));
   if (!result.ok) {

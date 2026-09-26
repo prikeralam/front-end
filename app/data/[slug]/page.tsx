@@ -6,7 +6,7 @@ import { load } from "../../_lib/api/load";
 import DatasetAccess from "../_ui/DatasetAccess";
 import DatasetView from "../_ui/DatasetView";
 
-export default async function DatasetDetailV2({ params }: { params: Promise<{ slug: string }> }) {
+export default async function DatasetDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const result = await load("this dataset", () => getDatasetDetail(slug));
   if (!result.ok) {
