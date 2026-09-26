@@ -1,6 +1,6 @@
 import "server-only";
 import { cookies } from "next/headers";
-import { InvalidCredentialsError, login, resolveSession } from "./authService";
+import { InvalidCredentialsError, TooManyAttemptsError, login, resolveSession, revokeRefresh } from "./authService";
 import { ACCESS_COOKIE, REFRESH_COOKIE, clearSessionCookies, setSessionCookies } from "./cookies";
 
 const MAX_USERNAME_LENGTH = 150;
@@ -43,14 +43,27 @@ export async function handleLogin(request: Request): Promise<Response> {
     return json(session.user, 200);
   } catch (error) {
     if (error instanceof InvalidCredentialsError) return json({ detail: "Invalid credentials" }, 401);
+    if (error instanceof TooManyAttemptsError) return json({ detail: "Too many sign-in attempts. Wait a minute and try again." }, 429);
     return unavailable(error);
   }
 }
 
-/** `POST /api/auth/logout`: forgets the tokens. The backend has no logout endpoint, so nothing is revoked server-side. */
+/**
+ * `POST /api/auth/logout`: revokes the refresh token on the backend, then forgets both tokens. Revocation is best
+ * effort: the cookies are cleared even when the backend cannot be reached, so signing out always works locally.
+ */
 export async function handleLogout(request: Request): Promise<Response> {
   if (!isSameOrigin(request)) return json({ detail: "Cross-site sign-out is not allowed." }, 403);
-  clearSessionCookies(await cookies());
+  const store = await cookies();
+  const refresh = store.get(REFRESH_COOKIE)?.value;
+  if (refresh) {
+    try {
+      await revokeRefresh(refresh);
+    } catch (error) {
+      console.error("Could not revoke the refresh token on sign-out", error);
+    }
+  }
+  clearSessionCookies(store);
   return json({ ok: true }, 200);
 }
 

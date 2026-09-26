@@ -12,6 +12,7 @@ type Failure = Exclude<SignInResult, { ok: true }>["reason"];
 const failureCopy: Record<Failure, string> = {
   invalid: "That username and password don't match an active account. Check them and try again.",
   input: "Enter both your username and password.",
+  throttled: "Too many sign-in attempts for this account. Wait a minute and try again.",
   unreachable: "We can't reach the sign-in service right now. Please try again in a few minutes.",
 };
 

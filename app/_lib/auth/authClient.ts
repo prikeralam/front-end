@@ -8,7 +8,7 @@ import { SESSION_CHANGED_EVENT, clearSession, getSession, setSession, subscribeT
 
 type SessionUser = { id: number; name: string; email: string; role: Role };
 
-export type SignInResult = { ok: true; session: Session } | { ok: false; reason: "invalid" | "input" | "unreachable" };
+export type SignInResult = { ok: true; session: Session } | { ok: false; reason: "invalid" | "input" | "throttled" | "unreachable" };
 
 export type SessionCheck =
   | { status: "signed-in"; session: Session }
@@ -44,6 +44,7 @@ export async function signIn(username: string, password: string): Promise<SignIn
 
   if (response.status === 401) return { ok: false, reason: "invalid" };
   if (response.status === 400) return { ok: false, reason: "input" };
+  if (response.status === 429) return { ok: false, reason: "throttled" };
   if (!response.ok) return { ok: false, reason: "unreachable" };
   return { ok: true, session: mirror((await response.json()) as SessionUser) };
 }

@@ -7,7 +7,7 @@ const POST = vi.fn();
 const uncachedApi = vi.fn((accessToken?: string) => ({ GET: (...args: unknown[]) => GET(accessToken, ...args), POST }));
 vi.mock("../api/client", () => ({ uncachedApi }));
 
-const { InvalidCredentialsError, login, refreshAccess, fetchMe, resolveSession } = await import("./authService");
+const { InvalidCredentialsError, TooManyAttemptsError, login, refreshAccess, revokeRefresh, fetchMe, resolveSession } = await import("./authService");
 const { ApiError } = await import("../api/errors");
 
 const ok = (data: unknown) => ({ data, response: { status: 200 } });
@@ -33,6 +33,25 @@ describe("login", () => {
 
     POST.mockResolvedValueOnce(status(500, { detail: "boom" }));
     await expect(login("u", "p")).rejects.toBeInstanceOf(ApiError);
+  });
+
+  it("throws TooManyAttemptsError when the backend throttles the username", async () => {
+    POST.mockResolvedValueOnce(status(429, { detail: "Request was throttled." }));
+    await expect(login("u", "p")).rejects.toBeInstanceOf(TooManyAttemptsError);
+  });
+});
+
+describe("revokeRefresh", () => {
+  it("blacklists the refresh token, reports an already-invalid one as false, and throws on other failures", async () => {
+    POST.mockResolvedValueOnce(ok({}));
+    expect(await revokeRefresh("r")).toBe(true);
+    expect(POST).toHaveBeenCalledWith("/api/v1/token/logout/", { body: { refresh: "r" } });
+
+    POST.mockResolvedValueOnce(status(401));
+    expect(await revokeRefresh("stale")).toBe(false);
+
+    POST.mockResolvedValueOnce(status(500));
+    await expect(revokeRefresh("r")).rejects.toBeInstanceOf(ApiError);
   });
 });
 

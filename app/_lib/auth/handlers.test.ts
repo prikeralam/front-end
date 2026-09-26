@@ -5,9 +5,10 @@ vi.mock("server-only", () => ({}));
 const jar = { set: vi.fn(), delete: vi.fn(), get: vi.fn() };
 vi.mock("next/headers", () => ({ cookies: async () => jar }));
 
-const service = { login: vi.fn(), resolveSession: vi.fn() };
+const service = { login: vi.fn(), resolveSession: vi.fn(), revokeRefresh: vi.fn() };
 class InvalidCredentialsError extends Error {}
-vi.mock("./authService", () => ({ ...service, InvalidCredentialsError }));
+class TooManyAttemptsError extends Error {}
+vi.mock("./authService", () => ({ ...service, InvalidCredentialsError, TooManyAttemptsError }));
 
 const { handleLogin, handleLogout, handleSession } = await import("./handlers");
 
@@ -28,6 +29,7 @@ beforeEach(() => {
   jar.get.mockReset();
   service.login.mockReset();
   service.resolveSession.mockReset();
+  service.revokeRefresh.mockReset();
 });
 
 describe("handleLogin", () => {
@@ -51,6 +53,15 @@ describe("handleLogin", () => {
     const response = await handleLogin(loginRequest({ username: "u", password: "bad" }));
 
     expect(response.status).toBe(401);
+    expect(jar.set).not.toHaveBeenCalled();
+  });
+
+  it("answers 429 when the backend throttles the username", async () => {
+    service.login.mockRejectedValueOnce(new TooManyAttemptsError());
+
+    const response = await handleLogin(loginRequest({ username: "u", password: "p" }));
+
+    expect(response.status).toBe(429);
     expect(jar.set).not.toHaveBeenCalled();
   });
 
@@ -89,11 +100,34 @@ describe("handleLogin", () => {
 });
 
 describe("handleLogout", () => {
-  it("clears both cookies", async () => {
-    const response = await handleLogout(new Request("https://pri.example/api/auth/logout", { method: "POST" }));
+  const logoutRequest = () => new Request("https://pri.example/api/auth/logout", { method: "POST" });
+
+  it("revokes the refresh token on the backend and clears both cookies", async () => {
+    jar.get.mockImplementation((name: string) => ({ value: `${name}-token` }));
+    service.revokeRefresh.mockResolvedValueOnce(true);
+
+    const response = await handleLogout(logoutRequest());
+
+    expect(response.status).toBe(200);
+    expect(service.revokeRefresh).toHaveBeenCalledWith("pri_refresh-token");
+    expect(jar.delete).toHaveBeenCalledTimes(2);
+  });
+
+  it("still signs out locally when the backend cannot revoke the token", async () => {
+    jar.get.mockImplementation((name: string) => ({ value: `${name}-token` }));
+    service.revokeRefresh.mockRejectedValueOnce(new TypeError("fetch failed"));
+
+    const response = await handleLogout(logoutRequest());
 
     expect(response.status).toBe(200);
     expect(jar.delete).toHaveBeenCalledTimes(2);
+  });
+
+  it("skips revocation when there is no refresh cookie", async () => {
+    const response = await handleLogout(logoutRequest());
+
+    expect(response.status).toBe(200);
+    expect(service.revokeRefresh).not.toHaveBeenCalled();
   });
 
   it("refuses a cross-site request", async () => {
