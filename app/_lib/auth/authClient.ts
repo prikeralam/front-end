@@ -1,4 +1,4 @@
-import { SESSION_CHANGED_EVENT, clearSession, getSession, setSession, subscribeToSession, type Session, type Role } from "../session";
+import { SESSION_CHANGED_EVENT, clearSession, getSession, setSession, type Session, type Role } from "../session";
 
 /**
  * Browser half of sign-in. The server owns the truth (httpOnly token cookies behind /api/auth/*); this module asks it
@@ -27,8 +27,6 @@ function forget() {
   clearSession();
   window.dispatchEvent(new Event(SESSION_CHANGED_EVENT));
 }
-
-export { subscribeToSession as onSessionChanged };
 
 export async function signIn(username: string, password: string): Promise<SignInResult> {
   let response: Response;

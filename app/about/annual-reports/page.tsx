@@ -1,4 +1,4 @@
-import { legalStatus } from "../../_content/people";
+import { legalStatus } from "../../_content/org";
 import { EmptyState, LoadError } from "../../_ui/ApiMessage";
 import { listDocuments } from "../../_lib/api/documents";
 import { load } from "../../_lib/api/load";

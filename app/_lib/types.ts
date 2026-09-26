@@ -104,35 +104,6 @@ export type PRIDocument = {
   kind: string;
   year?: string;
   status: ContentStatus;
-  /** Path to the actual file once PRI has supplied one, e.g. "/PDFs/Annual Report 25-26.pdf". */
+  /** URL of the file, once one exists (from the backend for documents). */
   href?: string;
-};
-
-export type NamedProgram = {
-  slug: string;
-  name: string;
-  description: string;
-  funder: string;
-  status: ContentStatus;
-  image: MediaNeed | null;
-};
-
-/** Module A: a slug-addressable rich-text block (e.g. a page section) editable through the CMS. */
-export type ContentBlock = {
-  slug: string;
-  title: string;
-  body: string;
-  seoTitle?: string;
-  seoDescription?: string;
-  updatedAt: string;
-};
-
-/** Module A: a quote shown in a "what people say about PRI" strip. Same shape as the
- * placeholder entries already in app/_content/people.ts's `testimonials` array. */
-export type Testimonial = {
-  slug: string;
-  quote: string;
-  name: string;
-  role: string;
-  status: ContentStatus;
 };

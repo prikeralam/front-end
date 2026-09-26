@@ -78,4 +78,3 @@ export const fellows: Person[] = [
 ];
 
 export const currentFellows = fellows.filter((f) => f.group === "fellow");
-export const pastFellows = fellows.filter((f) => f.group === "past-fellow");
