@@ -48,7 +48,7 @@ function SignedIn({ session, onSignOut }: { session: Session; onSignOut: () => v
   );
 }
 
-export default function AccountV2() {
+export default function AccountPage() {
   const router = useRouter();
   const usernameRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);

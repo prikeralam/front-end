@@ -6,7 +6,7 @@ export function generateStaticParams() {
   return jobs.map((j) => ({ slug: j.slug }));
 }
 
-export default async function JobDetailV2({ params }: { params: Promise<{ slug: string }> }) {
+export default async function JobDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const job = jobs.find((j) => j.slug === slug);
   if (!job) notFound();

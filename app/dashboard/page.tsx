@@ -6,7 +6,7 @@ import { useRequireSession } from "../_lib/useSession";
 import { PageHeader } from "../_ui/kit";
 import { AdminOverview, EditorOverview, ResearcherOverview, FellowOverview, DonorOverview } from "./_ui/RoleOverview";
 
-export default function DashboardV2() {
+export default function DashboardPage() {
   const session = useRequireSession();
   const [, setTick] = useState(0);
 

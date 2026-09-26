@@ -1,6 +1,7 @@
 import "server-only";
 import { apiBaseUrl } from "./client";
 import { describeErrorBody } from "./errors";
+import { collectAllPages } from "./pagination";
 
 /**
  * A plain, uncached request to the backend on behalf of a user, for the CMS Server Actions, whose paths and payloads
@@ -33,15 +34,24 @@ export async function backendRequest(
   return { ok: response.ok, status: response.status, data, message: response.ok ? "" : describeErrorBody(data) };
 }
 
-/** Every item of a paginated list, following `next` links. */
-export async function backendListAll(path: string, accessToken: string): Promise<{ ok: true; items: Record<string, unknown>[] } | { ok: false; status: number }> {
-  const items: Record<string, unknown>[] = [];
-  for (let page = 1; page <= 200; page++) {
-    const result = await backendRequest("GET", `${path}?page=${page}`, { accessToken });
-    if (!result.ok) return { ok: false, status: result.status };
-    const body = result.data as { results?: Record<string, unknown>[]; next?: string | null } | null;
-    items.push(...(body?.results ?? []));
-    if (!body?.next) return { ok: true, items };
+class ListPageError extends Error {
+  constructor(readonly status: number) {
+    super(`List request failed with ${status}`);
   }
-  return { ok: true, items };
+}
+
+/** Every item of a paginated list, following `next` links; a failed page reports its status instead of throwing. */
+export async function backendListAll(path: string, accessToken: string): Promise<{ ok: true; items: Record<string, unknown>[] } | { ok: false; status: number }> {
+  try {
+    const items = await collectAllPages(async (page) => {
+      const result = await backendRequest("GET", `${path}?page=${page}`, { accessToken });
+      if (!result.ok) throw new ListPageError(result.status);
+      const body = result.data as { count?: number; results?: Record<string, unknown>[]; next?: string | null } | null;
+      return { count: body?.count ?? 0, results: body?.results ?? [], next: body?.next };
+    });
+    return { ok: true, items };
+  } catch (error) {
+    if (error instanceof ListPageError) return { ok: false, status: error.status };
+    throw error;
+  }
 }

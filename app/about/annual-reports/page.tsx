@@ -1,10 +1,10 @@
 import { legalStatus } from "../../_content/org";
-import { EmptyState, LoadError } from "../../_ui/ApiMessage";
+import { NotPublishedYet, LoadError } from "../../_ui/ApiMessage";
 import { listDocuments } from "../../_lib/api/documents";
 import { load } from "../../_lib/api/load";
 import { PageHeader, DocumentRow, SectionHeading } from "../../_ui/kit";
 
-export default async function AnnualReportsV2() {
+export default async function AnnualReportsPage() {
   const result = await load("annual reports", () => listDocuments("annual-report"));
 
   return (
@@ -12,7 +12,7 @@ export default async function AnnualReportsV2() {
       <PageHeader kicker="About" title="Annual Reports & Strategic Plans" />
       <section className="mx-auto max-w-6xl px-6 pb-16 pt-8">
         {!result.ok && <LoadError what="the annual reports" />}
-        {result.ok && result.data.length === 0 && <EmptyState>Reports will be published here soon.</EmptyState>}
+        {result.ok && result.data.length === 0 && <NotPublishedYet>Reports will be published here soon.</NotPublishedYet>}
         <ul className="grid gap-3">
           {(result.ok ? result.data : []).map((r) => <DocumentRow key={r.title} doc={r} />)}
         </ul>

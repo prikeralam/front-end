@@ -30,7 +30,7 @@ const groupBackLabel: Record<string, string> = {
   author: "Research",
 };
 
-export default async function PersonDetailV2({ params }: { params: Promise<{ slug: string }> }) {
+export default async function PersonDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const result = await load("this profile", () => getPersonBySlug(slug));
   if (!result.ok) {

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import type { HeroProject } from "../_content/projects";
+import type { HeroProject } from "../_lib/types";
 
 export default function HeroCarousel({ projects, photos }: { projects: HeroProject[]; photos: Record<string, string> }) {
   const [index, setIndex] = useState(0);

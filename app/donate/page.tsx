@@ -4,7 +4,7 @@ import { listPeopleByGroup } from "../_lib/api/people";
 import { listPublications } from "../_lib/api/publications";
 import { PageHeader, SectionHeading, StatusTag } from "../_ui/kit";
 
-export default async function DonateV2() {
+export default async function DonatePage() {
   const [research, executive, team] = await Promise.all([
     load("research", listPublications),
     load("the executive council", () => listPeopleByGroup("executive")),

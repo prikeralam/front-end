@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { PageHeader, FormMock } from "../../_ui/kit";
 
-export default function FellowshipApplyV2() {
+export default function FellowshipApplyPage() {
   return (
     <>
       <PageHeader kicker="Fellowship & Internship Portal" title="Apply" />

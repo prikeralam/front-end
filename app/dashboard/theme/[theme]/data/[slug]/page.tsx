@@ -7,7 +7,7 @@ import { getAccessToken } from "../../../../../_lib/auth/serverAuth";
 import DatasetAccess from "../../../../../data/_ui/DatasetAccess";
 import DatasetView from "../../../../../data/_ui/DatasetView";
 
-export default async function DashboardDatasetDetailV2({ params }: { params: Promise<{ theme: string; slug: string }> }) {
+export default async function DashboardDatasetDetailPage({ params }: { params: Promise<{ theme: string; slug: string }> }) {
   const { theme: rawTheme, slug } = await params;
   const theme = decodeURIComponent(rawTheme);
 

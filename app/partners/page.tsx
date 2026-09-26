@@ -1,5 +1,5 @@
 import { partnerForms } from "../_content/partners";
-import { LoadError, EmptyState } from "../_ui/ApiMessage";
+import { LoadError, NotPublishedYet } from "../_ui/ApiMessage";
 import { load } from "../_lib/api/load";
 import { listPartners } from "../_lib/api/people";
 import type { Partner } from "../_lib/types";
@@ -7,7 +7,7 @@ import { PageHeader, SectionHeading, FormMock, StatusTag } from "../_ui/kit";
 import MediaSlot from "../_ui/MediaSlot";
 
 function PartnerGrid({ partners, emptyCopy }: { partners: Partner[]; emptyCopy: string }) {
-  if (partners.length === 0) return <EmptyState>{emptyCopy}</EmptyState>;
+  if (partners.length === 0) return <NotPublishedYet>{emptyCopy}</NotPublishedYet>;
   return (
     <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
       {partners.map((p) => (
@@ -21,7 +21,7 @@ function PartnerGrid({ partners, emptyCopy }: { partners: Partner[]; emptyCopy: 
   );
 }
 
-export default async function PartnersV2() {
+export default async function PartnersPage() {
   const result = await load("partners", listPartners);
   const partners = result.ok ? result.data : [];
   const institutions = partners.filter((p) => p.type === "institution");

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { EmptyState, LoadError } from "../_ui/ApiMessage";
+import { NotPublishedYet, LoadError } from "../_ui/ApiMessage";
 import { listDashboards, listDatasets } from "../_lib/api/datasets";
 import { load } from "../_lib/api/load";
 import { PageHeader, SectionHeading } from "../_ui/kit";
@@ -50,7 +50,7 @@ const fallbackIcon = (
   </svg>
 );
 
-export default async function DataV2() {
+export default async function DataPage() {
   const [datasetsResult, dashboardsResult] = await Promise.all([load("datasets", listDatasets), load("dashboards", listDashboards)]);
   const datasets = datasetsResult.ok ? datasetsResult.data : [];
   const themes = Array.from(new Set(datasets.map((d) => d.theme).filter((t): t is string => !!t)));
@@ -67,7 +67,7 @@ export default async function DataV2() {
       <section className="mx-auto max-w-6xl px-6 py-16">
         <SectionHeading>Discover by theme</SectionHeading>
         {!datasetsResult.ok && <LoadError what="our datasets" />}
-        {datasetsResult.ok && themeCounts.length === 0 && <EmptyState>Datasets will be published here soon.</EmptyState>}
+        {datasetsResult.ok && themeCounts.length === 0 && <NotPublishedYet>Datasets will be published here soon.</NotPublishedYet>}
         <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {themeCounts.map((t) => (
             <Link
@@ -92,7 +92,7 @@ export default async function DataV2() {
         <div className="mx-auto max-w-6xl px-6 py-16">
           <SectionHeading>Visualization Dashboards</SectionHeading>
           {!dashboardsResult.ok && <LoadError what="our dashboards" />}
-          {dashboardsResult.ok && dashboardsResult.data.length === 0 && <EmptyState>Dashboards will be published here soon.</EmptyState>}
+          {dashboardsResult.ok && dashboardsResult.data.length === 0 && <NotPublishedYet>Dashboards will be published here soon.</NotPublishedYet>}
           <div className="mt-8 grid gap-5 sm:grid-cols-2">
             {(dashboardsResult.ok ? dashboardsResult.data : []).map((d) => (
               <div key={d.slug} className="rounded-xl border border-[#e6e8f0] bg-white p-5">

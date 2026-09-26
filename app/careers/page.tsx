@@ -2,7 +2,7 @@ import Link from "next/link";
 import { jobs, involvementPaths } from "../_content/jobs";
 import { PageHeader, SectionHeading, StatusTag } from "../_ui/kit";
 
-export default function GetInvolvedV2() {
+export default function GetInvolvedPage() {
   return (
     <>
       <PageHeader kicker="Careers" title="Ways to work with PRI" />

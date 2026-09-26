@@ -14,6 +14,18 @@ export type MediaNeed = {
   src?: string;
 };
 
+/** A homepage hero slide: a project from the API, or the static motto slide. */
+export type HeroProject = {
+  slug: string;
+  title: string;
+  blurb: string;
+  status: ContentStatus;
+  image: MediaNeed;
+  /** Overrides the default "Explore project →" / `/projects/{slug}` link — used by the motto slide. */
+  ctaLabel?: string;
+  ctaHref?: string;
+};
+
 export type Person = {
   slug: string;
   name: string;

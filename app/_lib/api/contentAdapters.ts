@@ -1,5 +1,5 @@
 import type { components } from "./schema";
-import type { HeroProject } from "../../_content/projects";
+import type { HeroProject } from "../types";
 import type { PRIDocument } from "../types";
 
 type ApiProject = components["schemas"]["Project"];

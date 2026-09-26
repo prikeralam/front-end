@@ -6,7 +6,7 @@ import { load } from "../../../_lib/api/load";
 import { PageHeader } from "../../../_ui/kit";
 import ThemeDatasetGrid from "../../_ui/ThemeDatasetGrid";
 
-export default async function DataThemeV2({ params }: { params: Promise<{ theme: string }> }) {
+export default async function DataThemePage({ params }: { params: Promise<{ theme: string }> }) {
   const { theme: rawTheme } = await params;
   const theme = decodeURIComponent(rawTheme);
 

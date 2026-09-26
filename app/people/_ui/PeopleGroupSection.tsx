@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { EmptyState, LoadError } from "../../_ui/ApiMessage";
+import { NotPublishedYet, LoadError } from "../../_ui/ApiMessage";
 import { PersonCard, SectionHeading } from "../../_ui/kit";
 import { load } from "../../_lib/api/load";
 import { listPeopleByGroup } from "../../_lib/api/people";
@@ -15,7 +15,7 @@ export default async function PeopleGroupSection({ group, heading, what }: { gro
       {!result.ok ? (
         <LoadError what={what} />
       ) : result.data.length === 0 ? (
-        <EmptyState>Profiles will be published here soon.</EmptyState>
+        <NotPublishedYet>Profiles will be published here soon.</NotPublishedYet>
       ) : (
         <div className="mt-8 grid grid-cols-2 gap-5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
           {result.data.map((p) => (
