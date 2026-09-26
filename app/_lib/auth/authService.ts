@@ -10,6 +10,7 @@ export type ResolvedSession = { user: SessionUser; access: string; accessWasRefr
 
 const TOKEN_PATH = "/api/v1/token/";
 const REFRESH_PATH = "/api/v1/token/refresh/";
+const LOGOUT_PATH = "/api/v1/token/logout/";
 const ROLE_PATH = "/api/v1/users/me/role/";
 
 /** Wrong username or password (the backend answers 401 without saying which). */
@@ -17,6 +18,14 @@ export class InvalidCredentialsError extends Error {
   constructor() {
     super("Invalid credentials");
     this.name = "InvalidCredentialsError";
+  }
+}
+
+/** The backend throttles sign-in attempts per username and answered 429. */
+export class TooManyAttemptsError extends Error {
+  constructor() {
+    super("Too many sign-in attempts");
+    this.name = "TooManyAttemptsError";
   }
 }
 
@@ -28,10 +37,12 @@ function displayName(email: string): string {
 // The generated request-body types wrongly include the read-only `access`/`refresh` response fields, hence the casts.
 type LoginBody = components["schemas"]["TokenObtainPair"];
 type RefreshBody = components["schemas"]["TokenRefresh"];
+type LogoutBody = components["schemas"]["TokenBlacklist"];
 
 export async function login(username: string, password: string): Promise<{ access: string; refresh: string }> {
   const result = await uncachedApi().POST(TOKEN_PATH, { body: { username, password } as LoginBody });
   if (result.response.status === 401) throw new InvalidCredentialsError();
+  if (result.response.status === 429) throw new TooManyAttemptsError();
   if (!result.data) throw new ApiError(result.response.status, describeErrorBody(result.error), TOKEN_PATH);
   return { access: result.data.access, refresh: result.data.refresh };
 }
@@ -42,6 +53,14 @@ export async function refreshAccess(refresh: string): Promise<string | null> {
   if (result.response.status === 401) return null;
   if (!result.data) throw new ApiError(result.response.status, describeErrorBody(result.error), REFRESH_PATH);
   return result.data.access;
+}
+
+/** Blacklists a refresh token on the backend. `false` when it was already invalid (401); other failures throw. */
+export async function revokeRefresh(refresh: string): Promise<boolean> {
+  const result = await uncachedApi().POST(LOGOUT_PATH, { body: { refresh } as LogoutBody });
+  if (result.response.status === 401) return false;
+  if (result.response.status !== 200) throw new ApiError(result.response.status, describeErrorBody(result.error), LOGOUT_PATH);
+  return true;
 }
 
 /** The user an access token belongs to, or `null` when the token is expired or invalid. */

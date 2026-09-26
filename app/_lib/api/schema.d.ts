@@ -1040,10 +1040,28 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * @description Takes a set of user credentials and returns an access and refresh JSON web
-         *     token pair to prove the authentication of those credentials.
+         * @description Exchanges a username and password for an access/refresh token pair.
+         *
+         *     Throttled per username: the sixth attempt within a minute answers 429.
          */
         post: operations["v1_token_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/token/logout/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Signs out: blacklists the refresh token so it can no longer mint access tokens. */
+        post: operations["v1_token_logout_create"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1766,6 +1784,9 @@ export interface components {
             readonly id: number;
             slug: string;
             name: string;
+        };
+        TokenBlacklist: {
+            refresh: string;
         };
         TokenObtainPair: {
             username: string;
@@ -3775,6 +3796,31 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["TokenObtainPair"];
+                };
+            };
+        };
+    };
+    v1_token_logout_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TokenBlacklist"];
+                "application/x-www-form-urlencoded": components["schemas"]["TokenBlacklist"];
+                "multipart/form-data": components["schemas"]["TokenBlacklist"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TokenBlacklist"];
                 };
             };
         };
