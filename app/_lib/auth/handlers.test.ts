@@ -97,6 +97,24 @@ describe("handleLogin", () => {
     const same = await handleLogin(loginRequest({ username: "u", password: "p" }, { Origin: "https://pri.example" }));
     expect(same.status).toBe(200);
   });
+
+  it("behind a proxy, compares the Origin with the forwarded host, not the server's own address", async () => {
+    // The standalone server sees request.url as its bind address; nginx forwards the host the browser used.
+    const proxied = (headers: Record<string, string>) =>
+      new Request("http://0.0.0.0:3000/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...headers },
+        body: JSON.stringify({ username: "u", password: "p" }),
+      });
+
+    const cross = await handleLogin(proxied({ Origin: "https://evil.example", Host: "pri.example", "X-Forwarded-Host": "pri.example" }));
+    expect(cross.status).toBe(403);
+
+    service.login.mockResolvedValueOnce(tokens);
+    service.resolveSession.mockResolvedValueOnce({ user, access: tokens.access, accessWasRefreshed: false });
+    const same = await handleLogin(proxied({ Origin: "https://pri.example", Host: "pri.example", "X-Forwarded-Host": "pri.example" }));
+    expect(same.status).toBe(200);
+  });
 });
 
 describe("handleLogout", () => {

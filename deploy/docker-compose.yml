@@ -1,0 +1,23 @@
+# Frontend on its own EC2 instance (staging and production alike): the Next.js server + nginx.
+# Copied to /opt/pri-frontend by the deploy workflows, next to a rendered .env
+# (compose reads .env there for ${...} below and for the app via env_file).
+services:
+  web:
+    image: ${IMAGE}
+    restart: unless-stopped
+    env_file: .env
+
+  nginx:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      SERVER_NAME: ${SERVER_NAME}
+    volumes:
+      - ./nginx.conf.template:/etc/nginx/templates/default.conf.template:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - /var/www/certbot:/var/www/certbot:ro
+    depends_on:
+      - web

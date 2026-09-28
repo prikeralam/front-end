@@ -11,10 +11,19 @@ function json(body: unknown, status: number): Response {
   return Response.json(body, { status, headers: { "Cache-Control": "no-store" } });
 }
 
+/**
+ * The host the browser addressed. Behind nginx the standalone server sees `request.url` as its own bind address
+ * (`0.0.0.0:3000`), so the proxy's forwarded host, or `Host`, is what identifies this site; Server Actions check the same.
+ */
+function requestHost(request: Request): string {
+  const forwarded = request.headers.get("x-forwarded-host")?.split(",")[0].trim();
+  return forwarded || request.headers.get("host") || new URL(request.url).host;
+}
+
 /** Browsers always send `Origin` on cross-site POSTs; reject any that does not match this site. Non-browser callers omit it. */
 function isSameOrigin(request: Request): boolean {
   const origin = request.headers.get("origin");
-  return !origin || new URL(origin).host === new URL(request.url).host;
+  return !origin || new URL(origin).host === requestHost(request);
 }
 
 function unavailable(error: unknown): Response {

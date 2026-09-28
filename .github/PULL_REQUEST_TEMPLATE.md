@@ -15,7 +15,7 @@ Closes #
 ## Checklist
 
 - [ ] Targets `dev` (not `main`/`staging`, unless this is a release/hotfix PR)
-- [ ] Commit messages follow Conventional Commits (`feat(scope): summary`), no `Co-Authored-By` trailer (Vercel Hobby blocks such deploys)
+- [ ] Commit messages follow Conventional Commits (`feat(scope): summary`), no `Co-Authored-By` trailer
 - [ ] Regenerated `app/_lib/api/schema.d.ts` (`npm run api:types`) if the backend contract changed
 - [ ] Env vars documented in `.env.example` if new ones were added
 - [ ] No hardcoded API/media hosts for one environment (use `API_URL`)

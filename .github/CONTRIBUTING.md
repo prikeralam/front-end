@@ -1,8 +1,8 @@
 # Contributing / Git Workflow — PRI Website (frontend)
 
 This is the frontend repo (`front-end`, Next.js). It follows the same workflow as the backend repo
-(`website-backend`, Django/DRF); differences are in the deploy target (Vercel, not EC2) and in there being no
-migrations here.
+(`website-backend`, Django/DRF), including the EC2 deploy pipeline; the difference is that there is no
+database or migrations here.
 
 ---
 
@@ -12,8 +12,8 @@ Three long-lived branches. Nothing else is long-lived.
 
 | Branch | Purpose | Protected |
 |---|---|---|
-| `main` | Production. Vercel deploys it on merge. | Yes |
-| `staging` | Pre-prod. Vercel Preview deployment pointed at the staging backend. | Yes |
+| `main` | Production. Deployed to the production EC2 instance on merge (after manual approval). | Yes |
+| `staging` | Pre-prod. Deployed to the staging EC2 instance on merge, pointed at the staging backend. | Yes |
 | `dev` | Integration branch. Default branch for local work. | Yes (solo reviewer allowed) |
 
 "Protected" is the intent; see [Enforcement](#enforcement) for what GitHub actually blocks today.
@@ -73,7 +73,7 @@ chore(deps): bump next to 16.3.5
 docs(prd): mark module C frontend as migrated
 ```
 
-**No `Co-Authored-By` trailers.** Vercel's Hobby plan blocks deploys when one is present.
+**No `Co-Authored-By` trailers.**
 
 ---
 
@@ -107,31 +107,48 @@ docs(prd): mark module C frontend as migrated
 | Env | Branch | Backend (`API_URL`) | Hosting |
 |---|---|---|---|
 | Dev | local / `dev` | local backend (`docker compose up` in `website-backend`, `http://localhost:8000`), seeded with `seed_demo` | `npm run dev` |
-| Staging | `staging` | staging backend | Vercel Preview, env vars scoped to the `staging` branch |
-| Production | `main` | production backend | Vercel Production |
+| Staging | `staging` | staging backend | its own EC2 instance: Docker Compose (Next.js standalone server + nginx), `/opt/pri-frontend` |
+| Production | `main` | production backend | its own EC2 instance, same layout |
 
-Never point a staging deployment at the production backend. Set `API_URL` separately for the Production and
-Preview (branch `staging`) scopes in the Vercel project. The backend must also list each deployed frontend
-origin in its `CORS_ALLOWED_ORIGINS`, and media hosts the backend returns must be allow-listed in
-`next.config.ts` (an unlisted host makes `next/image` throw).
+Never point a staging deployment at the production backend. The backend must also list each deployed frontend
+origin in its `CORS_ALLOWED_ORIGINS`, and media hosts the backend returns must be allow-listed for `next/image`
+(an unlisted host makes `next/image` throw). `next.config.ts` is baked into the image at build time and one
+image serves both environments, so those hosts come from the `IMAGE_HOSTS` repository variable (both
+environments' storage buckets), not from the runtime `API_URL`.
 
 ### Workflows (`.github/workflows/`)
 
 | Workflow | Runs on | What it does |
 |---|---|---|
-| `ci.yml` | every PR, push to `dev` | `typecheck` (`next typegen`, `tsc --noEmit`), `test` (Vitest), `build` (`next build` with no backend reachable), `lint` (ESLint) |
+| `ci.yml` | every PR, push to `dev`, and called by both deploy workflows | `typecheck` (`next typegen`, `tsc --noEmit`), `test` (Vitest), `build` (`next build` with no backend reachable), `lint` (ESLint), `docker-build` (builds the image, runs it, requests `/healthz`) |
 | `pr-guard.yml` | PRs into `dev`, `staging`, `main` | `branch-flow` fails a PR whose source/target pair is not an allowed promotion path (section 1) |
+| `deploy-staging.yml` | push to `staging` | CI, then builds and pushes the image to GHCR, then deploys it to the staging EC2 host over SSH (`staging` Environment) |
+| `deploy-production.yml` | push to `main` | CI, then image, then manual approval, then SSH deploy, then git tag and GitHub Release (`production` Environment) |
 | `hotfix-backport.yml` | push to `main` from a `fix/*` PR | opens backport PRs into `staging` and `dev` |
 
-There are no deploy workflows: Vercel's Git integration deploys `main` to production and builds a Preview for
-every other branch and PR.
+Images are tagged `sha-<commit>` and `tree-<git tree hash>`. A merge of `staging` into `main` has the same tree
+as staging, so production **promotes the image already tested on staging** (retag, no rebuild). A hotfix or any
+tree never seen on staging is built fresh.
+
+On the host, `deploy/remote-deploy.sh` swaps in the new env file (which pins `IMAGE`), restarts the stack,
+requests `/healthz` through nginx, and restores the previous image if that fails. `/healthz` does not call the
+backend, so a backend outage does not roll back a frontend deploy.
 
 ### Release flow
 
 1. Merge work branches into `dev` (squash) once CI is green.
-2. Open `dev` -> `staging`, merge commit. Check the Vercel Preview for the `staging` branch against the staging backend.
-3. Open `staging` -> `main`, merge commit. Vercel deploys production.
+2. Open `dev` -> `staging`, merge commit. The staging deploy runs; smoke test it against the staging backend.
+3. Open `staging` -> `main`, merge commit. The production run pauses at the `production` Environment for
+   approval. Approve it: the image is deployed and the release is tagged (section 6).
 4. Hotfix: `fix/*` from `main` -> `main`, then merge the two backport PRs.
+
+### Provisioning a host (once per environment)
+
+1. EC2 instance (Ubuntu, Docker Engine + compose plugin), security group open on 80/443, SSH restricted.
+2. A `deploy` user in the `docker` group whose public key matches `EC2_SSH_KEY`; `/opt/pri-frontend` owned by it.
+3. DNS for `SERVER_NAME` pointing at the instance; issue the first certificate with certbot (webroot
+   `/var/www/certbot`, or `--standalone` before nginx first starts) and set up its renewal.
+4. Set the Environment secrets below, then merge to the matching branch.
 
 ### Backend contract
 
@@ -141,10 +158,18 @@ endpoint, run `npm run api:types` (set `API_SCHEMA` to a path or a `/api/schema/
 
 ### Secrets and variables
 
-Nothing sensitive is needed by the GitHub workflows. Runtime configuration is set in Vercel (`API_URL`, per
-scope); the shape is in `.env.example`. Optional repository secret: `BACKPORT_TOKEN` (fine-grained PAT with
-contents and pull-requests write on this repo); without it backport PRs don't trigger CI, so close and reopen
-each one.
+Set per GitHub Environment, not at repo level, so staging and prod stay isolated
+(`gh secret set NAME --env staging`):
+
+| Where | Name | Kind |
+|---|---|---|
+| `staging` and `production` | `EC2_HOST`, `EC2_USER`, `EC2_SSH_KEY`, `EC2_SSH_KNOWN_HOSTS`, `APP_ENV_FILE` | secrets |
+| repository | `IMAGE_HOSTS` | variable; build-time `next/image` hosts, comma-separated (`gh variable set IMAGE_HOSTS`) |
+| repository (optional) | `BACKPORT_TOKEN` | secret; fine-grained PAT with contents and pull-requests write on this repo; without it backport PRs don't trigger CI, so close and reopen each one |
+
+`APP_ENV_FILE` is the full runtime env file (see the "Deployed" section of `.env.example`): `ENVIRONMENT`
+(must equal the environment being deployed; the deploy action refuses otherwise), `SERVER_NAME` and `API_URL`.
+The GitHub side is scripted in `scripts/setup-github-protection.sh`.
 
 ### Enforcement
 
@@ -152,7 +177,7 @@ The rulesets that would block merging on red checks, direct pushes, force-pushes
 and the wrong merge method need GitHub Pro/Team on a private repo, so they may **not be applied** on this
 repo. Until they are, the flow is followed by convention, and CI and `pr-guard` run but do not block:
 
-- Merge only when `lint`, `typecheck`, `test`, `build` and `branch-flow` are green.
+- Merge only when `lint`, `typecheck`, `test`, `build`, `docker-build` and `branch-flow` are green.
 - Never push directly to `dev`, `staging` or `main`; a push to `main` deploys to production.
 - Never force-push or delete the long-lived branches.
 - Use the merge methods in section 1.
@@ -163,9 +188,10 @@ Once the plan allows it, run `scripts/setup-github-protection.sh`; it is safe to
 
 ## 6. Versioning
 
-Frontend and backend repos version independently — don't try to keep tag numbers in sync across the two
-repos. There is no automated release tagging here (the backend tags on deploy); tag a release by hand
-(`gh release create`) when promoting `staging` to `main` if a named release is wanted.
+Every successful prod deploy is tagged and published as a GitHub Release automatically (`v0.1.0` for the
+first). While pre-1.0, a `feat` commit since the last tag bumps the minor version and anything else bumps the
+patch. Frontend and backend repos version independently — don't try to keep tag numbers in sync across the two
+repos.
 
 ---
 

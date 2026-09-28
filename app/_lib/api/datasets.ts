@@ -1,4 +1,5 @@
 import "server-only";
+import { unstable_rethrow } from "next/navigation";
 import type { DatasetDetail, DatasetSummary, ResourcePreview } from "../datasetTypes";
 import { api, uncachedApi } from "./client";
 import {
@@ -69,6 +70,7 @@ export async function getDatasetPreviews(dataset: Pick<DatasetDetail, "slug" | "
     const body: unknown = result.data;
     return { table: result.response.ok && isTablePreview(body) ? toResourcePreview(dataset.title, dataset.fileFormat ?? "", body) : null, map: null };
   } catch (error) {
+    unstable_rethrow(error);
     console.error(`Failed to load the preview for dataset ${slug}`, error);
     return { table: null, map: null };
   }

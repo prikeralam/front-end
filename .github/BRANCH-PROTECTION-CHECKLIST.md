@@ -1,7 +1,7 @@
 # Branch Protection Setup — frontend repo (`front-end`)
 
-> **Automated:** `scripts/setup-github-protection.sh` applies sections 2-4 (rulesets), the repo setting and the
-> labels, and prints what is still to do by hand. It is safe to re-run. The backend repo has the same checklist.
+> **Automated:** `scripts/setup-github-protection.sh` applies sections 2-4 (rulesets), the repo setting, the
+> labels and the GitHub Environments (section 5), and prints what is still to do by hand. It is safe to re-run. The backend repo has the same checklist.
 >
 > **Plan limit:** rulesets on a private repo need GitHub Pro/Team (or a public repo). On Free the script reports a 403
 > for that step. Until the plan changes, the workflow in CONTRIBUTING.md is followed by convention: CI and `pr-guard`
@@ -26,7 +26,7 @@ so new PRs target it automatically.
 
 Settings → Branches → Add rule → branch name pattern `main`:
 - [ ] Require a pull request before merging
-- [ ] Require status checks to pass before merging (`lint`, `typecheck`, `test`, `build`, `branch-flow`)
+- [ ] Require status checks to pass before merging (`lint`, `typecheck`, `test`, `build`, `docker-build`, `branch-flow`)
 - [ ] Do not allow bypassing the above settings (include yourself)
 - [ ] Block force pushes
 - [ ] Block deletions
@@ -38,16 +38,17 @@ Same rule pattern as `main`, target `staging`.
 ## 4. Protect `dev`
 
 - [ ] Require a pull request before merging
-- [ ] Require status checks to pass (`lint`, `typecheck`, `test`, `build`, `branch-flow`)
+- [ ] Require status checks to pass (`lint`, `typecheck`, `test`, `build`, `docker-build`, `branch-flow`)
 - [ ] Block force pushes
 - [ ] Block deletions
 - [ ] (Leave "require approvals" at 0 for now — solo dev. Set to 1 when the team grows.)
 
-## 5. Vercel
+## 5. Deploy environments (EC2)
 
-- [ ] Import the repo; set the production branch to `main`
-- [ ] `API_URL`: Production scope -> production backend; Preview scope limited to branch `staging` -> staging backend
-- [ ] Confirm no commit carries a `Co-Authored-By` trailer (Hobby plan blocks those deploys)
+- [ ] GitHub Environments `staging` (deploys only from `staging`) and `production` (deploys only from `main`, required reviewer)
+- [ ] One EC2 instance per environment, provisioned as in CONTRIBUTING.md section 5
+- [ ] Per environment: `EC2_HOST`, `EC2_USER`, `EC2_SSH_KEY`, `EC2_SSH_KNOWN_HOSTS`, `APP_ENV_FILE` (with the matching `ENVIRONMENT=`)
+- [ ] Repository variable `IMAGE_HOSTS` (both environments' media hosts)
 - [ ] Add each deployed origin to the backend's `CORS_ALLOWED_ORIGINS`
 
 ## 6. Repo hygiene

@@ -2,24 +2,26 @@
 # Applies the repo hygiene from the branch-protection checklist (.github/BRANCH-PROTECTION-CHECKLIST.md):
 #   1. repo settings (auto-delete merged branches)
 #   2. triage and area labels (docs/agents/triage-labels.md)
-#   3. rulesets protecting dev, staging and main
-# Deploys are handled by Vercel's Git integration, so there are no GitHub Environments to create here.
-# Safe to re-run: existing labels and rulesets are updated in place.
+#   3. GitHub Environments `staging` and `production` (production needs a reviewer; deploys only from
+#      the matching branch)
+#   4. rulesets protecting dev, staging and main
+# Safe to re-run: existing labels, environments and rulesets are updated in place.
 #
-# Needs: gh logged in as a repo admin. Rulesets on a private repo need GitHub Pro/Team; on Free that step
-# reports a 403 and the script exits non-zero after trying the rest.
+# Needs: gh logged in as a repo admin. Rulesets and environment reviewers need GitHub Pro/Team on a
+# private repo; on Free those steps report a 403 and the script exits non-zero after trying the rest.
 #
 # Usage: scripts/setup-github-protection.sh [owner/repo]
 set -uo pipefail
 
 repo="${1:-$(gh repo view --json nameWithOwner --jq .nameWithOwner)}"
+user_id="$(gh api user --jq .id)"
 failed=0
 
 step() { printf '\n== %s\n' "$1"; }
 warn() { printf 'FAILED: %s\n' "$1" >&2; failed=1; }
 
 # Required status checks: the job names from ci.yml and pr-guard.yml.
-checks='[{"context":"lint"},{"context":"typecheck"},{"context":"test"},{"context":"build"},{"context":"branch-flow"}]'
+checks='[{"context":"lint"},{"context":"typecheck"},{"context":"test"},{"context":"build"},{"context":"docker-build"},{"context":"branch-flow"}]'
 
 step "Repo settings"
 gh api -X PATCH "repos/$repo" -F delete_branch_on_merge=true --silent \
@@ -40,6 +42,17 @@ label ci              0E8A16 "CI/CD pipeline"
 label frontend        C5DEF5 "Next.js frontend"
 label integration     5319E7 "Wiring the frontend to the Django backend"
 label module          1D76DB "Product module from a PRD"
+
+step "Environments"
+gh api -X PUT "repos/$repo/environments/staging" --input - --silent <<JSON   && echo "staging: ok" || warn "could not create the staging environment"
+{"deployment_branch_policy":{"protected_branches":false,"custom_branch_policies":true}}
+JSON
+gh api -X POST "repos/$repo/environments/staging/deployment-branch-policies" -f name=staging --silent 2>/dev/null || true
+
+gh api -X PUT "repos/$repo/environments/production" --input - --silent <<JSON   && echo "production: ok (required reviewer: user $user_id)" || warn "could not create the production environment with a required reviewer"
+{"reviewers":[{"type":"User","id":$user_id}],"deployment_branch_policy":{"protected_branches":false,"custom_branch_policies":true}}
+JSON
+gh api -X POST "repos/$repo/environments/production/deployment-branch-policies" -f name=main --silent 2>/dev/null || true
 
 # Promotion PRs (dev->staging, staging->main) must be merge commits: squashing them makes the branches
 # diverge and every later promotion conflicts. Work-branch PRs into dev are squashed. Because promotion
@@ -91,9 +104,10 @@ ruleset "protect-main" main merge
 
 step "Still to do by hand"
 cat <<'TXT'
-  Vercel project: production branch = main; set API_URL for the Production scope and, for the Preview scope
-  limited to the `staging` branch, the staging backend URL. Add each deployed origin to the backend's
-  CORS_ALLOWED_ORIGINS.
+  Secrets per environment (gh secret set NAME --env staging|production):
+    EC2_HOST EC2_USER EC2_SSH_KEY EC2_SSH_KNOWN_HOSTS APP_ENV_FILE
+  Repository variable (build time, shared by both environments): IMAGE_HOSTS  ->  gh variable set IMAGE_HOSTS
+  Add each deployed origin to the backend's CORS_ALLOWED_ORIGINS.
   Repository (optional): BACKPORT_TOKEN  ->  gh secret set BACKPORT_TOKEN
 TXT
 
