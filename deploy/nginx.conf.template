@@ -1,0 +1,44 @@
+# Rendered by the nginx image's envsubst; only ${SERVER_NAME} is substituted.
+# Certificates come from certbot on the host (/etc/letsencrypt is mounted read-only).
+
+server {
+    listen 80;
+    server_name ${SERVER_NAME};
+
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+
+    # Plain-HTTP health check for load balancers and deploy smoke tests.
+    location = /healthz {
+        proxy_pass http://web:3000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}
+
+server {
+    listen 443 ssl;
+    server_name ${SERVER_NAME};
+
+    ssl_certificate     /etc/letsencrypt/live/${SERVER_NAME}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/${SERVER_NAME}/privkey.pem;
+
+    # Server Actions accept uploads up to 11 MB (next.config.ts).
+    client_max_body_size 12m;
+
+    location / {
+        proxy_pass http://web:3000;
+        # Server Actions and the auth routes compare the browser's Origin with this host.
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 60s;
+    }
+}

@@ -1,4 +1,5 @@
 import "server-only";
+import { connection } from "next/server";
 import createClient from "openapi-fetch";
 import type { paths } from "./schema";
 
@@ -13,8 +14,13 @@ export function apiBaseUrl(): string {
 /** Server-side, unauthenticated client. Public pages read published content only, so no token is sent. */
 export const api = createClient<paths>({
   baseUrl: apiBaseUrl(),
-  // Public content changes rarely; let Next cache responses and refresh them in the background.
-  fetch: (request) => fetch(request, { next: { revalidate: REVALIDATE_SECONDS } }),
+  // Render pages that read the API per request, never at build time: the image is built with no backend reachable
+  // and promoted from staging to production, so a build-time render would bake in an error state or staging data.
+  // Responses are still cached, so the backend sees at most one request per endpoint per revalidate window.
+  fetch: async (request) => {
+    await connection();
+    return fetch(request, { next: { revalidate: REVALIDATE_SECONDS } });
+  },
 });
 
 /**

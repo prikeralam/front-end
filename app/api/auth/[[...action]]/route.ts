@@ -1,6 +1,6 @@
 import { handleLogin, handleLogout, handleSession } from "../../../_lib/auth/handlers";
 
-// One catch-all route rather than three: Vercel's Hobby plan caps the number of serverless functions per deployment.
+// One catch-all route for login, logout and session, dispatched on the action segment.
 
 type Context = { params: Promise<{ action?: string[] }> };
 

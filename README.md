@@ -2,7 +2,7 @@
 
 The public website and staff dashboard for **PRI** (Policy and Research Initiative): the homepage, About, People, Projects, Research & Publications, the Data Repository & Library, and a signed-in `/dashboard` where staff draft, review and publish content and manage dataset access.
 
-Next.js (App Router, TypeScript, Tailwind CSS), deployed on Vercel. Content, datasets, sign-in and roles come from the Django REST backend in the sibling repo [`website-backend`](https://github.com/prikeralam/website-backend); this app never talks to a database directly.
+Next.js (App Router, TypeScript, Tailwind CSS), deployed as a Docker image to EC2 (staging and production; see [`.github/CONTRIBUTING.md`](.github/CONTRIBUTING.md) section 5). Content, datasets, sign-in and roles come from the Django REST backend in the sibling repo [`website-backend`](https://github.com/prikeralam/website-backend); this app never talks to a database directly.
 
 ## Getting started
 
