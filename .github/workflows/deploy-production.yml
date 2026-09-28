@@ -71,6 +71,10 @@ jobs:
     runs-on: ubuntu-latest
     # Required reviewers on this environment are the manual gate before anything touches prod.
     environment: production
+    permissions:
+      contents: read
+      # The token handed to the server for `docker login ghcr.io` must be able to pull the private image.
+      packages: read
     steps:
       - uses: actions/checkout@v4
 
