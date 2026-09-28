@@ -2,16 +2,18 @@ import "server-only";
 import { uncachedApi } from "../api/client";
 import { ApiError, describeErrorBody } from "../api/errors";
 import type { components } from "../api/schema";
+import { displayName } from "../api/userAdapter";
 import type { Role } from "../session";
 
-export type SessionUser = { id: number; email: string; role: Role; name: string };
+/** `mustChangePassword`: signed in with a temporary password an admin set; the dashboard asks for a new one first. */
+export type SessionUser = { id: number; email: string; role: Role; name: string; mustChangePassword: boolean };
 export type Tokens = { access?: string; refresh?: string };
 export type ResolvedSession = { user: SessionUser; access: string; accessWasRefreshed: boolean };
 
 const TOKEN_PATH = "/api/v1/token/";
 const REFRESH_PATH = "/api/v1/token/refresh/";
 const LOGOUT_PATH = "/api/v1/token/logout/";
-const ROLE_PATH = "/api/v1/users/me/role/";
+const ME_PATH = "/api/v1/users/me/";
 
 /** Wrong username or password (the backend answers 401 without saying which). */
 export class InvalidCredentialsError extends Error {
@@ -27,11 +29,6 @@ export class TooManyAttemptsError extends Error {
     super("Too many sign-in attempts");
     this.name = "TooManyAttemptsError";
   }
-}
-
-/** The backend has no display name; the local part of the email stands in for one. */
-function displayName(email: string): string {
-  return email.split("@")[0] || email;
 }
 
 // The generated request-body types wrongly include the read-only `access`/`refresh` response fields, hence the casts.
@@ -65,12 +62,12 @@ export async function revokeRefresh(refresh: string): Promise<boolean> {
 
 /** The user an access token belongs to, or `null` when the token is expired or invalid. */
 export async function fetchMe(access: string): Promise<SessionUser | null> {
-  const result = await uncachedApi(access).GET(ROLE_PATH);
+  const result = await uncachedApi(access).GET(ME_PATH);
   if (result.response.status === 401) return null;
-  if (!result.data) throw new ApiError(result.response.status, describeErrorBody(result.error), ROLE_PATH);
-  const { id, email, role } = result.data;
-  if (id === undefined || !email || !role) throw new ApiError(result.response.status, "Malformed role response", ROLE_PATH);
-  return { id, email, role, name: displayName(email) };
+  if (!result.data) throw new ApiError(result.response.status, describeErrorBody(result.error), ME_PATH);
+  const { id, email, role, first_name: firstName, last_name: lastName, must_change_password: mustChangePassword } = result.data;
+  if (id === undefined || !email || !role) throw new ApiError(result.response.status, "Malformed profile response", ME_PATH);
+  return { id, email, role, name: displayName({ firstName, lastName, email }), mustChangePassword: !!mustChangePassword };
 }
 
 /**

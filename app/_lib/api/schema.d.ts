@@ -510,6 +510,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/password-reset/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Emails a reset link. Always answers 204, so it can't reveal which emails have accounts. */
+        post: operations["v1_password_reset_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/password-reset/confirm/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Sets a new password from an emailed reset or invite link. Each link works once. */
+        post: operations["v1_password_reset_confirm_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/people/": {
         parameters: {
             query?: never;
@@ -1104,6 +1138,76 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/users/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Admin user management. Users are deactivated, never deleted: content keeps its author. */
+        get: operations["v1_users_list"];
+        put?: never;
+        /** @description Admin user management. Users are deactivated, never deleted: content keeps its author. */
+        post: operations["v1_users_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/users/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Admin user management. Users are deactivated, never deleted: content keeps its author. */
+        get: operations["v1_users_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** @description Admin user management. Users are deactivated, never deleted: content keeps its author. */
+        patch: operations["v1_users_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/users/{id}/deactivate/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Blocks sign-in and invalidates the user's existing tokens on their next use. */
+        post: operations["v1_users_deactivate_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/users/{id}/reactivate/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Admin user management. Users are deactivated, never deleted: content keeps its author. */
+        post: operations["v1_users_reactivate_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/users/{id}/role/": {
         parameters: {
             query?: never;
@@ -1118,6 +1222,57 @@ export interface paths {
         options?: never;
         head?: never;
         patch: operations["v1_users_role_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/users/{id}/send-password-reset/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Emails a set-password link: a fresh invite if the user never set a password, else a reset. */
+        post: operations["v1_users_send_password_reset_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/users/me/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description The signed-in user's own profile. `must_change_password` tells the frontend to force a change. */
+        get: operations["v1_users_me_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** @description The signed-in user's own profile. `must_change_password` tells the frontend to force a change. */
+        patch: operations["v1_users_me_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/users/me/password/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["v1_users_me_password_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/v1/users/me/role/": {
@@ -1487,6 +1642,34 @@ export interface components {
             previous?: string | null;
             results: components["schemas"]["Theme"][];
         };
+        PaginatedUserList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["User"][];
+        };
+        PasswordChange: {
+            old_password: string;
+            new_password: string;
+        };
+        PasswordResetConfirm: {
+            uid: string;
+            token: string;
+            new_password: string;
+        };
+        PasswordResetRequest: {
+            /** Format: email */
+            email: string;
+        };
         PatchedAccessRequestReview: {
             status?: components["schemas"]["AccessRequestReviewStatusEnum"];
         };
@@ -1661,6 +1844,35 @@ export interface components {
             parent?: number | null;
             readonly subthemes?: components["schemas"]["ThemeChild"][];
         };
+        /**
+         * @description A user as admins see them, and as a user sees themselves at /users/me/.
+         *
+         *     Only contact details are writable here: the role has its own audited endpoint, `is_active` its
+         *     deactivate/reactivate actions, and passwords their own flows.
+         */
+        PatchedUser: {
+            readonly id?: number;
+            /** @description Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only. */
+            readonly username?: string;
+            /**
+             * Email address
+             * Format: email
+             */
+            email?: string;
+            first_name?: string;
+            last_name?: string;
+            readonly role?: components["schemas"]["RoleEnum"];
+            /**
+             * Active
+             * @description Designates whether this user should be treated as active. Unselect this instead of deleting accounts.
+             */
+            readonly is_active?: boolean;
+            readonly must_change_password?: boolean;
+            /** Format: date-time */
+            readonly date_joined?: string;
+            /** Format: date-time */
+            readonly last_login?: string | null;
+        };
         PersonProfile: {
             readonly id: number;
             slug: string;
@@ -1797,6 +2009,60 @@ export interface components {
         TokenRefresh: {
             readonly access: string;
             refresh: string;
+        };
+        /**
+         * @description A user as admins see them, and as a user sees themselves at /users/me/.
+         *
+         *     Only contact details are writable here: the role has its own audited endpoint, `is_active` its
+         *     deactivate/reactivate actions, and passwords their own flows.
+         */
+        User: {
+            readonly id: number;
+            /** @description Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only. */
+            readonly username: string;
+            /**
+             * Email address
+             * Format: email
+             */
+            email: string;
+            first_name?: string;
+            last_name?: string;
+            readonly role: components["schemas"]["RoleEnum"];
+            /**
+             * Active
+             * @description Designates whether this user should be treated as active. Unselect this instead of deleting accounts.
+             */
+            readonly is_active: boolean;
+            readonly must_change_password: boolean;
+            /** Format: date-time */
+            readonly date_joined: string;
+            /** Format: date-time */
+            readonly last_login: string | null;
+        };
+        /** @description Creates an account with either a temporary password or, when none is given, an emailed invite. */
+        UserCreate: {
+            readonly id: number;
+            /** @description Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only. */
+            username: string;
+            /**
+             * Email address
+             * Format: email
+             */
+            email: string;
+            first_name?: string;
+            last_name?: string;
+            role: components["schemas"]["RoleEnum"];
+            /**
+             * Active
+             * @description Designates whether this user should be treated as active. Unselect this instead of deleting accounts.
+             */
+            readonly is_active: boolean;
+            readonly must_change_password: boolean;
+            /** Format: date-time */
+            readonly date_joined: string;
+            /** Format: date-time */
+            readonly last_login: string | null;
+            password?: string;
         };
         /**
          * @description * `draft` - Draft
@@ -2676,6 +2942,54 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["Document"];
                 };
+            };
+        };
+    };
+    v1_password_reset_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PasswordResetRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["PasswordResetRequest"];
+                "multipart/form-data": components["schemas"]["PasswordResetRequest"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    v1_password_reset_confirm_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PasswordResetConfirm"];
+                "application/x-www-form-urlencoded": components["schemas"]["PasswordResetConfirm"];
+                "multipart/form-data": components["schemas"]["PasswordResetConfirm"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -3874,6 +4188,154 @@ export interface operations {
             };
         };
     };
+    v1_users_list: {
+        parameters: {
+            query?: {
+                is_active?: boolean;
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Matches username, email, first or last name */
+                q?: string;
+                /**
+                 * @description * `public` - Donor / Visitor
+                 *     * `researcher` - Researcher
+                 *     * `editor` - Editor
+                 *     * `fellow` - Intern / Fellow
+                 *     * `admin` - Admin
+                 */
+                role?: "admin" | "editor" | "fellow" | "public" | "researcher";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedUserList"];
+                };
+            };
+        };
+    };
+    v1_users_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UserCreate"];
+                "application/x-www-form-urlencoded": components["schemas"]["UserCreate"];
+                "multipart/form-data": components["schemas"]["UserCreate"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserCreate"];
+                };
+            };
+        };
+    };
+    v1_users_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["User"];
+                };
+            };
+        };
+    };
+    v1_users_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedUser"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedUser"];
+                "multipart/form-data": components["schemas"]["PatchedUser"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["User"];
+                };
+            };
+        };
+    };
+    v1_users_deactivate_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["User"];
+                };
+            };
+        };
+    };
+    v1_users_reactivate_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["User"];
+                };
+            };
+        };
+    };
     v1_users_role_partial_update: {
         parameters: {
             query?: never;
@@ -3898,6 +4360,94 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["MyRole"];
                 };
+            };
+        };
+    };
+    v1_users_send_password_reset_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    v1_users_me_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["User"];
+                };
+            };
+        };
+    };
+    v1_users_me_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedUser"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedUser"];
+                "multipart/form-data": components["schemas"]["PatchedUser"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["User"];
+                };
+            };
+        };
+    };
+    v1_users_me_password_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PasswordChange"];
+                "application/x-www-form-urlencoded": components["schemas"]["PasswordChange"];
+                "multipart/form-data": components["schemas"]["PasswordChange"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

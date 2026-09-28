@@ -44,6 +44,7 @@ function buildSections(session: Session | null): NavSection[] {
     sections.push({
       label: "Administration",
       items: [
+        { label: "Users & Roles", href: "/dashboard/users" },
         { label: "Audit Log", href: "/dashboard/audit" },
       ],
     });

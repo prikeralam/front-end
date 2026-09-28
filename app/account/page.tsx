@@ -129,7 +129,10 @@ export default function AccountPage() {
               </div>
 
               <div>
-                <label htmlFor="password" className={labelClass}>Password</label>
+                <div className="mb-1 flex items-baseline justify-between">
+                  <label htmlFor="password" className="block text-xs font-bold uppercase tracking-wider text-[#8b8fa3]">Password</label>
+                  <Link href="/reset-password" className="text-[12px] font-semibold text-[#253D9A] hover:underline">Forgot your password?</Link>
+                </div>
                 <div className="relative">
                   <input
                     ref={passwordRef}
