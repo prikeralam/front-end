@@ -1,0 +1,156 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  PRI frontend staging - one EC2 host running the Next.js and nginx containers
+  (deploy/docker-compose.yml), with a static IP, an sslip.io hostname and a Let's Encrypt
+  certificate. Stateless: no bucket or database; media comes from the backend's bucket.
+
+Parameters:
+  ImageId:
+    Type: AWS::EC2::Image::Id
+    Description: >-
+      Ubuntu 24.04 amd64 AMI. Pinned rather than resolved from SSM on every update,
+      because a new AMI replaces the instance (and so its static certificate state).
+  InstanceType:
+    Type: String
+    Default: t3.micro
+    AllowedValues: [t3.micro, t3.small, t3.medium]
+  SshPublicKey:
+    Type: String
+    Description: Public half of the deploy key (the private half is the EC2_SSH_KEY GitHub secret)
+  SshCidr:
+    Type: String
+    Default: 0.0.0.0/0
+    Description: GitHub-hosted runners have no fixed IPs, so SSH is open and key-only.
+
+Resources:
+  InstanceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: pri-frontend-staging-instance
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal: { Service: ec2.amazonaws.com }
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        # Session Manager: a way in if SSH or the key is ever lost. The app itself needs no AWS access.
+        - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+
+  InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles: [!Ref InstanceRole]
+
+  DeployKey:
+    Type: AWS::EC2::KeyPair
+    Properties:
+      KeyName: pri-frontend-staging-deploy
+      PublicKeyMaterial: !Ref SshPublicKey
+
+  HostSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: pri-frontend-staging-host
+      GroupDescription: PRI frontend staging - HTTP, HTTPS and key-only SSH
+      SecurityGroupIngress:
+        - { IpProtocol: tcp, FromPort: 80, ToPort: 80, CidrIp: 0.0.0.0/0 }
+        - { IpProtocol: tcp, FromPort: 443, ToPort: 443, CidrIp: 0.0.0.0/0 }
+        - { IpProtocol: tcp, FromPort: 22, ToPort: 22, CidrIp: !Ref SshCidr }
+
+  StaticIp:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+      Tags:
+        - { Key: Name, Value: pri-frontend-staging }
+
+  Host:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref ImageId
+      InstanceType: !Ref InstanceType
+      KeyName: !Ref DeployKey
+      IamInstanceProfile: !Ref InstanceProfile
+      SecurityGroupIds: [!GetAtt HostSecurityGroup.GroupId]
+      # Standard credits: a CPU-bound runaway throttles instead of billing surplus credits.
+      CreditSpecification:
+        CPUCredits: standard
+      MetadataOptions:
+        HttpEndpoint: enabled
+        HttpTokens: required
+        HttpPutResponseHopLimit: 2
+      BlockDeviceMappings:
+        - DeviceName: /dev/sda1
+          Ebs:
+            VolumeType: gp3
+            VolumeSize: 20
+            Encrypted: true
+      Tags:
+        - { Key: Name, Value: pri-frontend-staging }
+      UserData:
+        Fn::Base64: !Sub
+          - |
+            #!/bin/bash
+            # First-boot bootstrap. Output lands in /var/log/pri-bootstrap.log.
+            set -euxo pipefail
+            exec > >(tee -a /var/log/pri-bootstrap.log) 2>&1
+            export DEBIAN_FRONTEND=noninteractive
+
+            # 1 GB of RAM: swap keeps the Node server and nginx up through image pulls and spikes.
+            if [ ! -f /swapfile ]; then
+              fallocate -l 2G /swapfile
+              chmod 600 /swapfile
+              mkswap /swapfile
+              swapon /swapfile
+              echo '/swapfile none swap sw 0 0' >> /etc/fstab
+            fi
+
+            # Cap container logs so they can't fill the 20 GB disk.
+            install -d /etc/docker
+            echo '{"log-driver": "json-file", "log-opts": {"max-size": "10m", "max-file": "3"}}' > /etc/docker/daemon.json
+
+            apt-get update
+            apt-get install -y ca-certificates curl certbot
+            install -m 0755 -d /etc/apt/keyrings
+            curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+            chmod a+r /etc/apt/keyrings/docker.asc
+            echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" > /etc/apt/sources.list.d/docker.list
+            apt-get update
+            apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+            usermod -aG docker ubuntu
+
+            # Where the deploy workflow uploads the compose file, nginx template and .env.
+            install -d -o ubuntu -g ubuntu /opt/pri-frontend
+            install -d /var/www/certbot
+
+            # The static IP is attached after the instance starts, so retry until it routes here.
+            # Renewals stop the nginx container to free port 80 for certbot's standalone server.
+            # Hooks go through sh -c: certbot rejects a hook whose first word isn't an executable.
+            for _ in $(seq 1 30); do
+              if certbot certonly --standalone --non-interactive --agree-tos \
+                  --register-unsafely-without-email -d ${Hostname} \
+                  --pre-hook "sh -c 'cd /opt/pri-frontend && docker compose stop nginx || true'" \
+                  --post-hook "sh -c 'cd /opt/pri-frontend && docker compose start nginx || true'"; then
+                break
+              fi
+              sleep 20
+            done
+            test -f /etc/letsencrypt/live/${Hostname}/fullchain.pem
+            echo "bootstrap complete"
+          - Hostname: !Join ["", [!Join ["-", !Split [".", !Ref StaticIp]], ".sslip.io"]]
+
+  StaticIpAssociation:
+    Type: AWS::EC2::EIPAssociation
+    Properties:
+      AllocationId: !GetAtt StaticIp.AllocationId
+      InstanceId: !Ref Host
+
+Outputs:
+  PublicIp:
+    Value: !Ref StaticIp
+  Hostname:
+    Description: SERVER_NAME for the staging env file
+    Value: !Join ["", [!Join ["-", !Split [".", !Ref StaticIp]], ".sslip.io"]]
+  InstanceId:
+    Value: !Ref Host

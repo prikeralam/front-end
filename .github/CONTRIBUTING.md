@@ -144,11 +144,10 @@ backend, so a backend outage does not roll back a frontend deploy.
 
 ### Provisioning a host (once per environment)
 
-1. EC2 instance (Ubuntu, Docker Engine + compose plugin), security group open on 80/443, SSH restricted.
-2. A `deploy` user in the `docker` group whose public key matches `EC2_SSH_KEY`; `/opt/pri-frontend` owned by it.
-3. DNS for `SERVER_NAME` pointing at the instance; issue the first certificate with certbot (webroot
-   `/var/www/certbot`, or `--standalone` before nginx first starts) and set up its renewal.
-4. Set the Environment secrets below, then merge to the matching branch.
+Each host is a CloudFormation stack from `deploy/aws/staging.yml`: the EC2 instance, static IP, `sslip.io`
+hostname, security group (80/443, key-only SSH), deploy key pair, and a first-boot script that installs Docker,
+creates `/opt/pri-frontend` and issues the Let's Encrypt certificate with renewal. Commands, current values and
+the Environment secrets are in [`docs/deploy/aws-provisioning.md`](../docs/deploy/aws-provisioning.md).
 
 ### Backend contract
 
