@@ -1,24 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { getSession, roleLabels, type MockSession } from "../_lib/mockAuth";
+import { useState } from "react";
+import { roleLabels } from "../_lib/session";
+import { useRequireSession } from "../_lib/useSession";
 import { PageHeader } from "../_ui/kit";
 import { AdminOverview, EditorOverview, ResearcherOverview, FellowOverview, DonorOverview } from "./_ui/RoleOverview";
 
-export default function DashboardV2() {
-  const router = useRouter();
-  const [session, setSessionState] = useState<MockSession | null | undefined>(undefined);
-  const [tick, setTick] = useState(0);
-
-  useEffect(() => {
-    const s = getSession();
-    if (!s) {
-      router.replace("/account");
-      return;
-    }
-    setSessionState(s);
-  }, [router, tick]);
+export default function DashboardPage() {
+  const session = useRequireSession();
+  const [, setTick] = useState(0);
 
   if (!session) return null;
 

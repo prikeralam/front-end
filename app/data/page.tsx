@@ -1,9 +1,10 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { dashboards, datasetThemes } from "../_content/dashboards";
-import { listDatasets } from "../_lib/datasetsService";
-import { PageHeader, SectionHeading, StatusTag } from "../_ui/kit";
-import MediaSlot from "../_ui/MediaSlot";
+import { NotPublishedYet, LoadError } from "../_ui/ApiMessage";
+import { listDashboards, listDatasets } from "../_lib/api/datasets";
+import { load } from "../_lib/api/load";
+import { PageHeader, SectionHeading } from "../_ui/kit";
+import DashboardEmbed from "./_ui/DashboardEmbed";
 
 const themeIcons: Record<string, ReactNode> = {
   Education: (
@@ -41,11 +42,19 @@ const themeIcons: Record<string, ReactNode> = {
   ),
 };
 
-export default async function DataV2() {
-  const datasets = await listDatasets({ session: null });
-  const themeCounts = datasetThemes
-    .map((theme) => ({ theme, count: datasets.filter((d) => d.theme === theme).length }))
-    .filter((t) => t.count > 0);
+const fallbackIcon = (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <ellipse cx="12" cy="5" rx="8" ry="3" />
+    <path d="M4 5v6c0 1.66 3.58 3 8 3s8-1.34 8-3V5" />
+    <path d="M4 11v6c0 1.66 3.58 3 8 3s8-1.34 8-3v-6" />
+  </svg>
+);
+
+export default async function DataPage() {
+  const [datasetsResult, dashboardsResult] = await Promise.all([load("datasets", listDatasets), load("dashboards", listDashboards)]);
+  const datasets = datasetsResult.ok ? datasetsResult.data : [];
+  const themes = Array.from(new Set(datasets.map((d) => d.theme).filter((t): t is string => !!t)));
+  const themeCounts = themes.map((theme) => ({ theme, count: datasets.filter((d) => d.theme === theme).length }));
 
   return (
     <>
@@ -57,6 +66,8 @@ export default async function DataV2() {
 
       <section className="mx-auto max-w-6xl px-6 py-16">
         <SectionHeading>Discover by theme</SectionHeading>
+        {!datasetsResult.ok && <LoadError what="our datasets" />}
+        {datasetsResult.ok && themeCounts.length === 0 && <NotPublishedYet>Datasets will be published here soon.</NotPublishedYet>}
         <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {themeCounts.map((t) => (
             <Link
@@ -66,7 +77,7 @@ export default async function DataV2() {
             >
               <div className="flex items-center justify-between">
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#253D9A]/8 text-[#253D9A]">
-                  {themeIcons[t.theme]}
+                  {themeIcons[t.theme] ?? fallbackIcon}
                 </div>
                 <p className="text-4xl font-bold text-[#253D9A]">{t.count}</p>
               </div>
@@ -80,13 +91,13 @@ export default async function DataV2() {
       <section className="border-t border-[#e6e8f0] bg-[#fafbfc]">
         <div className="mx-auto max-w-6xl px-6 py-16">
           <SectionHeading>Visualization Dashboards</SectionHeading>
+          {!dashboardsResult.ok && <LoadError what="our dashboards" />}
+          {dashboardsResult.ok && dashboardsResult.data.length === 0 && <NotPublishedYet>Dashboards will be published here soon.</NotPublishedYet>}
           <div className="mt-8 grid gap-5 sm:grid-cols-2">
-            {dashboards.map((d) => (
+            {(dashboardsResult.ok ? dashboardsResult.data : []).map((d) => (
               <div key={d.slug} className="rounded-xl border border-[#e6e8f0] bg-white p-5">
-                {d.embed && <MediaSlot need={d.embed} />}
-                <h3 className="mt-4 flex items-center gap-2 text-lg font-bold text-[#171a2b]">
-                  {d.title} <StatusTag status={d.status} />
-                </h3>
+                <DashboardEmbed url={d.embedUrl} title={d.title} type={d.embedType} />
+                <h3 className="mt-4 text-lg font-bold text-[#171a2b]">{d.title}</h3>
                 <p className="mt-2 text-sm text-[#5b5f74]">{d.description}</p>
               </div>
             ))}

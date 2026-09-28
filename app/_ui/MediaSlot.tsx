@@ -1,7 +1,16 @@
 import Image from "next/image";
 import type { MediaNeed } from "../_lib/types";
-import { ratioClass } from "../_lib/ratio";
 import { stockPhotoFor } from "../_lib/stockPhotos";
+
+const ratioClasses: Record<string, string> = {
+  square: "aspect-square",
+  "16:9": "aspect-video",
+  "4:3": "aspect-[4/3]",
+  "3:2": "aspect-[3/2]",
+  "3:4": "aspect-[3/4]",
+};
+
+const ratioClass = (ratio: string) => ratioClasses[ratio] ?? "aspect-video";
 
 const kindLabel: Record<MediaNeed["kind"], string> = {
   photo: "Photograph",

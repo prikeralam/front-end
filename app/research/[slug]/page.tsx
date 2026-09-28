@@ -2,17 +2,15 @@ import type { ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { publications } from "../../_content/publications";
-import { people } from "../../_content/people";
+import { LoadError } from "../../_ui/ApiMessage";
+import { load } from "../../_lib/api/load";
+import { getPublicationBySlug } from "../../_lib/api/publications";
+import { formatPublicationDate } from "../../_lib/api/publicationAdapter";
 import { stockPhotoFor } from "../../_lib/stockPhotos";
 import { dataStories, educationCharts, demographyCharts, healthCharts, migrationCharts } from "../../_content/dataStories";
-import { HBarChart, GroupedBarChart, DivergingBarChart, ScatterChart, LineChart, VBarChart, HBarSimpleChart, type ChartPalette } from "../../_lib/dataStoryCharts";
+import { HBarChart, GroupedBarChart, DivergingBarChart, ScatterChart, LineChart, VBarChart, HBarSimpleChart, type ChartPalette } from "../_ui/dataStoryCharts";
 import { PageHeader, SectionHeading, StatusTag } from "../../_ui/kit";
 import MediaSlot from "../../_ui/MediaSlot";
-
-export function generateStaticParams() {
-  return publications.map((p) => ({ slug: p.slug }));
-}
 
 const palette: ChartPalette = {
   primary: "#253D9A",
@@ -290,12 +288,22 @@ function StoryBody({ slug }: { slug: string }) {
   );
 }
 
-export default async function PublicationDetailV2({ params }: { params: Promise<{ slug: string }> }) {
+export default async function PublicationDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const pub = publications.find((p) => p.slug === slug);
-  if (!pub) notFound();
+  const result = await load("this publication", () => getPublicationBySlug(slug));
+  if (!result.ok) {
+    return (
+      <>
+        <PageHeader kicker="Research" title="Publication" />
+        <section className="mx-auto max-w-3xl px-6 py-16"><LoadError what="this publication" /></section>
+      </>
+    );
+  }
+  if (!result.data) notFound();
+  const { publication: pub, authors } = result.data;
+  // The API has no body or chart data (backend gap G3): data stories keep their hand-built bodies, keyed by slug.
   const story = dataStories[slug];
-  const author = people.find((p) => p.slug === pub.authors[0]);
+  const author = authors[pub.authors[0]];
 
   return (
     <>
@@ -312,7 +320,7 @@ export default async function PublicationDetailV2({ params }: { params: Promise<
           ) : (
             pub.authors.join(", ")
           )}
-          &middot; {pub.date} <StatusTag status={pub.status} />
+          &middot; {formatPublicationDate(pub.date)} <StatusTag status={pub.status} />
         </div>
         {pub.cover && <MediaSlot need={pub.cover} className="mt-6" />}
         {story ? (

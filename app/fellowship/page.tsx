@@ -4,7 +4,7 @@ import { PageHeader, SectionHeading, PersonCard, StatusTag } from "../_ui/kit";
 
 const featuredFellows = currentFellows.filter((f) => f.slug === "hisham");
 
-export default function FellowshipV2() {
+export default function FellowshipPage() {
   return (
     <>
       <PageHeader

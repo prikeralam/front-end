@@ -1,13 +1,20 @@
-import { reports, legalStatus } from "../../_content/people";
+import { legalStatus } from "../../_content/org";
+import { NotPublishedYet, LoadError } from "../../_ui/ApiMessage";
+import { listDocuments } from "../../_lib/api/documents";
+import { load } from "../../_lib/api/load";
 import { PageHeader, DocumentRow, SectionHeading } from "../../_ui/kit";
 
-export default function AnnualReportsV2() {
+export default async function AnnualReportsPage() {
+  const result = await load("annual reports", () => listDocuments("annual-report"));
+
   return (
     <>
       <PageHeader kicker="About" title="Annual Reports & Strategic Plans" />
       <section className="mx-auto max-w-6xl px-6 pb-16 pt-8">
+        {!result.ok && <LoadError what="the annual reports" />}
+        {result.ok && result.data.length === 0 && <NotPublishedYet>Reports will be published here soon.</NotPublishedYet>}
         <ul className="grid gap-3">
-          {reports.map((r) => <DocumentRow key={r.title} doc={r} />)}
+          {(result.ok ? result.data : []).map((r) => <DocumentRow key={r.title} doc={r} />)}
         </ul>
       </section>
 

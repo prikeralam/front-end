@@ -8,7 +8,7 @@ const sections = [
   { title: "Our Team", href: "/people/team", desc: "PRI's staff, who run the day-to-day work of the institute." },
 ];
 
-export default function PeopleV2() {
+export default function PeoplePage() {
   return (
     <>
       <PageHeader kicker="People" title="The people behind PRI" intro="Our team, patrons, Executive Council, and partners." />

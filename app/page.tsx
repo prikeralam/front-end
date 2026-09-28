@@ -1,21 +1,34 @@
 import Link from "next/link";
-import { heroProjects } from "./_content/projects";
+import { mottoSlide } from "./_content/projects";
 import { heroProjectPhotos } from "./_lib/stockPhotos";
-import { publications } from "./_content/publications";
+import { load } from "./_lib/api/load";
+import { listProjects } from "./_lib/api/projects";
+import { listPublications } from "./_lib/api/publications";
+import { LoadError, NotPublishedYet } from "./_ui/ApiMessage";
 import { upcomingEvents, pastEvents } from "./_content/events";
 import { SectionHeading, StatusTag } from "./_ui/kit";
 import HeroCarousel from "./_ui/HeroCarousel";
 import MediaSlot from "./_ui/MediaSlot";
 
-const featuredResearch = publications.slice(0, 3);
 const featuredEvents = [...upcomingEvents, ...pastEvents].slice(0, 3);
 
-export default function HomeV2() {
+/** Slugs of the projects shown after the motto slide, in order. */
+const HERO_PROJECT_SLUGS = ["education", "demography-migration"];
+
+export default async function HomePage() {
+  const [projects, research] = await Promise.all([load("projects", listProjects), load("research", listPublications)]);
+  const featuredResearch = research.ok ? research.data.publications.slice(0, 3) : [];
+  const heroProjects = [
+    mottoSlide,
+    ...HERO_PROJECT_SLUGS.flatMap((slug) => (projects.ok ? projects.data.filter((p) => p.slug === slug) : [])),
+  ];
+  const heroPhotos = { ...heroProjectPhotos, ...Object.fromEntries(heroProjects.flatMap((p) => (p.image.src ? [[p.slug, p.image.src]] : []))) };
+
   return (
     <>
       {/* Hero banners */}
       <div className="mx-auto max-w-6xl px-6 pt-8">
-        <HeroCarousel projects={heroProjects} photos={heroProjectPhotos} />
+        <HeroCarousel projects={heroProjects} photos={heroPhotos} />
       </div>
 
       {/* Featured Research */}
@@ -24,6 +37,8 @@ export default function HomeV2() {
           <SectionHeading>Featured research</SectionHeading>
           <Link href="/research" className="text-sm font-semibold text-[#E4633F] hover:underline">View all research &rarr;</Link>
         </div>
+        {!research.ok && <LoadError what="our research" />}
+        {research.ok && featuredResearch.length === 0 && <NotPublishedYet>Research will be published here soon.</NotPublishedYet>}
         <div className="mt-8 grid gap-5 sm:grid-cols-3">
           {featuredResearch.map((p) => (
             <Link key={p.slug} href={`/research/${p.slug}`} className="block overflow-hidden rounded-xl border border-[#e6e8f0] bg-white transition-shadow hover:shadow-[0_2px_16px_rgba(15,107,92,0.10)]">

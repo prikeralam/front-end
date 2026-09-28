@@ -1,15 +1,22 @@
 import { donatePayment, bankDetails } from "../_content/donate";
-import { publications } from "../_content/publications";
-import { people } from "../_content/people";
+import { load } from "../_lib/api/load";
+import { listPeopleByGroup } from "../_lib/api/people";
+import { listPublications } from "../_lib/api/publications";
 import { PageHeader, SectionHeading, StatusTag } from "../_ui/kit";
 
-const impactStats = [
-  { value: String(publications.length), label: "Published research stories" },
-  { value: String(people.filter((p) => p.group === "executive").length), label: "Executive Council members" },
-  { value: String(people.filter((p) => p.group === "team").length), label: "Team members driving the work" },
-];
+export default async function DonatePage() {
+  const [research, executive, team] = await Promise.all([
+    load("research", listPublications),
+    load("the executive council", () => listPeopleByGroup("executive")),
+    load("our team", () => listPeopleByGroup("team")),
+  ]);
+  const count = (loaded: { ok: true; data: unknown[] } | { ok: false }) => (loaded.ok ? String(loaded.data.length) : "—");
+  const impactStats = [
+    { value: research.ok ? String(research.data.publications.length) : "—", label: "Published research stories" },
+    { value: count(executive), label: "Executive Council members" },
+    { value: count(team), label: "Team members driving the work" },
+  ];
 
-export default function DonateV2() {
   return (
     <>
       <PageHeader

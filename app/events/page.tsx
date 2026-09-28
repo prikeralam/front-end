@@ -3,7 +3,7 @@ import { upcomingEvents, pastEvents, eventTypes } from "../_content/events";
 import { PageHeader, SectionHeading, FilterBar, StatusTag, EmptyState } from "../_ui/kit";
 import MediaSlot from "../_ui/MediaSlot";
 
-export default function EventsV2() {
+export default function EventsPage() {
   return (
     <>
       <PageHeader kicker="Events & Campaigns" title="Seminars, workshops, and roundtables" />

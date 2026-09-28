@@ -12,14 +12,6 @@ export function StatusTag({ status }: { status: ContentStatus }) {
   );
 }
 
-export function Badge({ children }: { children: ReactNode }) {
-  return (
-    <span className="inline-block rounded-full bg-[#253D9A]/8 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-[#253D9A]">
-      {children}
-    </span>
-  );
-}
-
 export function PageHeader({ kicker, title, intro }: { kicker: string; title: string; intro?: string }) {
   return (
     <section className="border-b border-[#e6e8f0] bg-[#fafbfc]">
@@ -57,23 +49,6 @@ export function Stat({ value, label }: { value: string; label: string }) {
       <p className="font-[family-name:var(--font-mono)] text-3xl font-semibold text-[#253D9A]">{value}</p>
       <p className="mt-2 text-sm text-[#5b5f74]">{label}</p>
     </div>
-  );
-}
-
-export function Quote({ quote, name, role, status }: { quote: string; name: string; role: string; status: ContentStatus }) {
-  return (
-    <figure className="rounded-xl bg-[#253D9A] p-6 text-white">
-      <blockquote className="text-[15px] leading-relaxed text-white/95">&ldquo;{quote}&rdquo;</blockquote>
-      <figcaption className="mt-5 flex items-center gap-2 border-t border-white/15 pt-4 text-sm">
-        <span className="font-semibold">{name}</span>
-        <span className="text-white/60">{role}</span>
-        {status === "placeholder" && (
-          <span className="rounded-full bg-white/10 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-white/70">
-            Placeholder
-          </span>
-        )}
-      </figcaption>
-    </figure>
   );
 }
 
