@@ -1,25 +1,29 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { checkSession } from "../_lib/auth/authClient";
+import type { Session } from "../_lib/session";
+import ChangePasswordForm from "./_ui/ChangePasswordForm";
 import DashboardSidebar from "./_ui/DashboardSidebar";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
   // Children read the session from local storage, so they only render once the server has confirmed it.
-  const [verified, setVerified] = useState(false);
+  const [verified, setVerified] = useState<Session | null>(null);
 
-  useEffect(() => {
+  const verify = useCallback(() => {
     checkSession().then((check) => {
       if (check.status === "signed-out" || (check.status === "unreachable" && !check.session)) {
         router.replace("/account");
         return;
       }
-      setVerified(true);
+      setVerified(check.session);
     });
   }, [router]);
+
+  useEffect(verify, [verify]);
 
   if (!verified) {
     return (
@@ -28,6 +32,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </p>
     );
   }
+
+  // A temporary password set by an admin has to be replaced before anything else.
+  if (verified.mustChangePassword) return <ChangePasswordForm name={verified.name} onChanged={verify} />;
 
   return (
     <div className="flex min-h-[calc(100vh-73px)]">

@@ -6,7 +6,7 @@ import { SESSION_CHANGED_EVENT, clearSession, getSession, setSession, type Sessi
  * stale local copy can never outlive the real session for long.
  */
 
-type SessionUser = { id: number; name: string; email: string; role: Role };
+type SessionUser = { id: number; name: string; email: string; role: Role; mustChangePassword?: boolean };
 
 export type SignInResult = { ok: true; session: Session } | { ok: false; reason: "invalid" | "input" | "throttled" | "unreachable" };
 
@@ -17,7 +17,7 @@ export type SessionCheck =
   | { status: "unreachable"; session: Session | null };
 
 function mirror(user: SessionUser): Session {
-  const session = { id: user.id, name: user.name, email: user.email, role: user.role };
+  const session: Session = { id: user.id, name: user.name, email: user.email, role: user.role, mustChangePassword: !!user.mustChangePassword };
   setSession(session);
   window.dispatchEvent(new Event(SESSION_CHANGED_EVENT));
   return session;

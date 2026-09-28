@@ -66,11 +66,18 @@ describe("refreshAccess", () => {
 });
 
 describe("fetchMe", () => {
-  it("sends the token and derives a display name from the email", async () => {
+  it("sends the token and derives a display name from the email when there is no name", async () => {
     GET.mockResolvedValueOnce(ok(me));
 
-    expect(await fetchMe("tok")).toEqual({ id: 12, email: "admin@demo.example", role: "admin", name: "admin" });
+    expect(await fetchMe("tok")).toEqual({ id: 12, email: "admin@demo.example", role: "admin", name: "admin", mustChangePassword: false });
     expect(uncachedApi).toHaveBeenCalledWith("tok");
+    expect(GET.mock.calls[0]).toContain("/api/v1/users/me/");
+  });
+
+  it("uses the full name and passes on a pending password change", async () => {
+    GET.mockResolvedValueOnce(ok({ ...me, first_name: "Asha", last_name: "R", must_change_password: true }));
+
+    expect(await fetchMe("tok")).toMatchObject({ name: "Asha R", mustChangePassword: true });
   });
 
   it("returns null on 401 and rejects a malformed body", async () => {

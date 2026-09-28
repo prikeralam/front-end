@@ -22,6 +22,8 @@ export type Session = {
   role: Role;
   /** Backend user id, used to tell whether an object is the signed-in user's own. */
   id?: number;
+  /** Signed in with a temporary password an admin set: the dashboard asks for a new one before anything else. */
+  mustChangePassword?: boolean;
 };
 
 const SESSION_KEY = "pri_session";
