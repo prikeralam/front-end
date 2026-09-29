@@ -5,6 +5,7 @@ import { formatPublicationDate } from "../../_lib/api/publicationAdapter";
 import { LoadError } from "../../_ui/ApiMessage";
 import { PageHeader, StatusTag } from "../../_ui/kit";
 import MediaSlot from "../../_ui/MediaSlot";
+import ProfileLinks from "../_ui/ProfileLinks";
 import { load } from "../../_lib/api/load";
 import { getPersonBySlug } from "../../_lib/api/people";
 
@@ -55,6 +56,9 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ s
           {person.photo && <MediaSlot need={person.photo} />}
           <div>
             <p className="flex items-center gap-2 text-[15px] font-semibold text-[#171a2b]">{person.role} <StatusTag status={person.status} /></p>
+            <div className="mt-4">
+              <ProfileLinks person={person} size="md" />
+            </div>
             {person.bio && <p className="mt-4 text-[15px] leading-relaxed text-[#5b5f74]">{person.bio}</p>}
           </div>
         </div>

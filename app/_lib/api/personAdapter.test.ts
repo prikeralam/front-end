@@ -43,6 +43,14 @@ describe("toPerson", () => {
     expect(person.bio).toBeUndefined();
     expect(person.photo?.src).toBeUndefined();
   });
+
+  it("carries the public LinkedIn and email links, and drops empty ones", () => {
+    const linked = toPerson({ ...apiPerson, linkedin_url: "https://www.linkedin.com/in/noushad", email: "noushad@priresearch.in" }, "team");
+    expect([linked.linkedin, linked.email]).toEqual(["https://www.linkedin.com/in/noushad", "noushad@priresearch.in"]);
+
+    const blank = toPerson({ ...apiPerson, linkedin_url: "", email: "" }, "team");
+    expect([blank.linkedin, blank.email]).toEqual([undefined, undefined]);
+  });
 });
 
 describe("isPersonGroup", () => {

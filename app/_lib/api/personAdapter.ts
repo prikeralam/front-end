@@ -18,6 +18,8 @@ export function toPerson(person: ApiPerson, group: Person["group"]): Person {
     role: person.role_title,
     group,
     bio: person.bio || undefined,
+    linkedin: person.linkedin_url || undefined,
+    email: person.email || undefined,
     status: "real",
     photo: {
       label: `${person.name} — ${person.role_title} portrait`,

@@ -32,6 +32,9 @@ export type Person = {
   role: string;
   group: "team" | "patron" | "advisory" | "executive" | "fellow" | "past-fellow" | "author";
   bio?: string;
+  /** Public contact links, shown as icons on the people pages. */
+  linkedin?: string;
+  email?: string;
   /** Fellows only: their research topic. */
   topic?: string;
   /** Fellows only: research objectives, shown as a bulleted list. */

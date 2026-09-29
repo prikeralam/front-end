@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState, type MouseEvent } from "react";
 import type { Person } from "../../_lib/types";
 import { isPlainClick } from "./plainClick";
+import ProfileLinks from "./ProfileLinks";
 
 /** Shown where PRI hasn't supplied a portrait yet: a quiet silhouette rather than a stranger's stock photo. */
 function PortraitPlaceholder() {
@@ -52,28 +53,42 @@ export default function PeopleGrid({ people, groupLabel }: { people: Person[]; g
       <ul className="mt-8 grid grid-cols-2 gap-x-5 gap-y-8 sm:grid-cols-3 lg:grid-cols-4">
         {people.map((p) => (
           <li key={p.slug} className="flex">
-            <Link
-              href={`/people/${p.slug}`}
-              onClick={(e) => handleClick(e, p)}
-              aria-haspopup="dialog"
-              className="group relative flex w-full flex-col overflow-hidden rounded-lg border border-[#e3e6f0] bg-white transition-[border-color,box-shadow] duration-300 ease-[cubic-bezier(.22,1,.36,1)] before:absolute before:inset-x-0 before:top-0 before:z-10 before:h-[2px] before:origin-left before:scale-x-0 before:bg-[#253D9A] before:transition-transform before:duration-[350ms] before:ease-[cubic-bezier(.22,1,.36,1)] hover:border-[#cdd6f3] hover:shadow-[0_14px_30px_-18px_rgba(23,26,43,0.45)] hover:before:scale-x-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#253D9A] focus-visible:before:scale-x-100 motion-reduce:transition-none motion-reduce:before:transition-none"
-            >
-              <div className="relative aspect-square overflow-hidden border-b border-[#e3e6f0] bg-[#eef0f5]">
-                <Portrait
-                  person={p}
-                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 280px"
-                  className="grayscale transition-[filter,transform] duration-500 ease-[cubic-bezier(.22,1,.36,1)] group-hover:scale-[1.03] group-hover:grayscale-0 group-focus-visible:grayscale-0 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
-                />
-              </div>
-              <div className="flex flex-1 flex-col gap-1 px-4 pb-4 pt-3.5">
-                <p className="font-[family-name:var(--font-heading)] text-[16px] leading-snug text-[#171a2b] transition-colors group-hover:text-[#253D9A]">{p.name}</p>
-                <p className="font-[family-name:var(--font-mono)] text-[10.5px] uppercase leading-snug tracking-[0.08em] text-[#6f7899]">{p.role}</p>
-                <span className="mt-auto inline-flex items-center gap-1 pt-2 text-[12.5px] font-semibold text-[#253D9A]">
+            {/* The card holds two links and the contact icons side by side: interactive elements can't nest in one link. */}
+            <div className="group relative flex w-full flex-col overflow-hidden rounded-lg border border-[#e3e6f0] bg-white transition-[border-color,box-shadow] duration-300 ease-[cubic-bezier(.22,1,.36,1)] before:absolute before:inset-x-0 before:top-0 before:z-10 before:h-[2px] before:origin-left before:scale-x-0 before:bg-[#253D9A] before:transition-transform before:duration-[350ms] before:ease-[cubic-bezier(.22,1,.36,1)] hover:border-[#cdd6f3] hover:shadow-[0_14px_30px_-18px_rgba(23,26,43,0.45)] hover:before:scale-x-100 focus-within:before:scale-x-100 motion-reduce:transition-none motion-reduce:before:transition-none">
+              <Link
+                href={`/people/${p.slug}`}
+                onClick={(e) => handleClick(e, p)}
+                aria-haspopup="dialog"
+                className="flex flex-1 flex-col focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[#253D9A]"
+              >
+                <div className="relative aspect-square overflow-hidden border-b border-[#e3e6f0] bg-[#eef0f5]">
+                  <Portrait
+                    person={p}
+                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 280px"
+                    className="grayscale transition-[filter,transform] duration-500 ease-[cubic-bezier(.22,1,.36,1)] group-hover:scale-[1.03] group-hover:grayscale-0 group-focus-within:grayscale-0 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+                  />
+                </div>
+                <div className="flex flex-1 flex-col gap-1 px-3 pt-3.5 sm:px-4">
+                  <p className="font-[family-name:var(--font-heading)] text-[16px] leading-snug text-[#171a2b] transition-colors group-hover:text-[#253D9A]">{p.name}</p>
+                  <p className="font-[family-name:var(--font-mono)] text-[10.5px] uppercase leading-snug tracking-[0.08em] text-[#6f7899]">{p.role}</p>
+                </div>
+              </Link>
+              {/* Narrow cards (phones, tablets) show only the icons; the photo and name are the tap target. */}
+              <div className="flex items-center justify-start gap-2 px-3 pb-3 pt-2 sm:px-4 xl:justify-between">
+                <Link
+                  href={`/people/${p.slug}`}
+                  onClick={(e) => handleClick(e, p)}
+                  aria-haspopup="dialog"
+                  tabIndex={-1}
+                  aria-hidden="true"
+                  className="hidden items-center gap-1 text-[12.5px] font-semibold text-[#253D9A] xl:inline-flex"
+                >
                   Read profile
                   <span aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-0.5">&rarr;</span>
-                </span>
+                </Link>
+                <ProfileLinks person={p} />
               </div>
-            </Link>
+            </div>
           </li>
         ))}
       </ul>
@@ -101,6 +116,7 @@ export default function PeopleGrid({ people, groupLabel }: { people: Person[]; g
                 </h2>
                 <p className="mt-1.5 pl-[17px] font-[family-name:var(--font-mono)] text-[11.5px] uppercase tracking-[0.08em] text-[#6f7899]">{open.role}</p>
               </div>
+              <ProfileLinks person={open} size="md" />
               <p className="text-[15px] leading-relaxed text-[#4b4f66]">{open.bio || "A biography will be added soon."}</p>
               <Link href={`/people/${open.slug}`} className="mt-2 inline-flex w-fit items-center gap-1 text-[13.5px] font-semibold text-[#253D9A] hover:underline">
                 Open full profile <span aria-hidden="true">&rarr;</span>

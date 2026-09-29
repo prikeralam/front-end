@@ -1762,6 +1762,8 @@ export interface components {
             photo_url?: string;
             /** Format: uri */
             photo?: string | null;
+            linkedin_url?: string;
+            email?: string;
             readonly status?: components["schemas"]["WorkflowStatusEnum"];
             readonly created_by?: number;
             readonly reviewed_by?: number | null;
@@ -1889,6 +1891,8 @@ export interface components {
             photo_url?: string;
             /** Format: uri */
             photo?: string | null;
+            linkedin_url?: string;
+            email?: string;
             readonly status: components["schemas"]["WorkflowStatusEnum"];
             readonly created_by: number;
             readonly reviewed_by: number | null;
