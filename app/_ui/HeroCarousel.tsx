@@ -33,7 +33,7 @@ export default function HeroCarousel({ projects, photos }: { projects: HeroProje
             <div className="absolute inset-x-0 bottom-0 p-7 sm:p-12">
               <h2 className="text-2xl font-extrabold leading-tight text-white sm:text-4xl">{p.title}</h2>
               <p className="mt-2 max-w-md text-sm leading-relaxed text-white/80 sm:text-base">{p.blurb}</p>
-              <span className="mt-5 inline-block rounded-full bg-[#E4633F] px-5 py-2.5 text-sm font-semibold text-white">
+              <span className="mt-5 inline-block rounded-md bg-[#253D9A] px-5 py-2.5 text-sm font-semibold text-white">
                 {p.ctaLabel ?? "Explore project"} &rarr;
               </span>
             </div>
@@ -65,7 +65,7 @@ export default function HeroCarousel({ projects, photos }: { projects: HeroProje
             type="button"
             aria-label={`Go to ${p.title}`}
             onClick={() => go(i)}
-            className={`h-1.5 rounded-full transition-all ${i === index ? "w-7 bg-[#E4633F]" : "w-3 bg-white/50"}`}
+            className={`h-1.5 rounded-full transition-all ${i === index ? "w-7 bg-[#253D9A]" : "w-3 bg-white/50"}`}
           />
         ))}
       </div>
