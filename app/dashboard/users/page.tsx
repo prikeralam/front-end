@@ -17,7 +17,10 @@ import {
   type UserListResult,
   type UserMutation,
 } from "../../_lib/dashboard/userActions";
-import { EmptyState, PageHeader, SectionHeading } from "../../_ui/kit";
+import { EmptyState } from "../../_ui/kit";
+import DashboardPageHeader, { primaryButton } from "../_ui/DashboardPageHeader";
+import Drawer from "../_ui/Drawer";
+import { PlusIcon } from "../_ui/icons";
 
 // Access is per role, not per user (backend Module H): giving someone access means choosing their role.
 const ROLE_ORDER: Role[] = ["public", "fellow", "researcher", "editor", "admin"];
@@ -128,15 +131,10 @@ function NewUserPanel({ onCreated, onCancel }: { onCreated: (user: ManagedUser |
   );
 
   return (
-    <form onSubmit={submit} noValidate className="mt-8 rounded-xl border border-[#253D9A]/25 bg-white p-6 shadow-[0_2px_16px_rgba(37,61,154,0.06)]" aria-busy={busy}>
-      <div className="flex items-baseline justify-between gap-4">
-        <h3 className="text-lg font-bold text-[#171a2b]">New user</h3>
-        <button type="button" onClick={onCancel} className="text-[13px] font-semibold text-[#8b8fa3] hover:text-[#171a2b]">Cancel</button>
-      </div>
+    <form onSubmit={submit} noValidate aria-busy={busy}>
+      {result && <p role="alert" className="mb-4 rounded-lg border border-[#E4633F]/30 bg-[#E4633F]/8 p-3 text-[13px] text-[#5b5f74]">{result.message}</p>}
 
-      {result && <p role="alert" className="mt-4 rounded-lg border border-[#E4633F]/30 bg-[#E4633F]/8 p-3 text-[13px] text-[#5b5f74]">{result.message}</p>}
-
-      <div className="mt-5 grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-2">
         {field("username", "Username", { required: true, autoCapitalize: "none", spellCheck: false, maxLength: 150, autoComplete: "off" })}
         {field("email", "Email", { required: true, type: "email", maxLength: 254, autoComplete: "off" })}
         {field("firstName", "First name", { maxLength: 150, autoComplete: "off" })}
@@ -190,8 +188,9 @@ function NewUserPanel({ onCreated, onCancel }: { onCreated: (user: ManagedUser |
         </div>
       )}
 
-      <div className="mt-6 flex items-center gap-3">
+      <div className="sticky bottom-0 -mx-6 -mb-5 mt-6 flex items-center gap-3 border-t border-[#e3e6f0] bg-white px-6 py-4">
         <button type="submit" disabled={busy} className={primaryClass}>{busy ? "Creating…" : mode === "invite" ? "Create and send invite" : "Create user"}</button>
+        <button type="button" onClick={onCancel} className={ghostClass}>Cancel</button>
       </div>
     </form>
   );
@@ -389,87 +388,94 @@ function UserManager({ session }: { session: Session }) {
   }
 
   return (
-    <section className="mx-auto max-w-5xl px-6 py-12">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <SectionHeading>People with an account</SectionHeading>
-        {!creating && <button onClick={() => { setNotice(""); setCreating(true); }} className={primaryClass}>+ New user</button>}
-      </div>
+    <>
+      <DashboardPageHeader
+        trail={["Administration", "Users & roles"]}
+        title="Users & roles"
+        description="Create accounts, choose what each person can do, and switch access off when someone leaves."
+        actions={
+          <button type="button" onClick={() => { setNotice(""); setCreating(true); }} className={primaryButton}>
+            <PlusIcon width={16} height={16} /> New user
+          </button>
+        }
+      />
+      <section className="mx-auto max-w-6xl px-6 py-6 lg:px-8">
+        <Drawer open={creating} title="New user" subtitle="They get an account with the role you choose." onClose={() => setCreating(false)}>
+          <NewUserPanel
+            onCancel={() => setCreating(false)}
+            onCreated={(user, invite) => {
+              setCreating(false);
+              const who = user?.username ?? "The user";
+              refresh(invite ? `${who} was created and an invite was emailed to ${user?.email ?? "them"}.` : `${who} was created. Pass on the temporary password; they'll be asked to change it.`);
+            }}
+          />
+        </Drawer>
 
-      {creating && (
-        <NewUserPanel
-          onCancel={() => setCreating(false)}
-          onCreated={(user, invite) => {
-            setCreating(false);
-            const who = user?.username ?? "The user";
-            refresh(invite ? `${who} was created and an invite was emailed to ${user?.email ?? "them"}.` : `${who} was created. Pass on the temporary password; they'll be asked to change it.`);
-          }}
-        />
-      )}
-
-      <RoleLadder />
-
-      <div className="mt-6 flex flex-wrap items-center gap-3 rounded-xl border border-[#e6e8f0] bg-[#fafbfc] p-4">
-        <form onSubmit={search} role="search" className="flex min-w-[14rem] flex-1 gap-2">
-          <label htmlFor="user-search" className="sr-only">Search users</label>
-          <input id="user-search" value={queryInput} onChange={(e) => setQueryInput(e.target.value)} maxLength={100} placeholder="Search name, username or email" className={`${pillClass} flex-1`} />
-          <button type="submit" className={ghostClass}>Search</button>
-        </form>
-        <label className="flex items-center gap-2 text-[13px] font-medium text-[#5b5f74]">
-          Role
-          <select value={filters.role} onChange={(e) => applyFilters({ role: e.target.value as Role | "" })} className={pillClass}>
-            <option value="">All roles</option>
-            {ROLE_ORDER.map((r) => <option key={r} value={r}>{roleLabels[r]}</option>)}
-          </select>
-        </label>
-        <div role="group" aria-label="Status" className="flex rounded-full border border-[#dcdee8] bg-white p-0.5">
-          {([["", "All"], ["active", "Active"], ["inactive", "Deactivated"]] as const).map(([value, label]) => (
-            <button
-              key={value}
-              onClick={() => applyFilters({ active: value })}
-              aria-pressed={filters.active === value}
-              className={`rounded-full px-3 py-1 text-[12px] font-semibold ${filters.active === value ? "bg-[#253D9A] text-white" : "text-[#5b5f74] hover:text-[#171a2b]"}`}
-            >
-              {label}
-            </button>
-          ))}
+        <div className="flex flex-wrap items-center gap-3 rounded-xl border border-[#e3e6f0] bg-white p-3">
+          <form onSubmit={search} role="search" className="flex min-w-[14rem] flex-1 gap-2">
+            <label htmlFor="user-search" className="sr-only">Search users</label>
+            <input id="user-search" value={queryInput} onChange={(e) => setQueryInput(e.target.value)} maxLength={100} placeholder="Search name, username or email" className={`${pillClass} flex-1`} />
+            <button type="submit" className={ghostClass}>Search</button>
+          </form>
+          <label className="flex items-center gap-2 text-[13px] font-medium text-[#5b5f74]">
+            Role
+            <select value={filters.role} onChange={(e) => applyFilters({ role: e.target.value as Role | "" })} className={pillClass}>
+              <option value="">All roles</option>
+              {ROLE_ORDER.map((r) => <option key={r} value={r}>{roleLabels[r]}</option>)}
+            </select>
+          </label>
+          <div role="group" aria-label="Status" className="flex rounded-full border border-[#dcdee8] bg-white p-0.5">
+            {([["", "All"], ["active", "Active"], ["inactive", "Deactivated"]] as const).map(([value, label]) => (
+              <button
+                key={value}
+                onClick={() => applyFilters({ active: value })}
+                aria-pressed={filters.active === value}
+                className={`rounded-full px-3 py-1 text-[12px] font-semibold ${filters.active === value ? "bg-[#253D9A] text-white" : "text-[#5b5f74] hover:text-[#171a2b]"}`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
 
-      <p role="status" aria-live="polite" className={notice ? "mt-4 rounded-lg border border-[#0F6B5C]/25 bg-[#0F6B5C]/8 px-4 py-2.5 text-[13px] text-[#0F4F44]" : "sr-only"}>
-        {notice}
-      </p>
+        <p role="status" aria-live="polite" className={notice ? "mt-4 rounded-lg border border-[#0F6B5C]/25 bg-[#0F6B5C]/8 px-4 py-2.5 text-[13px] text-[#0F4F44]" : "sr-only"}>
+          {notice}
+        </p>
 
-      <div className="mt-6">
-        {result === "loading" ? (
-          <p role="status" className="text-sm text-[#8b8fa3]">Loading users…</p>
-        ) : result.status === "forbidden" ? (
-          <p className="text-sm text-[#8b8fa3]">The server says this account may not manage users.</p>
-        ) : result.status === "signed-out" ? (
-          <p className="text-sm text-[#8b8fa3]">Your session has ended. <a href="/account" className="font-semibold text-[#253D9A] hover:underline">Sign in again</a>.</p>
-        ) : result.status === "invalid" ? (
-          <p className="text-sm text-[#B8452A]">Those filters aren&apos;t valid.</p>
-        ) : result.status === "error" ? (
-          <p className="text-sm text-[#B8452A]">We couldn&apos;t load users just now. Please try again.</p>
-        ) : result.users.length === 0 ? (
-          <EmptyState message={filters.q || filters.role || filters.active ? "No users match these filters." : "No accounts yet."} />
-        ) : (
-          <>
-            <ul className="divide-y divide-[#e6e8f0] rounded-xl border border-[#e6e8f0] bg-white">
-              {result.users.map((user) => (
-                <UserRow key={`${user.id}-${reload}`} user={user} self={user.id === session.id} onChanged={refresh} />
-              ))}
-            </ul>
-            <div className="mt-4 flex items-center justify-between text-[13px] text-[#8b8fa3]">
-              <span>{result.count} {result.count === 1 ? "account" : "accounts"} &middot; page {page}</span>
-              <div className="flex gap-2">
-                <button onClick={() => { setResult("loading"); setPage((p) => p - 1); }} disabled={!result.hasPrevious} className={ghostClass}>Previous</button>
-                <button onClick={() => { setResult("loading"); setPage((p) => p + 1); }} disabled={!result.hasNext} className={ghostClass}>Next</button>
+        <div className="mt-6">
+          {result === "loading" ? (
+            <p role="status" className="text-sm text-[#8b8fa3]">Loading users…</p>
+          ) : result.status === "forbidden" ? (
+            <p className="text-sm text-[#8b8fa3]">The server says this account may not manage users.</p>
+          ) : result.status === "signed-out" ? (
+            <p className="text-sm text-[#8b8fa3]">Your session has ended. <a href="/account" className="font-semibold text-[#253D9A] hover:underline">Sign in again</a>.</p>
+          ) : result.status === "invalid" ? (
+            <p className="text-sm text-[#B8452A]">Those filters aren&apos;t valid.</p>
+          ) : result.status === "error" ? (
+            <p className="text-sm text-[#B8452A]">We couldn&apos;t load users just now. Please try again.</p>
+          ) : result.users.length === 0 ? (
+            <EmptyState message={filters.q || filters.role || filters.active ? "No users match these filters." : "No accounts yet."} />
+          ) : (
+            <>
+              <ul className="divide-y divide-[#edf0f6] overflow-hidden rounded-xl border border-[#e3e6f0] bg-white shadow-[0_1px_2px_rgba(23,26,43,0.04)]">
+                {result.users.map((user) => (
+                  <UserRow key={`${user.id}-${reload}`} user={user} self={user.id === session.id} onChanged={refresh} />
+                ))}
+              </ul>
+              <div className="mt-4 flex items-center justify-between text-[13px] text-[#8b8fa3]">
+                <span>{result.count} {result.count === 1 ? "account" : "accounts"} &middot; page {page}</span>
+                <div className="flex gap-2">
+                  <button onClick={() => { setResult("loading"); setPage((p) => p - 1); }} disabled={!result.hasPrevious} className={ghostClass}>Previous</button>
+                  <button onClick={() => { setResult("loading"); setPage((p) => p + 1); }} disabled={!result.hasNext} className={ghostClass}>Next</button>
+                </div>
               </div>
-            </div>
-          </>
-        )}
-      </div>
-    </section>
+            </>
+          )}
+        </div>
+
+        <RoleLadder />
+      </section>
+    </>
   );
 }
 
@@ -478,15 +484,15 @@ export default function UsersPage() {
   if (!session) return null;
 
   return (
-    <>
-      <PageHeader kicker="Module H" title="Users & roles" intro="Create accounts, choose what each person can do, and switch access off when someone leaves." />
-      {isAdmin(session) ? (
-        <UserManager session={session} />
-      ) : (
-        <section className="mx-auto max-w-3xl px-6 py-16">
+    isAdmin(session) ? (
+      <UserManager session={session} />
+    ) : (
+      <>
+        <DashboardPageHeader trail={["Administration", "Users & roles"]} title="Users & roles" />
+        <section className="mx-auto max-w-6xl px-6 py-6 lg:px-8">
           <p className="text-sm text-[#8b8fa3]">Managing users is limited to the Admin role.</p>
         </section>
-      )}
-    </>
+      </>
+    )
   );
 }

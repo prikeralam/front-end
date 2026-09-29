@@ -23,8 +23,8 @@ export function toPerson(person: ApiPerson, group: Person["group"]): Person {
       label: `${person.name} — ${person.role_title} portrait`,
       ratio: "square",
       kind: "photo",
-      // Empty `photo_url` leaves `src` unset, which falls back to the themed stock portrait like before.
-      src: person.photo_url || undefined,
+      // An uploaded photo wins over the link; neither leaves `src` unset, which falls back to the themed stock portrait like before.
+      src: person.photo || person.photo_url || undefined,
     },
   };
 }
@@ -44,7 +44,7 @@ export function toPartner(person: ApiPerson): Partner {
       label: `${person.name} logo`,
       ratio: "3:2",
       kind: "logo",
-      src: person.photo_url || undefined,
+      src: person.photo || person.photo_url || undefined,
     },
   };
 }

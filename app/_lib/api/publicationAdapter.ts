@@ -56,7 +56,7 @@ export function toPublication(publication: ApiPublication, lookups: PublicationL
       ratio: "4:3",
       kind: "photo",
       // The API has no cover for the seeded data stories; the site's hand-picked stock covers stand in until it does.
-      src: publication.cover_url || dataStoryCoverPhotos[publication.slug] || undefined,
+      src: publication.cover || publication.cover_url || dataStoryCoverPhotos[publication.slug] || undefined,
     },
   };
 }

@@ -4,7 +4,8 @@ import { useEffect, useState, type FormEvent } from "react";
 import { isAdmin } from "../../_lib/session";
 import { useRequireSession } from "../../_lib/useSession";
 import { listAuditLogAction, type AuditPage } from "../../_lib/dashboard/auditActions";
-import { PageHeader, SectionHeading, EmptyState } from "../../_ui/kit";
+import { SectionHeading, EmptyState } from "../../_ui/kit";
+import DashboardPageHeader from "../_ui/DashboardPageHeader";
 
 const inputClass = "rounded-full border border-[#dcdee8] bg-white px-3 py-1.5 text-[13px] text-[#171a2b]";
 const pagerClass =
@@ -43,8 +44,8 @@ export default function AuditLog() {
   if (!admin) {
     return (
       <>
-        <PageHeader kicker="Module H" title="Audit log" />
-        <section className="mx-auto max-w-3xl px-6 py-16">
+        <DashboardPageHeader trail={["Administration", "Audit log"]} title="Audit log" />
+        <section className="mx-auto max-w-6xl px-6 py-6 lg:px-8">
           <p className="text-sm text-[#8b8fa3]">The cross-module audit log is limited to the Admin role.</p>
         </section>
       </>
@@ -53,9 +54,9 @@ export default function AuditLog() {
 
   return (
     <>
-      <PageHeader kicker="Module H" title="Audit log" intro="Every permission-relevant action recorded by the platform, across every module." />
-      <section className="mx-auto max-w-4xl px-6 py-16">
-        <form onSubmit={applyFilters} className="flex flex-wrap items-center gap-3 rounded-xl border border-[#e6e8f0] bg-[#fafbfc] p-4">
+      <DashboardPageHeader trail={["Administration", "Audit log"]} title="Audit log" description="Every permission-relevant action recorded by the platform, across every module." />
+      <section className="mx-auto max-w-6xl px-6 py-6 lg:px-8">
+        <form onSubmit={applyFilters} className="flex flex-wrap items-center gap-3 rounded-xl border border-[#e3e6f0] bg-white p-3">
           <label className="flex items-center gap-2 text-[13px] font-medium text-[#5b5f74]">
             Module
             <input list="audit-modules" value={moduleInput} onChange={(e) => setModuleInput(e.target.value)} placeholder="e.g. accounts" className={inputClass} />

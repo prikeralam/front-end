@@ -9,26 +9,39 @@ import { useDatasets, usePendingAccessRequests, useMyAccessRequests } from "../.
 import type { AccessRequestRow } from "../../_lib/datasetTypes";
 import type { Session } from "../../_lib/session";
 import { transitionCmsAction } from "../../_lib/dashboard/cmsActions";
-import { contentTypeLabel, workflowStatusLabel, type CmsRecord } from "../../_lib/cms/types";
+import { contentTypeLabel, type CmsRecord } from "../../_lib/cms/types";
 import { useCmsRecords, useRecentAudit } from "../../_lib/useCmsApi";
-import { SectionHeading, Stat, Card, EmptyState } from "../../_ui/kit";
+import { SectionHeading, Card, EmptyState } from "../../_ui/kit";
+import StatusBadge from "./StatusBadge";
 
 type OverviewProps = { session: Session; bump: () => void };
-
-const statusLabel: Record<string, string> = { pending: "Pending review", rejected: "Rejected", ...workflowStatusLabel };
-const statusColor: Record<string, string> = {
-  pending: "bg-[#E4633F]/10 text-[#E4633F]",
-  in_review: "bg-[#E4633F]/10 text-[#E4633F]",
-  approved: "bg-[#253D9A]/10 text-[#253D9A]",
-  published: "bg-[#253D9A]/10 text-[#253D9A]",
-  rejected: "bg-[#8b8fa3]/10 text-[#5b5f74]",
-  draft: "bg-[#8b8fa3]/10 text-[#5b5f74]",
-  unpublished: "bg-[#8b8fa3]/10 text-[#5b5f74]",
-};
 
 // ---------------------------------------------------------------------------
 // Shared building blocks reused across role views
 // ---------------------------------------------------------------------------
+
+const kpiTone = {
+  amber: "before:bg-[#d98f1c]",
+  coral: "before:bg-[#E4633F]",
+  blue: "before:bg-[#253D9A]",
+  green: "before:bg-[#27a567]",
+};
+
+/** A headline number with a coloured edge, linking to the screen where it can be acted on. */
+function KpiTile({ value, label, tone, href }: { value: number; label: string; tone: keyof typeof kpiTone; href: string }) {
+  return (
+    <Link
+      href={href}
+      className={`group relative overflow-hidden rounded-xl border border-[#e3e6f0] bg-white p-5 shadow-[0_1px_2px_rgba(23,26,43,0.04)] transition-shadow before:absolute before:inset-y-0 before:left-0 before:w-1 hover:shadow-[0_4px_16px_rgba(23,26,43,0.08)] ${kpiTone[tone]}`}
+    >
+      <p className="font-[family-name:var(--font-mono)] text-[30px] font-semibold leading-none text-[#171a2b]">{value}</p>
+      <p className="mt-2 text-[13px] text-[#5b6280] group-hover:text-[#253D9A]">{label} &rarr;</p>
+    </Link>
+  );
+}
+
+const panel = "rounded-xl border border-[#e3e6f0] bg-white shadow-[0_1px_2px_rgba(23,26,43,0.04)]";
+const panelHeading = "flex items-center justify-between border-b border-[#edf0f6] px-5 py-3.5 font-[family-name:var(--font-heading)] text-[16px] text-[#171a2b]";
 
 function BrowseDatasetsGrid({ session }: { session: Session | null }) {
   const datasets = useDatasets(session);
@@ -210,27 +223,24 @@ export function AdminOverview({ session, bump }: OverviewProps) {
   const needsAttentionCount = pendingAccessRequests.length + pendingDatasets.length + pendingContent.length;
 
   return (
-    <div className="space-y-12">
-      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        <Stat value={String(pendingAccessRequests.length)} label="Pending access requests" />
-        <Stat value={String(pendingDatasets.length)} label="Datasets awaiting review" />
-        <Stat value={String(pendingContent.length)} label="Content items awaiting review" />
-        <Stat value={String(datasets.length)} label="Total datasets in repository" />
+    <div className="space-y-8">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <KpiTile value={pendingAccessRequests.length} label="Pending access requests" tone="coral" href="#needs-attention" />
+        <KpiTile value={pendingDatasets.length} label="Datasets awaiting review" tone="amber" href="/dashboard/manage" />
+        <KpiTile value={pendingContent.length} label="Content awaiting review" tone="blue" href="/dashboard/content" />
+        <KpiTile value={datasets.length} label="Datasets in the repository" tone="green" href="/dashboard/manage" />
       </div>
 
-      <div className="grid gap-5 sm:grid-cols-2">
-        <Card href="/dashboard/audit">
-          <p className="text-lg font-bold text-[#171a2b]">Audit log &rarr;</p>
-          <p className="mt-2 text-[13px] text-[#8b8fa3]">See every permission-relevant action across every module.</p>
-        </Card>
-      </div>
-
-      <div>
-        <SectionHeading>Needs your attention</SectionHeading>
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+      <div id="needs-attention" className={`${panel} scroll-mt-6`}>
+        <h2 className={panelHeading}>
+          Needs your attention
+          {needsAttentionCount > 0 && <span className="rounded-full bg-[#E4633F]/10 px-2 py-0.5 font-[family-name:var(--font-mono)] text-[12px] text-[#b3452a]">{needsAttentionCount}</span>}
+        </h2>
         {needsAttentionCount === 0 ? (
-          <div className="mt-6"><EmptyState message="Nothing pending review right now." /></div>
+          <p className="px-5 py-10 text-center text-[13px] text-[#7d86a8]">Nothing pending review right now.</p>
         ) : (
-          <div className="mt-6 space-y-3">
+          <div className="divide-y divide-[#edf0f6] [&>div]:rounded-none [&>div]:border-0">
             {pendingAccessRequests.map((r) => {
               const d = datasets.find((ds) => ds.slug === r.datasetSlug);
               return (
@@ -272,21 +282,24 @@ export function AdminOverview({ session, bump }: OverviewProps) {
         )}
       </div>
 
-      <div>
-        <SectionHeading>Recent activity</SectionHeading>
+      <div className={panel}>
+        <h2 className={panelHeading}>
+          Recent activity
+          <Link href="/dashboard/audit" className="font-[family-name:var(--font-body)] text-[12.5px] font-semibold text-[#253D9A] hover:underline">Audit log &rarr;</Link>
+        </h2>
         {recentActivity.length === 0 ? (
-          <div className="mt-6"><EmptyState message="No activity recorded yet." /></div>
+          <p className="px-5 py-10 text-center text-[13px] text-[#7d86a8]">No activity recorded yet.</p>
         ) : (
-          <ul className="mt-6 divide-y divide-[#e6e8f0] rounded-xl border border-[#e6e8f0] bg-white">
+          <ul className="divide-y divide-[#edf0f6]">
             {recentActivity.map((item) => (
-              <li key={item.id} className="flex items-center justify-between gap-4 px-5 py-4">
-                <p className="text-[14px] text-[#171a2b]">{item.summary}</p>
-                <span className="shrink-0 rounded-full bg-[#8b8fa3]/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-[#5b5f74]">{item.module}</span>
+              <li key={item.id} className="flex items-start justify-between gap-3 px-5 py-3">
+                <p className="text-[13px] leading-snug text-[#171a2b]">{item.summary}</p>
+                <span className="shrink-0 rounded bg-[#eef0f5] px-2 py-0.5 font-[family-name:var(--font-mono)] text-[11px] text-[#5b6280]">{item.module}</span>
               </li>
             ))}
           </ul>
         )}
-        <p className="mt-3 text-[12px] text-[#8b8fa3]">The latest entries from the platform&rsquo;s audit log. See <Link href="/dashboard/audit" className="underline">the full audit log</Link>.</p>
+      </div>
       </div>
 
       <div className="border-t border-[#e6e8f0] pt-10 space-y-12">
@@ -331,7 +344,7 @@ export function ResearcherOverview({ session }: OverviewProps) {
                   <p className="text-[15px] font-semibold text-[#171a2b]">{s.title}</p>
                   <p className="mt-1 text-[12px] text-[#8b8fa3]">{s.kind}</p>
                 </div>
-                <span className={`shrink-0 rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wide ${statusColor[s.status] ?? "bg-[#8b8fa3]/10 text-[#5b5f74]"}`}>{statusLabel[s.status] ?? s.status}</span>
+                <StatusBadge status={s.status} />
               </li>
             ))}
           </ul>

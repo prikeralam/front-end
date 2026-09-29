@@ -23,6 +23,11 @@ export type Resource = {
   subtitle: (values: Record<string, string>, record: ApiRecord) => string;
 };
 
+/** Image uploads the backend accepts (JPG, PNG, WebP up to 5 MB). */
+export const IMAGE_ACCEPT = ".jpg,.jpeg,.png,.webp";
+/** Form value meaning "remove the uploaded image" (sent to the API as null). */
+export const REMOVE_IMAGE = "__remove__";
+
 const options = (...pairs: [string, string][]): FieldOption[] => pairs.map(([value, label]) => ({ value, label }));
 
 export const PERSON_GROUPS = options(
@@ -71,7 +76,7 @@ export const RESOURCES: Record<ContentTypeKey, Resource> = {
       { key: "role_title", label: "Role / title", kind: "text" },
       { key: "group", label: "Group", kind: "select", options: PERSON_GROUPS },
       { key: "bio", label: "Bio", kind: "textarea", optional: true },
-      { key: "photo_url", label: "Photo URL", kind: "text", optional: true },
+      { key: "photo", label: "Photo", kind: "image", urlKey: "photo_url", optional: true },
     ],
     title: (v) => v.name,
     subtitle: (v) => [v.role_title, PERSON_GROUPS.find((g) => g.value === v.group)?.label].filter(Boolean).join(" · "),
@@ -87,7 +92,7 @@ export const RESOURCES: Record<ContentTypeKey, Resource> = {
       // The API has no institution/researcher field; the public site reads "institution" in the role title.
       { key: "role_title", label: "Type", kind: "select", options: options(["Partner institution", "Institution"], ["Partner researcher", "Researcher"]) },
       { key: "bio", label: "Description", kind: "textarea", optional: true },
-      { key: "photo_url", label: "Logo URL", kind: "text", optional: true },
+      { key: "photo", label: "Logo", kind: "image", urlKey: "photo_url", optional: true },
     ],
     title: (v) => v.name,
     subtitle: (v) => v.role_title,
@@ -118,7 +123,7 @@ export const RESOURCES: Record<ContentTypeKey, Resource> = {
       { key: "slug", label: "Slug", kind: "text" },
       { key: "title", label: "Title", kind: "text" },
       { key: "blurb", label: "Blurb", kind: "textarea" },
-      { key: "image_url", label: "Image URL", kind: "text", optional: true },
+      { key: "image", label: "Image", kind: "image", urlKey: "image_url", optional: true },
       { key: "cta_label", label: "Button label", kind: "text", optional: true },
       { key: "cta_href", label: "Button link", kind: "text", optional: true },
     ],
@@ -144,6 +149,7 @@ export const RESOURCES: Record<ContentTypeKey, Resource> = {
       { key: "authors", label: "Author", kind: "select", optionsFrom: "authors", optional: true },
       { key: "tags", label: "Tags", kind: "text", optional: true, help: "Comma-separated." },
       { key: "visibility", label: "Visibility", kind: "select", options: options(["public", "Public"], ["private", "Private"]) },
+      { key: "cover", label: "Cover image", kind: "image", urlKey: "cover_url", optional: true },
     ],
     title: (v) => v.title,
     subtitle: (v) => [v.format.replace(/_/g, " "), v.date].filter(Boolean).join(" · "),
@@ -195,14 +201,25 @@ const asString = (value: unknown): string => {
   return String(value);
 };
 
-/** API record -> form values, keyed by the resource's field keys. File fields stay empty. */
+/**
+ * API record -> form values, keyed by the resource's field keys. File fields stay empty; an image field holds the
+ * uploaded file's URL under its own key and the link under its `urlKey`.
+ */
 export function toValues(resource: Resource, record: ApiRecord): Record<string, string> {
-  return Object.fromEntries(resource.fields.map((f) => [f.key, f.kind === "file" ? "" : f.key === "authors" ? asString((record.authors as unknown[] | undefined)?.[0]) : asString(record[f.key])]));
+  return Object.fromEntries(
+    resource.fields.flatMap((f): [string, string][] => {
+      if (f.kind === "file") return [[f.key, ""]];
+      if (f.kind === "image") return [[f.key, asString(record[f.key])], ...(f.urlKey ? [[f.urlKey, asString(record[f.urlKey])] as [string, string]] : [])];
+      return [[f.key, f.key === "authors" ? asString((record.authors as unknown[] | undefined)?.[0]) : asString(record[f.key])]];
+    }),
+  );
 }
 
 export function toCmsRecord(type: ContentTypeKey, record: ApiRecord): CmsRecord {
   const resource = RESOURCES[type];
   const values = toValues(resource, record);
+  const image = resource.fields.find((f) => f.kind === "image");
+  const imageUrl = image ? values[image.key] || (image.urlKey ? values[image.urlKey] : "") : "";
   return {
     key: String(resource.lookup === "slug" ? record.slug : record.id),
     type,
@@ -213,6 +230,7 @@ export function toCmsRecord(type: ContentTypeKey, record: ApiRecord): CmsRecord 
     subtitle: resource.subtitle(values, record),
     values,
     fileUrl: typeof record.file === "string" ? record.file : undefined,
+    imageUrl: imageUrl || undefined,
   };
 }
 
@@ -228,6 +246,12 @@ export function toPayload(type: ContentTypeKey, values: Record<string, string>, 
 
   for (const field of resource.fields) {
     if (field.kind === "file") continue;
+    if (field.kind === "image") {
+      // The file itself travels as multipart; here only the link and a removal request.
+      if (field.urlKey) payload[field.urlKey] = (values[field.urlKey] ?? "").trim();
+      if (values[field.key] === REMOVE_IMAGE) payload[field.key] = null;
+      continue;
+    }
     if (mode === "update" && field.createOnly) continue;
 
     const raw = (values[field.key] ?? "").trim();
