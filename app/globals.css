@@ -77,3 +77,52 @@ body {
     transform: translateY(22px) scale(0.98);
   }
 }
+
+/* Homepage motion (app/_ui/home). Every piece is complete at rest; reduced motion stops them all. */
+@keyframes pri-spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+@keyframes pri-unspin {
+  from {
+    transform: translate(-50%, -50%) rotate(0);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(-1turn);
+  }
+}
+@keyframes pri-drift {
+  from {
+    transform: translate(-3.5%, -2.5%) rotate(-2deg);
+  }
+  to {
+    transform: translate(3.5%, 2.5%) rotate(2deg) scale(1.06);
+  }
+}
+@keyframes pri-glint {
+  0%,
+  72% {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: 0 0;
+  }
+}
+@keyframes pri-rise {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pri-motion,
+  .pri-motion * {
+    animation: none !important;
+  }
+}
+
+/* Fine film grain over the theme panels' gradients. */
+.pri-grain {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}

@@ -73,7 +73,7 @@ export default function Footer() {
           <span>80G: {org.registration.cert80G}</span>
         </div>
         <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
-          <p className="text-xs text-white/35">&copy; {new Date().getFullYear()} {org.name}. Prototype build.</p>
+          <p className="text-xs text-white/35">&copy; {new Date().getFullYear()} {org.name}.</p>
           <div className="flex items-center gap-6">
             <Link href="/account" className="text-xs font-semibold uppercase tracking-[0.12em] text-white/55 transition-colors hover:text-white">
               Login
