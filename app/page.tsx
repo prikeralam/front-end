@@ -88,10 +88,6 @@ export default async function HomePage() {
       <section className="relative overflow-hidden border-b border-[#e3e6f0] bg-[radial-gradient(1000px_520px_at_88%_4%,rgba(37,61,154,0.10),transparent_62%),radial-gradient(760px_460px_at_0%_100%,rgba(37,61,154,0.05),transparent_60%)] after:pointer-events-none after:absolute after:inset-0 after:bg-[radial-gradient(circle,rgba(37,61,154,0.14)_1px,transparent_1.4px)] after:bg-[length:28px_28px] after:[mask-image:linear-gradient(100deg,transparent_45%,#000_90%)]">
         <div className="pri-motion relative z-10 mx-auto grid max-w-6xl items-center gap-12 px-6 py-16 md:grid-cols-[1.05fr_0.95fr] md:py-20">
           <div className="grid justify-items-start gap-6">
-            <p className={`${eyebrow} animate-[pri-rise_700ms_cubic-bezier(.22,1,.36,1)_both]`}>
-              <span aria-hidden="true" className="h-2 w-2 bg-[#253D9A]" />
-              Policy and Research Initiative · Kerala
-            </p>
             <h1 className="max-w-[15ch] animate-[pri-rise_700ms_cubic-bezier(.22,1,.36,1)_60ms_both] text-balance text-[40px] leading-[1.04] tracking-tight text-[#171a2b] sm:text-[56px]">
               {headLead && <><KeepHyphenated text={headLead} /> </>}
               <span className="animate-[pri-glint_7s_ease-in-out_1.5s_infinite] bg-[linear-gradient(105deg,#253D9A_40%,#8fa6ff_50%,#253D9A_60%)] bg-[length:250%_100%] bg-[position:100%_0] bg-no-repeat bg-clip-text text-transparent">
