@@ -18,10 +18,22 @@ export type DatasetSummary = {
   coverage?: string;
   frequency?: string;
   lastUpdated?: string;
+  /** ISO timestamp of the last change, for the default citation's year. */
+  updatedAt?: string;
   fileFormat: string | null;
+  /** e.g. "District, Year". */
+  granularity?: string;
+  /** e.g. "2014-15 to 2024-25". */
+  timePeriod?: string;
+  /** Worked out by the backend from the file; absent when it couldn't read it. */
+  rowCount?: number;
+  columnCount?: number;
 };
 
 export type DatasetDetail = DatasetSummary & {
+  columns: string[];
+  /** PRI's own citation text, when set; otherwise a default is built (`citationFor`). */
+  citation?: string;
   tags: string[];
   files: { label: string; path: string }[];
 };

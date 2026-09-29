@@ -6,13 +6,13 @@ const GET = vi.fn();
 vi.mock("./client", () => ({ api: { GET } }));
 vi.mock("./themes", () => ({
   listThemes: async () => [
-    { id: 7, slug: "demography", name: "Demography", parent: null, subthemes: [{ id: 10, slug: "religious-composition", name: "Religious Composition" }] },
+    { id: 7, slug: "demography", name: "Demography", description: "Population and change.", parent: null, subthemes: [{ id: 10, slug: "religious-composition", name: "Religious Composition" }] },
     { id: 10, slug: "religious-composition", name: "Religious Composition", parent: 7, subthemes: [] },
     { id: 4, slug: "public-finance", name: "Public Finance", parent: null, subthemes: [] },
   ],
 }));
 
-const { listDatasets, getDatasetDetail, getDatasetPreviews, listDashboards, listThemeNames } = await import("./datasets");
+const { listDatasets, getDatasetDetail, getDatasetPreviews, listDashboards, listTopThemes } = await import("./datasets");
 
 const apiDataset = (id: number, slug: string, extra: Record<string, unknown> = {}) => ({
   id,
@@ -100,7 +100,7 @@ describe("getDatasetPreviews", () => {
   });
 });
 
-describe("listDashboards / listThemeNames", () => {
+describe("listDashboards / listTopThemes", () => {
   beforeEach(() => GET.mockReset());
 
   it("resolves dashboard theme names", async () => {
@@ -111,7 +111,10 @@ describe("listDashboards / listThemeNames", () => {
     expect(await listDashboards()).toMatchObject([{ slug: "d", theme: "Public Finance", embedType: "tableau" }]);
   });
 
-  it("lists only top-level theme names", async () => {
-    expect(await listThemeNames()).toEqual(["Demography", "Public Finance"]);
+  it("lists only top-level themes, with a blank description where none is set", async () => {
+    expect(await listTopThemes()).toEqual([
+      { name: "Demography", description: "Population and change." },
+      { name: "Public Finance", description: "" },
+    ]);
   });
 });

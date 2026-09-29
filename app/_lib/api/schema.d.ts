@@ -1381,6 +1381,12 @@ export interface components {
             source?: string;
             update_frequency?: string;
             visibility?: components["schemas"]["DatasetVisibilityEnum"];
+            granularity?: string;
+            time_period?: string;
+            citation?: string;
+            readonly row_count: number | null;
+            readonly column_count: number | null;
+            readonly columns: unknown;
             readonly status: components["schemas"]["WorkflowStatusEnum"];
             readonly created_by: number;
             readonly reviewed_by: number | null;
@@ -1725,6 +1731,12 @@ export interface components {
             source?: string;
             update_frequency?: string;
             visibility?: components["schemas"]["DatasetVisibilityEnum"];
+            granularity?: string;
+            time_period?: string;
+            citation?: string;
+            readonly row_count?: number | null;
+            readonly column_count?: number | null;
+            readonly columns?: unknown;
             readonly status?: components["schemas"]["WorkflowStatusEnum"];
             readonly created_by?: number;
             readonly reviewed_by?: number | null;
@@ -1849,6 +1861,7 @@ export interface components {
             readonly id?: number;
             slug?: string;
             name?: string;
+            description?: string;
             parent?: number | null;
             readonly subthemes?: components["schemas"]["ThemeChild"][];
         };
@@ -2001,6 +2014,7 @@ export interface components {
             readonly id: number;
             slug: string;
             name: string;
+            description?: string;
             parent?: number | null;
             readonly subthemes: components["schemas"]["ThemeChild"][];
         };

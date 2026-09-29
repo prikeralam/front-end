@@ -86,7 +86,8 @@ export async function listDashboards(): Promise<DashboardCard[]> {
   return dashboards.sort((a, b) => a.id - b.id).map((dashboard) => toDashboard(dashboard, names));
 }
 
-/** Names of the top-level themes, in API order: the valid `/data/theme/[theme]` values. */
-export async function listThemeNames(): Promise<string[]> {
-  return (await listThemes()).filter((theme) => theme.parent === null).map((theme) => theme.name);
+/** Top-level themes with their descriptions, in API order. */
+export async function listTopThemes(): Promise<{ name: string; description: string }[]> {
+  return (await listThemes()).filter((theme) => theme.parent === null).map((theme) => ({ name: theme.name, description: theme.description ?? "" }));
 }
+

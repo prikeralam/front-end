@@ -25,7 +25,7 @@ export default async function DatasetDetailPage({ params }: { params: Promise<{ 
   return (
     <>
       <PageHeader kicker={`${ds.type ?? "Dataset"} · ${ds.theme ?? "Uncategorised"}`} title={ds.title} />
-      <section className="mx-auto max-w-3xl px-6 py-16">
+      <section className="mx-auto max-w-5xl px-6 py-12">
         <DatasetView ds={ds} previews={previews} access={<DatasetAccess slug={ds.slug} accessState={ds.accessState} downloadUrl={ds.files[0]?.path ?? null} />} />
       </section>
     </>

@@ -27,6 +27,12 @@ const dataset: ApiDataset = {
   source: "PRI Research Team",
   update_frequency: "",
   visibility: "public",
+  granularity: "Religion, Year",
+  time_period: "2011 to 2024",
+  citation: "",
+  row_count: 3,
+  column_count: 3,
+  columns: ["group", "share_2011", "share_2024"],
   status: "published",
   created_by: 10,
   reviewed_by: null,
@@ -82,6 +88,16 @@ describe("toDatasetSummary / toDatasetDetail", () => {
 
   it("exposes the single file as a download, and none when it is withheld", () => {
     expect(toDatasetDetail(dataset, topLevel).files).toEqual([{ label: dataset.title, path: dataset.file }]);
+    expect(toDatasetDetail(dataset, topLevel)).toMatchObject({
+      granularity: "Religion, Year",
+      timePeriod: "2011 to 2024",
+      rowCount: 3,
+      columnCount: 3,
+      columns: ["group", "share_2011", "share_2024"],
+      citation: undefined,
+    });
+    // Stats the backend couldn't work out stay absent, rather than showing as 0.
+    expect(toDatasetDetail({ ...dataset, row_count: null, column_count: null, columns: [] }, topLevel)).toMatchObject({ rowCount: undefined, columnCount: undefined, columns: [] });
     expect(toDatasetDetail({ ...dataset, file: undefined } as unknown as ApiDataset, topLevel).files).toEqual([]);
   });
 });
