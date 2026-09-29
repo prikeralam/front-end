@@ -5,6 +5,7 @@ import { formatPublicationDate } from "../../_lib/api/publicationAdapter";
 import { LoadError } from "../../_ui/ApiMessage";
 import { PageHeader, StatusTag } from "../../_ui/kit";
 import MediaSlot from "../../_ui/MediaSlot";
+import ProfileLinks from "../_ui/ProfileLinks";
 import { load } from "../../_lib/api/load";
 import { getPersonBySlug } from "../../_lib/api/people";
 
@@ -52,7 +53,15 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ s
       <PageHeader kicker={groupLabel[person.group] ?? "People"} title={person.name} />
       <section className="mx-auto max-w-3xl px-6 py-16">
         <div className="grid gap-8 sm:grid-cols-[200px_1fr]">
-          {person.photo && <MediaSlot need={person.photo} />}
+          <div className="grid content-start gap-4">
+            {person.photo && <MediaSlot need={person.photo} />}
+            <ProfileLinks person={person} size="md" />
+            {person.email && (
+              <a href={`mailto:${person.email}`} className="break-all text-[13.5px] font-semibold text-[#253D9A] hover:underline">
+                {person.email}
+              </a>
+            )}
+          </div>
           <div>
             <p className="flex items-center gap-2 text-[15px] font-semibold text-[#171a2b]">{person.role} <StatusTag status={person.status} /></p>
             {person.bio && <p className="mt-4 text-[15px] leading-relaxed text-[#5b5f74]">{person.bio}</p>}
