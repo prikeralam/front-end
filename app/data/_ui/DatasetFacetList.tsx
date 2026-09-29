@@ -10,7 +10,7 @@ function FacetGroup({ label, options, value, onChange }: { label: string; option
   if (options.length === 0) return null;
   return (
     <div>
-      <p className="mb-2 text-[11px] font-bold uppercase tracking-wider text-[#8b8fa3]">{label}</p>
+      <p className="mb-2 text-[11px] font-[family-name:var(--font-mono)] font-semibold uppercase tracking-[0.12em] text-[#8b8fa3]">{label}</p>
       <div className="space-y-1.5">
         <button
           onClick={() => onChange("")}
@@ -85,7 +85,7 @@ export default function DatasetFacetList({
         {filtered.length === 0 ? (
           <EmptyState message="No datasets match your filters." />
         ) : (
-          <div className="divide-y divide-[#e6e8f0] rounded-xl border border-[#e6e8f0] bg-white">{filtered.map(renderRow)}</div>
+          <div className="divide-y divide-[#e6e8f0] rounded-lg border border-[#e6e8f0] bg-white">{filtered.map(renderRow)}</div>
         )}
       </div>
     </div>

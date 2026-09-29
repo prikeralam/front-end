@@ -5,7 +5,7 @@ import Link from "next/link";
 import { confirmPasswordResetAction, requestPasswordResetAction, type PasswordResult } from "../_lib/auth/passwordActions";
 import PasswordInput from "../_ui/PasswordInput";
 
-const cardClass = "rounded-xl border border-[#e6e8f0] bg-white p-6 shadow-[0_2px_16px_rgba(15,107,92,0.06)] sm:p-8";
+const cardClass = "rounded-lg border border-[#e6e8f0] bg-white p-6 shadow-[0_2px_16px_rgba(23,26,43,0.06)] sm:p-8";
 const buttonClass =
   "mt-7 flex h-11 w-full items-center justify-center rounded-full bg-[#253D9A] text-sm font-semibold text-white transition-colors hover:bg-[#1B2C70] disabled:cursor-not-allowed disabled:opacity-70";
 const errorClass = "mb-5 rounded-lg border border-[#E4633F]/30 bg-[#E4633F]/8 p-3 text-[13px] leading-relaxed text-[#5b5f74]";
@@ -31,7 +31,7 @@ function RequestLink({ intro }: { intro: string }) {
   if (sent) {
     return (
       <div className={cardClass} role="status">
-        <p className="text-xs font-bold uppercase tracking-wider text-[#8b8fa3]">Check your inbox</p>
+        <p className="text-xs font-[family-name:var(--font-mono)] font-semibold uppercase tracking-[0.12em] text-[#8b8fa3]">Check your inbox</p>
         <p className="mt-2 text-[15px] leading-relaxed text-[#171a2b]">
           If <strong>{email.trim()}</strong> belongs to an active account, a link to set a new password is on its way. It works once and expires after three days.
         </p>
@@ -44,7 +44,7 @@ function RequestLink({ intro }: { intro: string }) {
     <form onSubmit={submit} noValidate className={cardClass} aria-busy={busy}>
       <div id="request-error" role="alert" className={error ? errorClass : "sr-only"}>{error}</div>
       <p className="text-[14px] leading-relaxed text-[#5b5f74]">{intro}</p>
-      <label htmlFor="reset-email" className="mb-1 mt-5 block text-xs font-bold uppercase tracking-wider text-[#8b8fa3]">Email</label>
+      <label htmlFor="reset-email" className="mb-1 mt-5 block text-xs font-[family-name:var(--font-mono)] font-semibold uppercase tracking-[0.12em] text-[#8b8fa3]">Email</label>
       <input
         id="reset-email"
         type="email"
@@ -88,9 +88,9 @@ function SetPassword({ uid, token }: { uid: string; token: string }) {
   if (state === "done") {
     return (
       <div className={cardClass} role="status">
-        <p className="text-xs font-bold uppercase tracking-wider text-[#0F6B5C]">Password set</p>
+        <p className="text-xs font-[family-name:var(--font-mono)] font-semibold uppercase tracking-[0.12em] text-[#0F6B5C]">Password set</p>
         <p className="mt-2 text-[15px] leading-relaxed text-[#171a2b]">You can now sign in with your username and new password.</p>
-        <Link href="/account" className="mt-6 inline-flex rounded-full bg-[#253D9A] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#1B2C70]">Sign in</Link>
+        <Link href="/account" className="mt-6 inline-flex rounded-md bg-[#253D9A] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#1B2C70]">Sign in</Link>
       </div>
     );
   }

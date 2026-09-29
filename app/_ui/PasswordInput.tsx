@@ -28,7 +28,7 @@ export default function PasswordInput({
   const [shown, setShown] = useState(false);
   return (
     <div>
-      <label htmlFor={id} className="mb-1 block text-xs font-bold uppercase tracking-wider text-[#8b8fa3]">{label}</label>
+      <label htmlFor={id} className="mb-1 block text-xs font-[family-name:var(--font-mono)] font-semibold uppercase tracking-[0.12em] text-[#8b8fa3]">{label}</label>
       <div className="relative">
         <input
           id={id}

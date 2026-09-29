@@ -73,7 +73,7 @@ export default async function DataPage() {
             <Link
               key={t.theme}
               href={`/data/theme/${encodeURIComponent(t.theme)}`}
-              className="group rounded-xl border border-[#e6e8f0] bg-white p-7 transition-shadow hover:shadow-[0_2px_16px_rgba(15,107,92,0.10)]"
+              className="group rounded-lg border border-[#e6e8f0] bg-white p-7 transition-shadow hover:shadow-[0_2px_16px_rgba(23,26,43,0.10)]"
             >
               <div className="flex items-center justify-between">
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#253D9A]/8 text-[#253D9A]">
@@ -88,14 +88,14 @@ export default async function DataPage() {
         </div>
       </section>
 
-      <section className="border-t border-[#e6e8f0] bg-[#fafbfc]">
+      <section className="border-t border-[#e6e8f0] bg-white">
         <div className="mx-auto max-w-6xl px-6 py-16">
           <SectionHeading>Visualization Dashboards</SectionHeading>
           {!dashboardsResult.ok && <LoadError what="our dashboards" />}
           {dashboardsResult.ok && dashboardsResult.data.length === 0 && <NotPublishedYet>Dashboards will be published here soon.</NotPublishedYet>}
           <div className="mt-8 grid gap-5 sm:grid-cols-2">
             {(dashboardsResult.ok ? dashboardsResult.data : []).map((d) => (
-              <div key={d.slug} className="rounded-xl border border-[#e6e8f0] bg-white p-5">
+              <div key={d.slug} className="rounded-lg border border-[#e6e8f0] bg-white p-5">
                 <DashboardEmbed url={d.embedUrl} title={d.title} type={d.embedType} />
                 <h3 className="mt-4 text-lg font-bold text-[#171a2b]">{d.title}</h3>
                 <p className="mt-2 text-sm text-[#5b5f74]">{d.description}</p>

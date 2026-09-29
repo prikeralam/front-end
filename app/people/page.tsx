@@ -16,10 +16,10 @@ export default function PeoplePage() {
         <SectionHeading>Browse by group</SectionHeading>
         <div className="mt-8 grid gap-5 sm:grid-cols-2">
           {sections.map((s) => (
-            <Link key={s.title} href={s.href} className="group rounded-xl border border-[#e6e8f0] p-7 transition-colors hover:border-[#253D9A]">
+            <Link key={s.title} href={s.href} className="group rounded-lg border border-[#e6e8f0] p-7 transition-colors hover:border-[#253D9A]">
               <h3 className="text-lg font-bold text-[#171a2b]">{s.title}</h3>
               <p className="mt-3 text-sm leading-relaxed text-[#5b5f74]">{s.desc}</p>
-              <span className="mt-5 inline-block text-sm font-semibold text-[#E4633F] group-hover:underline">Explore &rarr;</span>
+              <span className="mt-5 inline-block text-sm font-semibold text-[#253D9A] group-hover:underline">Explore &rarr;</span>
             </Link>
           ))}
         </div>

@@ -18,13 +18,13 @@ export default async function AnnualReportsPage() {
         </ul>
       </section>
 
-      <section className="border-t border-[#e6e8f0] bg-[#fafbfc]">
+      <section className="border-t border-[#e6e8f0] bg-white">
         <div className="mx-auto max-w-6xl px-6 py-16">
           <SectionHeading>Legal Status</SectionHeading>
           <dl className="mt-8 grid gap-4 sm:grid-cols-3">
             {legalStatus.map((l) => (
               <div key={l.label} className="rounded-lg border border-[#e6e8f0] bg-white px-5 py-4">
-                <dt className="text-xs font-bold uppercase tracking-wider text-[#8b8fa3]">{l.label}</dt>
+                <dt className="text-xs font-[family-name:var(--font-mono)] font-semibold uppercase tracking-[0.12em] text-[#8b8fa3]">{l.label}</dt>
                 <dd className="mt-1 text-[15px] font-semibold text-[#171a2b]">{l.value}</dd>
                 <dd className="text-[13px] text-[#8b8fa3]">{l.note}</dd>
               </div>

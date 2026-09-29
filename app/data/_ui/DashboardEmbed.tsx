@@ -14,7 +14,7 @@ export default function DashboardEmbed({ url, title, type }: { url: string; titl
 
   return (
     <>
-      <div className="aspect-video overflow-hidden rounded-lg border border-[#e6e8f0] bg-[#fafbfc]">
+      <div className="aspect-video overflow-hidden rounded-lg border border-[#e6e8f0] bg-white">
         <iframe
           src={url}
           title={`${title} (${EMBED_LABELS[type]})`}

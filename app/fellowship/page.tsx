@@ -15,7 +15,7 @@ export default function FellowshipPage() {
       <section className="mx-auto max-w-6xl px-6 py-16">
         <div className="grid gap-5 sm:grid-cols-2">
           {programmes.map((p) => (
-            <div key={p.name} className="rounded-xl border border-[#e6e8f0] bg-white p-6">
+            <div key={p.name} className="rounded-lg border border-[#e6e8f0] bg-white p-6">
               <h3 className="flex items-center gap-2 text-lg font-bold text-[#171a2b]">
                 {p.name} <StatusTag status={p.status} />
               </h3>
@@ -25,8 +25,8 @@ export default function FellowshipPage() {
           ))}
         </div>
 
-        <div className="mt-8 rounded-xl border border-[#e6e8f0] bg-[#fafbfc] p-6">
-          <p className="text-xs font-bold uppercase tracking-wider text-[#8b8fa3]">Timeline</p>
+        <div className="mt-8 rounded-lg border border-[#e6e8f0] bg-white p-6">
+          <p className="text-xs font-[family-name:var(--font-mono)] font-semibold uppercase tracking-[0.12em] text-[#8b8fa3]">Timeline</p>
           <div className="mt-4 grid gap-4 sm:grid-cols-4">
             {timeline.map((t) => (
               <div key={t.stage}>
@@ -38,13 +38,13 @@ export default function FellowshipPage() {
         </div>
 
         <div className="mt-8">
-          <Link href="/fellowship/apply" className="inline-block rounded-full bg-[#253D9A] px-6 py-3 text-sm font-semibold text-white hover:bg-[#1B2C70]">
+          <Link href="/fellowship/apply" className="inline-block rounded-md bg-[#253D9A] px-6 py-3 text-sm font-semibold text-white hover:bg-[#1B2C70]">
             Apply now &rarr;
           </Link>
         </div>
       </section>
 
-      <section className="border-y border-[#e6e8f0] bg-[#fafbfc]">
+      <section className="border-y border-[#e6e8f0] bg-white">
         <div className="mx-auto max-w-6xl px-6 py-16">
           <SectionHeading>Current Fellows</SectionHeading>
           <div className="mt-8 grid gap-5 sm:grid-cols-3">

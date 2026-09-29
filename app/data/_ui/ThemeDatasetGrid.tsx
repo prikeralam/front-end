@@ -16,7 +16,7 @@ export default function ThemeDatasetGrid({ datasets }: { datasets: DatasetSummar
         <Link
           key={d.slug}
           href={`/data/${d.slug}`}
-          className="flex flex-wrap items-start justify-between gap-4 px-5 py-4 transition-colors hover:bg-[#fafbfc]"
+          className="flex flex-wrap items-start justify-between gap-4 px-5 py-4 transition-colors hover:bg-white"
         >
           <div className="flex min-w-0 flex-1 gap-4">
             <DatasetIcon />
@@ -31,11 +31,11 @@ export default function ThemeDatasetGrid({ datasets }: { datasets: DatasetSummar
           </div>
           <div className="flex shrink-0 items-center gap-2 self-center">
             {d.fileFormat && (
-              <span className="rounded bg-[#171a2b]/5 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-[#171a2b]">{d.fileFormat}</span>
+              <span className="rounded bg-[#171a2b]/5 px-2 py-0.5 text-[11px] font-[family-name:var(--font-mono)] font-semibold uppercase tracking-[0.08em] text-[#171a2b]">{d.fileFormat}</span>
             )}
-            {d.type && <span className="rounded bg-[#253D9A]/8 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-[#253D9A]">{d.type}</span>}
+            {d.type && <span className="rounded bg-[#253D9A]/8 px-2 py-0.5 text-[11px] font-[family-name:var(--font-mono)] font-semibold uppercase tracking-[0.08em] text-[#253D9A]">{d.type}</span>}
             <span
-              className={`flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
+              className={`flex items-center gap-1 rounded px-2 py-0.5 text-[10px] font-[family-name:var(--font-mono)] font-semibold uppercase tracking-[0.08em] ${
                 d.visibility === "internal" ? "bg-[#8b8fa3]/10 text-[#5b5f74]" : "bg-[#E4633F]/10 text-[#E4633F]"
               }`}
             >
