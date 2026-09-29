@@ -73,20 +73,20 @@ export default function PeopleGrid({ people, groupLabel }: { people: Person[]; g
                   <p className="font-[family-name:var(--font-mono)] text-[10.5px] uppercase leading-snug tracking-[0.08em] text-[#6f7899]">{p.role}</p>
                 </div>
               </Link>
-              {/* Narrow cards (phones, tablets) show only the icons; the photo and name are the tap target. */}
-              <div className="flex items-center justify-start gap-2 px-3 pb-3 pt-2 sm:px-4 xl:justify-between">
+              {/* Icons on the left, "Read profile" bottom right; on narrow cards the link wraps onto its own line. */}
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-1 px-3 pb-3 pt-2 sm:px-4">
+                <ProfileLinks person={p} share={false} />
                 <Link
                   href={`/people/${p.slug}`}
                   onClick={(e) => handleClick(e, p)}
                   aria-haspopup="dialog"
                   tabIndex={-1}
                   aria-hidden="true"
-                  className="hidden items-center gap-1 text-[12.5px] font-semibold text-[#253D9A] xl:inline-flex"
+                  className="ml-auto inline-flex min-h-8 items-center gap-1 whitespace-nowrap text-[12.5px] font-semibold text-[#253D9A]"
                 >
                   Read profile
                   <span aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-0.5">&rarr;</span>
                 </Link>
-                <ProfileLinks person={p} share={false} />
               </div>
             </div>
           </li>
