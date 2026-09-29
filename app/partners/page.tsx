@@ -11,7 +11,7 @@ function PartnerGrid({ partners, emptyCopy }: { partners: Partner[]; emptyCopy: 
   return (
     <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
       {partners.map((p) => (
-        <div key={p.slug} className="rounded-xl border border-[#e6e8f0] bg-white p-5">
+        <div key={p.slug} className="rounded-lg border border-[#e6e8f0] bg-white p-5">
           {p.logo && <MediaSlot need={p.logo} />}
           <h3 className="mt-4 flex items-center gap-2 text-[15px] font-semibold text-[#171a2b]">{p.name} <StatusTag status={p.status} /></h3>
           <p className="mt-2 text-sm text-[#5b5f74]">{p.description}</p>
@@ -36,7 +36,7 @@ export default async function PartnersPage() {
         {result.ok ? <PartnerGrid partners={institutions} emptyCopy="Partner institutions will be listed here soon." /> : <LoadError what="our partners" />}
       </section>
 
-      <section className="border-y border-[#e6e8f0] bg-[#fafbfc]">
+      <section className="border-y border-[#e6e8f0] bg-white">
         <div className="mx-auto max-w-6xl px-6 py-16">
           <SectionHeading>Researchers</SectionHeading>
           {result.ok ? <PartnerGrid partners={researchers} emptyCopy="Collaborating researchers will be listed here soon." /> : <LoadError what="our partners" />}

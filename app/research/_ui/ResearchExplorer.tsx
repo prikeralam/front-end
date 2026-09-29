@@ -50,11 +50,11 @@ export default function ResearchExplorer({ publications, authors }: { publicatio
           {filtered.map((p) => {
             const author = authors[p.authors[0]];
             return (
-              <Link key={p.slug} href={`/research/${p.slug}`} className="group overflow-hidden rounded-xl border border-[#e6e8f0] bg-white transition-shadow hover:shadow-[0_2px_16px_rgba(15,107,92,0.10)]">
+              <Link key={p.slug} href={`/research/${p.slug}`} className="group overflow-hidden rounded-lg border border-[#e6e8f0] bg-white transition-shadow hover:shadow-[0_2px_16px_rgba(23,26,43,0.10)]">
                 {p.cover && <MediaSlot need={p.cover} />}
                 <div className="p-5">
                   <div className="flex items-center gap-2">
-                    <span className="rounded bg-[#253D9A]/8 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-[#253D9A]">{p.format}</span>
+                    <span className="rounded bg-[#253D9A]/8 px-2 py-0.5 text-[11px] font-[family-name:var(--font-mono)] font-semibold uppercase tracking-[0.08em] text-[#253D9A]">{p.format}</span>
                     <span className="text-[11px] font-semibold uppercase tracking-wide text-[#8b8fa3]">{p.theme}</span>
                     <span className="text-[11px] text-[#8b8fa3]">&middot; {p.language}</span>
                   </div>
@@ -64,7 +64,7 @@ export default function ResearchExplorer({ publications, authors }: { publicatio
                   </h3>
                   <div className="mt-4 flex items-center gap-2">
                     {author?.photo && (
-                      <div className="relative h-7 w-7 shrink-0 overflow-hidden rounded-full bg-[#fafbfc]">
+                      <div className="relative h-7 w-7 shrink-0 overflow-hidden rounded-full bg-white">
                         <Image src={author.photo.src ?? stockPhotoFor(author.photo) ?? ""} alt={author.name} fill sizes="28px" className="object-cover" />
                       </div>
                     )}

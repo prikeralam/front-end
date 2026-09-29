@@ -13,12 +13,12 @@ export default function ContactPage() {
             title="Contact form"
             fields={[`Category: ${contactCategories.join(" / ")}`, "Name", "Email", "Message"]}
           />
-          <div className="rounded-xl border border-[#e6e8f0] bg-white p-6">
-            <p className="text-xs font-bold uppercase tracking-wider text-[#8b8fa3]">Office</p>
+          <div className="rounded-lg border border-[#e6e8f0] bg-white p-6">
+            <p className="text-xs font-[family-name:var(--font-mono)] font-semibold uppercase tracking-[0.12em] text-[#8b8fa3]">Office</p>
             {org.address.map((line) => <p key={line} className="mt-2 text-[15px] text-[#171a2b]">{line}</p>)}
             <p className="mt-4 text-[15px] text-[#171a2b]">{org.email}</p>
             <p className="text-[15px] text-[#171a2b]">{org.phone}</p>
-            <div className="relative mt-6 aspect-video overflow-hidden rounded-xl border border-[#e6e8f0]">
+            <div className="relative mt-6 aspect-video overflow-hidden rounded-lg border border-[#e6e8f0]">
               <iframe
                 src={org.mapEmbedUrl}
                 className="absolute inset-0 h-full w-full border-0"

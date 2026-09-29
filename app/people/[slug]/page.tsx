@@ -60,8 +60,8 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ s
         </div>
 
         {person.group === "author" && (
-          <div className="mt-10 rounded-xl border border-[#e6e8f0] bg-[#fafbfc] p-6">
-            <p className="text-xs font-bold uppercase tracking-wider text-[#8b8fa3]">Publications by this author</p>
+          <div className="mt-10 rounded-lg border border-[#e6e8f0] bg-white p-6">
+            <p className="text-xs font-[family-name:var(--font-mono)] font-semibold uppercase tracking-[0.12em] text-[#8b8fa3]">Publications by this author</p>
             {authoredPublications.length === 0 ? (
               <p className="mt-2 text-sm text-[#8b8fa3]">No publications linked yet.</p>
             ) : (

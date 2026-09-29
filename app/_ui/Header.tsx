@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { nav, org } from "../_content/org";
 import { useSession } from "../_lib/useSession";
 import { checkSession, signOut } from "../_lib/auth/authClient";
@@ -47,16 +47,31 @@ function PortalHeader() {
   );
 }
 
+function subscribeToScroll(onChange: () => void) {
+  window.addEventListener("scroll", onChange, { passive: true });
+  return () => window.removeEventListener("scroll", onChange);
+}
+
+/** Whether the page has scrolled past the first 40px, which turns the header frosted. */
+function useScrolled() {
+  return useSyncExternalStore(subscribeToScroll, () => window.scrollY > 40, () => false);
+}
+
 export default function Header() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [group, setGroup] = useState<string | null>(null);
+  const scrolled = useScrolled();
 
   const isPortal = pathname === "/account" || pathname.startsWith("/dashboard");
   if (isPortal) return <PortalHeader />;
 
   return (
-    <header className="sticky top-0 z-20 bg-white">
+    <header
+      className={`sticky top-0 z-20 transition-[background-color,box-shadow,backdrop-filter] duration-300 ${
+        scrolled || open ? "bg-white/85 shadow-[0_1px_0_#e3e6f0,0_8px_24px_-18px_rgba(23,26,43,0.35)] backdrop-blur-md" : "bg-[#f7f8fc]"
+      }`}
+    >
       <div className="h-1 w-full bg-[#253D9A]" />
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-6 px-6 py-4">
         <Link href="/" className="flex shrink-0 items-center gap-2.5">
@@ -70,7 +85,7 @@ export default function Header() {
               <Link
                 key={n.label}
                 href={`${n.href}`}
-                className="rounded-full px-4 py-2 text-[15px] font-semibold text-[#3a3f55] transition-colors hover:bg-[#253D9A]/8"
+                className="rounded-md px-4 py-2 text-[15px] font-semibold text-[#3a3f55] transition-colors hover:bg-[#253D9A]/8"
               >
                 {n.label}
               </Link>
@@ -79,7 +94,7 @@ export default function Header() {
                 <button
                   onClick={() => setGroup(group === n.label ? null : n.label)}
                   aria-expanded={group === n.label}
-                  className={`rounded-full px-4 py-2 text-[15px] font-semibold transition-colors ${
+                  className={`rounded-md px-4 py-2 text-[15px] font-semibold transition-colors ${
                     group === n.label ? "bg-[#253D9A] text-white" : "text-[#3a3f55] hover:bg-[#253D9A]/8"
                   }`}
                 >
@@ -87,7 +102,7 @@ export default function Header() {
                 </button>
                 {group === n.label && (
                   <div className="absolute left-1/2 top-full w-64 -translate-x-1/2 pt-3">
-                    <div className="rounded-xl border border-[#e6e8f0] bg-white py-2 shadow-[0_8px_28px_rgba(15,107,92,0.14)]">
+                    <div className="rounded-lg border border-[#e6e8f0] bg-white py-2 shadow-[0_8px_28px_rgba(23,26,43,0.14)]">
                       {n.items.map((item) => (
                         <Link
                           key={item.href}
@@ -106,7 +121,7 @@ export default function Header() {
           )}
         </nav>
 
-        <Link href={`/donate`} className="hidden shrink-0 rounded-full bg-[#E4633F] px-5 py-2 text-[15px] font-semibold text-white hover:bg-[#C94F2E] lg:inline-block">
+        <Link href={`/donate`} className="hidden shrink-0 rounded-md bg-[#253D9A] px-5 py-2 text-[15px] font-semibold text-white hover:bg-[#1B2C70] lg:inline-block">
           Donate
         </Link>
 
@@ -148,7 +163,7 @@ export default function Header() {
             <Link
               href={`/donate`}
               onClick={() => setOpen(false)}
-              className="mt-4 inline-block rounded-full bg-[#E4633F] px-4 py-2 text-sm font-semibold text-white"
+              className="mt-4 inline-block rounded-md bg-[#253D9A] px-4 py-2 text-sm font-semibold text-white"
             >
               Donate
             </Link>

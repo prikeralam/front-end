@@ -29,15 +29,15 @@ export default async function EventDetailPage({ params }: { params: Promise<{ sl
         ) : (
           <div className="mt-10 space-y-6">
             <div>
-              <p className="mb-3 text-[12px] font-bold uppercase tracking-wider text-[#8b8fa3]">Recording</p>
+              <p className="mb-3 text-[12px] font-[family-name:var(--font-mono)] font-semibold uppercase tracking-[0.12em] text-[#8b8fa3]">Recording</p>
               <MediaSlot need={pastEventArchive.recording} className="max-w-lg" />
             </div>
             <div>
-              <p className="mb-3 text-[12px] font-bold uppercase tracking-wider text-[#8b8fa3]">Photo Gallery</p>
+              <p className="mb-3 text-[12px] font-[family-name:var(--font-mono)] font-semibold uppercase tracking-[0.12em] text-[#8b8fa3]">Photo Gallery</p>
               <MediaSlot need={pastEventArchive.gallery} className="max-w-lg" />
             </div>
             <div>
-              <p className="mb-3 text-[12px] font-bold uppercase tracking-wider text-[#8b8fa3]">Report</p>
+              <p className="mb-3 text-[12px] font-[family-name:var(--font-mono)] font-semibold uppercase tracking-[0.12em] text-[#8b8fa3]">Report</p>
               <ul className="grid gap-3">
                 <DocumentRow doc={pastEventArchive.report} />
               </ul>

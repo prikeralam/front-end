@@ -17,17 +17,17 @@ export default function DatasetView({ ds, previews, access }: { ds: DatasetDetai
           ["Visibility", ds.visibility],
         ].map(([label, value]) => (
           <div key={label} className="rounded-lg border border-[#e6e8f0] px-4 py-3">
-            <dt className="text-[11px] font-bold uppercase tracking-wider text-[#8b8fa3]">{label}</dt>
+            <dt className="text-[11px] font-[family-name:var(--font-mono)] font-semibold uppercase tracking-[0.12em] text-[#8b8fa3]">{label}</dt>
             <dd className="mt-1 text-[15px] text-[#171a2b]">{value ?? "To be confirmed"}</dd>
           </div>
         ))}
       </dl>
       {ds.tags.length > 0 && (
         <div className="mt-6">
-          <p className="mb-2 text-[11px] font-bold uppercase tracking-wider text-[#8b8fa3]">Tags</p>
+          <p className="mb-2 text-[11px] font-[family-name:var(--font-mono)] font-semibold uppercase tracking-[0.12em] text-[#8b8fa3]">Tags</p>
           <div className="flex flex-wrap gap-2">
             {ds.tags.map((tag) => (
-              <span key={tag} className="rounded-full bg-[#253D9A]/8 px-3 py-1 text-[12px] font-semibold text-[#253D9A]">{tag}</span>
+              <span key={tag} className="rounded bg-[#253D9A]/8 px-3 py-1 text-[12px] font-semibold text-[#253D9A]">{tag}</span>
             ))}
           </div>
         </div>
@@ -40,7 +40,7 @@ export default function DatasetView({ ds, previews, access }: { ds: DatasetDetai
       {previews.map && <GeoPreview collection={previews.map} title={ds.title} />}
       {previews.table && (
         <div className="overflow-hidden rounded-lg border border-[#e6e8f0]">
-          <p className="border-b border-[#e6e8f0] bg-[#fafbfc] px-4 py-2 text-[13px] font-bold text-[#171a2b]">{previews.table.label}</p>
+          <p className="border-b border-[#e6e8f0] bg-white px-4 py-2 text-[13px] font-bold text-[#171a2b]">{previews.table.label}</p>
           <div className="overflow-x-auto">
             <table className="w-full border-collapse text-left">
               <thead>

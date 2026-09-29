@@ -14,7 +14,7 @@ export default function GeoPreview({ collection, title }: { collection: GeoJsonF
   if (shapes.length === 0) return <p className="text-[13px] text-[#8b8fa3]">This file has no drawable geometry.</p>;
 
   return (
-    <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} role="img" aria-label={`Map preview of ${title}`} className="w-full rounded-lg border border-[#e6e8f0] bg-[#fafbfc]">
+    <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} role="img" aria-label={`Map preview of ${title}`} className="w-full rounded-lg border border-[#e6e8f0] bg-white">
       {shapes.map((shape, i) =>
         shape.kind === "path" ? (
           <path key={i} d={shape.d} fill={shape.filled ? "#253D9A" : "none"} fillOpacity={0.15} stroke="#253D9A" strokeWidth={1.5}>
