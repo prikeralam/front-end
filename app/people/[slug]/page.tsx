@@ -53,12 +53,17 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ s
       <PageHeader kicker={groupLabel[person.group] ?? "People"} title={person.name} />
       <section className="mx-auto max-w-3xl px-6 py-16">
         <div className="grid gap-8 sm:grid-cols-[200px_1fr]">
-          {person.photo && <MediaSlot need={person.photo} />}
+          <div className="grid content-start gap-4">
+            {person.photo && <MediaSlot need={person.photo} />}
+            <ProfileLinks person={person} size="md" />
+            {person.email && (
+              <a href={`mailto:${person.email}`} className="break-all text-[13.5px] font-semibold text-[#253D9A] hover:underline">
+                {person.email}
+              </a>
+            )}
+          </div>
           <div>
             <p className="flex items-center gap-2 text-[15px] font-semibold text-[#171a2b]">{person.role} <StatusTag status={person.status} /></p>
-            <div className="mt-4">
-              <ProfileLinks person={person} size="md" />
-            </div>
             {person.bio && <p className="mt-4 text-[15px] leading-relaxed text-[#5b5f74]">{person.bio}</p>}
           </div>
         </div>

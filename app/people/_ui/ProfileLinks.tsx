@@ -27,10 +27,19 @@ const ShareIcon = () => (
 const NOTICE: Record<string, string> = { copied: "Link copied", failed: "Couldn't copy the link" };
 
 /**
- * LinkedIn, email and share for one person. LinkedIn and email appear only when the profile has them; share is
- * always there and shares the profile page's own address. `size="md"` adds text labels (pop-up and profile page).
+ * Square icon links for one person: LinkedIn and email when the profile has them, and optionally share (the profile
+ * page's own address). Every icon has a hover tooltip and an accessible name. `size="sm"` is the quiet card version;
+ * `size="md"` the bordered one in the pop-up and on the profile page.
  */
-export default function ProfileLinks({ person, size = "sm" }: { person: Pick<Person, "slug" | "name" | "linkedin" | "email">; size?: "sm" | "md" }) {
+export default function ProfileLinks({
+  person,
+  size = "sm",
+  share = true,
+}: {
+  person: Pick<Person, "slug" | "name" | "linkedin" | "email">;
+  size?: "sm" | "md";
+  share?: boolean;
+}) {
   const [notice, setNotice] = useState<string | null>(null);
 
   useEffect(() => {
@@ -44,30 +53,31 @@ export default function ProfileLinks({ person, size = "sm" }: { person: Pick<Per
     setNotice(NOTICE[outcome] ?? null);
   }
 
-  const labelled = size === "md";
-  const item = labelled
-    ? "inline-flex h-9 items-center gap-2 rounded-md border border-[#e3e6f0] bg-white px-3 text-[13px] font-semibold text-[#3a4263] transition-colors hover:border-[#253D9A] hover:text-[#253D9A]"
-    : "grid h-8 w-8 place-items-center rounded-md text-[#6f7899] transition-colors hover:bg-[#253D9A]/8 hover:text-[#253D9A]";
+  if (!person.linkedin && !person.email && !share) return null;
+
+  const item =
+    size === "md"
+      ? "grid h-10 w-10 place-items-center rounded-md border border-[#e3e6f0] bg-white text-[#3a4263] transition-colors hover:border-[#253D9A] hover:bg-[#253D9A] hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#253D9A]"
+      : "grid h-8 w-8 place-items-center rounded-md text-[#6f7899] transition-colors hover:bg-[#253D9A]/8 hover:text-[#253D9A] focus-visible:outline-2 focus-visible:outline-[#253D9A]";
 
   return (
-    <div className={`relative flex items-center ${labelled ? "flex-wrap gap-1.5" : "-ml-1.5 gap-0.5"}`}>
+    <div className={`relative flex items-center ${size === "md" ? "gap-2" : "-ml-1.5 gap-0.5"}`}>
       {person.linkedin && (
-        <a href={person.linkedin} target="_blank" rel="noopener noreferrer" aria-label={`${person.name} on LinkedIn (opens in a new tab)`} className={item}>
+        <a href={person.linkedin} target="_blank" rel="noopener noreferrer" title="LinkedIn" aria-label={`${person.name} on LinkedIn (opens in a new tab)`} className={item}>
           <LinkedInIcon />
-          {labelled && "LinkedIn"}
         </a>
       )}
       {person.email && (
-        <a href={`mailto:${person.email}`} aria-label={`Email ${person.name}`} title={labelled ? undefined : person.email} className={item}>
+        <a href={`mailto:${person.email}`} title={person.email} aria-label={`Email ${person.name} at ${person.email}`} className={item}>
           <MailIcon />
-          {labelled && <span className="max-w-[22ch] truncate">{person.email}</span>}
         </a>
       )}
-      <button type="button" onClick={handleShare} aria-label={`Share ${person.name}'s profile`} className={item}>
-        <ShareIcon />
-        {labelled && "Share"}
-      </button>
-      <span role="status" aria-live="polite" className={notice ? "absolute -top-8 right-0 whitespace-nowrap rounded-md bg-[#171a2b] px-2.5 py-1 text-[12px] font-semibold text-white" : "sr-only"}>
+      {share && (
+        <button type="button" onClick={handleShare} title="Share profile" aria-label={`Share ${person.name}'s profile`} className={item}>
+          <ShareIcon />
+        </button>
+      )}
+      <span role="status" aria-live="polite" className={notice ? "absolute left-0 top-full mt-2 whitespace-nowrap rounded-md bg-[#171a2b] px-2.5 py-1 text-[12px] font-semibold text-white" : "sr-only"}>
         {notice ?? ""}
       </span>
     </div>

@@ -86,7 +86,7 @@ export default function PeopleGrid({ people, groupLabel }: { people: Person[]; g
                   Read profile
                   <span aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-0.5">&rarr;</span>
                 </Link>
-                <ProfileLinks person={p} />
+                <ProfileLinks person={p} share={false} />
               </div>
             </div>
           </li>
@@ -116,11 +116,13 @@ export default function PeopleGrid({ people, groupLabel }: { people: Person[]; g
                 </h2>
                 <p className="mt-1.5 pl-[17px] font-[family-name:var(--font-mono)] text-[11.5px] uppercase tracking-[0.08em] text-[#6f7899]">{open.role}</p>
               </div>
-              <ProfileLinks person={open} size="md" />
               <p className="text-[15px] leading-relaxed text-[#4b4f66]">{open.bio || "A biography will be added soon."}</p>
-              <Link href={`/people/${open.slug}`} className="mt-2 inline-flex w-fit items-center gap-1 text-[13.5px] font-semibold text-[#253D9A] hover:underline">
-                Open full profile <span aria-hidden="true">&rarr;</span>
-              </Link>
+              <div className="mt-1 grid justify-items-start gap-4">
+                <ProfileLinks person={open} size="md" />
+                <Link href={`/people/${open.slug}`} className="inline-flex items-center gap-1 text-[13.5px] font-semibold text-[#253D9A] hover:underline">
+                  Open full profile <span aria-hidden="true">&rarr;</span>
+                </Link>
+              </div>
             </div>
           </div>
         )}
