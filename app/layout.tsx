@@ -6,7 +6,8 @@ import ScrollReveal from "./_ui/ScrollReveal";
 import { headingFont, bodyFont, monoFont } from "./fonts";
 
 export const metadata: Metadata = {
-  title: "PRI — Policy and Research Initiative",
+  // The tab reads "PRI"; a page that sets its own title shows it as "<title> | PRI".
+  title: { default: "PRI", template: "%s | PRI" },
   description: "The public website and research platform for the Policy and Research Initiative (PRI).",
 };
 

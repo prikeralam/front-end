@@ -1,6 +1,6 @@
 import type { HeroProject } from "../_lib/types";
 
-/** First homepage hero slide: PRI's motto. Not a project, so it isn't served by the projects API. */
+/** PRI's motto: the homepage hero's text when the `hero` content block isn't published. */
 export const mottoSlide: HeroProject = {
   slug: "motto",
   title: "Data-driven research. Evidence-based policy.",
