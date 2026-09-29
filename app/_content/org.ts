@@ -136,14 +136,3 @@ export const nav = [
     ],
   },
 ];
-
-/** "How a PRI study is made" on the homepage. Wording to be confirmed by PRI. */
-export const researchProcess = [
-  { title: "Question", detail: "A policy question from Kerala's public life" },
-  { title: "Field data", detail: "Surveys, records and official statistics" },
-  { title: "Cleaning", detail: "Standard codes for districts, schools and years" },
-  { title: "Analysis", detail: "Patterns, gaps and comparisons" },
-  { title: "Review", detail: "Method and findings checked internally" },
-  { title: "Policy brief", detail: "Findings written for decision-makers" },
-  { title: "Open data", detail: "The dataset released in the repository" },
-];

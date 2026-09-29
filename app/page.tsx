@@ -2,11 +2,9 @@ import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { mottoSlide } from "./_content/projects";
-import { researchProcess } from "./_content/org";
 import { upcomingEvents, pastEvents } from "./_content/events";
 import { load } from "./_lib/api/load";
 import { getContentBlock } from "./_lib/api/contentBlocks";
-import { listDatasets } from "./_lib/api/datasets";
 import { listPartners, listPeopleByGroup } from "./_lib/api/people";
 import { listProjects } from "./_lib/api/projects";
 import { listPublications } from "./_lib/api/publications";
@@ -14,12 +12,13 @@ import { listThemes } from "./_lib/api/themes";
 import { LoadError, NotPublishedYet } from "./_ui/ApiMessage";
 import { StatusTag } from "./_ui/kit";
 import MediaSlot from "./_ui/MediaSlot";
-import ResearchProcess from "./_ui/home/ResearchProcess";
-import StatStrip, { type Stat } from "./_ui/home/StatStrip";
 import ThemeOrbit from "./_ui/home/ThemeOrbit";
 import ThemePanel from "./_ui/home/ThemePanel";
 
 const featuredEvents = [...upcomingEvents, ...pastEvents].slice(0, 3);
+
+/** Themes left out of the hero orbit (they still exist everywhere else). */
+const ORBIT_EXCLUDED_THEMES = new Set(["Economics"]);
 
 const eyebrow = "flex items-center gap-2.5 font-[family-name:var(--font-mono)] text-[11.5px] font-semibold uppercase tracking-[0.14em] text-[#253D9A]";
 const primaryButton = "inline-flex items-center gap-2 rounded-md bg-[#253D9A] px-5 py-3 text-sm font-semibold text-white shadow-[0_1px_2px_rgba(37,61,154,0.3)] transition-colors hover:bg-[#1B2C70]";
@@ -62,11 +61,10 @@ function splitHeadline(title: string): [string, string] {
 }
 
 export default async function HomePage() {
-  const [projects, research, themes, datasets, partners, executive, heroBlock, quoteBlock] = await Promise.all([
+  const [projects, research, themes, partners, executive, heroBlock, quoteBlock] = await Promise.all([
     load("projects", listProjects),
     load("research", listPublications),
     load("themes", listThemes),
-    load("datasets", () => listDatasets()),
     load("partners", listPartners),
     load("executive council", () => listPeopleByGroup("executive")),
     load("hero", () => getContentBlock("hero")),
@@ -74,21 +72,15 @@ export default async function HomePage() {
   ]);
 
   const featuredResearch = research.ok ? research.data.publications.slice(0, 3) : [];
-  const topThemes = themes.ok ? themes.data.filter((t) => t.parent === null || t.parent === undefined).map((t) => t.name) : [];
+  const orbitThemes = themes.ok
+    ? themes.data.filter((t) => (t.parent === null || t.parent === undefined) && !ORBIT_EXCLUDED_THEMES.has(t.name)).map((t) => t.name)
+    : [];
   const hero = heroBlock.ok && heroBlock.data ? { title: heroBlock.data.title, blurb: heroBlock.data.body } : mottoSlide;
   const [headLead, headAccent] = splitHeadline(hero.title);
   const chairman = executive.ok ? executive.data.find((p) => /^chairman$/i.test(p.role.trim())) : undefined;
   const quote = quoteBlock.ok ? quoteBlock.data : null;
   const institutions = partners.ok ? partners.data : [];
 
-  // Only counts that loaded are shown; a failed read drops its tile rather than showing a wrong zero.
-  const stats: Stat[] = [
-    research.ok && { value: research.data.publications.length, label: "Publications", href: "/research" },
-    datasets.ok && { value: datasets.data.length, label: "Open datasets", href: "/data" },
-    projects.ok && { value: projects.data.length, label: "Projects", href: "/projects" },
-    themes.ok && { value: topThemes.length, label: "Research themes", href: "/research" },
-    partners.ok && { value: institutions.length, label: "Partners", href: "/partners" },
-  ].filter((s): s is Stat => Boolean(s));
 
   return (
     <>
@@ -116,22 +108,15 @@ export default async function HomePage() {
               </Link>
             </div>
           </div>
-          {topThemes.length > 0 && (
+          {orbitThemes.length > 0 && (
             <div>
-              <ThemeOrbit themes={topThemes} />
-              <p className="sr-only">Research themes: {topThemes.join(", ")}.</p>
+              <ThemeOrbit themes={orbitThemes} />
+              <p className="sr-only">Research themes: {orbitThemes.join(", ")}.</p>
             </div>
           )}
         </div>
       </section>
 
-      {/* Headline counts */}
-      {stats.length > 0 && (
-        <section className="mx-auto max-w-6xl px-6 pt-12">
-          <h2 className="sr-only">PRI in numbers</h2>
-          <StatStrip stats={stats} />
-        </section>
-      )}
 
       {/* What we do */}
       <section className="mx-auto max-w-6xl px-6 py-16">
@@ -178,30 +163,24 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* How a study is made */}
-      <section className="mx-auto max-w-6xl px-6 py-16">
-        <SectionIntro label="How we work" title="How a PRI study is made" />
-        <div className="mt-10">
-          <ResearchProcess steps={researchProcess} />
-        </div>
-      </section>
 
       {/* Chairman's words: shown only once the content block is published, never invented. */}
       {quote && chairman && (
         <section className="bg-[#171a2b] text-white">
-          <div className="mx-auto grid max-w-6xl items-center gap-10 px-6 py-16 md:grid-cols-[1.5fr_1fr] md:py-20">
-            <figure className="grid gap-6">
-              <span aria-hidden="true" className="h-10 font-[family-name:var(--font-heading)] text-[88px] leading-[0.8] text-[#8fa6ff]">&ldquo;</span>
-              {quote.title && <p className="text-balance font-[family-name:var(--font-heading)] text-[30px] leading-tight sm:text-[38px]">{quote.title}</p>}
-              <blockquote className="max-w-[60ch] text-pretty text-[16.5px] leading-relaxed text-white/75">{quote.body}</blockquote>
+          {/* Edge to edge, but kept short: compact padding and a small portrait. */}
+          <div className="mx-auto grid max-w-6xl items-center gap-8 px-6 py-10 md:grid-cols-[1fr_auto] md:gap-12 md:py-12">
+            <figure className="grid max-w-[62ch] gap-5">
+              <span aria-hidden="true" className="h-8 font-[family-name:var(--font-heading)] text-[72px] leading-[0.8] text-[#8fa6ff]">&ldquo;</span>
+              {quote.title && <p className="text-balance font-[family-name:var(--font-heading)] text-[24px] leading-tight sm:text-[30px]">{quote.title}</p>}
+              <blockquote className="text-pretty text-[15.5px] leading-relaxed text-white/75">{quote.body}</blockquote>
               <figcaption className="border-l-2 border-[#8fa6ff] pl-4">
-                <span className="block text-[16px] font-semibold">{chairman.name}</span>
-                <span className="font-[family-name:var(--font-mono)] text-[12px] uppercase tracking-[0.08em] text-white/55">{chairman.role}, Policy and Research Initiative</span>
+                <span className="block text-[15px] font-semibold">{chairman.name}</span>
+                <span className="font-[family-name:var(--font-mono)] text-[11.5px] uppercase tracking-[0.08em] text-white/55">{chairman.role}, Policy and Research Initiative</span>
               </figcaption>
             </figure>
             {chairman.photo?.src && (
-              <div className="relative mx-auto aspect-[4/5] w-full max-w-[320px] overflow-hidden rounded-lg">
-                <Image src={chairman.photo.src} alt={`Portrait of ${chairman.name}`} fill sizes="320px" className="object-cover grayscale" />
+              <div className="relative mx-auto aspect-[4/5] w-full max-w-[240px] overflow-hidden rounded-lg md:w-[240px]">
+                <Image src={chairman.photo.src} alt={`Portrait of ${chairman.name}`} fill sizes="240px" className="object-cover grayscale" />
               </div>
             )}
           </div>
