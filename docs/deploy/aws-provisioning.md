@@ -14,9 +14,12 @@ covers this stack too. Staging exists; production is not provisioned yet.
 - **Host:** `t3.micro`, Ubuntu 24.04 amd64 (the image is amd64-only), 20 GB gp3, 2 GB swap, standard CPU credits
   (no surplus billing). Runs `deploy/docker-compose.yml`: the Next.js server and nginx. No database or bucket:
   the frontend is stateless, and media comes from the backend's bucket.
-- **Hostname:** `<ip-with-dashes>.sslip.io`, currently `13-234-6-255.sslip.io` (static IP `13.234.6.255`).
-  A real subdomain later means an A record, a new certbot certificate, and `SERVER_NAME` in `APP_ENV_FILE`.
-- **Backend:** `API_URL=https://15-206-144-63.sslip.io` (the backend's staging host).
+- **Hostname:** `staging.priresearch.in`, an A record at GoDaddy (where `priresearch.in` is registered) to the
+  static IP `13.234.6.255`. The old `13-234-6-255.sslip.io` name is no longer served. Changing the name means a new
+  A record, a certbot certificate for it on the host (same command and hooks as the bootstrap in
+  `deploy/aws/staging.yml`), and `SERVER_NAME` in `APP_ENV_FILE`. Leave the domain's MX and TXT records alone:
+  they carry the `priresearch.in` email.
+- **Backend:** `API_URL=https://api-staging.priresearch.in` (the backend's staging host, A record to `15.206.144.63`).
 - **TLS:** certbot on the host, first issued at boot. Renewals use the standalone server: the renewal hooks stop
   the nginx container for a few seconds to free port 80.
 - **Access:** SSH as `ubuntu` with the deploy key, open to 0.0.0.0/0 because GitHub-hosted runners have no fixed
@@ -51,7 +54,7 @@ A new stack gets a new IP, and so a new hostname: update `APP_ENV_FILE` and `EC2
 | `EC2_USER` | `ubuntu` |
 | `EC2_SSH_KEY` | private deploy key (kept locally at `~/.ssh/pri-frontend-staging-deploy`) |
 | `EC2_SSH_KNOWN_HOSTS` | the verified `ssh-keyscan -t ed25519 13.234.6.255` line (kept at `~/.ssh/pri-frontend-staging.known_hosts`) |
-| `APP_ENV_FILE` | `ENVIRONMENT=staging`, `SERVER_NAME=13-234-6-255.sslip.io`, `API_URL=https://15-206-144-63.sslip.io` (kept at `~/.pri-deploy/frontend-staging.env`) |
+| `APP_ENV_FILE` | `ENVIRONMENT=staging`, `SERVER_NAME=staging.priresearch.in`, `API_URL=https://api-staging.priresearch.in` (kept at `~/.pri-deploy/frontend-staging.env`) |
 
 Repository variable `IMAGE_HOSTS`: `pri-staging-949820257880.s3.amazonaws.com,pri-staging-949820257880.s3.ap-south-1.amazonaws.com`
 (the backend's staging bucket, in both hostname forms S3 presigns with; add the production bucket when it exists).
