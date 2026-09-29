@@ -167,6 +167,39 @@ describe("updateCmsAction", () => {
     expect(backendRequest).toHaveBeenCalledWith("PATCH", "/api/v1/testimonials/9/", { accessToken: "tok", json: { quote: "New", attribution: "Dr. A", role: "" } });
   });
 
+  it("uploads a person's photo from the computer as multipart under the photo field, keeping the link field", async () => {
+    const jpg = new File(["ÿØ"], "asha.JPG", { type: "image/jpeg" });
+    backendRequest.mockResolvedValueOnce(ok(api({ id: 12, name: "Asha", photo: "http://api/media/people/asha.jpg", photo_url: "" })));
+
+    const result = await updateCmsAction("person-profile", "12", form({ name: "Asha", role_title: "Analyst", group: "team", bio: "", photo_url: "", photo: jpg }));
+
+    expect(result).toMatchObject({ ok: true, record: { imageUrl: "http://api/media/people/asha.jpg" } });
+    const sent = backendRequest.mock.calls[0][2].form as FormData;
+    expect(sent.get("photo")).toBeInstanceOf(File);
+    expect(sent.get("photo_url")).toBe("");
+  });
+
+  it("removes an uploaded image by sending null, and keeps it when nothing is chosen", async () => {
+    backendRequest.mockResolvedValue(ok(api({ id: 12, name: "Asha" })));
+    const values = { name: "Asha", role_title: "Analyst", group: "team", bio: "", photo_url: "https://example.org/a.jpg" };
+
+    await updateCmsAction("person-profile", "12", form({ ...values, "photo-remove": "1" }));
+    expect(backendRequest.mock.calls[0][2].json).toMatchObject({ photo: null, photo_url: "https://example.org/a.jpg" });
+
+    await updateCmsAction("person-profile", "12", form(values));
+    expect("photo" in backendRequest.mock.calls[1][2].json).toBe(false);
+  });
+
+  it("rejects images over 5 MB or of a non-image type before contacting the backend", async () => {
+    const values = { name: "Asha", role_title: "Analyst", group: "team", bio: "", photo_url: "" };
+    const big = new File([new Uint8Array(5 * 1024 * 1024 + 1)], "big.png");
+    const pdf = new File(["%PDF"], "cv.pdf");
+
+    expect(await updateCmsAction("person-profile", "12", form({ ...values, photo: big }))).toEqual({ ok: false, message: "That image is larger than 5 MB." });
+    expect(await updateCmsAction("person-profile", "12", form({ ...values, photo: pdf }))).toMatchObject({ ok: false, message: expect.stringContaining(".pdf") });
+    expect(backendRequest).not.toHaveBeenCalled();
+  });
+
   it("rejects a key that is not a plain slug or id", async () => {
     expect(await updateCmsAction("testimonial", "../../admin", testimonialForm())).toEqual({ ok: false, message: "That request isn't valid." });
     expect(backendRequest).not.toHaveBeenCalled();

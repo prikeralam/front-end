@@ -6,7 +6,7 @@ import { useDatasets, useMyAccessRequests } from "../../../_lib/useDatasetsApi";
 import { requestAccessAction } from "../../../_lib/dashboard/datasetActions";
 import { rememberRequestedDataset } from "../../../_lib/requestedAccess";
 import { useRequireSession } from "../../../_lib/useSession";
-import { PageHeader } from "../../../_ui/kit";
+import DashboardPageHeader from "../../_ui/DashboardPageHeader";
 import DatasetFacetList, { DatasetIcon } from "../../../data/_ui/DatasetFacetList";
 import DatasetMeta from "../../../data/_ui/DatasetMeta";
 
@@ -26,8 +26,8 @@ export default function DashboardThemePage({ params }: { params: Promise<{ theme
 
   return (
     <>
-      <PageHeader kicker="Your dashboard" title={theme} intro={`${themeDatasets.length} ${themeDatasets.length === 1 ? "dataset" : "datasets"} in this theme.`} />
-      <section className="mx-auto max-w-6xl px-6 py-16">
+      <DashboardPageHeader trail={["Data", "Themes"]} title={theme} description={`${themeDatasets.length} ${themeDatasets.length === 1 ? "dataset" : "datasets"} in this theme.`} />
+      <section className="mx-auto max-w-6xl px-6 py-6 lg:px-8">
         <DatasetFacetList
           datasets={themeDatasets}
           renderRow={(d) => {

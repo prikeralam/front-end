@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { roleLabels } from "../_lib/session";
 import { useRequireSession } from "../_lib/useSession";
-import { PageHeader } from "../_ui/kit";
+import DashboardPageHeader from "./_ui/DashboardPageHeader";
 import { AdminOverview, EditorOverview, ResearcherOverview, FellowOverview, DonorOverview } from "./_ui/RoleOverview";
 
 export default function DashboardPage() {
@@ -16,9 +16,9 @@ export default function DashboardPage() {
 
   return (
     <>
-      <PageHeader kicker="Your dashboard" title={`Welcome, ${session.name}`} intro={`Signed in as ${roleLabels[session.role]}`} />
+      <DashboardPageHeader trail={["Overview"]} title={`Welcome, ${session.name}`} description={`Signed in as ${roleLabels[session.role]}`} />
 
-      <section className="mx-auto max-w-6xl px-6 py-16">
+      <section className="mx-auto max-w-6xl px-6 py-6 lg:px-8">
         {session.role === "admin" && <AdminOverview session={session} bump={bump} />}
         {session.role === "editor" && <EditorOverview session={session} bump={bump} />}
         {session.role === "researcher" && <ResearcherOverview session={session} bump={bump} />}

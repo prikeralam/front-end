@@ -35,7 +35,8 @@ export type DynamicOptions = "sub-themes" | "authors";
 export type FieldConfig = {
   key: string;
   label: string;
-  kind: "text" | "textarea" | "select" | "date" | "number" | "file";
+  /** `image` is an optional upload paired with a link field (`urlKey`); the upload wins when both are set. */
+  kind: "text" | "textarea" | "select" | "date" | "number" | "file" | "image";
   options?: FieldOption[];
   optionsFrom?: DynamicOptions;
   /** Not required to submit. */
@@ -44,6 +45,8 @@ export type FieldConfig = {
   createOnly?: boolean;
   /** Extensions offered by the file picker, e.g. ".pdf,.docx". */
   accept?: string;
+  /** For `image` fields: the API's link field that sits beside the upload, e.g. `photo_url`. */
+  urlKey?: string;
   help?: string;
 };
 
@@ -61,6 +64,8 @@ export type CmsRecord = {
   /** Form values, keyed by `FieldConfig.key`. File fields are always empty here. */
   values: Record<string, string>;
   fileUrl?: string;
+  /** The image to show in lists: the uploaded file, else the linked URL. */
+  imageUrl?: string;
 };
 
 export type CmsListResult =

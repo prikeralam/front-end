@@ -5,7 +5,9 @@ import { listPeopleById } from "../api/people";
 import { listThemes } from "../api/themes";
 import { getAccessToken } from "../auth/serverAuth";
 import {
+  IMAGE_ACCEPT,
   KEY_PATTERN,
+  REMOVE_IMAGE,
   RESOURCES,
   belongsToType,
   objectPath,
@@ -29,6 +31,7 @@ import {
 // publish and delete). This file never grants anything; it only relays and reports.
 
 const MAX_FILE_BYTES = 10 * 1024 * 1024;
+const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
 
 const isType = (value: unknown): value is ContentTypeKey => typeof value === "string" && (ALL_CONTENT_TYPES as string[]).includes(value);
 const isKey = (value: unknown): value is string => typeof value === "string" && KEY_PATTERN.test(value);
@@ -87,33 +90,47 @@ export async function getFormOptionsAction(): Promise<FormOptions> {
   };
 }
 
+/** Form values for the payload. An image field contributes its link (`urlKey`) and, if ticked, its removal flag. */
 function valuesFrom(type: ContentTypeKey, form: FormData): Record<string, string> {
-  return Object.fromEntries(RESOURCES[type].fields.filter((f) => f.kind !== "file").map((f) => [f.key, String(form.get(f.key) ?? "")]));
+  const values: Record<string, string> = {};
+  for (const f of RESOURCES[type].fields) {
+    if (f.kind === "file") continue;
+    if (f.kind === "image") {
+      if (f.urlKey) values[f.urlKey] = String(form.get(f.urlKey) ?? "");
+      values[f.key] = form.get(`${f.key}-remove`) === "1" ? REMOVE_IMAGE : "";
+    } else values[f.key] = String(form.get(f.key) ?? "");
+  }
+  return values;
 }
 
-type Upload = { file: File | null; error?: string };
+type Uploads = { files: [string, File][]; error?: string };
 
-/** A chosen file, checked against the field's allowlist and the size cap; an empty picker is "no file". */
-function uploadFrom(type: ContentTypeKey, form: FormData): Upload {
-  const field = RESOURCES[type].fields.find((f) => f.kind === "file");
-  const entry = form.get("file");
-  if (!field || !(entry instanceof File) || entry.size === 0) return { file: null };
+/** Chosen files and images, each checked against its allowlist and size cap; an empty picker is "no file". */
+function uploadsFrom(type: ContentTypeKey, form: FormData): Uploads {
+  const files: [string, File][] = [];
+  for (const field of RESOURCES[type].fields) {
+    if (field.kind !== "file" && field.kind !== "image") continue;
+    const entry = form.get(field.key);
+    if (!(entry instanceof File) || entry.size === 0) continue;
 
-  if (entry.size > MAX_FILE_BYTES) return { file: null, error: "That file is larger than 10 MB." };
-  const allowed = (field.accept ?? "").split(",").map((ext) => ext.trim().toLowerCase()).filter(Boolean);
-  const extension = /\.[^.]+$/.exec(entry.name.toLowerCase())?.[0] ?? "";
-  if (allowed.length > 0 && !allowed.includes(extension)) return { file: null, error: `Files of type ${extension || "(none)"} aren't accepted here.` };
-  return { file: entry };
+    const image = field.kind === "image";
+    if (entry.size > (image ? MAX_IMAGE_BYTES : MAX_FILE_BYTES)) return { files: [], error: image ? "That image is larger than 5 MB." : "That file is larger than 10 MB." };
+    const allowed = ((image ? IMAGE_ACCEPT : field.accept) ?? "").split(",").map((ext) => ext.trim().toLowerCase()).filter(Boolean);
+    const extension = /\.[^.]+$/.exec(entry.name.toLowerCase())?.[0] ?? "";
+    if (allowed.length > 0 && !allowed.includes(extension)) return { files: [], error: `Files of type ${extension || "(none)"} aren't accepted here.` };
+    files.push([field.key, entry]);
+  }
+  return { files };
 }
 
-function multipart(payload: Record<string, unknown>, file: File): FormData {
+function multipart(payload: Record<string, unknown>, files: [string, File][]): FormData {
   const form = new FormData();
   for (const [key, value] of Object.entries(payload)) {
     if (value === null) continue;
     if (Array.isArray(value)) value.forEach((item) => form.append(key, String(item)));
     else form.append(key, String(value));
   }
-  form.append("file", file);
+  for (const [key, file] of files) form.append(key, file);
   return form;
 }
 
@@ -122,9 +139,9 @@ const randomSuffix = () => `-${Math.random().toString(36).slice(2, 6)}`;
 async function send(type: ContentTypeKey, mode: "create" | "update", key: string | null, form: FormData): Promise<CmsMutation> {
   const resource = RESOURCES[type];
   const fileField = resource.fields.find((f) => f.kind === "file");
-  const upload = uploadFrom(type, form);
-  if (upload.error) return { ok: false, message: upload.error };
-  if (mode === "create" && fileField && !upload.file) return { ok: false, message: `${fileField.label} is required.` };
+  const uploads = uploadsFrom(type, form);
+  if (uploads.error) return { ok: false, message: uploads.error };
+  if (mode === "create" && fileField && !uploads.files.some(([key]) => key === fileField.key)) return { ok: false, message: `${fileField.label} is required.` };
 
   const accessToken = await getAccessToken();
   if (!accessToken) return signedOut;
@@ -133,7 +150,7 @@ async function send(type: ContentTypeKey, mode: "create" | "update", key: string
   const attempt = async (suffix: string) => {
     const built = toPayload(type, values, mode, suffix);
     if (!built.ok) return built;
-    const body = upload.file ? { form: multipart(built.payload, upload.file) } : { json: built.payload };
+    const body = uploads.files.length > 0 ? { form: multipart(built.payload, uploads.files) } : { json: built.payload };
     const path = mode === "create" ? resource.path : objectPath(type, key as string);
     return backendRequest(mode === "create" ? "POST" : "PATCH", path, { accessToken, ...body });
   };

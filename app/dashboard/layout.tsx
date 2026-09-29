@@ -6,6 +6,7 @@ import { checkSession } from "../_lib/auth/authClient";
 import type { Session } from "../_lib/session";
 import ChangePasswordForm from "./_ui/ChangePasswordForm";
 import DashboardSidebar from "./_ui/DashboardSidebar";
+import { MenuIcon } from "./_ui/icons";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -37,14 +38,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   if (verified.mustChangePassword) return <ChangePasswordForm name={verified.name} onChanged={verify} />;
 
   return (
-    <div className="flex min-h-[calc(100vh-73px)]">
+    <div className="flex min-h-[calc(100vh-73px)] bg-[#f6f7fb]">
       <DashboardSidebar mobileOpen={mobileOpen} onCloseMobile={() => setMobileOpen(false)} />
       <div className="min-w-0 flex-1">
         <button
           onClick={() => setMobileOpen(true)}
-          className="m-4 flex items-center gap-2 rounded-full border border-[#e6e8f0] bg-white px-4 py-2 text-[13px] font-semibold text-[#3a3f55] lg:hidden"
+          className="mx-4 mt-4 flex items-center gap-2 rounded-lg border border-[#dde2f0] bg-white px-3 py-2 text-[13px] font-semibold text-[#3a4263] lg:hidden"
         >
-          <span aria-hidden="true">☰</span> Menu
+          <MenuIcon /> Menu
         </button>
         {children}
       </div>
