@@ -1760,6 +1760,8 @@ export interface components {
             group?: components["schemas"]["GroupEnum"];
             bio?: string;
             photo_url?: string;
+            /** Format: uri */
+            photo?: string | null;
             readonly status?: components["schemas"]["WorkflowStatusEnum"];
             readonly created_by?: number;
             readonly reviewed_by?: number | null;
@@ -1774,6 +1776,8 @@ export interface components {
             title?: string;
             blurb?: string;
             image_url?: string;
+            /** Format: uri */
+            image?: string | null;
             cta_label?: string;
             cta_href?: string;
             readonly status?: components["schemas"]["WorkflowStatusEnum"];
@@ -1800,6 +1804,8 @@ export interface components {
             tags?: string[];
             views?: number;
             cover_url?: string;
+            /** Format: uri */
+            cover?: string | null;
             readonly status?: components["schemas"]["WorkflowStatusEnum"];
             readonly created_by?: number;
             readonly reviewed_by?: number | null;
@@ -1881,6 +1887,8 @@ export interface components {
             group: components["schemas"]["GroupEnum"];
             bio?: string;
             photo_url?: string;
+            /** Format: uri */
+            photo?: string | null;
             readonly status: components["schemas"]["WorkflowStatusEnum"];
             readonly created_by: number;
             readonly reviewed_by: number | null;
@@ -1895,6 +1903,8 @@ export interface components {
             title: string;
             blurb: string;
             image_url?: string;
+            /** Format: uri */
+            image?: string | null;
             cta_label?: string;
             cta_href?: string;
             readonly status: components["schemas"]["WorkflowStatusEnum"];
@@ -1921,6 +1931,8 @@ export interface components {
             tags?: string[];
             views?: number;
             cover_url?: string;
+            /** Format: uri */
+            cover?: string | null;
             readonly status: components["schemas"]["WorkflowStatusEnum"];
             readonly created_by: number;
             readonly reviewed_by: number | null;

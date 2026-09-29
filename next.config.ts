@@ -20,8 +20,12 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "images.unsplash.com" },
-      // The backend's seeded person photos point at the deployed site's own /public files.
+      // Seeded person photos used to point at the old Vercel deployment; the backend migration (website-backend #42)
+      // moves them to {FRONTEND_URL}/people/..., whose hosts come from IMAGE_HOSTS. Remove once every environment has
+      // run it.
       { protocol: "https", hostname: "pri-website-pink.vercel.app" },
+      // Locally the seed points photos at this dev server's own /public folder.
+      ...(isDev ? [{ protocol: "http" as const, hostname: "localhost", port: "3000" }] : []),
       // Media the backend serves (e.g. person photos) — in production this is the storage bucket's host, so
       // set API_URL (or add the bucket host here) per environment.
       {

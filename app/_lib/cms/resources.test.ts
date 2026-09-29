@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { RESOURCES, belongsToType, objectPath, slugify, toCmsRecord, toPayload, type ApiRecord } from "./resources";
+import { REMOVE_IMAGE, RESOURCES, belongsToType, objectPath, slugify, toCmsRecord, toPayload, type ApiRecord } from "./resources";
 
 const base = { id: 7, status: "draft" as const, created_by: 3, updated_at: "2026-09-25T10:00:00Z" };
 
@@ -112,6 +112,31 @@ describe("toCmsRecord", () => {
     expect(record.fileUrl).toBe("http://api/media/ar.pdf");
     expect(record.values.file).toBe("");
     expect(record.values.year).toBe("");
+  });
+});
+
+describe("image fields", () => {
+  it("shows the uploaded photo first, else the link, else nothing", () => {
+    const person = { ...base, name: "Asha", role_title: "Analyst", group: "team" };
+
+    expect(toCmsRecord("person-profile", { ...person, photo: "http://api/media/a.jpg", photo_url: "https://x/a.jpg" } as ApiRecord).imageUrl).toBe("http://api/media/a.jpg");
+    expect(toCmsRecord("person-profile", { ...person, photo: null, photo_url: "https://x/a.jpg" } as ApiRecord)).toMatchObject({ imageUrl: "https://x/a.jpg", values: { photo: "", photo_url: "https://x/a.jpg" } });
+    expect(toCmsRecord("person-profile", { ...person, photo: null, photo_url: "" } as ApiRecord).imageUrl).toBeUndefined();
+  });
+
+  it("sends the link, never the upload's URL, and null only when removal was asked for", () => {
+    const values = { name: "A", role_title: "Analyst", group: "team", bio: "", photo: "http://api/media/a.jpg", photo_url: " https://x/a.jpg " };
+
+    const kept = toPayload("person-profile", values, "update");
+    expect(kept).toMatchObject({ ok: true, payload: { photo_url: "https://x/a.jpg" } });
+    expect(kept.ok && "photo" in kept.payload).toBe(false);
+    expect(toPayload("person-profile", { ...values, photo: REMOVE_IMAGE }, "update")).toMatchObject({ payload: { photo: null } });
+  });
+
+  it("gives people, partners, projects and publications an image field", () => {
+    const withImages = Object.entries(RESOURCES).filter(([, r]) => r.fields.some((f) => f.kind === "image")).map(([type]) => type);
+
+    expect(withImages.sort()).toEqual(["partner", "person-profile", "project", "publication"]);
   });
 });
 

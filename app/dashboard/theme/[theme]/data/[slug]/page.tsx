@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { LoadError } from "../../../../../_ui/ApiMessage";
-import { PageHeader } from "../../../../../_ui/kit";
+import DashboardPageHeader from "../../../../_ui/DashboardPageHeader";
 import { getDatasetDetail, getDatasetPreviews } from "../../../../../_lib/api/datasets";
 import { load } from "../../../../../_lib/api/load";
 import { getAccessToken } from "../../../../../_lib/auth/serverAuth";
@@ -17,8 +17,8 @@ export default async function DashboardDatasetDetailPage({ params }: { params: P
   if (!result.ok) {
     return (
       <>
-        <PageHeader kicker="Your dashboard" title="Dataset" />
-        <section className="mx-auto max-w-3xl px-6 py-16"><LoadError what="this dataset" /></section>
+        <DashboardPageHeader trail={["Data", theme]} title="Dataset" />
+        <section className="mx-auto max-w-4xl px-6 py-6 lg:px-8"><LoadError what="this dataset" /></section>
       </>
     );
   }
@@ -29,8 +29,8 @@ export default async function DashboardDatasetDetailPage({ params }: { params: P
 
   return (
     <>
-      <PageHeader kicker="Your dashboard" title={ds.title} />
-      <section className="mx-auto max-w-3xl px-6 py-16">
+      <DashboardPageHeader trail={["Data", theme]} title={ds.title} />
+      <section className="mx-auto max-w-4xl px-6 py-6 lg:px-8">
         <DatasetView ds={ds} previews={previews} access={<DatasetAccess slug={ds.slug} accessState={ds.accessState} downloadUrl={ds.files[0]?.path ?? null} />} />
       </section>
     </>

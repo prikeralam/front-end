@@ -15,7 +15,7 @@ export function toProject(project: ApiProject): HeroProject {
       label: `${project.title} photograph`,
       ratio: "3:2",
       kind: "photo",
-      src: project.image_url || undefined,
+      src: project.image || project.image_url || undefined,
     },
     ctaLabel: project.cta_label || undefined,
     ctaHref: project.cta_href || undefined,
