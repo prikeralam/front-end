@@ -77,6 +77,8 @@ export const RESOURCES: Record<ContentTypeKey, Resource> = {
       { key: "group", label: "Group", kind: "select", options: PERSON_GROUPS },
       { key: "bio", label: "Bio", kind: "textarea", optional: true },
       { key: "photo", label: "Photo", kind: "image", urlKey: "photo_url", optional: true },
+      { key: "linkedin_url", label: "LinkedIn profile", kind: "text", optional: true, help: "The https://www.linkedin.com/in/… address. Shown as an icon on the public profile." },
+      { key: "email", label: "Public email", kind: "text", optional: true, help: "Shown on the public profile. Leave blank to keep it private." },
     ],
     title: (v) => v.name,
     subtitle: (v) => [v.role_title, PERSON_GROUPS.find((g) => g.value === v.group)?.label].filter(Boolean).join(" · "),
