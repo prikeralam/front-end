@@ -8,9 +8,9 @@ import { getDatasetAccessAction, requestAccessAction } from "../../_lib/dashboar
 import type { AccessState } from "../../_lib/datasetTypes";
 import { getRequestedDatasets, rememberRequestedDataset } from "../../_lib/requestedAccess";
 
-const primary = "mt-8 inline-block rounded-full bg-[#253D9A] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#1B2C70]";
+const primary = "mt-8 inline-block rounded-md bg-[#253D9A] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#1B2C70]";
 const secondary =
-  "rounded-full border border-[#253D9A] px-5 py-2.5 text-sm font-semibold text-[#253D9A] hover:bg-[#253D9A] hover:text-white disabled:cursor-not-allowed disabled:opacity-60";
+  "rounded-md border border-[#253D9A] px-5 py-2.5 text-sm font-semibold text-[#253D9A] hover:bg-[#253D9A] hover:text-white disabled:cursor-not-allowed disabled:opacity-60";
 
 type Access = { accessState: AccessState; downloadUrl: string | null };
 

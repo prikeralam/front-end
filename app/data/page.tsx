@@ -1,10 +1,13 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { NotPublishedYet, LoadError } from "../_ui/ApiMessage";
-import { listDashboards, listDatasets } from "../_lib/api/datasets";
+import { getDatasetPreviews, listDashboards, listDatasets } from "../_lib/api/datasets";
+import type { DatasetSummary } from "../_lib/datasetTypes";
 import { load } from "../_lib/api/load";
-import { PageHeader, SectionHeading } from "../_ui/kit";
+import { SectionHeading } from "../_ui/kit";
 import DashboardEmbed from "./_ui/DashboardEmbed";
+import DataSearch from "./_ui/DataSearch";
+import FeaturedDataset from "./_ui/FeaturedDataset";
 
 const themeIcons: Record<string, ReactNode> = {
   Education: (
@@ -50,22 +53,49 @@ const fallbackIcon = (
   </svg>
 );
 
+/** The newest dataset anyone can open that has a table to show, for the featured frame. */
+function pickFeatured(datasets: DatasetSummary[]): DatasetSummary | undefined {
+  return [...datasets].reverse().find((d) => d.accessState === "full" && d.fileFormat !== null && d.fileFormat !== "GeoJSON");
+}
+
 export default async function DataPage() {
   const [datasetsResult, dashboardsResult] = await Promise.all([load("datasets", listDatasets), load("dashboards", listDashboards)]);
   const datasets = datasetsResult.ok ? datasetsResult.data : [];
   const themes = Array.from(new Set(datasets.map((d) => d.theme).filter((t): t is string => !!t)));
   const themeCounts = themes.map((theme) => ({ theme, count: datasets.filter((d) => d.theme === theme).length }));
+  const featured = pickFeatured(datasets);
+  const featuredTable = featured ? (await getDatasetPreviews(featured)).table : null;
+  const dashboardCount = dashboardsResult.ok ? dashboardsResult.data.length : 0;
+  const statLine = [
+    `${datasets.length} ${datasets.length === 1 ? "dataset" : "datasets"}`,
+    `${themes.length} ${themes.length === 1 ? "theme" : "themes"}`,
+    dashboardCount > 0 && `${dashboardCount} ${dashboardCount === 1 ? "dashboard" : "dashboards"}`,
+  ].filter(Boolean);
 
   return (
     <>
-      <PageHeader
-        kicker="Data Repository & Library"
-        title="Datasets and dashboards"
-        intro="A centralized data repository with controlled access, designed to store, manage, and analyze research datasets securely."
-      />
+      <section className="relative overflow-hidden border-b border-[#e3e6f0] bg-[radial-gradient(1100px_420px_at_85%_-10%,rgba(37,61,154,0.11),transparent_62%)] after:pointer-events-none after:absolute after:inset-0 after:bg-[radial-gradient(circle,rgba(37,61,154,0.14)_1px,transparent_1.4px)] after:bg-[length:26px_26px] after:[mask-image:linear-gradient(100deg,transparent_55%,#000_92%)]">
+        <div className={`relative z-10 mx-auto grid max-w-6xl items-start gap-10 px-6 pb-14 pt-14 ${featured && featuredTable ? "lg:grid-cols-[1.1fr_0.9fr]" : ""}`}>
+          <div className="grid gap-5">
+            <p className="flex items-center gap-2.5 font-[family-name:var(--font-mono)] text-[11.5px] font-semibold uppercase tracking-[0.14em] text-[#253D9A]">
+              <span aria-hidden="true" className="h-2 w-2 bg-[#253D9A]" />
+              Data Repository & Library
+            </p>
+            <h1 className="max-w-[18ch] text-balance text-[36px] leading-[1.08] tracking-tight text-[#171a2b] sm:text-[48px]">Open data for Kerala&rsquo;s policy questions</h1>
+            {datasetsResult.ok && datasets.length > 0 && (
+              <p className="font-[family-name:var(--font-mono)] text-[13px] font-semibold text-[#253D9A]">{statLine.join(" · ")}</p>
+            )}
+            <p className="max-w-[56ch] text-pretty text-[16.5px] leading-relaxed text-[#4b4f66]">
+              Datasets behind PRI&rsquo;s research, with previews, sources and citations. Some are open to everyone; others are available on request.
+            </p>
+            {datasetsResult.ok && datasets.length > 0 && <DataSearch datasets={datasets} suggestions={themes} />}
+          </div>
+          {featured && featuredTable && <FeaturedDataset dataset={featured} table={featuredTable} />}
+        </div>
+      </section>
 
       <section className="mx-auto max-w-6xl px-6 py-16">
-        <SectionHeading>Discover by theme</SectionHeading>
+        <SectionHeading>Browse by theme</SectionHeading>
         {!datasetsResult.ok && <LoadError what="our datasets" />}
         {datasetsResult.ok && themeCounts.length === 0 && <NotPublishedYet>Datasets will be published here soon.</NotPublishedYet>}
         <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -73,31 +103,31 @@ export default async function DataPage() {
             <Link
               key={t.theme}
               href={`/data/theme/${encodeURIComponent(t.theme)}`}
-              className="group rounded-lg border border-[#e6e8f0] bg-white p-7 transition-shadow hover:shadow-[0_2px_16px_rgba(23,26,43,0.10)]"
+              className="group rounded-lg border border-[#e3e6f0] bg-white p-6 transition-[border-color,box-shadow] hover:border-[#cdd6f3] hover:shadow-[0_12px_28px_-16px_rgba(23,26,43,0.35)]"
             >
               <div className="flex items-center justify-between">
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#253D9A]/8 text-[#253D9A]">
                   {themeIcons[t.theme] ?? fallbackIcon}
                 </div>
-                <p className="text-4xl font-bold text-[#253D9A]">{t.count}</p>
+                <p className="font-[family-name:var(--font-mono)] text-[30px] font-semibold leading-none text-[#253D9A]">{t.count}</p>
               </div>
-              <p className="mt-4 text-lg font-bold text-[#171a2b] group-hover:text-[#253D9A]">{t.theme}</p>
-              <p className="mt-1 text-[13px] text-[#8b8fa3]">{t.count === 1 ? "dataset" : "datasets"}</p>
+              <p className="mt-4 text-[18px] text-[#171a2b] group-hover:text-[#253D9A]">{t.theme}</p>
+              <p className="mt-1 text-[13px] text-[#6f7899]">{t.count === 1 ? "dataset" : "datasets"}</p>
             </Link>
           ))}
         </div>
       </section>
 
-      <section className="border-t border-[#e6e8f0] bg-white">
+      <section className="border-t border-[#e3e6f0] bg-white">
         <div className="mx-auto max-w-6xl px-6 py-16">
           <SectionHeading>Visualization Dashboards</SectionHeading>
           {!dashboardsResult.ok && <LoadError what="our dashboards" />}
           {dashboardsResult.ok && dashboardsResult.data.length === 0 && <NotPublishedYet>Dashboards will be published here soon.</NotPublishedYet>}
           <div className="mt-8 grid gap-5 sm:grid-cols-2">
             {(dashboardsResult.ok ? dashboardsResult.data : []).map((d) => (
-              <div key={d.slug} className="rounded-lg border border-[#e6e8f0] bg-white p-5">
+              <div key={d.slug} className="rounded-lg border border-[#e3e6f0] bg-white p-5">
                 <DashboardEmbed url={d.embedUrl} title={d.title} type={d.embedType} />
-                <h3 className="mt-4 text-lg font-bold text-[#171a2b]">{d.title}</h3>
+                <h3 className="mt-4 text-lg text-[#171a2b]">{d.title}</h3>
                 <p className="mt-2 text-sm text-[#5b5f74]">{d.description}</p>
               </div>
             ))}
