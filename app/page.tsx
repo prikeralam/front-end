@@ -18,7 +18,7 @@ import ThemePanel from "./_ui/home/ThemePanel";
 const featuredEvents = [...upcomingEvents, ...pastEvents].slice(0, 3);
 
 /** Themes left out of the hero orbit (they still exist everywhere else). */
-const ORBIT_EXCLUDED_THEMES = new Set(["Economics"]);
+const ORBIT_EXCLUDED_THEMES = new Set(["Economics", "Employment"]);
 
 const eyebrow = "flex items-center gap-2.5 font-[family-name:var(--font-mono)] text-[11.5px] font-semibold uppercase tracking-[0.14em] text-[#253D9A]";
 const primaryButton = "inline-flex items-center gap-2 rounded-md bg-[#253D9A] px-5 py-3 text-sm font-semibold text-white shadow-[0_1px_2px_rgba(37,61,154,0.3)] transition-colors hover:bg-[#1B2C70]";
