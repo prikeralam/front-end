@@ -40,6 +40,8 @@ export const PERSON_GROUPS = options(
   ["author", "Author"],
 );
 
+export const MENTION_KINDS = options(["news", "News"], ["research", "Research paper"], ["report", "Report"], ["legislature", "Legislature"], ["other", "Other"]);
+
 export const RESOURCES: Record<ContentTypeKey, Resource> = {
   "content-block": {
     path: "/api/v1/content-blocks/",
@@ -178,6 +180,55 @@ export const RESOURCES: Record<ContentTypeKey, Resource> = {
     title: (v) => v.title,
     subtitle: (v) => [v.format.toUpperCase(), v.geography, v.year].filter(Boolean).join(" · "),
   },
+  mention: {
+    path: "/api/v1/mentions/",
+    lookup: "slug",
+    slugFrom: (v) => [v.publisher, v.title].filter(Boolean).join(" "),
+    fields: [
+      { key: "title", label: "Title", kind: "text", help: "The headline or title of the piece that cites PRI." },
+      { key: "publisher", label: "Publisher", kind: "text", help: "e.g. The Hindu, a journal, a department." },
+      { key: "url", label: "Link", kind: "text", help: "The https:// address of the original." },
+      { key: "kind", label: "Kind", kind: "select", options: MENTION_KINDS },
+      { key: "date", label: "Date", kind: "date" },
+      { key: "summary", label: "Summary", kind: "textarea", optional: true },
+      { key: "publisher_logo", label: "Publisher logo", kind: "image", optional: true },
+      { key: "publication", label: "Cites publication", kind: "select", optionsFrom: "publications", optional: true },
+      { key: "dataset", label: "Cites dataset", kind: "select", optionsFrom: "datasets", optional: true },
+    ],
+    title: (v) => v.title,
+    subtitle: (v) => [v.publisher, v.date].filter(Boolean).join(" · "),
+  },
+  recognition: {
+    path: "/api/v1/recognition/",
+    lookup: "slug",
+    slugFrom: (v) => [v.title, v.year].filter(Boolean).join(" "),
+    fields: [
+      { key: "title", label: "Title", kind: "text" },
+      { key: "awarded_by", label: "Awarded by", kind: "text" },
+      { key: "year", label: "Year", kind: "number" },
+      { key: "description", label: "Description", kind: "textarea", optional: true },
+      { key: "url", label: "Link", kind: "text", optional: true, help: "An https:// page about it, if there is one." },
+      { key: "image", label: "Image", kind: "image", optional: true },
+    ],
+    title: (v) => v.title,
+    subtitle: (v) => [v.awarded_by, v.year].filter(Boolean).join(" · "),
+  },
+  collection: {
+    path: "/api/v1/collections/",
+    lookup: "slug",
+    slugFrom: (v) => v.title,
+    fields: [
+      { key: "title", label: "Title", kind: "text" },
+      { key: "description", label: "Description", kind: "textarea", optional: true },
+      { key: "datasets", label: "Datasets", kind: "multiselect", optionsFrom: "datasets", optional: true },
+      { key: "publication", label: "Data story", kind: "select", optionsFrom: "publications", optional: true, help: "The publication these datasets are behind, if any." },
+    ],
+    title: (v) => v.title,
+    subtitle: (v) => {
+      const count = v.datasets ? v.datasets.split(",").filter((s) => s.trim()).length : 0;
+      return `${count} ${count === 1 ? "dataset" : "datasets"}`;
+    },
+  },
 };
 
 // ---------------------------------------------------------------------------
@@ -263,6 +314,9 @@ export function toPayload(type: ContentTypeKey, values: Record<string, string>, 
     if (!raw && !field.optional) return { ok: false, message: `${field.label} is required.` };
 
     if (field.key === "authors") payload.authors = raw ? [Number(raw)] : [];
+    else if (field.kind === "multiselect") payload[field.key] = raw ? raw.split(",").map((t) => t.trim()).filter(Boolean) : [];
+    // Links to other objects by slug: an empty choice clears the link.
+    else if (field.optionsFrom === "publications" || field.optionsFrom === "datasets") payload[field.key] = raw || null;
     else if (field.key === "tags") payload.tags = raw ? raw.split(",").map((t) => t.trim()).filter(Boolean) : [];
     else if (field.kind === "number") {
       if (raw && !/^-?\d+$/.test(raw)) return { ok: false, message: `${field.label} must be a whole number.` };

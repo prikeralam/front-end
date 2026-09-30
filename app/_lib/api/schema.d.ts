@@ -62,6 +62,96 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/collections/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description Mixin for any content-type ViewSet built on WorkflowMixin models.
+         *     Provides a shared `POST /<resource>/<pk>/transition/` action that
+         *     validates the target status, applies role-gated permission checks,
+         *     updates the object, and writes an AuditLog row.
+         */
+        get: operations["v1_collections_list"];
+        put?: never;
+        /**
+         * @description Mixin for any content-type ViewSet built on WorkflowMixin models.
+         *     Provides a shared `POST /<resource>/<pk>/transition/` action that
+         *     validates the target status, applies role-gated permission checks,
+         *     updates the object, and writes an AuditLog row.
+         */
+        post: operations["v1_collections_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/collections/{slug}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description Mixin for any content-type ViewSet built on WorkflowMixin models.
+         *     Provides a shared `POST /<resource>/<pk>/transition/` action that
+         *     validates the target status, applies role-gated permission checks,
+         *     updates the object, and writes an AuditLog row.
+         */
+        get: operations["v1_collections_retrieve"];
+        /**
+         * @description Mixin for any content-type ViewSet built on WorkflowMixin models.
+         *     Provides a shared `POST /<resource>/<pk>/transition/` action that
+         *     validates the target status, applies role-gated permission checks,
+         *     updates the object, and writes an AuditLog row.
+         */
+        put: operations["v1_collections_update"];
+        post?: never;
+        /**
+         * @description Mixin for any content-type ViewSet built on WorkflowMixin models.
+         *     Provides a shared `POST /<resource>/<pk>/transition/` action that
+         *     validates the target status, applies role-gated permission checks,
+         *     updates the object, and writes an AuditLog row.
+         */
+        delete: operations["v1_collections_destroy"];
+        options?: never;
+        head?: never;
+        /**
+         * @description Mixin for any content-type ViewSet built on WorkflowMixin models.
+         *     Provides a shared `POST /<resource>/<pk>/transition/` action that
+         *     validates the target status, applies role-gated permission checks,
+         *     updates the object, and writes an AuditLog row.
+         */
+        patch: operations["v1_collections_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/collections/{slug}/transition/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * @description Mixin for any content-type ViewSet built on WorkflowMixin models.
+         *     Provides a shared `POST /<resource>/<pk>/transition/` action that
+         *     validates the target status, applies role-gated permission checks,
+         *     updates the object, and writes an AuditLog row.
+         */
+        post: operations["v1_collections_transition_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/content-blocks/": {
         parameters: {
             query?: never;
@@ -510,6 +600,96 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/mentions/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description Mixin for any content-type ViewSet built on WorkflowMixin models.
+         *     Provides a shared `POST /<resource>/<pk>/transition/` action that
+         *     validates the target status, applies role-gated permission checks,
+         *     updates the object, and writes an AuditLog row.
+         */
+        get: operations["v1_mentions_list"];
+        put?: never;
+        /**
+         * @description Mixin for any content-type ViewSet built on WorkflowMixin models.
+         *     Provides a shared `POST /<resource>/<pk>/transition/` action that
+         *     validates the target status, applies role-gated permission checks,
+         *     updates the object, and writes an AuditLog row.
+         */
+        post: operations["v1_mentions_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/mentions/{slug}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description Mixin for any content-type ViewSet built on WorkflowMixin models.
+         *     Provides a shared `POST /<resource>/<pk>/transition/` action that
+         *     validates the target status, applies role-gated permission checks,
+         *     updates the object, and writes an AuditLog row.
+         */
+        get: operations["v1_mentions_retrieve"];
+        /**
+         * @description Mixin for any content-type ViewSet built on WorkflowMixin models.
+         *     Provides a shared `POST /<resource>/<pk>/transition/` action that
+         *     validates the target status, applies role-gated permission checks,
+         *     updates the object, and writes an AuditLog row.
+         */
+        put: operations["v1_mentions_update"];
+        post?: never;
+        /**
+         * @description Mixin for any content-type ViewSet built on WorkflowMixin models.
+         *     Provides a shared `POST /<resource>/<pk>/transition/` action that
+         *     validates the target status, applies role-gated permission checks,
+         *     updates the object, and writes an AuditLog row.
+         */
+        delete: operations["v1_mentions_destroy"];
+        options?: never;
+        head?: never;
+        /**
+         * @description Mixin for any content-type ViewSet built on WorkflowMixin models.
+         *     Provides a shared `POST /<resource>/<pk>/transition/` action that
+         *     validates the target status, applies role-gated permission checks,
+         *     updates the object, and writes an AuditLog row.
+         */
+        patch: operations["v1_mentions_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/mentions/{slug}/transition/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * @description Mixin for any content-type ViewSet built on WorkflowMixin models.
+         *     Provides a shared `POST /<resource>/<pk>/transition/` action that
+         *     validates the target status, applies role-gated permission checks,
+         *     updates the object, and writes an AuditLog row.
+         */
+        post: operations["v1_mentions_transition_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/password-reset/": {
         parameters: {
             query?: never;
@@ -874,6 +1054,96 @@ export interface paths {
          *     updates the object, and writes an AuditLog row.
          */
         post: operations["v1_publications_versions_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/recognition/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description Mixin for any content-type ViewSet built on WorkflowMixin models.
+         *     Provides a shared `POST /<resource>/<pk>/transition/` action that
+         *     validates the target status, applies role-gated permission checks,
+         *     updates the object, and writes an AuditLog row.
+         */
+        get: operations["v1_recognition_list"];
+        put?: never;
+        /**
+         * @description Mixin for any content-type ViewSet built on WorkflowMixin models.
+         *     Provides a shared `POST /<resource>/<pk>/transition/` action that
+         *     validates the target status, applies role-gated permission checks,
+         *     updates the object, and writes an AuditLog row.
+         */
+        post: operations["v1_recognition_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/recognition/{slug}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description Mixin for any content-type ViewSet built on WorkflowMixin models.
+         *     Provides a shared `POST /<resource>/<pk>/transition/` action that
+         *     validates the target status, applies role-gated permission checks,
+         *     updates the object, and writes an AuditLog row.
+         */
+        get: operations["v1_recognition_retrieve"];
+        /**
+         * @description Mixin for any content-type ViewSet built on WorkflowMixin models.
+         *     Provides a shared `POST /<resource>/<pk>/transition/` action that
+         *     validates the target status, applies role-gated permission checks,
+         *     updates the object, and writes an AuditLog row.
+         */
+        put: operations["v1_recognition_update"];
+        post?: never;
+        /**
+         * @description Mixin for any content-type ViewSet built on WorkflowMixin models.
+         *     Provides a shared `POST /<resource>/<pk>/transition/` action that
+         *     validates the target status, applies role-gated permission checks,
+         *     updates the object, and writes an AuditLog row.
+         */
+        delete: operations["v1_recognition_destroy"];
+        options?: never;
+        head?: never;
+        /**
+         * @description Mixin for any content-type ViewSet built on WorkflowMixin models.
+         *     Provides a shared `POST /<resource>/<pk>/transition/` action that
+         *     validates the target status, applies role-gated permission checks,
+         *     updates the object, and writes an AuditLog row.
+         */
+        patch: operations["v1_recognition_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/recognition/{slug}/transition/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * @description Mixin for any content-type ViewSet built on WorkflowMixin models.
+         *     Provides a shared `POST /<resource>/<pk>/transition/` action that
+         *     validates the target status, applies role-gated permission checks,
+         *     updates the object, and writes an AuditLog row.
+         */
+        post: operations["v1_recognition_transition_create"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1329,6 +1599,23 @@ export interface components {
             /** Format: date-time */
             readonly timestamp: string;
         };
+        Collection: {
+            readonly id: number;
+            slug: string;
+            title: string;
+            description?: string;
+            datasets?: string[];
+            publication?: string | null;
+            readonly status: components["schemas"]["WorkflowStatusEnum"];
+            readonly created_by: number;
+            readonly reviewed_by: number | null;
+            /** Format: date-time */
+            readonly created_at: string;
+            /** Format: date-time */
+            readonly updated_at: string;
+            /** Format: date-time */
+            readonly published_at: string | null;
+        };
         ContentBlock: {
             readonly id: number;
             slug: string;
@@ -1449,6 +1736,15 @@ export interface components {
          */
         GroupEnum: "team" | "patron" | "advisory" | "executive" | "fellow" | "past-fellow" | "author" | "partner";
         /**
+         * @description * `news` - News
+         *     * `research` - Research paper
+         *     * `report` - Report
+         *     * `legislature` - Legislature
+         *     * `other` - Other
+         * @enum {string}
+         */
+        KindEnum: "news" | "research" | "report" | "legislature" | "other";
+        /**
          * @description * `en` - English
          *     * `ml` - Malayalam
          * @enum {string}
@@ -1461,6 +1757,31 @@ export interface components {
             title: string;
             /** Format: date-time */
             published_at: string;
+        };
+        Mention: {
+            readonly id: number;
+            slug: string;
+            title: string;
+            publisher: string;
+            /** Format: uri */
+            url: string;
+            kind?: components["schemas"]["KindEnum"];
+            /** Format: date */
+            date: string;
+            summary?: string;
+            /** Format: uri */
+            publisher_logo?: string | null;
+            publication?: string | null;
+            dataset?: string | null;
+            readonly status: components["schemas"]["WorkflowStatusEnum"];
+            readonly created_by: number;
+            readonly reviewed_by: number | null;
+            /** Format: date-time */
+            readonly created_at: string;
+            /** Format: date-time */
+            readonly updated_at: string;
+            /** Format: date-time */
+            readonly published_at: string | null;
         };
         MyRole: {
             readonly id: number;
@@ -1497,6 +1818,21 @@ export interface components {
              */
             previous?: string | null;
             results: components["schemas"]["AuditLog"][];
+        };
+        PaginatedCollectionList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["Collection"][];
         };
         PaginatedContentBlockList: {
             /** @example 123 */
@@ -1558,6 +1894,21 @@ export interface components {
             previous?: string | null;
             results: components["schemas"]["Document"][];
         };
+        PaginatedMentionList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["Mention"][];
+        };
         PaginatedPersonProfileList: {
             /** @example 123 */
             count: number;
@@ -1602,6 +1953,21 @@ export interface components {
              */
             previous?: string | null;
             results: components["schemas"]["Publication"][];
+        };
+        PaginatedRecognitionList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["Recognition"][];
         };
         PaginatedSubThemeList: {
             /** @example 123 */
@@ -1678,6 +2044,23 @@ export interface components {
         };
         PatchedAccessRequestReview: {
             status?: components["schemas"]["AccessRequestReviewStatusEnum"];
+        };
+        PatchedCollection: {
+            readonly id?: number;
+            slug?: string;
+            title?: string;
+            description?: string;
+            datasets?: string[];
+            publication?: string | null;
+            readonly status?: components["schemas"]["WorkflowStatusEnum"];
+            readonly created_by?: number;
+            readonly reviewed_by?: number | null;
+            /** Format: date-time */
+            readonly created_at?: string;
+            /** Format: date-time */
+            readonly updated_at?: string;
+            /** Format: date-time */
+            readonly published_at?: string | null;
         };
         PatchedContentBlock: {
             readonly id?: number;
@@ -1764,6 +2147,31 @@ export interface components {
             /** Format: date-time */
             readonly updated_at?: string;
         };
+        PatchedMention: {
+            readonly id?: number;
+            slug?: string;
+            title?: string;
+            publisher?: string;
+            /** Format: uri */
+            url?: string;
+            kind?: components["schemas"]["KindEnum"];
+            /** Format: date */
+            date?: string;
+            summary?: string;
+            /** Format: uri */
+            publisher_logo?: string | null;
+            publication?: string | null;
+            dataset?: string | null;
+            readonly status?: components["schemas"]["WorkflowStatusEnum"];
+            readonly created_by?: number;
+            readonly reviewed_by?: number | null;
+            /** Format: date-time */
+            readonly created_at?: string;
+            /** Format: date-time */
+            readonly updated_at?: string;
+            /** Format: date-time */
+            readonly published_at?: string | null;
+        };
         PatchedPersonProfile: {
             readonly id?: number;
             slug?: string;
@@ -1820,6 +2228,26 @@ export interface components {
             cover_url?: string;
             /** Format: uri */
             cover?: string | null;
+            readonly status?: components["schemas"]["WorkflowStatusEnum"];
+            readonly created_by?: number;
+            readonly reviewed_by?: number | null;
+            /** Format: date-time */
+            readonly created_at?: string;
+            /** Format: date-time */
+            readonly updated_at?: string;
+            /** Format: date-time */
+            readonly published_at?: string | null;
+        };
+        PatchedRecognition: {
+            readonly id?: number;
+            slug?: string;
+            title?: string;
+            awarded_by?: string;
+            year?: number;
+            description?: string;
+            url?: string;
+            /** Format: uri */
+            image?: string | null;
             readonly status?: components["schemas"]["WorkflowStatusEnum"];
             readonly created_by?: number;
             readonly reviewed_by?: number | null;
@@ -1977,6 +2405,26 @@ export interface components {
          * @enum {string}
          */
         PublicationVisibilityEnum: "public" | "private";
+        Recognition: {
+            readonly id: number;
+            slug: string;
+            title: string;
+            awarded_by: string;
+            year: number;
+            description?: string;
+            url?: string;
+            /** Format: uri */
+            image?: string | null;
+            readonly status: components["schemas"]["WorkflowStatusEnum"];
+            readonly created_by: number;
+            readonly reviewed_by: number | null;
+            /** Format: date-time */
+            readonly created_at: string;
+            /** Format: date-time */
+            readonly updated_at: string;
+            /** Format: date-time */
+            readonly published_at: string | null;
+        };
         /**
          * @description * `public` - Donor / Visitor
          *     * `researcher` - Researcher
@@ -2188,6 +2636,175 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PaginatedAuditLogList"];
+                };
+            };
+        };
+    };
+    v1_collections_list: {
+        parameters: {
+            query?: {
+                /** @description A page number within the paginated result set. */
+                page?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedCollectionList"];
+                };
+            };
+        };
+    };
+    v1_collections_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Collection"];
+                "application/x-www-form-urlencoded": components["schemas"]["Collection"];
+                "multipart/form-data": components["schemas"]["Collection"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Collection"];
+                };
+            };
+        };
+    };
+    v1_collections_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Collection"];
+                };
+            };
+        };
+    };
+    v1_collections_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Collection"];
+                "application/x-www-form-urlencoded": components["schemas"]["Collection"];
+                "multipart/form-data": components["schemas"]["Collection"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Collection"];
+                };
+            };
+        };
+    };
+    v1_collections_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    v1_collections_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedCollection"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedCollection"];
+                "multipart/form-data": components["schemas"]["PatchedCollection"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Collection"];
+                };
+            };
+        };
+    };
+    v1_collections_transition_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Collection"];
+                "application/x-www-form-urlencoded": components["schemas"]["Collection"];
+                "multipart/form-data": components["schemas"]["Collection"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Collection"];
                 };
             };
         };
@@ -2975,6 +3592,183 @@ export interface operations {
             };
         };
     };
+    v1_mentions_list: {
+        parameters: {
+            query?: {
+                /**
+                 * @description * `news` - News
+                 *     * `research` - Research paper
+                 *     * `report` - Report
+                 *     * `legislature` - Legislature
+                 *     * `other` - Other
+                 */
+                kind?: "legislature" | "news" | "other" | "report" | "research";
+                /** @description A page number within the paginated result set. */
+                page?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedMentionList"];
+                };
+            };
+        };
+    };
+    v1_mentions_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Mention"];
+                "application/x-www-form-urlencoded": components["schemas"]["Mention"];
+                "multipart/form-data": components["schemas"]["Mention"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Mention"];
+                };
+            };
+        };
+    };
+    v1_mentions_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Mention"];
+                };
+            };
+        };
+    };
+    v1_mentions_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Mention"];
+                "application/x-www-form-urlencoded": components["schemas"]["Mention"];
+                "multipart/form-data": components["schemas"]["Mention"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Mention"];
+                };
+            };
+        };
+    };
+    v1_mentions_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    v1_mentions_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedMention"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedMention"];
+                "multipart/form-data": components["schemas"]["PatchedMention"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Mention"];
+                };
+            };
+        };
+    };
+    v1_mentions_transition_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Mention"];
+                "application/x-www-form-urlencoded": components["schemas"]["Mention"];
+                "multipart/form-data": components["schemas"]["Mention"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Mention"];
+                };
+            };
+        };
+    };
     v1_password_reset_create: {
         parameters: {
             query?: never;
@@ -3643,6 +4437,175 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Publication"];
+                };
+            };
+        };
+    };
+    v1_recognition_list: {
+        parameters: {
+            query?: {
+                /** @description A page number within the paginated result set. */
+                page?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedRecognitionList"];
+                };
+            };
+        };
+    };
+    v1_recognition_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Recognition"];
+                "application/x-www-form-urlencoded": components["schemas"]["Recognition"];
+                "multipart/form-data": components["schemas"]["Recognition"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Recognition"];
+                };
+            };
+        };
+    };
+    v1_recognition_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Recognition"];
+                };
+            };
+        };
+    };
+    v1_recognition_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Recognition"];
+                "application/x-www-form-urlencoded": components["schemas"]["Recognition"];
+                "multipart/form-data": components["schemas"]["Recognition"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Recognition"];
+                };
+            };
+        };
+    };
+    v1_recognition_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    v1_recognition_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedRecognition"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedRecognition"];
+                "multipart/form-data": components["schemas"]["PatchedRecognition"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Recognition"];
+                };
+            };
+        };
+    };
+    v1_recognition_transition_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Recognition"];
+                "application/x-www-form-urlencoded": components["schemas"]["Recognition"];
+                "multipart/form-data": components["schemas"]["Recognition"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Recognition"];
                 };
             };
         };
