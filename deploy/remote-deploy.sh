@@ -30,6 +30,9 @@ rollback() {
 docker compose pull web || rollback
 docker compose up -d --remove-orphans || rollback
 
+# The host's nginx routes this app's name to it (HTTPS once a certificate exists; see website-backend's deploy/aws/host.yml).
+sudo /usr/local/sbin/pri-nginx-site pri-frontend "$server_name" /opt/pri-frontend || rollback
+
 healthy=0
 for _ in $(seq 1 30); do
   if curl -fsS -H "Host: $server_name" http://localhost/healthz >/dev/null; then
