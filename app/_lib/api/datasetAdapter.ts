@@ -4,7 +4,6 @@ import type { AccessState, DatasetDetail, DatasetSummary, ResourcePreview } from
 import type { Dataset } from "../types";
 
 type ApiDataset = components["schemas"]["Dataset"];
-type ApiDashboard = components["schemas"]["Dashboard"];
 type ApiTheme = components["schemas"]["Theme"];
 
 const FORMAT_LABELS: Record<ApiDataset["format"], string> = {
@@ -36,11 +35,6 @@ export function topLevelNameBySubTheme(themes: readonly ApiTheme[]): Map<number,
     for (const sub of theme.subthemes ?? []) index.set(sub.id, theme.name);
   }
   return index;
-}
-
-/** Every theme id -> name, for dashboards, which link to any theme directly. */
-export function themeNameById(themes: readonly ApiTheme[]): Map<number, string> {
-  return new Map(themes.map((theme) => [theme.id, theme.name]));
 }
 
 export function toDatasetSummary(dataset: ApiDataset, topLevelBySubTheme: ReadonlyMap<number, string>): DatasetSummary {
@@ -105,24 +99,4 @@ export type GeoJsonFeatureCollection = { type: "FeatureCollection"; features: Ge
 
 export function isFeatureCollection(body: unknown): body is GeoJsonFeatureCollection {
   return !!body && typeof body === "object" && (body as { type?: unknown }).type === "FeatureCollection" && Array.isArray((body as { features?: unknown }).features);
-}
-
-export type DashboardCard = {
-  slug: string;
-  title: string;
-  description: string;
-  theme: string | null;
-  embedUrl: string;
-  embedType: ApiDashboard["embed_type"];
-};
-
-export function toDashboard(dashboard: ApiDashboard, themeNames: ReadonlyMap<number, string>): DashboardCard {
-  return {
-    slug: dashboard.slug,
-    title: dashboard.title,
-    description: dashboard.description ?? "",
-    theme: themeNames.get(dashboard.theme) ?? null,
-    embedUrl: dashboard.embed_url,
-    embedType: dashboard.embed_type,
-  };
 }

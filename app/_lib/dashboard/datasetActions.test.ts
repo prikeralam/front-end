@@ -13,8 +13,7 @@ vi.mock("../api/client", () => ({ uncachedApi }));
 
 const listDatasets = vi.fn();
 const getDatasetDetail = vi.fn();
-const listDashboards = vi.fn();
-vi.mock("../api/datasets", () => ({ listDatasets, getDatasetDetail, listDashboards }));
+vi.mock("../api/datasets", () => ({ listDatasets, getDatasetDetail }));
 
 const { listDatasetsAction, getDatasetAccessAction, requestAccessAction, listAccessRequestsAction, decideAccessRequestAction } = await import("./datasetActions");
 
