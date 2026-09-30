@@ -152,6 +152,58 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/contact/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description The public contact form. Anyone may send a message; it is stored and emailed to PRI. */
+        post: operations["v1_contact_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/contact-messages/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description The inbox: editors and admins read messages and mark them handled (or new again). */
+        get: operations["v1_contact_messages_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/contact-messages/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description The inbox: editors and admins read messages and mark them handled (or new again). */
+        get: operations["v1_contact_messages_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** @description The inbox: editors and admins read messages and mark them handled (or new again). */
+        patch: operations["v1_contact_messages_partial_update"];
+        trace?: never;
+    };
     "/api/v1/content-blocks/": {
         parameters: {
             query?: never;
@@ -1599,6 +1651,13 @@ export interface components {
             /** Format: date-time */
             readonly timestamp: string;
         };
+        /**
+         * @description * `research` - Research
+         *     * `media` - Media
+         *     * `general` - General
+         * @enum {string}
+         */
+        CategoryEnum: "research" | "media" | "general";
         Collection: {
             readonly id: number;
             slug: string;
@@ -1615,6 +1674,36 @@ export interface components {
             readonly updated_at: string;
             /** Format: date-time */
             readonly published_at: string | null;
+        };
+        /** @description A message as staff see it. Only `status` can be changed. */
+        ContactMessage: {
+            readonly id: number;
+            readonly category: components["schemas"]["CategoryEnum"];
+            readonly name: string;
+            /** Format: email */
+            readonly email: string;
+            readonly message: string;
+            status?: components["schemas"]["ContactMessageStatusEnum"];
+            /** Format: date-time */
+            readonly created_at: string;
+            /** Format: date-time */
+            readonly handled_at: string | null;
+            readonly handled_by: number | null;
+        };
+        /**
+         * @description * `new` - New
+         *     * `handled` - Handled
+         * @enum {string}
+         */
+        ContactMessageStatusEnum: "new" | "handled";
+        /** @description What a visitor sends. `website` is a honeypot: the form hides it, so only bots fill it in. */
+        ContactSubmission: {
+            category?: components["schemas"]["CategoryEnum"];
+            name: string;
+            /** Format: email */
+            email: string;
+            message: string;
+            website?: string;
         };
         ContentBlock: {
             readonly id: number;
@@ -1833,6 +1922,21 @@ export interface components {
              */
             previous?: string | null;
             results: components["schemas"]["Collection"][];
+        };
+        PaginatedContactMessageList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["ContactMessage"][];
         };
         PaginatedContentBlockList: {
             /** @example 123 */
@@ -2061,6 +2165,21 @@ export interface components {
             readonly updated_at?: string;
             /** Format: date-time */
             readonly published_at?: string | null;
+        };
+        /** @description A message as staff see it. Only `status` can be changed. */
+        PatchedContactMessage: {
+            readonly id?: number;
+            readonly category?: components["schemas"]["CategoryEnum"];
+            readonly name?: string;
+            /** Format: email */
+            readonly email?: string;
+            readonly message?: string;
+            status?: components["schemas"]["ContactMessageStatusEnum"];
+            /** Format: date-time */
+            readonly created_at?: string;
+            /** Format: date-time */
+            readonly handled_at?: string | null;
+            readonly handled_by?: number | null;
         };
         PatchedContentBlock: {
             readonly id?: number;
@@ -2805,6 +2924,127 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Collection"];
+                };
+            };
+        };
+    };
+    v1_contact_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ContactSubmission"];
+                "application/x-www-form-urlencoded": components["schemas"]["ContactSubmission"];
+                "multipart/form-data": components["schemas"]["ContactSubmission"];
+            };
+        };
+        responses: {
+            /** @description Received. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid fields. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Too many messages. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    v1_contact_messages_list: {
+        parameters: {
+            query?: {
+                /**
+                 * @description * `research` - Research
+                 *     * `media` - Media
+                 *     * `general` - General
+                 */
+                category?: "general" | "media" | "research";
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /**
+                 * @description * `new` - New
+                 *     * `handled` - Handled
+                 */
+                status?: "handled" | "new";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedContactMessageList"];
+                };
+            };
+        };
+    };
+    v1_contact_messages_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this contact message. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContactMessage"];
+                };
+            };
+        };
+    };
+    v1_contact_messages_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this contact message. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedContactMessage"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedContactMessage"];
+                "multipart/form-data": components["schemas"]["PatchedContactMessage"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContactMessage"];
                 };
             };
         };

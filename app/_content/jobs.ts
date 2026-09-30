@@ -40,5 +40,3 @@ export const involvementPaths = [
   { title: "Open roles", desc: "Current recruitment across research, data, and communications." },
   { title: "Mailing list", desc: "Research updates, or media briefings for journalists." },
 ];
-
-export const contactCategories = ["Research", "Media", "General"];
