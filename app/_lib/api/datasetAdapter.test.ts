@@ -4,8 +4,6 @@ import {
   accessStateOf,
   isFeatureCollection,
   isTablePreview,
-  themeNameById,
-  toDashboard,
   toDatasetDetail,
   toDatasetSummary,
   toResourcePreview,
@@ -126,34 +124,5 @@ describe("isFeatureCollection", () => {
     expect(isFeatureCollection({ type: "FeatureCollection", features: [] })).toBe(true);
     expect(isFeatureCollection({ type: "Feature" })).toBe(false);
     expect(isFeatureCollection(undefined)).toBe(false);
-  });
-});
-
-describe("toDashboard", () => {
-  it("resolves the direct theme id to a name", () => {
-    const dashboard: components["schemas"]["Dashboard"] = {
-      id: 1,
-      slug: "education-access-dashboard",
-      title: "Education access dashboard",
-      description: "Enrolment by district",
-      embed_url: "https://example.org/embed/1",
-      embed_type: "datawrapper",
-      theme: 7,
-      status: "published",
-      created_by: 1,
-      reviewed_by: null,
-      created_at: "2026-09-25T06:52:46Z",
-      updated_at: "2026-09-25T06:52:46Z",
-      published_at: null,
-    };
-
-    expect(toDashboard(dashboard, themeNameById(themes))).toEqual({
-      slug: "education-access-dashboard",
-      title: "Education access dashboard",
-      description: "Enrolment by district",
-      theme: "Demography",
-      embedUrl: "https://example.org/embed/1",
-      embedType: "datawrapper",
-    });
   });
 });

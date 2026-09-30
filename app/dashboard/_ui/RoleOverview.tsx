@@ -1,10 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { decideAccessRequestAction, listDashboardsAction } from "../../_lib/dashboard/datasetActions";
-import type { DashboardCard } from "../../_lib/api/datasetAdapter";
-import DashboardEmbed from "../../data/_ui/DashboardEmbed";
+import { decideAccessRequestAction } from "../../_lib/dashboard/datasetActions";
 import { useDatasets, usePendingAccessRequests, useMyAccessRequests } from "../../_lib/useDatasetsApi";
 import type { AccessRequestRow } from "../../_lib/datasetTypes";
 import type { Session } from "../../_lib/session";
@@ -62,34 +60,6 @@ function BrowseDatasetsGrid({ session }: { session: Session | null }) {
             <p className="mt-2 text-lg font-bold text-[#171a2b] group-hover:text-[#253D9A]">{t.theme}</p>
             <p className="mt-1 text-[13px] text-[#8b8fa3]">{t.count === 1 ? "dataset" : "datasets"}</p>
           </Link>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function DashboardsList() {
-  const [dashboards, setDashboards] = useState<DashboardCard[]>([]);
-  useEffect(() => {
-    let current = true;
-    listDashboardsAction()
-      .then((list) => current && setDashboards(list))
-      .catch(() => current && setDashboards([]));
-    return () => {
-      current = false;
-    };
-  }, []);
-
-  return (
-    <div>
-      <SectionHeading>Dashboards</SectionHeading>
-      <div className="mt-6 grid gap-5 sm:grid-cols-2">
-        {dashboards.map((d) => (
-          <div key={d.slug} className="rounded-xl border border-[#e6e8f0] bg-white p-5">
-            <DashboardEmbed url={d.embedUrl} title={d.title} type={d.embedType} />
-            <h3 className="mt-4 text-lg font-bold text-[#171a2b]">{d.title}</h3>
-            <p className="mt-2 text-sm text-[#5b5f74]">{d.description}</p>
-          </div>
         ))}
       </div>
     </div>
@@ -302,9 +272,8 @@ export function AdminOverview({ session, bump }: OverviewProps) {
       </div>
       </div>
 
-      <div className="border-t border-[#e6e8f0] pt-10 space-y-12">
+      <div className="border-t border-[#e6e8f0] pt-10">
         <BrowseDatasetsGrid session={session} />
-        <DashboardsList />
       </div>
     </div>
   );
@@ -315,9 +284,8 @@ export function EditorOverview({ session, bump }: OverviewProps) {
     <div className="space-y-12">
       <ContentAwaitingReview session={session} bump={bump} />
       <AccessRequestsToReview session={session} bump={bump} />
-      <div className="border-t border-[#e6e8f0] pt-10 space-y-12">
+      <div className="border-t border-[#e6e8f0] pt-10">
         <BrowseDatasetsGrid session={session} />
-        <DashboardsList />
       </div>
     </div>
   );
@@ -373,10 +341,6 @@ export function ResearcherOverview({ session }: OverviewProps) {
       <div className="border-t border-[#e6e8f0] pt-10">
         <MyPendingRequests session={session} />
       </div>
-
-      <div className="border-t border-[#e6e8f0] pt-10">
-        <DashboardsList />
-      </div>
     </div>
   );
 }
@@ -391,9 +355,8 @@ export function FellowOverview({ session }: OverviewProps) {
 
       <MyPendingRequests session={session} />
 
-      <div className="border-t border-[#e6e8f0] pt-10 space-y-12">
+      <div className="border-t border-[#e6e8f0] pt-10">
         <BrowseDatasetsGrid session={session} />
-        <DashboardsList />
       </div>
     </div>
   );
@@ -409,9 +372,8 @@ export function DonorOverview({ session }: OverviewProps) {
 
       <MyPendingRequests session={session} />
 
-      <div className="border-t border-[#e6e8f0] pt-10 space-y-12">
+      <div className="border-t border-[#e6e8f0] pt-10">
         <BrowseDatasetsGrid session={session} />
-        <DashboardsList />
       </div>
     </div>
   );
