@@ -13,6 +13,7 @@ import {
   topLevelNameBySubTheme,
   type DashboardCard,
   type GeoJsonFeatureCollection,
+  type TablePreviewBody,
 } from "./datasetAdapter";
 import { collectAllPages } from "./pagination";
 import { unwrap } from "./request";
@@ -91,3 +92,26 @@ export async function listTopThemes(): Promise<{ name: string; description: stri
   return (await listThemes()).filter((theme) => theme.parent === null).map((theme) => ({ name: theme.name, description: theme.description ?? "" }));
 }
 
+/** Stop paging after this many preview pages (50 rows each), so a huge file can't stall a dashboard. */
+const MAX_TABLE_PAGES = 40;
+
+/**
+ * A dataset's whole table, read page by page from the table preview, as the caller may see it: the preview
+ * endpoint enforces the same access rules as the dataset itself. `null` when there's no table to read (a map dataset,
+ * an unreadable file, or a dataset the caller can't open).
+ */
+export async function getDatasetTable(slug: string, caller: Caller = {}): Promise<{ columns: string[]; rows: TablePreviewBody["rows"] } | null> {
+  const client = clientFor(caller);
+  const rows: TablePreviewBody["rows"] = [];
+  let columns: string[] = [];
+  for (let page = 1; page <= MAX_TABLE_PAGES; page++) {
+    // The endpoint takes `?page=`, but the OpenAPI schema doesn't declare it (a backend schema gap), hence the cast.
+    const result = await client.GET(TABLE_PREVIEW_PATH, { params: { path: { slug }, query: { page } } } as never);
+    const body: unknown = result.data;
+    if (!result.response.ok || !isTablePreview(body)) return page === 1 ? null : { columns, rows };
+    columns = body.header;
+    rows.push(...body.rows);
+    if (body.rows.length < body.page_size) break;
+  }
+  return { columns, rows };
+}

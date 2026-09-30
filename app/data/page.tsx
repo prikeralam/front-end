@@ -6,6 +6,8 @@ import { listCollections } from "../_lib/api/impact";
 import type { DatasetSummary } from "../_lib/datasetTypes";
 import { load } from "../_lib/api/load";
 import { SectionHeading } from "../_ui/kit";
+import DashboardCardLink from "./dashboards/_ui/DashboardCardLink";
+import { DASHBOARDS } from "./dashboards/_lib/specs";
 import DashboardEmbed from "./_ui/DashboardEmbed";
 import DataSearch from "./_ui/DataSearch";
 import FeaturedDataset from "./_ui/FeaturedDataset";
@@ -71,7 +73,7 @@ export default async function DataPage() {
   const themeCounts = themes.map((theme) => ({ theme, count: datasets.filter((d) => d.theme === theme).length }));
   const featured = pickFeatured(datasets);
   const featuredTable = featured ? (await getDatasetPreviews(featured)).table : null;
-  const dashboardCount = dashboardsResult.ok ? dashboardsResult.data.length : 0;
+  const dashboardCount = DASHBOARDS.length + (dashboardsResult.ok ? dashboardsResult.data.length : 0);
   const statLine = [
     `${datasets.length} ${datasets.length === 1 ? "dataset" : "datasets"}`,
     `${themes.length} ${themes.length === 1 ? "theme" : "themes"}`,
@@ -149,10 +151,19 @@ export default async function DataPage() {
 
       <section className="border-t border-[#e3e6f0] bg-white">
         <div className="mx-auto max-w-6xl px-6 py-16">
-          <SectionHeading>Visualization Dashboards</SectionHeading>
-          {!dashboardsResult.ok && <LoadError what="our dashboards" />}
-          {dashboardsResult.ok && dashboardsResult.data.length === 0 && <NotPublishedYet>Dashboards will be published here soon.</NotPublishedYet>}
-          <div className="mt-8 grid gap-5 sm:grid-cols-2">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <SectionHeading>Visualization Dashboards</SectionHeading>
+            <Link href="/data/dashboards" className="text-sm font-semibold text-[#253D9A] hover:underline">
+              All dashboards &rarr;
+            </Link>
+          </div>
+          <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {DASHBOARDS.map((d) => (
+              <DashboardCardLink key={d.slug} spec={d} />
+            ))}
+          </div>
+          {!dashboardsResult.ok && <LoadError what="our embedded dashboards" />}
+          <div className="mt-5 grid gap-5 sm:grid-cols-2">
             {(dashboardsResult.ok ? dashboardsResult.data : []).map((d) => (
               <div key={d.slug} className="rounded-lg border border-[#e3e6f0] bg-white p-5">
                 <DashboardEmbed url={d.embedUrl} title={d.title} type={d.embedType} />
