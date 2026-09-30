@@ -1,0 +1,21 @@
+# The frontend's site before its certificate exists (the name doesn't point at this host yet):
+# the app over plain HTTP, so deploys and health checks work. pri-nginx-site switches to
+# nginx.conf.template once it has a certificate.
+
+server {
+    listen 80;
+    server_name ${SERVER_NAME};
+    include snippets/acme.conf;
+
+    client_max_body_size 12m;
+
+    location / {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 60s;
+    }
+}

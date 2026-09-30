@@ -144,10 +144,10 @@ backend, so a backend outage does not roll back a frontend deploy.
 
 ### Provisioning a host (once per environment)
 
-Each host is a CloudFormation stack from `deploy/aws/staging.yml`: the EC2 instance, static IP, `sslip.io`
-hostname, security group (80/443, key-only SSH), deploy key pair, and a first-boot script that installs Docker,
-creates `/opt/pri-frontend` and issues the Let's Encrypt certificate with renewal. Commands, current values and
-the Environment secrets are in [`docs/deploy/aws-provisioning.md`](../docs/deploy/aws-provisioning.md).
+Each environment is one EC2 host shared with the backend, a CloudFormation stack from website-backend's
+`deploy/aws/host.yml` (instance, static IP, bucket, deploy key; nginx and certbot on the host). This repo only
+deploys its container to `/opt/pri-frontend` and installs its nginx site there. The Environment secrets are in
+[`docs/deploy/aws-provisioning.md`](../docs/deploy/aws-provisioning.md).
 
 ### Backend contract
 
