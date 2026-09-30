@@ -81,6 +81,25 @@ export default function SimpleDraftForm({
               <ImageField field={f} id={id} uploadedUrl={initial || undefined} linkUrl={f.urlKey ? initialValues?.[f.urlKey] || undefined : undefined} />
             ) : f.kind === "textarea" ? (
               <textarea id={id} name={f.key} defaultValue={initial ?? ""} required={required} readOnly={readOnly} rows={4} className={`${controlClass} py-2 leading-relaxed`} />
+            ) : f.kind === "multiselect" ? (
+              opts.length === 0 ? (
+                <p id={id} className="rounded-lg border border-dashed border-[#d3d8e8] px-3 py-3 text-[13px] text-[#7d86a8]">
+                  Nothing to choose from yet.
+                </p>
+              ) : (
+                <fieldset id={id} className="max-h-56 overflow-y-auto rounded-lg border border-[#d9ddea] bg-white p-1">
+                  <legend className="sr-only">{f.label}</legend>
+                  {opts.map((o) => {
+                    const checked = (initial ?? "").split(",").map((v) => v.trim()).includes(o.value);
+                    return (
+                      <label key={o.value} className="flex cursor-pointer items-start gap-2.5 rounded-md px-2.5 py-2 text-[13.5px] text-[#171a2b] hover:bg-[#f3f5fa]">
+                        <input type="checkbox" name={f.key} value={o.value} defaultChecked={checked} className="mt-0.5 h-4 w-4 shrink-0 accent-[#253D9A]" />
+                        <span>{o.label}</span>
+                      </label>
+                    );
+                  })}
+                </fieldset>
+              )
             ) : f.kind === "select" ? (
               <select id={id} name={f.key} defaultValue={initial ?? ""} required={required} className={`${controlClass} h-10 px-2`}>
                 {(f.optional || !initial) && <option value="">{f.optional ? "None" : "Choose…"}</option>}

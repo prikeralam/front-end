@@ -12,7 +12,18 @@ export const workflowStatusLabel: Record<WorkflowStatus, string> = {
 
 export const WORKFLOW_STATUSES = Object.keys(workflowStatusLabel) as WorkflowStatus[];
 
-export type ContentTypeKey = "content-block" | "testimonial" | "person-profile" | "partner" | "document" | "project" | "publication" | "dataset";
+export type ContentTypeKey =
+  | "content-block"
+  | "testimonial"
+  | "person-profile"
+  | "partner"
+  | "document"
+  | "project"
+  | "publication"
+  | "dataset"
+  | "mention"
+  | "recognition"
+  | "collection";
 
 export const contentTypeLabel: Record<ContentTypeKey, string> = {
   "content-block": "Content block",
@@ -23,6 +34,9 @@ export const contentTypeLabel: Record<ContentTypeKey, string> = {
   project: "Project",
   publication: "Publication",
   dataset: "Dataset",
+  mention: "Mention",
+  recognition: "Recognition",
+  collection: "Collection",
 };
 
 export const ALL_CONTENT_TYPES = Object.keys(contentTypeLabel) as ContentTypeKey[];
@@ -30,13 +44,13 @@ export const ALL_CONTENT_TYPES = Object.keys(contentTypeLabel) as ContentTypeKey
 export type FieldOption = { value: string; label: string };
 
 /** Fields whose options come from the backend (`getFormOptionsAction`) rather than a fixed list. */
-export type DynamicOptions = "sub-themes" | "authors";
+export type DynamicOptions = "sub-themes" | "authors" | "publications" | "datasets";
 
 export type FieldConfig = {
   key: string;
   label: string;
   /** `image` is an optional upload paired with a link field (`urlKey`); the upload wins when both are set. */
-  kind: "text" | "textarea" | "select" | "date" | "number" | "file" | "image";
+  kind: "text" | "textarea" | "select" | "multiselect" | "date" | "number" | "file" | "image";
   options?: FieldOption[];
   optionsFrom?: DynamicOptions;
   /** Not required to submit. */

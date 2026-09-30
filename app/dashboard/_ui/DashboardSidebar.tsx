@@ -27,6 +27,8 @@ function buildSections(session: Session | null): NavSection[] {
           { label: "Pages & blocks", href: "/dashboard/content" },
           { label: "Testimonials", href: "/dashboard/content/testimonials" },
           { label: "Documents", href: "/dashboard/content/documents" },
+          { label: "Cited in", href: "/dashboard/content/mentions" },
+          { label: "Recognition", href: "/dashboard/content/recognition" },
         ],
       },
       {
@@ -47,7 +49,16 @@ function buildSections(session: Session | null): NavSection[] {
           { label: "Projects", href: "/dashboard/projects" },
         ],
       },
-      { key: "data", label: "Data", icon: DataIcon, items: [{ label: "Datasets", href: "/dashboard/manage" }], also: (path) => path.startsWith("/dashboard/theme/") },
+      {
+        key: "data",
+        label: "Data",
+        icon: DataIcon,
+        items: [
+          { label: "Datasets", href: "/dashboard/manage" },
+          { label: "Collections", href: "/dashboard/collections" },
+        ],
+        also: (path) => path.startsWith("/dashboard/theme/"),
+      },
     );
   }
 

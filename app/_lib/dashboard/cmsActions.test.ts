@@ -16,6 +16,9 @@ vi.mock("../api/themes", () => ({
   ],
 }));
 vi.mock("../api/people", () => ({ listPeopleById: async () => new Map([[38, { name: "PRI Research Team" }]]) }));
+vi.mock("../api/publications", () => ({ listPublications: async () => ({ publications: [{ slug: "healthcare-gap", title: "Healthcare gap" }] }) }));
+const listDatasets = vi.fn();
+vi.mock("../api/datasets", () => ({ listDatasets }));
 
 const { listCmsAction, listAllCmsAction, getFormOptionsAction, createCmsAction, updateCmsAction, transitionCmsAction, deleteCmsAction } = await import("./cmsActions");
 
@@ -77,13 +80,40 @@ describe("listAllCmsAction", () => {
 });
 
 describe("getFormOptionsAction", () => {
-  it("offers sub-themes labelled with their theme, and people as authors", async () => {
+  it("offers sub-themes labelled with their theme, people as authors, and publications and datasets by slug", async () => {
+    listDatasets.mockResolvedValueOnce([{ slug: "plus-one", title: "Plus One batch size" }]);
+
     expect(await getFormOptionsAction()).toEqual({
       "sub-themes": [{ value: "11", label: "Health › Primary Care" }],
       authors: [{ value: "38", label: "PRI Research Team" }],
+      publications: [{ value: "healthcare-gap", label: "Healthcare gap" }],
+      datasets: [{ value: "plus-one", label: "Plus One batch size" }],
     });
+    // Datasets are listed as the signed-in user sees them, so staff can bundle internal ones.
+    expect(listDatasets).toHaveBeenCalledWith({ accessToken: "tok" });
+  });
+
+  it("leaves a list empty when it fails to load, rather than failing the form", async () => {
+    listDatasets.mockRejectedValueOnce(new Error("down"));
+    expect((await getFormOptionsAction()).datasets).toEqual([]);
   });
 });
+
+describe("multiselect fields", () => {
+  it("sends every ticked checkbox as a list of slugs", async () => {
+    backendRequest.mockResolvedValueOnce(ok(api({ id: 5, slug: "plus-one", title: "Plus One", description: "", datasets: ["a", "b"], publication: null }), 201));
+    const f = new FormData();
+    f.append("title", "Plus One");
+    f.append("description", "");
+    f.append("datasets", "a");
+    f.append("datasets", "b");
+    f.append("publication", "");
+
+    expect((await createCmsAction("collection", f)).ok).toBe(true);
+    expect(backendRequest.mock.calls[0][2].json).toMatchObject({ datasets: ["a", "b"], publication: null, slug: "plus-one" });
+  });
+});
+
 
 describe("createCmsAction", () => {
   it("creates as JSON with an auto slug and returns the record", async () => {
