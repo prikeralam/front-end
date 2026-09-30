@@ -1,7 +1,7 @@
 "use server";
 
 import { uncachedApi } from "../api/client";
-import { getDatasetDetail, listDashboards, listDatasets, type DashboardCard } from "../api/datasets";
+import { getDatasetDetail, listDatasets } from "../api/datasets";
 import { unwrap } from "../api/request";
 import { getAccessToken } from "../auth/serverAuth";
 import type { AccessRequestRow, AccessState, DatasetSummary } from "../datasetTypes";
@@ -19,11 +19,6 @@ const ACCESS_REQUEST_PATH = "/api/v1/access-requests/{id}/";
 /** Datasets as the signed-in caller sees them (staff also see internal ones; an approved requester gets the file). */
 export async function listDatasetsAction(): Promise<DatasetSummary[]> {
   return listDatasets({ accessToken: await getAccessToken() });
-}
-
-/** Published dashboards, for the dashboard home. */
-export async function listDashboardsAction(): Promise<DashboardCard[]> {
-  return listDashboards();
 }
 
 /** What this caller can do with one dataset, or `null` when it is not visible to them. */

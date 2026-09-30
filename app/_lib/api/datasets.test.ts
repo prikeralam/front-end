@@ -12,7 +12,7 @@ vi.mock("./themes", () => ({
   ],
 }));
 
-const { listDatasets, getDatasetDetail, getDatasetPreviews, listDashboards, listTopThemes } = await import("./datasets");
+const { listDatasets, getDatasetDetail, getDatasetPreviews, listTopThemes } = await import("./datasets");
 
 const apiDataset = (id: number, slug: string, extra: Record<string, unknown> = {}) => ({
   id,
@@ -100,16 +100,8 @@ describe("getDatasetPreviews", () => {
   });
 });
 
-describe("listDashboards / listTopThemes", () => {
+describe("listTopThemes", () => {
   beforeEach(() => GET.mockReset());
-
-  it("resolves dashboard theme names", async () => {
-    GET.mockResolvedValueOnce(
-      onePage([{ id: 1, slug: "d", title: "D", description: "", embed_url: "https://e/1", embed_type: "tableau", theme: 4, datasets: [], status: "published", created_by: 1, reviewed_by: null, created_at: "", updated_at: "", published_at: null }]),
-    );
-
-    expect(await listDashboards()).toMatchObject([{ slug: "d", theme: "Public Finance", embedType: "tableau" }]);
-  });
 
   it("lists only top-level themes, with a blank description where none is set", async () => {
     expect(await listTopThemes()).toEqual([

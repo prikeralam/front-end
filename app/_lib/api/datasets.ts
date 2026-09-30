@@ -5,13 +5,10 @@ import { api, uncachedApi } from "./client";
 import {
   isFeatureCollection,
   isTablePreview,
-  toDashboard,
   toDatasetDetail,
   toDatasetSummary,
   toResourcePreview,
-  themeNameById,
   topLevelNameBySubTheme,
-  type DashboardCard,
   type GeoJsonFeatureCollection,
   type TablePreviewBody,
 } from "./datasetAdapter";
@@ -19,13 +16,11 @@ import { collectAllPages } from "./pagination";
 import { unwrap } from "./request";
 import { listThemes } from "./themes";
 
-export type { DashboardCard };
 
 const DATASETS_PATH = "/api/v1/datasets/";
 const DATASET_PATH = "/api/v1/datasets/{slug}/";
 const TABLE_PREVIEW_PATH = "/api/v1/datasets/{slug}/preview/table/";
 const MAP_PREVIEW_PATH = "/api/v1/datasets/{slug}/preview/map/";
-const DASHBOARDS_PATH = "/api/v1/dashboards/";
 
 /** Anonymous reads share the cached client; a token means the answer depends on the caller, so it is never cached. */
 export type Caller = { accessToken?: string | null };
@@ -75,16 +70,6 @@ export async function getDatasetPreviews(dataset: Pick<DatasetDetail, "slug" | "
     console.error(`Failed to load the preview for dataset ${slug}`, error);
     return { table: null, map: null };
   }
-}
-
-/** Published dashboards with their theme names resolved. */
-export async function listDashboards(): Promise<DashboardCard[]> {
-  const [dashboards, themes] = await Promise.all([
-    collectAllPages(async (page) => unwrap(await api.GET(DASHBOARDS_PATH, { params: { query: { page } } }), DASHBOARDS_PATH)),
-    listThemes(),
-  ]);
-  const names = themeNameById(themes);
-  return dashboards.sort((a, b) => a.id - b.id).map((dashboard) => toDashboard(dashboard, names));
 }
 
 /** Top-level themes with their descriptions, in API order. */

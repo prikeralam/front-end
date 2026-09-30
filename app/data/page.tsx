@@ -1,14 +1,13 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { NotPublishedYet, LoadError } from "../_ui/ApiMessage";
-import { getDatasetPreviews, listDashboards, listDatasets } from "../_lib/api/datasets";
+import { getDatasetPreviews, listDatasets } from "../_lib/api/datasets";
 import { listCollections } from "../_lib/api/impact";
 import type { DatasetSummary } from "../_lib/datasetTypes";
 import { load } from "../_lib/api/load";
 import { SectionHeading } from "../_ui/kit";
 import DashboardCardLink from "./dashboards/_ui/DashboardCardLink";
 import { DASHBOARDS } from "./dashboards/_lib/specs";
-import DashboardEmbed from "./_ui/DashboardEmbed";
 import DataSearch from "./_ui/DataSearch";
 import FeaturedDataset from "./_ui/FeaturedDataset";
 
@@ -62,18 +61,14 @@ function pickFeatured(datasets: DatasetSummary[]): DatasetSummary | undefined {
 }
 
 export default async function DataPage() {
-  const [datasetsResult, dashboardsResult, collectionsResult] = await Promise.all([
-    load("datasets", listDatasets),
-    load("dashboards", listDashboards),
-    load("collections", listCollections),
-  ]);
+  const [datasetsResult, collectionsResult] = await Promise.all([load("datasets", listDatasets), load("collections", listCollections)]);
   const collections = collectionsResult.ok ? collectionsResult.data.slice(0, 3) : [];
   const datasets = datasetsResult.ok ? datasetsResult.data : [];
   const themes = Array.from(new Set(datasets.map((d) => d.theme).filter((t): t is string => !!t)));
   const themeCounts = themes.map((theme) => ({ theme, count: datasets.filter((d) => d.theme === theme).length }));
   const featured = pickFeatured(datasets);
   const featuredTable = featured ? (await getDatasetPreviews(featured)).table : null;
-  const dashboardCount = DASHBOARDS.length + (dashboardsResult.ok ? dashboardsResult.data.length : 0);
+  const dashboardCount = DASHBOARDS.length;
   const statLine = [
     `${datasets.length} ${datasets.length === 1 ? "dataset" : "datasets"}`,
     `${themes.length} ${themes.length === 1 ? "theme" : "themes"}`,
@@ -160,16 +155,6 @@ export default async function DataPage() {
           <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {DASHBOARDS.map((d) => (
               <DashboardCardLink key={d.slug} spec={d} />
-            ))}
-          </div>
-          {!dashboardsResult.ok && <LoadError what="our embedded dashboards" />}
-          <div className="mt-5 grid gap-5 sm:grid-cols-2">
-            {(dashboardsResult.ok ? dashboardsResult.data : []).map((d) => (
-              <div key={d.slug} className="rounded-lg border border-[#e3e6f0] bg-white p-5">
-                <DashboardEmbed url={d.embedUrl} title={d.title} type={d.embedType} />
-                <h3 className="mt-4 text-lg text-[#171a2b]">{d.title}</h3>
-                <p className="mt-2 text-sm text-[#5b5f74]">{d.description}</p>
-              </div>
             ))}
           </div>
         </div>
