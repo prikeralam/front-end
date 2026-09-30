@@ -133,10 +133,33 @@ describe("image fields", () => {
     expect(toPayload("person-profile", { ...values, photo: REMOVE_IMAGE }, "update")).toMatchObject({ payload: { photo: null } });
   });
 
-  it("gives people, partners, projects and publications an image field", () => {
+  it("gives people, partners, projects, publications, mentions and recognition an image field", () => {
     const withImages = Object.entries(RESOURCES).filter(([, r]) => r.fields.some((f) => f.kind === "image")).map(([type]) => type);
 
-    expect(withImages.sort()).toEqual(["partner", "person-profile", "project", "publication"]);
+    expect(withImages.sort()).toEqual(["mention", "partner", "person-profile", "project", "publication", "recognition"]);
+  });
+});
+
+describe("phase D types", () => {
+  it("links a mention to a publication or dataset by slug, and clears an empty choice", () => {
+    const values = { title: "Seats", publisher: "The Hindu", url: "https://x", kind: "news", date: "2026-09-01", summary: "", publisher_logo: "", publication: "healthcare-gap", dataset: "" };
+
+    expect(toPayload("mention", values, "create")).toMatchObject({
+      ok: true,
+      payload: { publication: "healthcare-gap", dataset: null, slug: "the-hindu-seats" },
+    });
+  });
+
+  it("sends a collection's datasets as a list of slugs, empty when none are ticked", () => {
+    expect(toPayload("collection", { title: "Plus One", description: "", datasets: "a, b ,", publication: "" }, "create")).toMatchObject({
+      payload: { datasets: ["a", "b"], publication: null, slug: "plus-one" },
+    });
+    expect(toPayload("collection", { title: "T", description: "", datasets: "", publication: "" }, "update")).toMatchObject({ payload: { datasets: [] } });
+  });
+
+  it("reads a collection's datasets back as form values and counts them in the subtitle", () => {
+    const record = toCmsRecord("collection", { ...base, slug: "plus-one", title: "Plus One", description: "", datasets: ["a", "b"], publication: null } as ApiRecord);
+    expect(record).toMatchObject({ key: "plus-one", values: { datasets: "a, b", publication: "" }, subtitle: "2 datasets" });
   });
 });
 

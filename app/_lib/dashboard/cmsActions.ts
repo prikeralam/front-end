@@ -2,6 +2,8 @@
 
 import { backendListAll, backendRequest, type BackendResult } from "../api/backendRequest";
 import { listPeopleById } from "../api/people";
+import { listDatasets } from "../api/datasets";
+import { listPublications } from "../api/publications";
 import { listThemes } from "../api/themes";
 import { getAccessToken } from "../auth/serverAuth";
 import {
@@ -22,6 +24,7 @@ import {
   type CmsMutation,
   type CmsRecord,
   type ContentTypeKey,
+  type DynamicOptions,
   type FieldOption,
   type WorkflowStatus,
 } from "../cms/types";
@@ -76,13 +79,25 @@ export async function listAllCmsAction(): Promise<CmsRecord[]> {
   return lists.flatMap((list) => (list.status === "ok" ? list.records : [])).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
 }
 
-export type FormOptions = { "sub-themes": FieldOption[]; authors: FieldOption[] };
+export type FormOptions = Record<DynamicOptions, FieldOption[]>;
 
-/** Choices for the form fields that point at other objects: sub-themes (grouped under their theme) and people. */
+/**
+ * Choices for the form fields that point at other objects: sub-themes (grouped under their theme), people, and
+ * publications and datasets by slug. Datasets are listed as the signed-in user sees them, so staff can pick internal
+ * ones too. A list that fails to load is empty rather than failing the whole form.
+ */
 export async function getFormOptionsAction(): Promise<FormOptions> {
-  const [themes, people] = await Promise.all([listThemes(), listPeopleById()]);
+  const accessToken = await getAccessToken();
+  const [themes, people, publications, datasets] = await Promise.all([
+    listThemes(),
+    listPeopleById(),
+    listPublications().catch(() => ({ publications: [] })),
+    listDatasets({ accessToken }).catch(() => []),
+  ]);
   const nameById = new Map(themes.map((theme) => [theme.id, theme.name]));
   return {
+    publications: publications.publications.map((p) => ({ value: p.slug, label: p.title })),
+    datasets: datasets.map((d) => ({ value: d.slug, label: d.title })),
     "sub-themes": themes
       .filter((theme) => theme.parent !== null && theme.parent !== undefined)
       .map((theme) => ({ value: String(theme.id), label: `${nameById.get(theme.parent as number) ?? "Theme"} › ${theme.name}` })),
@@ -95,6 +110,10 @@ function valuesFrom(type: ContentTypeKey, form: FormData): Record<string, string
   const values: Record<string, string> = {};
   for (const f of RESOURCES[type].fields) {
     if (f.kind === "file") continue;
+    if (f.kind === "multiselect") {
+      values[f.key] = form.getAll(f.key).map(String).join(",");
+      continue;
+    }
     if (f.kind === "image") {
       if (f.urlKey) values[f.urlKey] = String(form.get(f.urlKey) ?? "");
       values[f.key] = form.get(`${f.key}-remove`) === "1" ? REMOVE_IMAGE : "";

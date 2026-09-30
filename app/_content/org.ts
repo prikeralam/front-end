@@ -131,6 +131,7 @@ export const nav = [
     items: [
       { label: "Events & Campaigns", href: "/events" },
       { label: "Fellowships & Internships", href: "/fellowship" },
+      { label: "Cited in", href: "/cited-in" },
       { label: "Careers", href: "/careers" },
       { label: "Contact", href: "/contact" },
     ],
