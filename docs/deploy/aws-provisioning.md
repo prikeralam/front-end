@@ -3,7 +3,7 @@
 The frontend has no AWS stack of its own. Each environment is **one EC2 host shared with the backend**, in PRI's
 account `305846488655` (region `ap-south-1`), defined by `website-backend`'s `deploy/aws/host.yml` and documented in
 that repo's `docs/deploy/aws-provisioning.md` (template, host layout, nginx and certificates, how to recreate it).
-Staging exists; production is not provisioned yet.
+Staging and production both exist.
 
 ## What the frontend puts on the host
 
@@ -29,7 +29,14 @@ Repository variable `IMAGE_HOSTS`: `pri-staging-305846488655.s3.amazonaws.com,pr
 which serve the seeded person photos from `public/people/`). It is baked into the image at build time, and one image
 is promoted from staging to production, so add the production bucket when it exists.
 
-## Production (not provisioned)
+## Production
 
-The same shared-host template with `Environment=production`, deployed from `main` through the `production`
-Environment, for `priresearch.in` and `www.priresearch.in`.
+The shared host `pri-production` (static IP `3.7.92.231`), deployed from `main` through the `production` Environment
+(same five secrets as staging, with the production deploy key `~/.ssh/pri-production-host-deploy` and host key
+`~/.ssh/pri-production-host.known_hosts`). `APP_ENV_FILE`, kept at `~/.pri-deploy/frontend-production.env`:
+`ENVIRONMENT=production`, `SERVER_NAME=priresearch.in`, `SERVER_ALIASES=www.priresearch.in`,
+`API_URL=https://api.priresearch.in`.
+
+`SERVER_ALIASES` (optional, space or comma separated) are passed to `pri-nginx-site`, which puts them on the same
+certificate and redirects them to `SERVER_NAME` with `deploy/nginx.redirect.conf.template` (or
+`nginx.redirect.http.conf.template` before the certificate exists).
