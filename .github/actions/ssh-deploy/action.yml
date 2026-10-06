@@ -88,7 +88,7 @@ runs:
       run: |
         { printf '%s\n' "$APP_ENV_FILE"; echo "IMAGE=$IMAGE"; } > "$RUNNER_TEMP/.env.new"
         scp "$COMPOSE_FILE" target:/opt/pri-frontend/docker-compose.yml
-        scp deploy/nginx.conf.template deploy/nginx.http.conf.template deploy/remote-deploy.sh "$RUNNER_TEMP/.env.new" target:/opt/pri-frontend/
+        scp deploy/nginx.conf.template deploy/nginx.http.conf.template deploy/nginx.redirect.conf.template deploy/nginx.redirect.http.conf.template deploy/remote-deploy.sh "$RUNNER_TEMP/.env.new" target:/opt/pri-frontend/
         rm -f "$RUNNER_TEMP/.env.new"
 
     - name: Log the server in to GHCR

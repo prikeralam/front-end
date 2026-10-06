@@ -31,7 +31,9 @@ docker compose pull web || rollback
 docker compose up -d --remove-orphans || rollback
 
 # The host's nginx routes this app's name to it (HTTPS once a certificate exists; see website-backend's deploy/aws/host.yml).
-sudo /usr/local/sbin/pri-nginx-site pri-frontend "$server_name" /opt/pri-frontend || rollback
+# SERVER_ALIASES (space or comma separated, optional) redirect to SERVER_NAME, e.g. www in production.
+read -r -a aliases <<< "$(env_value SERVER_ALIASES | tr ',' ' ')"
+sudo /usr/local/sbin/pri-nginx-site pri-frontend "$server_name" /opt/pri-frontend "${aliases[@]}" || rollback
 
 healthy=0
 for _ in $(seq 1 30); do
