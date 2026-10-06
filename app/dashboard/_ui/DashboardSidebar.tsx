@@ -3,19 +3,20 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, type ComponentType, type SVGProps } from "react";
-import { canContributeContent, isAdmin, roleLabels, type Session } from "../../_lib/session";
+import { canContributeContent, canReviewDrafts, isAdmin, roleLabels, type Session } from "../../_lib/session";
 import { useLocalFlag } from "../../_lib/useLocalFlag";
 import { useSession } from "../../_lib/useSession";
-import { AdminIcon, ChevronIcon, CollapseIcon, ContentIcon, DataIcon, OverviewIcon, PeopleIcon, ResearchIcon } from "./icons";
+import { AdminIcon, ChevronIcon, CollapseIcon, ContentIcon, DataIcon, InboxIcon, OverviewIcon, PeopleIcon, ResearchIcon } from "./icons";
 
 type NavItem = { label: string; href: string };
 type NavSection = { key: string; label: string; icon: ComponentType<SVGProps<SVGSVGElement>>; items: NavItem[]; also?: (path: string) => boolean };
 
 const COLLAPSE_KEY = "pri_sidebar_collapsed";
 
-/** Six top-level headers; a header with one destination is a plain link, the rest open to show their pages. */
+/** Top-level headers; a header with one destination is a plain link, the rest open to show their pages. */
 function buildSections(session: Session | null): NavSection[] {
   const sections: NavSection[] = [{ key: "overview", label: "Overview", icon: OverviewIcon, items: [{ label: "Overview", href: "/dashboard" }] }];
+  if (canReviewDrafts(session)) sections.push({ key: "inbox", label: "Inbox", icon: InboxIcon, items: [{ label: "Inbox", href: "/dashboard/inbox" }] });
 
   if (canContributeContent(session)) {
     sections.push(

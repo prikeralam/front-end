@@ -49,6 +49,13 @@ export const DataIcon = (p: P) => (
   </Icon>
 );
 
+export const InboxIcon = (p: P) => (
+  <Icon {...p}>
+    <path d="M3 11.5 5.2 4.6A1.5 1.5 0 0 1 6.6 3.5h6.8a1.5 1.5 0 0 1 1.4 1.1L17 11.5V15a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 3 15z" />
+    <path d="M3 11.5h4l1 2h4l1-2h4" />
+  </Icon>
+);
+
 export const AdminIcon = (p: P) => (
   <Icon {...p}>
     <path d="M10 2.5 16 5v4.6c0 3.7-2.5 6.4-6 7.9-3.5-1.5-6-4.2-6-7.9V5z" />

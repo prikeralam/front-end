@@ -1,6 +1,9 @@
+import type { Metadata } from "next";
 import { org } from "../_content/org";
-import { contactCategories } from "../_content/jobs";
-import { PageHeader, FormMock } from "../_ui/kit";
+import { PageHeader } from "../_ui/kit";
+import ContactForm from "./_ui/ContactForm";
+
+export const metadata: Metadata = { title: "Contact" };
 
 export default function ContactPage() {
   return (
@@ -8,11 +11,8 @@ export default function ContactPage() {
       <PageHeader kicker="Contact" title="Get in touch" intro="Get in touch with our team to learn more about our research, explore collaboration opportunities, or join our mission for inclusive development." />
 
       <section className="mx-auto max-w-6xl px-6 py-16">
-        <div className="grid gap-8 sm:grid-cols-2">
-          <FormMock
-            title="Contact form"
-            fields={[`Category: ${contactCategories.join(" / ")}`, "Name", "Email", "Message"]}
-          />
+        <div className="relative grid items-start gap-8 lg:grid-cols-[1.15fr_0.85fr]">
+          <ContactForm email={org.email} />
           <div className="rounded-lg border border-[#e6e8f0] bg-white p-6">
             <p className="text-xs font-[family-name:var(--font-mono)] font-semibold uppercase tracking-[0.12em] text-[#8b8fa3]">Office</p>
             {org.address.map((line) => <p key={line} className="mt-2 text-[15px] text-[#171a2b]">{line}</p>)}
