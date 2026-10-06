@@ -1,30 +1,16 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
-import {
-  listRecords,
-  updateDraft,
-  deleteDraft,
-  transition,
-  workflowStatusLabel,
-  type ContentDataFor,
-  type ContentTypeKey,
-  type WorkflowRecord,
-  type WorkflowStatus,
-} from "../../_lib/mockContentStore";
-import { canContributeContent, canReviewDrafts, type MockSession } from "../../_lib/mockAuth";
-import { SectionHeading, EmptyState } from "../../_ui/kit";
-import SimpleDraftForm, { type FieldConfig } from "./SimpleDraftForm";
+import { useState } from "react";
+import { deleteCmsAction, transitionCmsAction } from "../../_lib/dashboard/cmsActions";
+import type { CmsMutation, CmsRecord, WorkflowStatus } from "../../_lib/cms/types";
+import { canContributeContent, canReviewDrafts, type Session } from "../../_lib/session";
+import { ImageIcon } from "./icons";
+import StatusBadge from "./StatusBadge";
 
-const statusColor: Record<WorkflowStatus, string> = {
-  draft: "bg-[#8b8fa3]/10 text-[#5b5f74]",
-  in_review: "bg-[#E4633F]/10 text-[#E4633F]",
-  approved: "bg-[#C9972C]/10 text-[#C9972C]",
-  published: "bg-[#253D9A]/10 text-[#253D9A]",
-  unpublished: "bg-[#8b8fa3]/10 text-[#5b5f74]",
-};
+type Action = { label: string; run: () => void; danger?: boolean };
 
-function nextActions(status: WorkflowStatus): { label: string; next: WorkflowStatus }[] {
+/** What a reviewer can do next. The backend checks the role again on every transition. */
+function reviewActions(status: WorkflowStatus): { label: string; next: WorkflowStatus }[] {
   switch (status) {
     case "in_review":
       return [{ label: "Approve", next: "approved" }, { label: "Send back to draft", next: "draft" }];
@@ -39,127 +25,171 @@ function nextActions(status: WorkflowStatus): { label: string; next: WorkflowSta
   }
 }
 
-export default function ContentWorkflowPanel<K extends ContentTypeKey>({
-  contentType,
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const formatDate = (iso: string) => {
+  const d = new Date(iso);
+  return Number.isNaN(d.getTime()) ? "" : `${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+};
+
+const rowButton = "rounded-md border border-[#d9ddea] bg-white px-2.5 py-1 text-[12px] font-semibold text-[#3a4263] hover:bg-[#f3f5fa] disabled:cursor-not-allowed disabled:opacity-50";
+const nextButton = "rounded-md bg-[#253D9A] px-2.5 py-1 text-[12px] font-semibold text-white hover:bg-[#1B2C70] disabled:cursor-not-allowed disabled:opacity-50";
+
+function MoreMenu({ actions, disabled }: { actions: Action[]; disabled: boolean }) {
+  const [open, setOpen] = useState(false);
+  if (actions.length === 0) return null;
+  return (
+    <div
+      className="relative"
+      onBlur={(e) => {
+        if (!e.currentTarget.contains(e.relatedTarget)) setOpen(false);
+      }}
+    >
+      <button type="button" disabled={disabled} aria-haspopup="menu" aria-expanded={open} aria-label="More actions" onClick={() => setOpen(!open)} className={`${rowButton} px-2 tracking-widest`}>
+        •••
+      </button>
+      {open && (
+        <div role="menu" className="absolute right-0 z-20 mt-1 min-w-44 overflow-hidden rounded-lg border border-[#e3e6f0] bg-white py-1 shadow-[0_8px_24px_rgba(23,26,43,0.12)]">
+          {actions.map((a) => (
+            <button
+              key={a.label}
+              type="button"
+              role="menuitem"
+              onClick={() => {
+                setOpen(false);
+                a.run();
+              }}
+              className={`block w-full px-3 py-2 text-left text-[13px] ${a.danger ? "text-[#b3452a] hover:bg-[#E4633F]/8" : "text-[#3a4263] hover:bg-[#f3f5fa]"}`}
+            >
+              {a.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/**
+ * The list for one content type: thumbnail (where the type has images), title, status, last change, and the actions
+ * this role may take. Editing happens in the parent's drawer (`onEdit`). The backend enforces every rule again.
+ */
+export default function ContentWorkflowPanel({
+  records,
   session,
-  renderSummary,
-  bump,
-  fields,
-  toFormValues,
-  buildData,
+  showImages,
+  onEdit,
+  onChanged,
 }: {
-  contentType: K;
-  session: MockSession;
-  renderSummary: (record: WorkflowRecord) => ReactNode;
-  bump: () => void;
-  fields: FieldConfig[];
-  toFormValues: (data: ContentDataFor<K>) => Record<string, string>;
-  buildData: (values: Record<string, string>, existing?: ContentDataFor<K>) => ContentDataFor<K>;
+  records: CmsRecord[];
+  session: Session;
+  showImages: boolean;
+  onEdit: (record: CmsRecord) => void;
+  onChanged: () => void;
 }) {
-  const [editingId, setEditingId] = useState<string | null>(null);
+  const [busyKey, setBusyKey] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const canReview = canReviewDrafts(session);
   const canSubmit = canContributeContent(session);
-  const all = [...listRecords(contentType)].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
 
-  function canEdit(r: WorkflowRecord<ContentDataFor<K>>) {
-    return (r.submittedByEmail === session.email && canSubmit) || canReview;
-  }
+  const isOwn = (r: CmsRecord) => session.id !== undefined && r.createdBy === session.id;
+  // Mirrors the backend: contributors edit their own drafts; editors and admins edit anything.
+  const canEdit = (r: CmsRecord) => canReview || (isOwn(r) && canSubmit && r.status === "draft");
 
-  function handleTransition(id: string, next: WorkflowStatus) {
-    const result = transition(contentType, id, next, session);
+  async function run(r: CmsRecord, action: () => Promise<CmsMutation>) {
+    setBusyKey(r.key);
+    setError(null);
+    const result = await action().catch((): CmsMutation => ({ ok: false, message: "We couldn't reach the server. Please try again." }));
+    setBusyKey(null);
     if (!result.ok) {
-      window.alert(result.reason);
+      setError(result.message);
       return;
     }
-    bump();
+    onChanged();
   }
 
-  function handleSaveEdit(r: WorkflowRecord<ContentDataFor<K>>, values: Record<string, string>) {
-    updateDraft(contentType, r.id, buildData(values, r.data));
-    setEditingId(null);
-    bump();
-  }
+  const transition = (r: CmsRecord, next: WorkflowStatus) => run(r, () => transitionCmsAction(r.type, r.key, next));
 
-  function handleDelete(r: WorkflowRecord<ContentDataFor<K>>) {
-    if (!window.confirm("Delete this item? This can't be undone.")) return;
-    deleteDraft(contentType, r.id);
-    bump();
-  }
-
-  if (all.length === 0) {
-    return <EmptyState message="Nothing here yet — use the form above to create one." />;
+  function remove(r: CmsRecord) {
+    if (!window.confirm(`Delete "${r.title}"? This can't be undone.`)) return;
+    run(r, () => deleteCmsAction(r.type, r.key));
   }
 
   return (
     <div>
-      <SectionHeading>All items</SectionHeading>
-      <ul className="mt-6 divide-y divide-[#e6e8f0] rounded-xl border border-[#e6e8f0] bg-white">
-        {all.map((r) => {
-          const editable = canEdit(r);
-          const canSubmitThisDraft = r.workflowStatus === "draft" && r.submittedByEmail === session.email && canSubmit;
-          return (
-            <li key={r.id} className="px-5 py-4">
-              <div className="flex flex-wrap items-center justify-between gap-4">
-                <div className="min-w-0">
-                  {renderSummary(r)}
-                  <p className="mt-1 text-[12px] text-[#8b8fa3]">submitted by {r.submittedByName}</p>
-                </div>
-                <div className="flex shrink-0 flex-wrap items-center gap-2">
-                  {canSubmitThisDraft && (
-                    <button
-                      onClick={() => handleTransition(r.id, "in_review")}
-                      className="rounded-full border border-[#253D9A] px-3 py-1.5 text-[12px] font-semibold text-[#253D9A] hover:bg-[#253D9A] hover:text-white"
-                    >
-                      Submit for review
-                    </button>
+      <div role="alert" className={error ? "mb-3 rounded-lg border border-[#E4633F]/30 bg-[#E4633F]/8 px-3 py-2.5 text-[13px] text-[#8a3a22]" : "sr-only"}>
+        {error ?? ""}
+      </div>
+      <div className="overflow-hidden rounded-xl border border-[#e3e6f0] bg-white shadow-[0_1px_2px_rgba(23,26,43,0.04)]">
+        <div className="hidden grid-cols-[minmax(0,1fr)_120px_110px_210px] gap-4 border-b border-[#e3e6f0] bg-[#fafbfd] px-5 py-2.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#7d86a8] md:grid">
+          <span>Name</span>
+          <span>Status</span>
+          <span>Updated</span>
+          <span className="sr-only">Actions</span>
+        </div>
+        <ul className="divide-y divide-[#edf0f6]">
+          {records.map((r) => {
+            const busy = busyKey === r.key;
+            const review = canReview ? reviewActions(r.status) : [];
+            const submit = r.status === "draft" && isOwn(r) && canSubmit ? [{ label: "Submit for review", next: "in_review" as WorkflowStatus }] : [];
+            // Only a step forward gets the solid button; stepping back (unpublish, back to draft) sits in the menu.
+            const steps = [...submit, ...review];
+            const next = steps.find((a) => a.next !== "draft" && a.next !== "unpublished");
+            const otherSteps = steps.filter((a) => a !== next);
+            const more: Action[] = [
+              ...otherSteps.map((a) => ({ label: a.label, run: () => transition(r, a.next) })),
+              ...(r.fileUrl ? [{ label: "Open file", run: () => window.open(r.fileUrl, "_blank", "noopener,noreferrer") }] : []),
+              ...(canReview ? [{ label: "Delete", run: () => remove(r), danger: true }] : []),
+            ];
+
+            return (
+              <li key={`${r.type}-${r.key}`} className={`grid grid-cols-1 items-center gap-3 px-5 py-3 transition-colors hover:bg-[#fafbfd] md:grid-cols-[minmax(0,1fr)_120px_110px_210px] md:gap-4 ${busy ? "opacity-60" : ""}`}>
+                <div className="flex min-w-0 items-center gap-3">
+                  {showImages && (
+                    <div className={`flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-lg ${r.imageUrl ? "bg-[#eef1f9]" : "border border-dashed border-[#d3d8e8] bg-[#fafbfd]"}`} title={r.imageUrl ? undefined : "No image yet"}>
+                      {r.imageUrl ? (
+                        // Images come from the storage bucket (presigned) or any linked host.
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={r.imageUrl} alt="" loading="lazy" className="h-full w-full object-cover" />
+                      ) : (
+                        <ImageIcon width={18} height={18} className="text-[#b3bad2]" />
+                      )}
+                    </div>
                   )}
-                  {canReview &&
-                    nextActions(r.workflowStatus).map((a) => (
-                      <button
-                        key={a.label}
-                        onClick={() => handleTransition(r.id, a.next)}
-                        className="rounded-full border border-[#253D9A] px-3 py-1.5 text-[12px] font-semibold text-[#253D9A] hover:bg-[#253D9A] hover:text-white"
-                      >
-                        {a.label}
+                  <div className="min-w-0">
+                    {canEdit(r) ? (
+                      <button type="button" onClick={() => onEdit(r)} className="block max-w-full truncate text-left text-[14px] font-semibold text-[#171a2b] hover:text-[#253D9A] hover:underline">
+                        {r.title}
                       </button>
-                    ))}
-                  {editable && (
-                    <button
-                      onClick={() => setEditingId(editingId === r.id ? null : r.id)}
-                      className="rounded-full border border-[#dcdee8] px-3 py-1.5 text-[12px] font-semibold text-[#5b5f74] hover:bg-[#f0f1f5]"
-                    >
-                      {editingId === r.id ? "Close" : "Edit"}
+                    ) : (
+                      <p className="truncate text-[14px] font-semibold text-[#171a2b]">{r.title}</p>
+                    )}
+                    <p className="mt-0.5 truncate text-[12.5px] text-[#7d86a8]">
+                      {[r.subtitle, isOwn(r) ? "by you" : `by user #${r.createdBy}`].filter(Boolean).join(" · ")}
+                    </p>
+                  </div>
+                </div>
+                <div>
+                  <StatusBadge status={r.status} />
+                </div>
+                <p className="font-[family-name:var(--font-mono)] text-[12px] text-[#5b6280]">{formatDate(r.updatedAt)}</p>
+                <div className="flex items-center gap-1.5 md:justify-end">
+                  {next && (
+                    <button type="button" disabled={busy} onClick={() => transition(r, next.next)} className={nextButton}>
+                      {next.label}
                     </button>
                   )}
-                  {editable && (
-                    <button
-                      onClick={() => handleDelete(r)}
-                      className="rounded-full border border-[#E4633F]/40 px-3 py-1.5 text-[12px] font-semibold text-[#E4633F] hover:bg-[#E4633F]/10"
-                    >
-                      Delete
+                  {canEdit(r) && (
+                    <button type="button" disabled={busy} onClick={() => onEdit(r)} className={rowButton}>
+                      Edit
                     </button>
                   )}
-                  <span className={`shrink-0 rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wide ${statusColor[r.workflowStatus]}`}>
-                    {workflowStatusLabel[r.workflowStatus]}
-                  </span>
+                  <MoreMenu actions={more} disabled={busy} />
                 </div>
-              </div>
-              {editingId === r.id && (
-                <div className="mt-4">
-                  <SimpleDraftForm
-                    title="Edit"
-                    fields={fields}
-                    initialValues={toFormValues(r.data)}
-                    submitLabel="Save changes"
-                    onCancel={() => setEditingId(null)}
-                    onSubmit={(values) => handleSaveEdit(r, values)}
-                  />
-                </div>
-              )}
-            </li>
-          );
-        })}
-      </ul>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
     </div>
   );
 }

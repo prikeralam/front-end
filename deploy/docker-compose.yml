@@ -1,0 +1,12 @@
+# Frontend on its environment's host (website-backend's deploy/aws/host.yml), shared with the
+# backend: just the Next.js server, listening on localhost. The host's nginx routes to it
+# (deploy/nginx.conf.template, installed by remote-deploy.sh).
+# Copied to /opt/pri-frontend by the deploy workflows, next to a rendered .env
+# (compose reads .env there for ${...} below and for the app via env_file).
+services:
+  web:
+    image: ${IMAGE}
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "127.0.0.1:3000:3000"

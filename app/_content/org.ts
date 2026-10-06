@@ -26,6 +26,12 @@ export const org = {
   status: "real" as ContentStatus,
 };
 
+export const legalStatus = [
+  { label: "Registration", value: org.registration.regNo, note: "Registered Society" },
+  { label: "12A Status", value: org.registration.pan12A, note: "Income Tax Act, 1961" },
+  { label: "80G Status", value: org.registration.cert80G, note: "Donations tax-deductible" },
+];
+
 export const vision = {
   text: "To create a society where every individual has equitable access to opportunities and resources. We envision an empowered society where all people can actively engage in socio-economic and political processes, fostering a culture of equity, inclusion, and mutual respect.",
   status: "real" as ContentStatus,
@@ -36,22 +42,6 @@ export const missionPoints = [
   "Develop evidence-based policies and recommendations to address issues and problems.",
   "Engage in strategic advocacy efforts with policymakers and key stakeholders.",
   "Empower decision-makers and the public through knowledge sharing and capacity building.",
-];
-
-export const pillars = [
-  {
-    title: "Research & Analysis Wing",
-    desc: "Five specialised departments examining gaps, inequalities, and opportunities across different societal sections through a multidisciplinary approach.",
-    href: "/research",
-  },
-  {
-    title: "Policy Advocacy & Engagement",
-    desc: "Active engagement with policymakers to ensure research findings translate into actionable policies and solutions.",
-  },
-  {
-    title: "Outreach & Production House",
-    desc: "Comprehensive outreach through publications, media engagement, and strategic content to shape public discourse.",
-  },
 ];
 
 export const departments = [
@@ -102,26 +92,6 @@ export const departments = [
   },
 ];
 
-export const researchDomains = [
-  { title: "Education", desc: "Analyzing educational access, quality, and outcomes across different communities and regions." },
-  { title: "Employment", desc: "Examining employment patterns, skill development, and occupational opportunities." },
-  { title: "Economics", desc: "Analyzing economic patterns, wealth distribution, and market participation." },
-  { title: "Public Finance", desc: "Budget allocation analysis, expenditure patterns, and fiscal policy evaluation." },
-  { title: "Health", desc: "Healthcare accessibility, delivery systems, and public health outcomes research." },
-  { title: "Environment", desc: "Environmental sustainability, climate resilience, and ecological impact studies." },
-  { title: "Politics & Representation", desc: "Electoral dynamics, political participation, and legislative representation studies." },
-  { title: "Demography & Diaspora", desc: "Population studies, migration patterns, and diaspora community analysis." },
-  { title: "Crime and Judiciary", desc: "Researching justice system effectiveness, legal access, and crime prevention strategies." },
-  { title: "Communication", desc: "Studying communication infrastructure, digital divide, and information accessibility." },
-  { title: "Community Infrastructure", desc: "Infrastructure development, community facilities, and urban planning research." },
-];
-
-export const methodology = [
-  { title: "Quantitative Analysis", desc: "Statistical analysis of large datasets to identify patterns, trends, and correlations across different demographic and geographic segments." },
-  { title: "Qualitative Research", desc: "In-depth interviews, focus groups, and ethnographic studies to understand lived experiences and contextual factors." },
-  { title: "Policy Evaluation", desc: "Systematic evaluation of existing policies and programs to assess effectiveness and identify areas for improvement." },
-];
-
 /** Grouped navigation IA — shared across all three design variants. */
 export const nav = [
   {
@@ -161,6 +131,7 @@ export const nav = [
     items: [
       { label: "Events & Campaigns", href: "/events" },
       { label: "Fellowships & Internships", href: "/fellowship" },
+      { label: "Cited in", href: "/cited-in" },
       { label: "Careers", href: "/careers" },
       { label: "Contact", href: "/contact" },
     ],

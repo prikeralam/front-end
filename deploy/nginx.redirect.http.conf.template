@@ -1,0 +1,12 @@
+# Alias names before the certificate covers them: answer certbot's challenge and redirect everything else to
+# SERVER_NAME. pri-nginx-site switches to nginx.redirect.conf.template once the certificate exists.
+
+server {
+    listen 80;
+    server_name ${SERVER_ALIASES};
+    include snippets/acme.conf;
+
+    location / {
+        return 301 http://${SERVER_NAME}$request_uri;
+    }
+}

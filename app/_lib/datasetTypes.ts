@@ -1,0 +1,51 @@
+import type { Dataset } from "./types";
+
+export type AccessState = "full" | "requestable" | "locked";
+
+export type DatasetSummary = {
+  /** API id: access requests reference datasets by id, not slug. */
+  id?: number;
+  slug: string;
+  title: string;
+  description: string;
+  visibility: Dataset["visibility"];
+  accessState: AccessState;
+  theme: string | null;
+  geography?: string;
+  year?: string;
+  type?: string;
+  source?: string;
+  coverage?: string;
+  frequency?: string;
+  lastUpdated?: string;
+  /** ISO timestamp of the last change, for the default citation's year. */
+  updatedAt?: string;
+  fileFormat: string | null;
+  /** e.g. "District, Year". */
+  granularity?: string;
+  /** e.g. "2014-15 to 2024-25". */
+  timePeriod?: string;
+  /** Worked out by the backend from the file; absent when it couldn't read it. */
+  rowCount?: number;
+  columnCount?: number;
+};
+
+export type DatasetDetail = DatasetSummary & {
+  columns: string[];
+  /** PRI's own citation text, when set; otherwise a default is built (`citationFor`). */
+  citation?: string;
+  tags: string[];
+  files: { label: string; path: string }[];
+};
+
+export type AccessRequestRow = {
+  id: string;
+  datasetSlug: string;
+  /** The API exposes only the requester's user id (backend gap G4/G6), so name and email are best-effort. */
+  requesterEmail: string;
+  requesterName: string;
+  status: "pending" | "approved" | "denied";
+  createdAt: string;
+};
+
+export type ResourcePreview = { label: string; format: string; columns: string[]; rows: string[][] };

@@ -1,24 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { getSession, roleLabels, type MockSession } from "../_lib/mockAuth";
-import { PageHeader } from "../_ui/kit";
+import { useState } from "react";
+import { roleLabels } from "../_lib/session";
+import { useRequireSession } from "../_lib/useSession";
+import DashboardPageHeader from "./_ui/DashboardPageHeader";
 import { AdminOverview, EditorOverview, ResearcherOverview, FellowOverview, DonorOverview } from "./_ui/RoleOverview";
 
-export default function DashboardV2() {
-  const router = useRouter();
-  const [session, setSessionState] = useState<MockSession | null | undefined>(undefined);
-  const [tick, setTick] = useState(0);
-
-  useEffect(() => {
-    const s = getSession();
-    if (!s) {
-      router.replace("/account");
-      return;
-    }
-    setSessionState(s);
-  }, [router, tick]);
+export default function DashboardPage() {
+  const session = useRequireSession();
+  const [, setTick] = useState(0);
 
   if (!session) return null;
 
@@ -26,9 +16,9 @@ export default function DashboardV2() {
 
   return (
     <>
-      <PageHeader kicker="Your dashboard" title={`Welcome, ${session.name}`} intro={`Signed in as ${roleLabels[session.role]}`} />
+      <DashboardPageHeader trail={["Overview"]} title={`Welcome, ${session.name}`} description={`Signed in as ${roleLabels[session.role]}`} />
 
-      <section className="mx-auto max-w-6xl px-6 py-16">
+      <section className="mx-auto max-w-6xl px-6 py-6 lg:px-8">
         {session.role === "admin" && <AdminOverview session={session} bump={bump} />}
         {session.role === "editor" && <EditorOverview session={session} bump={bump} />}
         {session.role === "researcher" && <ResearcherOverview session={session} bump={bump} />}

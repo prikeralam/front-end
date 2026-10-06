@@ -6,7 +6,7 @@ export function generateStaticParams() {
   return jobs.map((j) => ({ slug: j.slug }));
 }
 
-export default async function JobDetailV2({ params }: { params: Promise<{ slug: string }> }) {
+export default async function JobDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const job = jobs.find((j) => j.slug === slug);
   if (!job) notFound();
@@ -22,7 +22,7 @@ export default async function JobDetailV2({ params }: { params: Promise<{ slug: 
         <ul className="mt-6 list-disc space-y-2 pl-5 text-[15px] leading-relaxed text-[#4b4f66]">
           {job.responsibilities.map((r) => <li key={r}>{r}</li>)}
         </ul>
-        <button disabled className="mt-8 cursor-not-allowed rounded-full bg-[#253D9A]/40 px-5 py-2.5 text-sm font-semibold text-white">
+        <button disabled className="mt-8 cursor-not-allowed rounded-md bg-[#253D9A]/40 px-5 py-2.5 text-sm font-semibold text-white">
           Apply (outbound link not set)
         </button>
       </section>

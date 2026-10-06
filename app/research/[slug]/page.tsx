@@ -2,17 +2,15 @@ import type { ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { publications } from "../../_content/publications";
-import { people } from "../../_content/people";
+import { LoadError } from "../../_ui/ApiMessage";
+import { load } from "../../_lib/api/load";
+import { getPublicationBySlug } from "../../_lib/api/publications";
+import { formatPublicationDate } from "../../_lib/api/publicationAdapter";
 import { stockPhotoFor } from "../../_lib/stockPhotos";
 import { dataStories, educationCharts, demographyCharts, healthCharts, migrationCharts } from "../../_content/dataStories";
-import { HBarChart, GroupedBarChart, DivergingBarChart, ScatterChart, LineChart, VBarChart, HBarSimpleChart, type ChartPalette } from "../../_lib/dataStoryCharts";
+import { HBarChart, GroupedBarChart, DivergingBarChart, ScatterChart, LineChart, VBarChart, HBarSimpleChart, type ChartPalette } from "../_ui/dataStoryCharts";
 import { PageHeader, SectionHeading, StatusTag } from "../../_ui/kit";
 import MediaSlot from "../../_ui/MediaSlot";
-
-export function generateStaticParams() {
-  return publications.map((p) => ({ slug: p.slug }));
-}
 
 const palette: ChartPalette = {
   primary: "#253D9A",
@@ -32,7 +30,7 @@ function sortAsc(labels: string[], values: number[]) {
 function Figure({ children, caption }: { children: ReactNode; caption: string }) {
   return (
     <div className="mt-6">
-      <div className="rounded-xl border border-[#e6e8f0] bg-[#fafbfc] p-3">{children}</div>
+      <div className="rounded-lg border border-[#e6e8f0] bg-white p-3">{children}</div>
       <p className="mt-2 text-sm text-[#8b8fa3]">{caption}</p>
     </div>
   );
@@ -237,11 +235,11 @@ function StoryBody({ slug }: { slug: string }) {
 
   return (
     <>
-      <div className="mt-10 rounded-xl border border-[#e6e8f0] border-l-4 border-l-[#E4633F] bg-[#fafbfc] p-7">
+      <div className="mt-10 rounded-lg border border-[#e6e8f0] border-l-4 border-l-[#253D9A] bg-white p-7">
         <div className={story.hookStats.length > 1 ? "grid gap-6 sm:grid-cols-2" : ""}>
           {story.hookStats.map((s, i) => (
             <div key={i}>
-              <p className="font-[family-name:var(--font-mono)] text-3xl font-semibold text-[#E4633F] sm:text-4xl">{s.value}</p>
+              <p className="font-[family-name:var(--font-mono)] text-3xl font-semibold text-[#253D9A] sm:text-4xl">{s.value}</p>
               {s.label && <p className="mt-1 text-sm text-[#5b5f74]">{s.label}</p>}
             </div>
           ))}
@@ -264,7 +262,7 @@ function StoryBody({ slug }: { slug: string }) {
       {story.callouts && (
         <div className={`mt-10 grid gap-4 ${story.callouts.length === 3 ? "sm:grid-cols-3" : "sm:grid-cols-2"}`}>
           {story.callouts.map((c, i) => (
-            <div key={i} className="rounded-xl border border-[#e6e8f0] bg-white p-5">
+            <div key={i} className="rounded-lg border border-[#e6e8f0] bg-white p-5">
               <p className="text-[13px] text-[#8b8fa3]">{c.label}</p>
               <p className={`mt-1 font-[family-name:var(--font-mono)] text-2xl font-semibold ${c.tone === "bad" ? "text-[#E4633F]" : c.tone === "good" ? "text-[#253D9A]" : "text-[#171a2b]"}`}>{c.value}</p>
               {c.sub && <p className="mt-1 text-[13px] text-[#8b8fa3]">{c.sub}</p>}
@@ -273,7 +271,7 @@ function StoryBody({ slug }: { slug: string }) {
         </div>
       )}
 
-      <div className="mt-16 rounded-xl bg-[#0A2E28] p-8 text-white">
+      <div className="mt-16 rounded-lg bg-[#0A2E28] p-8 text-white">
         <h2 className="text-2xl font-bold tracking-tight text-white">Why this matters</h2>
         <p className="mt-4 text-[15px] leading-relaxed text-white/80">{story.whyItMatters}</p>
       </div>
@@ -290,12 +288,22 @@ function StoryBody({ slug }: { slug: string }) {
   );
 }
 
-export default async function PublicationDetailV2({ params }: { params: Promise<{ slug: string }> }) {
+export default async function PublicationDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const pub = publications.find((p) => p.slug === slug);
-  if (!pub) notFound();
+  const result = await load("this publication", () => getPublicationBySlug(slug));
+  if (!result.ok) {
+    return (
+      <>
+        <PageHeader kicker="Research" title="Publication" />
+        <section className="mx-auto max-w-3xl px-6 py-16"><LoadError what="this publication" /></section>
+      </>
+    );
+  }
+  if (!result.data) notFound();
+  const { publication: pub, authors } = result.data;
+  // The API has no body or chart data (backend gap G3): data stories keep their hand-built bodies, keyed by slug.
   const story = dataStories[slug];
-  const author = people.find((p) => p.slug === pub.authors[0]);
+  const author = authors[pub.authors[0]];
 
   return (
     <>
@@ -303,7 +311,7 @@ export default async function PublicationDetailV2({ params }: { params: Promise<
       <section className="mx-auto max-w-3xl px-6 py-16">
         <div className="flex items-center gap-2 text-sm text-[#5b5f74]">
           {author?.photo && (
-            <Link href={`/people/${author.slug}`} className="relative h-7 w-7 shrink-0 overflow-hidden rounded-full bg-[#fafbfc]">
+            <Link href={`/people/${author.slug}`} className="relative h-7 w-7 shrink-0 overflow-hidden rounded-full bg-white">
               <Image src={author.photo.src ?? stockPhotoFor(author.photo) ?? ""} alt={author.name} fill sizes="28px" className="object-cover" />
             </Link>
           )}
@@ -312,7 +320,7 @@ export default async function PublicationDetailV2({ params }: { params: Promise<
           ) : (
             pub.authors.join(", ")
           )}
-          &middot; {pub.date} <StatusTag status={pub.status} />
+          &middot; {formatPublicationDate(pub.date)} <StatusTag status={pub.status} />
         </div>
         {pub.cover && <MediaSlot need={pub.cover} className="mt-6" />}
         {story ? (
@@ -321,10 +329,10 @@ export default async function PublicationDetailV2({ params }: { params: Promise<
           <>
             <p className="mt-8 text-lg leading-relaxed text-[#4b4f66]">{pub.abstract}</p>
             <div className="mt-10 flex flex-wrap gap-3">
-              <button disabled className="cursor-not-allowed rounded-full bg-[#253D9A]/40 px-5 py-2.5 text-sm font-semibold text-white">
+              <button disabled className="cursor-not-allowed rounded-md bg-[#253D9A]/40 px-5 py-2.5 text-sm font-semibold text-white">
                 Download PDF (not wired)
               </button>
-              <button disabled className="cursor-not-allowed rounded-full border border-[#dcdee8] px-5 py-2.5 text-sm font-semibold text-[#8b8fa3]">
+              <button disabled className="cursor-not-allowed rounded-md border border-[#dcdee8] px-5 py-2.5 text-sm font-semibold text-[#8b8fa3]">
                 Export citation
               </button>
             </div>

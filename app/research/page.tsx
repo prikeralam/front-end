@@ -1,32 +1,11 @@
-"use client";
+import { NotPublishedYet, LoadError } from "../_ui/ApiMessage";
+import { PageHeader } from "../_ui/kit";
+import { load } from "../_lib/api/load";
+import { listPublications } from "../_lib/api/publications";
+import ResearchExplorer from "./_ui/ResearchExplorer";
 
-import { useMemo, useState } from "react";
-import Image from "next/image";
-import Link from "next/link";
-import { publications, publicationThemes, publicationFormats, publicationLanguages } from "../_content/publications";
-import { people } from "../_content/people";
-import { stockPhotoFor } from "../_lib/stockPhotos";
-import { PageHeader, FilterBar, StatusTag, EmptyState } from "../_ui/kit";
-import MediaSlot from "../_ui/MediaSlot";
-
-const sortOptions = ["Latest", "Most read"];
-
-function authorFor(slug: string) {
-  return people.find((p) => p.slug === slug);
-}
-
-export default function ResearchV2() {
-  const [theme, setTheme] = useState("");
-  const [format, setFormat] = useState("");
-  const [language, setLanguage] = useState("");
-  const [sort, setSort] = useState(sortOptions[0]);
-
-  const filtered = useMemo(() => {
-    const list = publications.filter(
-      (p) => (!theme || p.theme === theme) && (!format || p.format === format) && (!language || p.language === language)
-    );
-    return [...list].sort((a, b) => (sort === "Most read" ? b.views - a.views : b.date.localeCompare(a.date)));
-  }, [theme, format, language, sort]);
+export default async function ResearchPage() {
+  const result = await load("research", listPublications);
 
   return (
     <>
@@ -36,48 +15,12 @@ export default function ResearchV2() {
         intro="Reports, working papers, and data stories across PRI's research themes."
       />
       <section className="mx-auto max-w-6xl px-6 py-16">
-        <FilterBar
-          facets={[
-            { label: "Theme", options: publicationThemes, value: theme, onChange: setTheme },
-            { label: "Format", options: publicationFormats, value: format, onChange: setFormat },
-            { label: "Language", options: publicationLanguages, value: language, onChange: setLanguage },
-            { label: "Sort by", options: sortOptions, value: sort, onChange: setSort },
-          ]}
-        />
-        {filtered.length === 0 ? (
-          <div className="mt-8">
-            <EmptyState message="No publications match these filters." />
-          </div>
+        {!result.ok ? (
+          <LoadError what="our research" />
+        ) : result.data.publications.length === 0 ? (
+          <NotPublishedYet>Research will be published here soon.</NotPublishedYet>
         ) : (
-          <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {filtered.map((p) => {
-              const author = authorFor(p.authors[0]);
-              return (
-                <Link key={p.slug} href={`/research/${p.slug}`} className="group overflow-hidden rounded-xl border border-[#e6e8f0] bg-white transition-shadow hover:shadow-[0_2px_16px_rgba(15,107,92,0.10)]">
-                  {p.cover && <MediaSlot need={p.cover} />}
-                  <div className="p-5">
-                    <div className="flex items-center gap-2">
-                      <span className="rounded bg-[#253D9A]/8 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-[#253D9A]">{p.format}</span>
-                      <span className="text-[11px] font-semibold uppercase tracking-wide text-[#8b8fa3]">{p.theme}</span>
-                      <span className="text-[11px] text-[#8b8fa3]">&middot; {p.language}</span>
-                    </div>
-                    <h3 className="mt-3 flex items-start gap-2 text-lg font-bold leading-snug text-[#171a2b] group-hover:text-[#253D9A]">
-                      {p.title}
-                      <StatusTag status={p.status} />
-                    </h3>
-                    <div className="mt-4 flex items-center gap-2">
-                      {author?.photo && (
-                        <div className="relative h-7 w-7 shrink-0 overflow-hidden rounded-full bg-[#fafbfc]">
-                          <Image src={author.photo.src ?? stockPhotoFor(author.photo) ?? ""} alt={author.name} fill sizes="28px" className="object-cover" />
-                        </div>
-                      )}
-                      <p className="text-[13px] text-[#8b8fa3]">{author?.name ?? p.authors.join(", ")} &middot; {p.date}</p>
-                    </div>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
+          <ResearchExplorer publications={result.data.publications} authors={result.data.authors} />
         )}
       </section>
     </>

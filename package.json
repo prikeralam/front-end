@@ -3,15 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "predev": "node scripts/start-services.mjs",
     "dev": "next dev",
-    "prestart": "node scripts/start-services.mjs",
+    "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "api:types": "node scripts/generate-api-types.mjs",
+    "test": "vitest run"
   },
   "dependencies": {
-    "@prisma/client": "^6.19.3",
     "next": "16.3.4",
+    "openapi-fetch": "^0.17.0",
     "plotly.js-dist-min": "^4.0.0",
     "react": "19.2.8",
     "react-dom": "19.2.8",
@@ -19,20 +20,18 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
+    "@types/node": "^22.20.4",
     "@types/plotly.js": "^3.0.13",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.3.4",
-    "prisma": "^6.19.3",
+    "openapi-typescript": "^7.13.0",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^5.0.2"
   },
   "allowScripts": {
-    "unrs-resolver@1.12.2": true,
-    "@prisma/engines@6.19.3": true,
-    "prisma@6.19.3": true,
-    "@prisma/client@6.19.3": true
+    "unrs-resolver@1.12.2": true
   }
 }

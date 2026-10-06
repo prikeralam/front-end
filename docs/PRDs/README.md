@@ -31,14 +31,14 @@ Phase 1 covers 3 frontend sections and 2 backend modules, chosen because they're
 
 | Letter | Module | Status | Spec |
 |---|---|---|---|
-| A | Content Management System | **Drafted — Phase 1** | [backend/A-content-management-system.md](backend/A-content-management-system.md) |
-| B | Publication Repository Module | Drafted · Future phase | [backend/B-publication-repository-module.md](backend/B-publication-repository-module.md) |
-| C | Data Repository & Dashboard Integration | **Drafted — Phase 1 · Django+DRF in `pri-backend` (CKAN pivot reversed, see amendment)** | [backend/C-data-repository-dashboard-integration.md](backend/C-data-repository-dashboard-integration.md) |
-| D | Fellowship / Internship Management System | Drafted · Future phase | [backend/D-fellowship-internship-management-system.md](backend/D-fellowship-internship-management-system.md) |
-| E | Media Watch & Rapid Response Module | Drafted · Future phase | [backend/E-media-watch-rapid-response-module.md](backend/E-media-watch-rapid-response-module.md) |
-| F | Donor & Fundraising Backend | Drafted · Future phase | [backend/F-donor-fundraising-backend.md](backend/F-donor-fundraising-backend.md) |
-| G | Forms, Surveys & Contact Management | Drafted · Future phase | [backend/G-forms-surveys-contact-management.md](backend/G-forms-surveys-contact-management.md) |
-| H | User Access & Roles (cross-cutting permissions layer) | Drafted · Future phase | [backend/H-user-access-roles.md](backend/H-user-access-roles.md) |
+| A | Content Management System | **Drafted — Phase 1** | `website-backend` → `docs/PRDs/A-content-management-system.md` |
+| B | Publication Repository Module | Drafted · Future phase | `website-backend` → `docs/PRDs/B-publication-repository-module.md` |
+| C | Data Repository & Dashboard Integration | **Drafted — Phase 1 · Django+DRF in `website-backend` (CKAN pivot reversed, see amendment)** | `website-backend` → `docs/PRDs/C-data-repository-dashboard-integration.md` |
+| D | Fellowship / Internship Management System | Drafted · Future phase | `website-backend` → `docs/PRDs/D-fellowship-internship-management-system.md` |
+| E | Media Watch & Rapid Response Module | Drafted · Future phase | `website-backend` → `docs/PRDs/E-media-watch-rapid-response-module.md` |
+| F | Donor & Fundraising Backend | Drafted · Future phase | `website-backend` → `docs/PRDs/F-donor-fundraising-backend.md` |
+| G | Forms, Surveys & Contact Management | Drafted · Future phase | `website-backend` → `docs/PRDs/G-forms-surveys-contact-management.md` |
+| H | User Access & Roles (cross-cutting permissions layer) | Drafted · Future phase | `website-backend` → `docs/PRDs/H-user-access-roles.md` |
 
 ## Dependency map (Phase 1)
 

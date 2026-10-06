@@ -14,12 +14,27 @@ export type MediaNeed = {
   src?: string;
 };
 
+/** A homepage hero slide: a project from the API, or the static motto slide. */
+export type HeroProject = {
+  slug: string;
+  title: string;
+  blurb: string;
+  status: ContentStatus;
+  image: MediaNeed;
+  /** Overrides the default "Explore project →" / `/projects/{slug}` link — used by the motto slide. */
+  ctaLabel?: string;
+  ctaHref?: string;
+};
+
 export type Person = {
   slug: string;
   name: string;
   role: string;
   group: "team" | "patron" | "advisory" | "executive" | "fellow" | "past-fellow" | "author";
   bio?: string;
+  /** Public contact links, shown as icons on the people pages. */
+  linkedin?: string;
+  email?: string;
   /** Fellows only: their research topic. */
   topic?: string;
   /** Fellows only: research objectives, shown as a bulleted list. */
@@ -32,7 +47,7 @@ export type Publication = {
   slug: string;
   title: string;
   abstract: string;
-  format: "Report" | "Working Paper" | "Data Story";
+  format: "Report" | "Working Paper" | "Brief" | "Explainer" | "Infographic" | "Video" | "Data Story";
   theme: string;
   date: string;
   /** `Person.slug` references, not raw display names. */
@@ -64,15 +79,6 @@ export type Dataset = {
   tags?: string[];
   /** Actual file format, when a real file exists. Distinct from `type`, which is a methodology classification. */
   fileFormat?: "CSV" | "Parquet" | "ZIP";
-};
-
-export type Dashboard = {
-  slug: string;
-  title: string;
-  description: string;
-  theme: string;
-  status: ContentStatus;
-  embed: MediaNeed | null;
 };
 
 export type PRIEvent = {
@@ -113,35 +119,6 @@ export type PRIDocument = {
   kind: string;
   year?: string;
   status: ContentStatus;
-  /** Path to the actual file once PRI has supplied one, e.g. "/PDFs/Annual Report 25-26.pdf". */
+  /** URL of the file, once one exists (from the backend for documents). */
   href?: string;
-};
-
-export type NamedProgram = {
-  slug: string;
-  name: string;
-  description: string;
-  funder: string;
-  status: ContentStatus;
-  image: MediaNeed | null;
-};
-
-/** Module A: a slug-addressable rich-text block (e.g. a page section) editable through the CMS. */
-export type ContentBlock = {
-  slug: string;
-  title: string;
-  body: string;
-  seoTitle?: string;
-  seoDescription?: string;
-  updatedAt: string;
-};
-
-/** Module A: a quote shown in a "what people say about PRI" strip. Same shape as the
- * placeholder entries already in app/_content/people.ts's `testimonials` array. */
-export type Testimonial = {
-  slug: string;
-  quote: string;
-  name: string;
-  role: string;
-  status: ContentStatus;
 };

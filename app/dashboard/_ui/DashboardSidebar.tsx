@@ -2,161 +2,203 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
-import { getSession, canContributeContent, isAdmin, type MockSession } from "../../_lib/mockAuth";
+import { useState, type ComponentType, type SVGProps } from "react";
+import { canContributeContent, canReviewDrafts, isAdmin, roleLabels, type Session } from "../../_lib/session";
+import { useLocalFlag } from "../../_lib/useLocalFlag";
+import { useSession } from "../../_lib/useSession";
+import { AdminIcon, ChevronIcon, CollapseIcon, ContentIcon, DataIcon, InboxIcon, OverviewIcon, PeopleIcon, ResearchIcon } from "./icons";
 
 type NavItem = { label: string; href: string };
-type NavSection = { label: string; items: NavItem[] };
+type NavSection = { key: string; label: string; icon: ComponentType<SVGProps<SVGSVGElement>>; items: NavItem[]; also?: (path: string) => boolean };
 
 const COLLAPSE_KEY = "pri_sidebar_collapsed";
 
-function buildSections(session: MockSession | null): NavSection[] {
-  const canManageContent = canContributeContent(session);
-  const admin = isAdmin(session);
+/** Top-level headers; a header with one destination is a plain link, the rest open to show their pages. */
+function buildSections(session: Session | null): NavSection[] {
+  const sections: NavSection[] = [{ key: "overview", label: "Overview", icon: OverviewIcon, items: [{ label: "Overview", href: "/dashboard" }] }];
+  if (canReviewDrafts(session)) sections.push({ key: "inbox", label: "Inbox", icon: InboxIcon, items: [{ label: "Inbox", href: "/dashboard/inbox" }] });
 
-  const sections: NavSection[] = [
-    { label: "", items: [{ label: "Dashboard", href: "/dashboard" }] },
-  ];
-
-  if (canManageContent) {
-    sections.push({
-      label: "Content",
-      items: [
-        { label: "Pages & Content Blocks", href: "/dashboard/content" },
-        { label: "Testimonials", href: "/dashboard/content/testimonials" },
-        { label: "Documents", href: "/dashboard/content/documents" },
-      ],
-    });
-    sections.push({
-      label: "Team & People",
-      items: [
-        { label: "People Directory", href: "/dashboard/team" },
-        { label: "Partners", href: "/dashboard/team/partners" },
-      ],
-    });
-    sections.push({ label: "Projects", items: [{ label: "Projects", href: "/dashboard/projects" }] });
-    sections.push({ label: "Research & Publications", items: [{ label: "Publications", href: "/dashboard/research" }] });
-    sections.push({ label: "Data Repository", items: [{ label: "Manage Datasets", href: "/dashboard/manage" }] });
+  if (canContributeContent(session)) {
+    sections.push(
+      {
+        key: "content",
+        label: "Content",
+        icon: ContentIcon,
+        items: [
+          { label: "Pages & blocks", href: "/dashboard/content" },
+          { label: "Testimonials", href: "/dashboard/content/testimonials" },
+          { label: "Documents", href: "/dashboard/content/documents" },
+          { label: "Cited in", href: "/dashboard/content/mentions" },
+          { label: "Recognition", href: "/dashboard/content/recognition" },
+        ],
+      },
+      {
+        key: "people",
+        label: "People",
+        icon: PeopleIcon,
+        items: [
+          { label: "Team directory", href: "/dashboard/team" },
+          { label: "Partners", href: "/dashboard/team/partners" },
+        ],
+      },
+      {
+        key: "research",
+        label: "Research & Projects",
+        icon: ResearchIcon,
+        items: [
+          { label: "Publications", href: "/dashboard/research" },
+          { label: "Projects", href: "/dashboard/projects" },
+        ],
+      },
+      {
+        key: "data",
+        label: "Data",
+        icon: DataIcon,
+        items: [
+          { label: "Datasets", href: "/dashboard/manage" },
+          { label: "Collections", href: "/dashboard/collections" },
+        ],
+        also: (path) => path.startsWith("/dashboard/theme/"),
+      },
+    );
   }
 
-  if (admin) {
+  if (isAdmin(session)) {
     sections.push({
+      key: "admin",
       label: "Administration",
+      icon: AdminIcon,
       items: [
-        { label: "Users & Roles", href: "/dashboard/users" },
-        { label: "Audit Log", href: "/dashboard/audit" },
+        { label: "Users & roles", href: "/dashboard/users" },
+        { label: "Audit log", href: "/dashboard/audit" },
       ],
     });
   }
-
-  sections.push({
-    label: "My Tools",
-    items: [
-      { label: "Favorites", href: "/dashboard/favorites" },
-      { label: "Downloads", href: "/dashboard/downloads" },
-      { label: "API Access", href: "/dashboard/api" },
-    ],
-  });
-
   return sections;
 }
 
-function SidebarLink({ item, collapsed, active, onNavigate }: { item: NavItem; collapsed: boolean; active: boolean; onNavigate: () => void }) {
-  return (
-    <Link
-      href={item.href}
-      onClick={onNavigate}
-      title={collapsed ? item.label : undefined}
-      className={`flex items-center gap-3 rounded-lg px-3 py-2 text-[13px] font-semibold transition-colors ${
-        active ? "bg-[#253D9A]/10 text-[#253D9A]" : "text-[#5b5f74] hover:bg-[#f0f1f5] hover:text-[#171a2b]"
-      } ${collapsed ? "justify-center" : ""}`}
-    >
-      <span
-        aria-hidden="true"
-        className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] font-bold ${
-          active ? "bg-[#253D9A] text-white" : "bg-[#e6e8f0] text-[#5b5f74]"
-        }`}
-      >
-        {item.label.charAt(0)}
-      </span>
-      {!collapsed && <span className="truncate">{item.label}</span>}
-    </Link>
-  );
-}
+const isActiveSection = (section: NavSection, path: string) => section.items.some((item) => item.href === path) || !!section.also?.(path);
 
 export default function DashboardSidebar({ mobileOpen, onCloseMobile }: { mobileOpen: boolean; onCloseMobile: () => void }) {
   const pathname = usePathname();
-  const [session, setSession] = useState<MockSession | null>(null);
-  const [collapsed, setCollapsed] = useState(false);
-
-  useEffect(() => {
-    setSession(getSession());
-  }, [pathname]);
-
-  useEffect(() => {
-    try {
-      setCollapsed(window.localStorage.getItem(COLLAPSE_KEY) === "1");
-    } catch {
-      // ignore
-    }
-  }, []);
-
-  function toggleCollapsed() {
-    setCollapsed((c) => {
-      const next = !c;
-      try {
-        window.localStorage.setItem(COLLAPSE_KEY, next ? "1" : "0");
-      } catch {
-        // ignore
-      }
-      return next;
-    });
-  }
+  const session = useSession() ?? null;
+  const [collapsed, setCollapsed] = useLocalFlag(COLLAPSE_KEY);
+  // The header the user opened, remembered only for the page it was opened on: navigating opens the new page's header.
+  const [manual, setManual] = useState<{ path: string; key: string | null } | null>(null);
 
   const sections = buildSections(session);
+  const activeKey = sections.find((s) => isActiveSection(s, pathname))?.key ?? null;
+  const openKey = manual?.path === pathname ? manual.key : activeKey;
 
-  const nav = (
-    <nav className="flex h-full flex-col gap-6 overflow-y-auto px-3 py-6">
-      {sections.map((section, i) => (
-        <div key={i}>
-          {section.label && !collapsed && section.items.length > 1 && (
-            <p className="mb-2 px-3 text-[11px] font-bold uppercase tracking-wider text-[#8b8fa3]">{section.label}</p>
-          )}
-          <div className="space-y-1">
-            {section.items.map((item) => (
-              <SidebarLink
-                key={item.href}
-                item={item}
-                collapsed={collapsed}
-                active={pathname === item.href}
-                onNavigate={onCloseMobile}
-              />
-            ))}
-          </div>
+  function toggle(section: NavSection) {
+    if (collapsed) {
+      setCollapsed(false);
+      setManual({ path: pathname, key: section.key });
+      return;
+    }
+    setManual({ path: pathname, key: openKey === section.key ? null : section.key });
+  }
+
+  const renderNav = (railCollapsed: boolean) => (
+    <nav aria-label="Dashboard" className="flex h-full flex-col px-3 pb-4 pt-5">
+      {!railCollapsed && <p className="mb-3 px-3 text-[10.5px] font-semibold uppercase tracking-[0.14em] text-[#7d86a8]">Workspace</p>}
+
+      <ul className="flex-1 space-y-1 overflow-y-auto">
+        {sections.map((section) => {
+          const Icon = section.icon;
+          const active = section.key === activeKey;
+          const single = section.items.length === 1;
+          const open = !railCollapsed && openKey === section.key;
+          const headerClass = `group flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-[13.5px] font-semibold transition-colors ${
+            railCollapsed ? "justify-center" : ""
+          } ${
+            active && (single || railCollapsed)
+              ? "bg-white text-[#253D9A] shadow-[0_1px_2px_rgba(23,26,43,0.08)]"
+              : active
+                ? "text-[#253D9A] hover:bg-white/60"
+                : "text-[#3a4263] hover:bg-white/60 hover:text-[#171a2b]"
+          }`;
+          const icon = <Icon className={`shrink-0 ${active ? "text-[#253D9A]" : "text-[#6f7899] group-hover:text-[#3a4263]"}`} />;
+
+          return (
+            <li key={section.key}>
+              {single ? (
+                <Link href={section.items[0].href} onClick={onCloseMobile} title={railCollapsed ? section.label : undefined} aria-current={active ? "page" : undefined} className={headerClass}>
+                  {icon}
+                  {!railCollapsed && <span className="truncate">{section.label}</span>}
+                </Link>
+              ) : (
+                <>
+                  <button type="button" onClick={() => toggle(section)} aria-expanded={open} title={railCollapsed ? section.label : undefined} className={headerClass}>
+                    {icon}
+                    {!railCollapsed && (
+                      <>
+                        <span className="flex-1 truncate">{section.label}</span>
+                        <ChevronIcon width={14} height={14} className={`shrink-0 text-[#8b93b3] transition-transform duration-200 ${open ? "rotate-90" : ""}`} />
+                      </>
+                    )}
+                  </button>
+                  {/* Grid-rows animates the height of the sub-list without measuring it. */}
+                  <div className={`grid transition-[grid-template-rows] duration-200 ease-out ${open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}>
+                    <div className="overflow-hidden" inert={!open}>
+                      <ul className="relative ml-[21px] mt-1 space-y-0.5 border-l border-[#d3d9ec] pb-1 pl-3">
+                        {section.items.map((item) => {
+                          const current = item.href === pathname;
+                          return (
+                            <li key={item.href}>
+                              <Link
+                                href={item.href}
+                                onClick={onCloseMobile}
+                                aria-current={current ? "page" : undefined}
+                                className={`relative block rounded-md px-3 py-1.5 text-[13px] transition-colors ${
+                                  current ? "bg-white font-semibold text-[#253D9A] shadow-[0_1px_2px_rgba(23,26,43,0.08)]" : "text-[#4f5878] hover:bg-white/60 hover:text-[#171a2b]"
+                                }`}
+                              >
+                                {current && <span aria-hidden="true" className="absolute -left-[13.5px] top-1/2 h-4 w-[3px] -translate-y-1/2 rounded-full bg-[#253D9A]" />}
+                                {item.label}
+                              </Link>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </div>
+                  </div>
+                </>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+
+      {session && !railCollapsed && (
+        <div className="mt-4 rounded-lg border border-[#d9def0] bg-white/70 px-3 py-2.5">
+          <p className="truncate text-[13px] font-semibold text-[#171a2b]">{session.name}</p>
+          <p className="text-[11.5px] text-[#6f7899]">{roleLabels[session.role]}</p>
         </div>
-      ))}
+      )}
 
       <button
-        onClick={toggleCollapsed}
-        className="mt-auto hidden items-center justify-center rounded-lg border border-[#e6e8f0] py-2 text-[12px] font-semibold text-[#5b5f74] hover:bg-[#f0f1f5] lg:flex"
+        type="button"
+        onClick={() => setCollapsed(!collapsed)}
+        aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+        className={`mt-3 hidden items-center gap-2 rounded-lg px-3 py-2 text-[12.5px] font-medium text-[#6f7899] hover:bg-white/60 hover:text-[#171a2b] lg:flex ${railCollapsed ? "justify-center" : ""}`}
       >
-        {collapsed ? "»" : "« Collapse"}
+        <CollapseIcon className={collapsed ? "rotate-180" : ""} />
+        {!railCollapsed && "Collapse"}
       </button>
     </nav>
   );
 
   return (
     <>
-      {/* Desktop persistent sidebar */}
-      <aside className={`hidden shrink-0 border-r border-[#e6e8f0] bg-white lg:block ${collapsed ? "w-[76px]" : "w-64"}`}>
-        {nav}
+      <aside className={`sticky top-0 hidden h-[calc(100vh-73px)] shrink-0 border-r border-[#dde2f0] bg-[#eef1f9] transition-[width] duration-200 lg:block ${collapsed ? "w-[72px]" : "w-64"}`}>
+        {renderNav(collapsed)}
       </aside>
 
-      {/* Mobile off-canvas drawer */}
       {mobileOpen && (
-        <div className="fixed inset-0 z-30 lg:hidden">
-          <button aria-label="Close menu" className="absolute inset-0 bg-black/30" onClick={onCloseMobile} />
-          <aside className="absolute left-0 top-0 h-full w-72 bg-white shadow-xl">{nav}</aside>
+        <div className="fixed inset-0 z-40 lg:hidden">
+          <button aria-label="Close menu" className="absolute inset-0 bg-[#171a2b]/40" onClick={onCloseMobile} />
+          <aside className="absolute left-0 top-0 h-full w-72 bg-[#eef1f9] shadow-xl">{renderNav(false)}</aside>
         </div>
       )}
     </>
