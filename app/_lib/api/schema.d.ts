@@ -474,6 +474,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/datasets/{slug}/files/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Add the same data in another format. Same permission as editing the dataset. */
+        post: operations["v1_datasets_files_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/datasets/{slug}/files/{file_id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** @description Remove one extra format; its stored file is deleted too. */
+        delete: operations["v1_datasets_files_destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/datasets/{slug}/preview/map/": {
         parameters: {
             query?: never;
@@ -1751,6 +1785,12 @@ export interface components {
             /** Format: uri */
             file: string;
             format: components["schemas"]["DatasetFormatEnum"];
+            /** @description Every format the dataset comes in, main first. Always shown, even when `files` is not. */
+            readonly formats: string[];
+            /** @description Every downloadable file: the main one first, then other formats of the same data. Omitted, like `file`, for callers who may not download the dataset. */
+            readonly files: {
+                [key: string]: unknown;
+            }[];
             sub_theme: number;
             geography?: string;
             year?: number | null;
@@ -1763,6 +1803,7 @@ export interface components {
             readonly row_count: number | null;
             readonly column_count: number | null;
             readonly columns: unknown;
+            readonly file_size: number | null;
             readonly status: components["schemas"]["WorkflowStatusEnum"];
             readonly created_by: number;
             readonly reviewed_by: number | null;
@@ -1773,14 +1814,26 @@ export interface components {
             /** Format: date-time */
             readonly published_at: string | null;
         };
+        /** @description An extra format of a dataset, as uploaded by staff. The dataset comes from the URL. */
+        DatasetFile: {
+            readonly id: number;
+            format: components["schemas"]["DatasetFormatEnum"];
+            /** Format: uri */
+            file: string;
+            readonly size: number | null;
+            /** Format: date-time */
+            readonly created_at: string;
+        };
         /**
          * @description * `csv` - CSV
          *     * `parquet` - Parquet
          *     * `zip` - ZIP
          *     * `geojson` - GeoJSON
+         *     * `json` - JSON
+         *     * `xlsx` - Excel
          * @enum {string}
          */
-        DatasetFormatEnum: "csv" | "parquet" | "zip" | "geojson";
+        DatasetFormatEnum: "csv" | "parquet" | "zip" | "geojson" | "json" | "xlsx";
         /**
          * @description * `public` - Public
          *     * `on_request` - On Request
@@ -2227,6 +2280,12 @@ export interface components {
             /** Format: uri */
             file?: string;
             format?: components["schemas"]["DatasetFormatEnum"];
+            /** @description Every format the dataset comes in, main first. Always shown, even when `files` is not. */
+            readonly formats?: string[];
+            /** @description Every downloadable file: the main one first, then other formats of the same data. Omitted, like `file`, for callers who may not download the dataset. */
+            readonly files?: {
+                [key: string]: unknown;
+            }[];
             sub_theme?: number;
             geography?: string;
             year?: number | null;
@@ -2239,6 +2298,7 @@ export interface components {
             readonly row_count?: number | null;
             readonly column_count?: number | null;
             readonly columns?: unknown;
+            readonly file_size?: number | null;
             readonly status?: components["schemas"]["WorkflowStatusEnum"];
             readonly created_by?: number;
             readonly reviewed_by?: number | null;
@@ -3541,7 +3601,10 @@ export interface operations {
     };
     v1_datasets_download_retrieve: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description A format from `files`; the main file when omitted. */
+                format?: string;
+            };
             header?: never;
             path: {
                 slug: string;
@@ -3557,6 +3620,52 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["Dataset"];
                 };
+            };
+        };
+    };
+    v1_datasets_files_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["DatasetFile"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DatasetFile"];
+                };
+            };
+        };
+    };
+    v1_datasets_files_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                file_id: string;
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

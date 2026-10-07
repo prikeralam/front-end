@@ -8,6 +8,7 @@ import { canContributeContent, canReviewDrafts } from "../../_lib/session";
 import { useRequireSession } from "../../_lib/useSession";
 import ContentWorkflowPanel from "./ContentWorkflowPanel";
 import DashboardPageHeader, { primaryButton } from "./DashboardPageHeader";
+import DatasetFormatsPanel from "./DatasetFormatsPanel";
 import Drawer from "./Drawer";
 import { ImageIcon, PlusIcon, SearchIcon } from "./icons";
 import SimpleDraftForm from "./SimpleDraftForm";
@@ -223,6 +224,7 @@ export default function CmsScreen({
             onCancel={() => setDrawer(null)}
           />
         )}
+        {drawer?.mode === "edit" && type === "dataset" && <DatasetFormatsPanel key={`formats-${drawer.record.key}`} slug={drawer.record.key} />}
       </Drawer>
     </>
   );

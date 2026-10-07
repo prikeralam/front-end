@@ -14,6 +14,7 @@ const dataset: DatasetSummary = {
   granularity: "District",
   timePeriod: "2023-24",
   fileFormat: "CSV",
+  formats: ["CSV"],
 };
 
 describe("matchesQuery", () => {
