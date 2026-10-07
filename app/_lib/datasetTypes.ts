@@ -20,7 +20,10 @@ export type DatasetSummary = {
   lastUpdated?: string;
   /** ISO timestamp of the last change, for the default citation's year. */
   updatedAt?: string;
+  /** The main file's format, the one previews read (e.g. "CSV"). */
   fileFormat: string | null;
+  /** Every format the dataset comes in, main first (e.g. ["CSV", "JSON"]). Known even when the files are locked. */
+  formats: string[];
   /** e.g. "District, Year". */
   granularity?: string;
   /** e.g. "2014-15 to 2024-25". */
@@ -35,8 +38,11 @@ export type DatasetDetail = DatasetSummary & {
   /** PRI's own citation text, when set; otherwise a default is built (`citationFor`). */
   citation?: string;
   tags: string[];
-  files: { label: string; path: string }[];
+  /** What the caller may download: the main file first, then other formats. Empty when the files are locked. */
+  files: DatasetFile[];
 };
+
+export type DatasetFile = { label: string; format: string; path: string; size?: number };
 
 export type AccessRequestRow = {
   id: string;

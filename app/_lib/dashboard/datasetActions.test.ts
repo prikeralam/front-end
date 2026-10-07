@@ -15,7 +15,19 @@ const listDatasets = vi.fn();
 const getDatasetDetail = vi.fn();
 vi.mock("../api/datasets", () => ({ listDatasets, getDatasetDetail }));
 
-const { listDatasetsAction, getDatasetAccessAction, requestAccessAction, listAccessRequestsAction, decideAccessRequestAction } = await import("./datasetActions");
+const backendRequest = vi.fn();
+vi.mock("../api/backendRequest", () => ({ backendRequest }));
+
+const {
+  listDatasetsAction,
+  getDatasetAccessAction,
+  requestAccessAction,
+  listAccessRequestsAction,
+  decideAccessRequestAction,
+  listExtraFormatsAction,
+  addExtraFormatAction,
+  removeExtraFormatAction,
+} = await import("./datasetActions");
 
 const res = (status: number) => ({ response: { status, ok: status >= 200 && status < 300 } });
 
@@ -39,11 +51,12 @@ describe("listDatasetsAction", () => {
 });
 
 describe("getDatasetAccessAction", () => {
-  it("returns the caller's access state and download URL", async () => {
+  it("returns the caller's access state and every file they may download", async () => {
     getAccessToken.mockResolvedValueOnce("tok");
-    getDatasetDetail.mockResolvedValueOnce({ accessState: "full", files: [{ label: "x", path: "http://api/media/x.csv" }] });
+    const files = [{ label: "CSV", format: "csv", path: "http://api/media/x.csv" }, { label: "JSON", format: "json", path: "http://api/media/x.json" }];
+    getDatasetDetail.mockResolvedValueOnce({ accessState: "full", files });
 
-    expect(await getDatasetAccessAction("religious-composition")).toEqual({ accessState: "full", downloadUrl: "http://api/media/x.csv" });
+    expect(await getDatasetAccessAction("religious-composition")).toEqual({ accessState: "full", files });
     expect(getDatasetDetail).toHaveBeenCalledWith("religious-composition", { accessToken: "tok" });
   });
 
@@ -143,5 +156,60 @@ describe("decideAccessRequestAction", () => {
     getAccessToken.mockResolvedValue(null);
     expect(await decideAccessRequestAction("7", "approved")).toBe(false);
     expect(PATCH).not.toHaveBeenCalled();
+  });
+});
+
+describe("other formats of a dataset", () => {
+  const ok = (data: unknown, status = 200) => ({ ok: true, status, data, message: "" });
+  const bad = (status: number, data: unknown = null) => ({ ok: false, status, data, message: "" });
+  const upload = (format: string, name: string, bytes = 10) => {
+    const form = new FormData();
+    form.append("format", format);
+    form.append("file", new File([new Uint8Array(bytes)], name));
+    return form;
+  };
+
+  beforeEach(() => {
+    backendRequest.mockReset();
+    getAccessToken.mockResolvedValue("tok");
+  });
+
+  it("lists the main format and the extra files (the main file has no id)", async () => {
+    backendRequest.mockResolvedValueOnce(
+      ok({ format: "csv", files: [{ id: null, format: "csv", url: "u", size: 8 }, { id: 4, format: "json", url: "u2", size: 2048 }, { format: "bad" }] }),
+    );
+    expect(await listExtraFormatsAction("plus-one")).toEqual({ status: "ok", mainFormat: "csv", extras: [{ id: 4, format: "json", label: "JSON", size: 2048 }] });
+    expect(backendRequest).toHaveBeenCalledWith("GET", "/api/v1/datasets/plus-one/", { accessToken: "tok" });
+  });
+
+  it("checks the format, size and extension before uploading", async () => {
+    expect(await addExtraFormatAction("plus-one", upload("xml", "a.xml"))).toMatchObject({ ok: false, message: "Choose a format." });
+    expect(await addExtraFormatAction("plus-one", upload("json", "a.csv"))).toMatchObject({ ok: false, message: expect.stringContaining("doesn't look like JSON") });
+    expect(await addExtraFormatAction("plus-one", upload("json", "a.json", 11 * 1024 * 1024))).toMatchObject({ ok: false, message: expect.stringContaining("10 MB") });
+    expect(await addExtraFormatAction("../x", upload("json", "a.json"))).toMatchObject({ ok: false });
+    expect(backendRequest).not.toHaveBeenCalled();
+  });
+
+  it("uploads as multipart and reports the backend's refusals", async () => {
+    backendRequest.mockResolvedValueOnce(ok({ id: 5 }, 201));
+    expect(await addExtraFormatAction("plus-one", upload("json", "data.JSON"))).toEqual({ ok: true });
+    const [method, path, options] = backendRequest.mock.calls[0];
+    expect([method, path, options.form.get("format"), (options.form.get("file") as File).name]).toEqual(["POST", "/api/v1/datasets/plus-one/files/", "json", "data.JSON"]);
+
+    backendRequest.mockResolvedValueOnce(bad(400, { format: ["This dataset already has a file in that format; remove it first."] }));
+    expect(await addExtraFormatAction("plus-one", upload("json", "a.json"))).toEqual({ ok: false, message: "This dataset already has a file in that format; remove it first." });
+    backendRequest.mockResolvedValueOnce(bad(403));
+    expect(await addExtraFormatAction("plus-one", upload("json", "a.json"))).toMatchObject({ ok: false, message: expect.stringContaining("isn't allowed") });
+  });
+
+  it("removes by id, and refuses nonsense ids without calling the backend", async () => {
+    backendRequest.mockResolvedValueOnce(ok(null, 204));
+    expect(await removeExtraFormatAction("plus-one", 4)).toEqual({ ok: true });
+    expect(backendRequest).toHaveBeenCalledWith("DELETE", "/api/v1/datasets/plus-one/files/4/", { accessToken: "tok" });
+    expect(await removeExtraFormatAction("plus-one", -1)).toMatchObject({ ok: false });
+    expect(backendRequest).toHaveBeenCalledTimes(1);
+
+    getAccessToken.mockResolvedValueOnce(null);
+    expect(await removeExtraFormatAction("plus-one", 4)).toMatchObject({ ok: false, message: expect.stringContaining("session has ended") });
   });
 });

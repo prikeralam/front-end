@@ -36,9 +36,11 @@ export default function DatasetRow({ dataset: d, href = `/data/${d.slug}` }: { d
         )}
       </div>
       <div className="flex shrink-0 items-center gap-2">
-        {d.fileFormat && (
-          <span className="rounded bg-[#171a2b]/5 px-2 py-0.5 font-[family-name:var(--font-mono)] text-[11px] font-semibold uppercase tracking-[0.08em] text-[#171a2b]">{d.fileFormat}</span>
-        )}
+        {d.formats.map((format) => (
+          <span key={format} className="rounded bg-[#171a2b]/5 px-2 py-0.5 font-[family-name:var(--font-mono)] text-[11px] font-semibold uppercase tracking-[0.08em] text-[#171a2b]">
+            {format}
+          </span>
+        ))}
         <span className={`flex items-center gap-1 rounded px-2 py-0.5 font-[family-name:var(--font-mono)] text-[11px] font-semibold uppercase tracking-[0.08em] ${tag.tone}`}>
           {d.visibility !== "public" && (
             <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">

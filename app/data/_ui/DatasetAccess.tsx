@@ -5,23 +5,23 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { checkSession } from "../../_lib/auth/authClient";
 import { getDatasetAccessAction, requestAccessAction } from "../../_lib/dashboard/datasetActions";
-import type { AccessState } from "../../_lib/datasetTypes";
+import type { AccessState, DatasetFile } from "../../_lib/datasetTypes";
 import { getRequestedDatasets, rememberRequestedDataset } from "../../_lib/requestedAccess";
+import DownloadFiles from "./DownloadFiles";
 
-const primary = "mt-8 inline-block rounded-md bg-[#253D9A] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#1B2C70]";
 const secondary =
   "rounded-md border border-[#253D9A] px-5 py-2.5 text-sm font-semibold text-[#253D9A] hover:bg-[#253D9A] hover:text-white disabled:cursor-not-allowed disabled:opacity-60";
 
-type Access = { accessState: AccessState; downloadUrl: string | null };
+type Access = { accessState: AccessState; files: DatasetFile[] };
 
 /**
  * What the visitor can do with a dataset. It starts from the anonymous answer the server rendered, and if someone is
  * signed in it asks the backend what *they* can do (an approved requester gets the file; staff see internal datasets).
  * The backend decides; this component only reflects it.
  */
-export default function DatasetAccess({ slug, accessState, downloadUrl }: { slug: string; accessState: AccessState; downloadUrl: string | null }) {
+export default function DatasetAccess({ slug, accessState, files }: { slug: string; accessState: AccessState; files: DatasetFile[] }) {
   const router = useRouter();
-  const [access, setAccess] = useState<Access>({ accessState, downloadUrl });
+  const [access, setAccess] = useState<Access>({ accessState, files });
   const [email, setEmail] = useState<string | null | undefined>(undefined); // undefined while checking
   const [requested, setRequested] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -62,11 +62,11 @@ export default function DatasetAccess({ slug, accessState, downloadUrl }: { slug
     }
   }
 
-  if (access.accessState === "full" && access.downloadUrl) {
+  if (access.accessState === "full" && access.files.length > 0) {
     return (
-      <a href={access.downloadUrl} download className={primary}>
-        Download
-      </a>
+      <div className="mt-8">
+        <DownloadFiles files={access.files} />
+      </div>
     );
   }
   if (access.accessState === "full") return <p className="mt-8 text-sm text-[#8b8fa3]">No file has been uploaded for this dataset yet.</p>;

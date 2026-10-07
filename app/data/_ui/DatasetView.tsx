@@ -72,7 +72,7 @@ export default function DatasetView({ ds, previews, access }: { ds: DatasetDetai
         ["Granularity", ds.granularity],
         ["Time period", ds.timePeriod ?? ds.year],
         ["Update frequency", ds.frequency],
-        ["File format", ds.fileFormat],
+        [ds.formats.length > 1 ? "Formats" : "File format", ds.formats.length ? ds.formats.join(", ") : ds.fileFormat],
         ["Last updated", ds.lastUpdated],
       ].map(([name, value]) => (
         <div key={name} className="rounded-lg border border-[#e3e6f0] bg-white px-4 py-3">

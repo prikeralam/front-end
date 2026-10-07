@@ -1,17 +1,35 @@
 import type { components } from "./schema";
 import { formatPublicationDate } from "./publicationAdapter";
-import type { AccessState, DatasetDetail, DatasetSummary, ResourcePreview } from "../datasetTypes";
+import type { AccessState, DatasetDetail, DatasetFile, DatasetSummary, ResourcePreview } from "../datasetTypes";
 import type { Dataset } from "../types";
 
 type ApiDataset = components["schemas"]["Dataset"];
 type ApiTheme = components["schemas"]["Theme"];
 
-const FORMAT_LABELS: Record<ApiDataset["format"], string> = {
+export const FORMAT_LABELS: Record<ApiDataset["format"], string> = {
   csv: "CSV",
   parquet: "Parquet",
   zip: "ZIP",
   geojson: "GeoJSON",
+  json: "JSON",
+  xlsx: "Excel",
 };
+
+const formatLabel = (code: string) => FORMAT_LABELS[code as ApiDataset["format"]] ?? code.toUpperCase();
+
+/** `files` is typed loosely in the schema, so each entry is checked here; anything malformed is skipped. */
+function toFiles(dataset: ApiDataset): DatasetFile[] {
+  const listed = Array.isArray(dataset.files) ? dataset.files : [];
+  const files: DatasetFile[] = [];
+  for (const entry of listed) {
+    const { format, url, size } = entry as { format?: unknown; url?: unknown; size?: unknown };
+    if (typeof format !== "string" || typeof url !== "string" || !url) continue;
+    files.push({ label: formatLabel(format), format, path: url, ...(typeof size === "number" ? { size } : {}) });
+  }
+  // A backend from before several formats existed sends only `file`.
+  if (files.length === 0 && dataset.file) files.push({ label: formatLabel(dataset.format), format: dataset.format, path: dataset.file });
+  return files;
+}
 
 const VISIBILITY: Record<NonNullable<ApiDataset["visibility"]>, Dataset["visibility"]> = {
   public: "public",
@@ -53,6 +71,7 @@ export function toDatasetSummary(dataset: ApiDataset, topLevelBySubTheme: Readon
     lastUpdated: formatPublicationDate(dataset.updated_at.slice(0, 10)),
     updatedAt: dataset.updated_at,
     fileFormat: FORMAT_LABELS[dataset.format],
+    formats: (Array.isArray(dataset.formats) && dataset.formats.length ? dataset.formats : [dataset.format]).map(formatLabel),
     granularity: dataset.granularity || undefined,
     timePeriod: dataset.time_period || undefined,
     rowCount: dataset.row_count ?? undefined,
@@ -60,14 +79,14 @@ export function toDatasetSummary(dataset: ApiDataset, topLevelBySubTheme: Readon
   };
 }
 
-/** The API holds one file per dataset and no tags; a locked file is simply absent from `files`. */
+/** The API has no tags; locked files are simply absent from `files`. */
 export function toDatasetDetail(dataset: ApiDataset, topLevelBySubTheme: ReadonlyMap<number, string>): DatasetDetail {
   return {
     ...toDatasetSummary(dataset, topLevelBySubTheme),
     columns: Array.isArray(dataset.columns) ? dataset.columns.filter((c): c is string => typeof c === "string") : [],
     citation: dataset.citation || undefined,
     tags: [],
-    files: dataset.file ? [{ label: dataset.title, path: dataset.file }] : [],
+    files: toFiles(dataset),
   };
 }
 
