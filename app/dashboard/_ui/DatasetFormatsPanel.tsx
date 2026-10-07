@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import { formatSize } from "../../data/_ui/DownloadFiles";
-import { DATASET_FORMATS } from "../../_lib/datasetFormats";
+import { DATASET_FORMATS, DATASET_MAX_MB } from "../../_lib/datasetFormats";
 import { addExtraFormatAction, listExtraFormatsAction, removeExtraFormatAction, type ExtraFormatsResult } from "../../_lib/dashboard/datasetActions";
 import { secondaryButton } from "./DashboardPageHeader";
 
@@ -100,7 +100,7 @@ export default function DatasetFormatsPanel({ slug }: { slug: string }) {
             </select>
           </label>
           <label className="min-w-0">
-            <span className={label}>File (up to 10 MB)</span>
+            <span className={label}>File (up to {DATASET_MAX_MB} MB)</span>
             <input name="file" type="file" required className="block w-full text-[13px] file:mr-3 file:rounded file:border-0 file:bg-[#253D9A]/10 file:px-3 file:py-1.5 file:font-semibold file:text-[#253D9A]" />
           </label>
           <button type="submit" disabled={busy} className={secondaryButton}>

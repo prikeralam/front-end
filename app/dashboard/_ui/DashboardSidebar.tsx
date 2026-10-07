@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, type ComponentType, type SVGProps } from "react";
-import { canContributeContent, canReviewDrafts, isAdmin, roleLabels, type Session } from "../../_lib/session";
+import { canContributeContent, canReviewDrafts, isAdmin, sessionLabel, type Session } from "../../_lib/session";
 import { useLocalFlag } from "../../_lib/useLocalFlag";
 import { useSession } from "../../_lib/useSession";
 import { AdminIcon, ChevronIcon, CollapseIcon, ContentIcon, DataIcon, InboxIcon, OverviewIcon, PeopleIcon, ResearchIcon } from "./icons";
@@ -172,8 +172,8 @@ export default function DashboardSidebar({ mobileOpen, onCloseMobile }: { mobile
 
       {session && !railCollapsed && (
         <div className="mt-4 rounded-lg border border-[#d9def0] bg-white/70 px-3 py-2.5">
-          <p className="truncate text-[13px] font-semibold text-[#171a2b]">{session.name}</p>
-          <p className="text-[11.5px] text-[#6f7899]">{roleLabels[session.role]}</p>
+          {sessionLabel(session).name && <p className="truncate text-[13px] font-semibold text-[#171a2b]">{sessionLabel(session).name}</p>}
+          <p className={sessionLabel(session).name ? "text-[11.5px] text-[#6f7899]" : "text-[13px] font-semibold text-[#171a2b]"}>{sessionLabel(session).role}</p>
         </div>
       )}
 

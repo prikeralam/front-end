@@ -8,6 +8,7 @@ import {
   toDatasetSummary,
   toResourcePreview,
   topLevelNameBySubTheme,
+  PREVIEW_ROWS,
 } from "./datasetAdapter";
 
 type ApiDataset = components["schemas"]["Dataset"];
@@ -145,5 +146,14 @@ describe("isFeatureCollection", () => {
     expect(isFeatureCollection({ type: "FeatureCollection", features: [] })).toBe(true);
     expect(isFeatureCollection({ type: "Feature" })).toBe(false);
     expect(isFeatureCollection(undefined)).toBe(false);
+  });
+});
+
+describe("toResourcePreview", () => {
+  it("shows only the first few rows of the API's page", () => {
+    const rows = Array.from({ length: 50 }, (_, i) => [i, null]);
+    const preview = toResourcePreview("x", "CSV", { page: 1, page_size: 50, header: ["n", "empty"], rows });
+    expect(PREVIEW_ROWS).toBe(5);
+    expect(preview.rows).toEqual([["0", ""], ["1", ""], ["2", ""], ["3", ""], ["4", ""]]);
   });
 });
