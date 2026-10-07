@@ -1,4 +1,5 @@
-import { donatePayment, bankDetails } from "../_content/donate";
+import Image from "next/image";
+import { donatePayment, bankDetails, upiPayment } from "../_content/donate";
 import { load } from "../_lib/api/load";
 import { listPeopleByGroup } from "../_lib/api/people";
 import { listPublications } from "../_lib/api/publications";
@@ -41,7 +42,7 @@ export default async function DonatePage() {
         <div className="mx-auto max-w-6xl px-6 py-16">
           <SectionHeading>Ways to give</SectionHeading>
 
-          <div className="mt-8 grid gap-5 sm:grid-cols-2">
+          <div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             <div className="rounded-lg border border-[#e6e8f0] bg-white p-6">
               <p className="flex items-center gap-2 text-[15px] font-semibold text-[#171a2b]">
                 Pay online via Razorpay <StatusTag status={donatePayment.status} />
@@ -60,6 +61,20 @@ export default async function DonatePage() {
                   Razorpay link coming soon
                 </button>
               )}
+            </div>
+
+            <div className="rounded-lg border border-[#e6e8f0] bg-white p-6">
+              <p className="text-[15px] font-semibold text-[#171a2b]">Scan and pay with UPI</p>
+              <p className="mt-1 text-[13px] text-[#5b6280]">Use Google Pay, PhonePe, Paytm, BHIM or any UPI app.</p>
+              <Image
+                src={upiPayment.qrImage}
+                alt={`UPI QR code to pay Policy and Research Initiative (${upiPayment.upiId})`}
+                width={452}
+                height={592}
+                className="mt-4 h-auto w-full max-w-[220px] rounded-md border border-[#e6e8f0]"
+              />
+              <p className="mt-3 text-xs font-[family-name:var(--font-mono)] font-semibold uppercase tracking-[0.12em] text-[#8b8fa3]">UPI ID</p>
+              <p className="mt-1 break-all font-[family-name:var(--font-mono)] text-[13px] text-[#171a2b]">{upiPayment.upiId}</p>
             </div>
 
             <div className="rounded-lg border border-[#e6e8f0] bg-white p-6">

@@ -6,6 +6,13 @@ export const donatePayment = {
   status: "real" as ContentStatus,
 };
 
+// PRI's UPI payment QR, as supplied by PRI (2026-10-07). Decoded and checked: it pays POLICYANDRESEARCHINITIATIVE at
+// this UPI ID, the same HDFC account as below.
+export const upiPayment = {
+  qrImage: "/donate/upi-qr.jpeg",
+  upiId: "policyandresearchini.70505116@hdfcbank",
+};
+
 // PRI's bank account for transfers, as supplied by PRI (2026-10-07).
 export const bankDetails = {
   accountName: "POLICY AND RESEARCH INITIATIVE",
