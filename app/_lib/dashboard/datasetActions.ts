@@ -5,7 +5,7 @@ import { uncachedApi } from "../api/client";
 import { getDatasetDetail, listDatasets } from "../api/datasets";
 import { unwrap } from "../api/request";
 import { getAccessToken } from "../auth/serverAuth";
-import { DATASET_FORMATS, fileFitsFormat, isDatasetFormat } from "../datasetFormats";
+import { DATASET_FORMATS, DATASET_MAX_MB, fileFitsFormat, isDatasetFormat } from "../datasetFormats";
 import type { AccessRequestRow, AccessState, DatasetFile, DatasetSummary } from "../datasetTypes";
 
 // Server Actions are public POST endpoints: every argument is validated here, and the backend enforces who may do what
@@ -84,7 +84,6 @@ export async function decideAccessRequestAction(id: string, decision: "approved"
 // Other formats of a dataset (website-backend #70). The backend decides who may change them (the dataset's creator
 // while it is a draft, editors and admins always); these actions validate the arguments and report its answer.
 
-const MAX_FORMAT_FILE_BYTES = 10 * 1024 * 1024;
 
 export type ExtraFormat = { id: number; format: string; label: string; size?: number };
 export type ExtraFormatsResult = { status: "ok"; mainFormat: string; extras: ExtraFormat[] } | { status: "signed-out" | "not-found" | "error" };
@@ -131,7 +130,7 @@ export async function addExtraFormatAction(slug: string, form: FormData): Promis
   const file = form.get("file");
   if (!isDatasetFormat(format)) return { ok: false, message: "Choose a format." };
   if (!(file instanceof File) || file.size === 0) return { ok: false, message: "Choose a file to upload." };
-  if (file.size > MAX_FORMAT_FILE_BYTES) return { ok: false, message: "That file is larger than 10 MB." };
+  if (file.size > DATASET_MAX_MB * 1024 * 1024) return { ok: false, message: `That file is larger than ${DATASET_MAX_MB} MB.` };
   if (!fileFitsFormat(file.name, format)) return { ok: false, message: `That file doesn't look like ${labelOf(format)} (check its extension).` };
 
   const accessToken = await getAccessToken();

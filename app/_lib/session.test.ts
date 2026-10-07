@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { canContributeContent, canReviewDrafts, clearSession, getSession, getSessionSnapshot, isAdmin, setSession, subscribeToSession, type Session } from "./session";
+import { canContributeContent, canReviewDrafts, clearSession, getSession, getSessionSnapshot, isAdmin, setSession, subscribeToSession, type Session, sessionLabel } from "./session";
 
 const store: Record<string, string> = {};
 const listeners = new Map<string, Set<() => void>>();
@@ -88,5 +88,14 @@ describe("role predicates", () => {
 
   it("denies everything to a signed-out visitor", () => {
     expect([canContributeContent(null), canReviewDrafts(null), isAdmin(null)]).toEqual([false, false, false]);
+  });
+});
+
+describe("sessionLabel", () => {
+  it("shows the role once when the name is just the role, and both otherwise", () => {
+    expect(sessionLabel({ name: "admin", role: "admin" })).toEqual({ name: null, role: "Admin" });
+    expect(sessionLabel({ name: "Admin", role: "admin" })).toEqual({ name: null, role: "Admin" });
+    expect(sessionLabel({ name: "  ", role: "editor" })).toEqual({ name: null, role: "Editor" });
+    expect(sessionLabel({ name: "Asha K", role: "admin" })).toEqual({ name: "Asha K", role: "Admin" });
   });
 });

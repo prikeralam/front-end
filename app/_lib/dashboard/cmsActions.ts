@@ -33,7 +33,7 @@ import {
 // the backend decides who may do what (contributors create and edit their own drafts, editors and admins review,
 // publish and delete). This file never grants anything; it only relays and reports.
 
-const MAX_FILE_BYTES = 10 * 1024 * 1024;
+const DEFAULT_FILE_MB = 10;
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
 
 const isType = (value: unknown): value is ContentTypeKey => typeof value === "string" && (ALL_CONTENT_TYPES as string[]).includes(value);
@@ -133,7 +133,8 @@ function uploadsFrom(type: ContentTypeKey, form: FormData): Uploads {
     if (!(entry instanceof File) || entry.size === 0) continue;
 
     const image = field.kind === "image";
-    if (entry.size > (image ? MAX_IMAGE_BYTES : MAX_FILE_BYTES)) return { files: [], error: image ? "That image is larger than 5 MB." : "That file is larger than 10 MB." };
+    const fileMb = field.maxMb ?? DEFAULT_FILE_MB;
+    if (entry.size > (image ? MAX_IMAGE_BYTES : fileMb * 1024 * 1024)) return { files: [], error: image ? "That image is larger than 5 MB." : `That file is larger than ${fileMb} MB.` };
     const allowed = ((image ? IMAGE_ACCEPT : field.accept) ?? "").split(",").map((ext) => ext.trim().toLowerCase()).filter(Boolean);
     const extension = /\.[^.]+$/.exec(entry.name.toLowerCase())?.[0] ?? "";
     if (allowed.length > 0 && !allowed.includes(extension)) return { files: [], error: `Files of type ${extension || "(none)"} aren't accepted here.` };
