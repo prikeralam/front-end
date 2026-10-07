@@ -14,8 +14,8 @@ const nextConfig: NextConfig = {
   output: "standalone",
   experimental: {
     // CMS uploads (documents, datasets) go through Server Actions; the default 1 MB limit would reject any real file.
-    // The actions cap files at 10 MB, so this leaves room for the form fields around one.
-    serverActions: { bodySizeLimit: "11mb" },
+    // The actions cap dataset files at 20 MB (others at 10 MB), so this leaves room for the form fields around one.
+    serverActions: { bodySizeLimit: "21mb" },
   },
   images: {
     remotePatterns: [

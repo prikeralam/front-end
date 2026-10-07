@@ -185,7 +185,7 @@ describe("other formats of a dataset", () => {
   it("checks the format, size and extension before uploading", async () => {
     expect(await addExtraFormatAction("plus-one", upload("xml", "a.xml"))).toMatchObject({ ok: false, message: "Choose a format." });
     expect(await addExtraFormatAction("plus-one", upload("json", "a.csv"))).toMatchObject({ ok: false, message: expect.stringContaining("doesn't look like JSON") });
-    expect(await addExtraFormatAction("plus-one", upload("json", "a.json", 11 * 1024 * 1024))).toMatchObject({ ok: false, message: expect.stringContaining("10 MB") });
+    expect(await addExtraFormatAction("plus-one", upload("json", "a.json", 21 * 1024 * 1024))).toMatchObject({ ok: false, message: expect.stringContaining("20 MB") });
     expect(await addExtraFormatAction("../x", upload("json", "a.json"))).toMatchObject({ ok: false });
     expect(backendRequest).not.toHaveBeenCalled();
   });

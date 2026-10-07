@@ -16,6 +16,16 @@ export const roleLabels: Record<Role, string> = {
   admin: "Admin",
 };
 
+/**
+ * The user's name and role for the header and sidebar: "Asha K · Admin", or just "Admin" when the account has no real
+ * display name (it falls back to the username or email, which for the built-in accounts is the role itself).
+ */
+export function sessionLabel(session: Pick<Session, "name" | "role">): { name: string | null; role: string } {
+  const role = roleLabels[session.role];
+  const name = session.name?.trim() ?? "";
+  return { name: !name || name.toLowerCase() === session.role || name.toLowerCase() === role.toLowerCase() ? null : name, role };
+}
+
 export type Session = {
   name: string;
   email: string;

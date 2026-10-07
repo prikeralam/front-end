@@ -1,3 +1,6 @@
+/** Largest dataset file (main or another format) the dashboard uploads. next.config.ts and nginx allow a little more. */
+export const DATASET_MAX_MB = 20;
+
 /** File formats a dataset's files can be in, as the backend names them, with the extensions each accepts. */
 export const DATASET_FORMATS = [
   { code: "csv", label: "CSV", extensions: [".csv"], note: "previewed as a table" },
