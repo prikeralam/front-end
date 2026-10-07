@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { nav, org } from "../_content/org";
+import { sessionLabel } from "../_lib/session";
 import { useSession } from "../_lib/useSession";
 import { checkSession, signOut } from "../_lib/auth/authClient";
 
@@ -33,7 +34,10 @@ function PortalHeader() {
         </Link>
         {session && (
           <div className="flex items-center gap-4">
-            <span className="hidden text-[13px] text-white/60 sm:inline">{session.name} &middot; {session.role}</span>
+            <span className="hidden text-[13px] text-white/60 sm:inline">
+              {sessionLabel(session).name && <>{sessionLabel(session).name} &middot; </>}
+              {sessionLabel(session).role}
+            </span>
             <button
               onClick={handleSignOut}
               className="rounded-full border border-white/25 px-4 py-1.5 text-[13px] font-semibold text-white/80 transition-colors hover:bg-white/10 hover:text-white"

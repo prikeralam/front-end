@@ -99,12 +99,15 @@ export function isTablePreview(body: unknown): body is TablePreviewBody {
   return Array.isArray(header) && Array.isArray(rows) && rows.every(Array.isArray);
 }
 
+/** Rows a dataset page shows as its preview; the API sends a page of 50, which dashboards still read in full. */
+export const PREVIEW_ROWS = 5;
+
 export function toResourcePreview(label: string, format: string, body: TablePreviewBody): ResourcePreview {
   return {
     label,
     format,
     columns: body.header,
-    rows: body.rows.map((row) => row.map((cell) => (cell === null ? "" : String(cell)))),
+    rows: body.rows.slice(0, PREVIEW_ROWS).map((row) => row.map((cell) => (cell === null ? "" : String(cell)))),
   };
 }
 

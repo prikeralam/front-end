@@ -59,6 +59,8 @@ export type FieldConfig = {
   createOnly?: boolean;
   /** Extensions offered by the file picker, e.g. ".pdf,.docx". */
   accept?: string;
+  /** Upload size cap for a `file` field, in MB; 10 when unset. */
+  maxMb?: number;
   /** For `image` fields: the API's link field that sits beside the upload, e.g. `photo_url`. */
   urlKey?: string;
   help?: string;

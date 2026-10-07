@@ -1,4 +1,4 @@
-import { ALL_DATASET_EXTENSIONS, DATASET_FORMATS } from "../datasetFormats";
+import { ALL_DATASET_EXTENSIONS, DATASET_FORMATS, DATASET_MAX_MB } from "../datasetFormats";
 import type { CmsRecord, ContentTypeKey, FieldConfig, FieldOption, WorkflowStatus } from "./types";
 
 /**
@@ -176,7 +176,7 @@ export const RESOURCES: Record<ContentTypeKey, Resource> = {
       { key: "time_period", label: "Time period", kind: "text", optional: true, help: "e.g. “2014-15 to 2024-25”." },
       { key: "citation", label: "Citation", kind: "textarea", optional: true, help: "Leave blank to use the standard PRI citation." },
       { key: "visibility", label: "Visibility", kind: "select", options: options(["public", "Public"], ["on_request", "On request"], ["internal_only", "Internal only"]) },
-      { key: "file", label: "Main data file", kind: "file", accept: ALL_DATASET_EXTENSIONS, help: "Required when creating. Leave empty on edit to keep the current file. Add the same data in other formats after saving." },
+      { key: "file", label: "Main data file", kind: "file", accept: ALL_DATASET_EXTENSIONS, maxMb: DATASET_MAX_MB, help: `Up to ${DATASET_MAX_MB} MB. Required when creating. Leave empty on edit to keep the current file. Add the same data in other formats after saving.` },
     ],
     title: (v) => v.title,
     subtitle: (v) => [v.format.toUpperCase(), v.geography, v.year].filter(Boolean).join(" · "),
