@@ -1,9 +1,9 @@
 import type { ContentStatus } from "../_lib/types";
 
-// PLACEHOLDER — Razorpay payment link to be supplied by PRI.
+// PRI's Razorpay payment page (short link to pages.razorpay.com/pl_QyVerSDowAODeJ).
 export const donatePayment = {
-  razorpayUrl: null as string | null,
-  status: "placeholder" as ContentStatus,
+  razorpayUrl: "https://rzp.io/rzp/rKZ9EuY" as string | null,
+  status: "real" as ContentStatus,
 };
 
 // PLACEHOLDER — bank transfer details to be confirmed by PRI.
