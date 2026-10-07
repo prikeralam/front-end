@@ -60,13 +60,13 @@ export default function DatasetFacetList({
   const [year, setYear] = useState("");
 
   const types = useMemo(() => distinct(datasets.map((d) => d.type)), [datasets]);
-  const formats = useMemo(() => distinct(datasets.map((d) => d.fileFormat)), [datasets]);
+  const formats = useMemo(() => distinct(datasets.flatMap((d) => d.formats)), [datasets]);
   const geographies = useMemo(() => distinct(datasets.map((d) => d.geography)), [datasets]);
   const years = useMemo(() => distinct(datasets.map((d) => d.year)).sort().reverse(), [datasets]);
 
   const filtered = datasets.filter(
     (d) =>
-      (!fileFormat || d.fileFormat === fileFormat) &&
+      (!fileFormat || d.formats.includes(fileFormat)) &&
       (!type || d.type === type) &&
       (!geography || d.geography === geography) &&
       (!year || d.year === year)

@@ -19,6 +19,9 @@ const dataset: ApiDataset = {
   description: "Figures as quoted in PRI's data stories.",
   file: "http://localhost:8000/media/datasets/religious-composition.parquet",
   format: "parquet",
+  formats: ["parquet"],
+  files: [{ id: null, format: "parquet", label: "Parquet", url: "http://localhost:8000/media/datasets/religious-composition.parquet", size: 2048 }],
+  file_size: 2048,
   sub_theme: 10,
   geography: "Kerala",
   year: 2024,
@@ -72,6 +75,7 @@ describe("toDatasetSummary / toDatasetDetail", () => {
       frequency: undefined,
       lastUpdated: "25 Sep 2026",
       fileFormat: "Parquet",
+      formats: ["Parquet"],
     });
     expect(toDatasetSummary({ ...dataset, visibility: "on_request", format: "geojson" }, topLevel)).toMatchObject({ visibility: "on-request", fileFormat: "GeoJSON" });
     expect(toDatasetSummary({ ...dataset, visibility: "internal_only" }, topLevel).visibility).toBe("internal");
@@ -84,8 +88,23 @@ describe("toDatasetSummary / toDatasetDetail", () => {
     expect(summary.year).toBeUndefined();
   });
 
-  it("exposes the single file as a download, and none when it is withheld", () => {
-    expect(toDatasetDetail(dataset, topLevel).files).toEqual([{ label: dataset.title, path: dataset.file }]);
+  it("exposes every downloadable file, main first, and none when they are withheld", () => {
+    expect(toDatasetDetail(dataset, topLevel).files).toEqual([{ label: "Parquet", format: "parquet", path: dataset.file, size: 2048 }]);
+    const several = {
+      ...dataset,
+      formats: ["parquet", "csv", "json"],
+      files: [
+        ...dataset.files,
+        { id: 4, format: "csv", label: "CSV", url: "https://bucket/datasets/r.csv", size: null },
+        { id: 5, format: "json", label: "JSON", url: "https://bucket/datasets/r.json", size: 900 },
+        { id: 6, format: "xml" },
+      ],
+    };
+    expect(toDatasetDetail(several, topLevel).files.map((f) => [f.label, f.size])).toEqual([["Parquet", 2048], ["CSV", undefined], ["JSON", 900]]);
+    expect(toDatasetSummary(several, topLevel).formats).toEqual(["Parquet", "CSV", "JSON"]);
+    // Locked: no files, but the formats are still known.
+    const locked = { ...several, visibility: "on_request" as const, file: undefined, files: undefined } as unknown as ApiDataset;
+    expect(toDatasetDetail(locked, topLevel)).toMatchObject({ accessState: "requestable", files: [], formats: ["Parquet", "CSV", "JSON"] });
     expect(toDatasetDetail(dataset, topLevel)).toMatchObject({
       granularity: "Religion, Year",
       timePeriod: "2011 to 2024",
@@ -96,7 +115,9 @@ describe("toDatasetSummary / toDatasetDetail", () => {
     });
     // Stats the backend couldn't work out stay absent, rather than showing as 0.
     expect(toDatasetDetail({ ...dataset, row_count: null, column_count: null, columns: [] }, topLevel)).toMatchObject({ rowCount: undefined, columnCount: undefined, columns: [] });
-    expect(toDatasetDetail({ ...dataset, file: undefined } as unknown as ApiDataset, topLevel).files).toEqual([]);
+    expect(toDatasetDetail({ ...dataset, file: undefined, files: undefined } as unknown as ApiDataset, topLevel).files).toEqual([]);
+    // An older backend sends only `file`.
+    expect(toDatasetDetail({ ...dataset, files: undefined } as unknown as ApiDataset, topLevel).files).toEqual([{ label: "Parquet", format: "parquet", path: dataset.file }]);
   });
 });
 
