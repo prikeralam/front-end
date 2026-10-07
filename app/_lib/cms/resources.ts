@@ -1,3 +1,4 @@
+import { ALL_DATASET_EXTENSIONS, DATASET_FORMATS } from "../datasetFormats";
 import type { CmsRecord, ContentTypeKey, FieldConfig, FieldOption, WorkflowStatus } from "./types";
 
 /**
@@ -165,7 +166,7 @@ export const RESOURCES: Record<ContentTypeKey, Resource> = {
     fields: [
       { key: "title", label: "Title", kind: "text" },
       { key: "description", label: "Description", kind: "textarea", optional: true },
-      { key: "format", label: "File format", kind: "select", options: options(["csv", "CSV"], ["parquet", "Parquet"], ["zip", "ZIP (first CSV is previewed)"], ["geojson", "GeoJSON"]) },
+      { key: "format", label: "Main file format", kind: "select", options: DATASET_FORMATS.map((f) => ({ value: f.code, label: `${f.label} (${f.note})` })) },
       { key: "sub_theme", label: "Sub-theme", kind: "select", optionsFrom: "sub-themes" },
       { key: "geography", label: "Geography", kind: "text", optional: true },
       { key: "year", label: "Year", kind: "number", optional: true },
@@ -175,7 +176,7 @@ export const RESOURCES: Record<ContentTypeKey, Resource> = {
       { key: "time_period", label: "Time period", kind: "text", optional: true, help: "e.g. “2014-15 to 2024-25”." },
       { key: "citation", label: "Citation", kind: "textarea", optional: true, help: "Leave blank to use the standard PRI citation." },
       { key: "visibility", label: "Visibility", kind: "select", options: options(["public", "Public"], ["on_request", "On request"], ["internal_only", "Internal only"]) },
-      { key: "file", label: "Data file", kind: "file", accept: ".csv,.parquet,.zip,.geojson,.json", help: "Required when creating. Leave empty on edit to keep the current file." },
+      { key: "file", label: "Main data file", kind: "file", accept: ALL_DATASET_EXTENSIONS, help: "Required when creating. Leave empty on edit to keep the current file. Add the same data in other formats after saving." },
     ],
     title: (v) => v.title,
     subtitle: (v) => [v.format.toUpperCase(), v.geography, v.year].filter(Boolean).join(" · "),

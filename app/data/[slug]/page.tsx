@@ -29,7 +29,7 @@ export default async function DatasetDetailPage({ params }: { params: Promise<{ 
     <>
       <PageHeader kicker={`${ds.type ?? "Dataset"} · ${ds.theme ?? "Uncategorised"}`} title={ds.title} />
       <section className="mx-auto max-w-5xl px-6 py-12">
-        <DatasetView ds={ds} previews={previews} access={<DatasetAccess slug={ds.slug} accessState={ds.accessState} downloadUrl={ds.files[0]?.path ?? null} />} />
+        <DatasetView ds={ds} previews={previews} access={<DatasetAccess slug={ds.slug} accessState={ds.accessState} files={ds.files} />} />
         {usedIn.length > 0 && (
           <div className="mt-10 rounded-lg border border-[#e3e6f0] bg-white p-5">
             <h2 className="font-[family-name:var(--font-mono)] text-[11px] font-semibold uppercase tracking-[0.1em] text-[#6f7899]">Explore in a dashboard</h2>
