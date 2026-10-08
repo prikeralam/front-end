@@ -1686,12 +1686,12 @@ export interface components {
             readonly timestamp: string;
         };
         /**
-         * @description * `research` - Research
-         *     * `media` - Media
-         *     * `general` - General
+         * @description * `general` - General Enquiry
+         *     * `collaboration` - Collaboration
+         *     * `data_request` - Data Request
          * @enum {string}
          */
-        CategoryEnum: "research" | "media" | "general";
+        CategoryEnum: "general" | "collaboration" | "data_request";
         Collection: {
             readonly id: number;
             slug: string;
@@ -2363,6 +2363,8 @@ export interface components {
             photo?: string | null;
             linkedin_url?: string;
             email?: string;
+            website_url?: string;
+            display_order?: number;
             readonly status?: components["schemas"]["WorkflowStatusEnum"];
             readonly created_by?: number;
             readonly reviewed_by?: number | null;
@@ -2381,6 +2383,7 @@ export interface components {
             image?: string | null;
             cta_label?: string;
             cta_href?: string;
+            stage?: components["schemas"]["StageEnum"];
             readonly status?: components["schemas"]["WorkflowStatusEnum"];
             readonly created_by?: number;
             readonly reviewed_by?: number | null;
@@ -2513,6 +2516,8 @@ export interface components {
             photo?: string | null;
             linkedin_url?: string;
             email?: string;
+            website_url?: string;
+            display_order?: number;
             readonly status: components["schemas"]["WorkflowStatusEnum"];
             readonly created_by: number;
             readonly reviewed_by: number | null;
@@ -2531,6 +2536,7 @@ export interface components {
             image?: string | null;
             cta_label?: string;
             cta_href?: string;
+            stage?: components["schemas"]["StageEnum"];
             readonly status: components["schemas"]["WorkflowStatusEnum"];
             readonly created_by: number;
             readonly reviewed_by: number | null;
@@ -2613,6 +2619,12 @@ export interface components {
          * @enum {string}
          */
         RoleEnum: "public" | "researcher" | "editor" | "fellow" | "admin";
+        /**
+         * @description * `ongoing` - Ongoing
+         *     * `completed` - Completed
+         * @enum {string}
+         */
+        StageEnum: "ongoing" | "completed";
         /**
          * @description Used under the nested /themes/{theme_pk}/subthemes/ routes — `parent` comes from
          *     the URL (see SubThemeViewSet), not the request body, so it's read-only here.
@@ -3030,11 +3042,11 @@ export interface operations {
         parameters: {
             query?: {
                 /**
-                 * @description * `research` - Research
-                 *     * `media` - Media
-                 *     * `general` - General
+                 * @description * `general` - General Enquiry
+                 *     * `collaboration` - Collaboration
+                 *     * `data_request` - Data Request
                  */
-                category?: "general" | "media" | "research";
+                category?: "collaboration" | "data_request" | "general";
                 /** @description A page number within the paginated result set. */
                 page?: number;
                 /**

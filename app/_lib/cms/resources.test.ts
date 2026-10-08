@@ -53,6 +53,12 @@ describe("toPayload", () => {
     expect(blank.ok && "file" in blank.payload).toBe(false);
   });
 
+  it("sends a blank display order as 0, since the API won't take null for it", () => {
+    const values = { name: "SAFI", role_title: "Partner institution", bio: "", website_url: "https://safi.ac.in", display_order: "" };
+    expect(toPayload("partner", values, "create")).toMatchObject({ ok: true, payload: { display_order: 0, website_url: "https://safi.ac.in" } });
+    expect(toPayload("partner", { ...values, display_order: "3" }, "update")).toMatchObject({ payload: { display_order: 3 } });
+  });
+
   it("maps a publication's author to a list, tags to an array and the sub-theme to a number", () => {
     const result = toPayload(
       "publication",

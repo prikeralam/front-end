@@ -11,6 +11,8 @@ export function toProject(project: ApiProject): HeroProject {
     title: project.title,
     blurb: project.blurb,
     status: "real",
+    // An older backend without the field: every project was ongoing then.
+    stage: project.stage ?? "ongoing",
     image: {
       label: `${project.title} photograph`,
       ratio: "3:2",

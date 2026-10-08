@@ -34,6 +34,11 @@ describe("toProject", () => {
     });
   });
 
+  it("carries the project's stage, defaulting to ongoing for a backend without it", () => {
+    expect(toProject({ ...project, stage: "completed" }).stage).toBe("completed");
+    expect(toProject(project).stage).toBe("ongoing");
+  });
+
   it("leaves image src and cta unset when the backend sends empty strings", () => {
     const mapped = toProject({ ...project, image_url: "", cta_label: "", cta_href: "" });
 
