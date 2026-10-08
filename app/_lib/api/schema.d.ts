@@ -46,6 +46,75 @@ export interface paths {
         patch: operations["v1_access_requests_partial_update"];
         trace?: never;
     };
+    "/api/v1/applications/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Staff read applications, open their files and mark them reviewed (or new again). */
+        get: operations["v1_applications_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/applications/{id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Staff read applications, open their files and mark them reviewed (or new again). */
+        get: operations["v1_applications_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** @description Staff read applications, open their files and mark them reviewed (or new again). */
+        patch: operations["v1_applications_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/applications/{id}/files/{document}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description A link to the applicant's CV or SOP. On S3 it is presigned and expires; never stored on the page. */
+        get: operations["v1_applications_files_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/apply/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description The public application form (fellowships, internships and job openings), with a CV and an SOP. */
+        post: operations["v1_apply_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/audit-log/": {
         parameters: {
             query?: never;
@@ -680,6 +749,186 @@ export interface paths {
          *     updates the object, and writes an AuditLog row.
          */
         post: operations["v1_documents_transition_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/events/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description Mixin for any content-type ViewSet built on WorkflowMixin models.
+         *     Provides a shared `POST /<resource>/<pk>/transition/` action that
+         *     validates the target status, applies role-gated permission checks,
+         *     updates the object, and writes an AuditLog row.
+         */
+        get: operations["v1_events_list"];
+        put?: never;
+        /**
+         * @description Mixin for any content-type ViewSet built on WorkflowMixin models.
+         *     Provides a shared `POST /<resource>/<pk>/transition/` action that
+         *     validates the target status, applies role-gated permission checks,
+         *     updates the object, and writes an AuditLog row.
+         */
+        post: operations["v1_events_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/events/{slug}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description Mixin for any content-type ViewSet built on WorkflowMixin models.
+         *     Provides a shared `POST /<resource>/<pk>/transition/` action that
+         *     validates the target status, applies role-gated permission checks,
+         *     updates the object, and writes an AuditLog row.
+         */
+        get: operations["v1_events_retrieve"];
+        /**
+         * @description Mixin for any content-type ViewSet built on WorkflowMixin models.
+         *     Provides a shared `POST /<resource>/<pk>/transition/` action that
+         *     validates the target status, applies role-gated permission checks,
+         *     updates the object, and writes an AuditLog row.
+         */
+        put: operations["v1_events_update"];
+        post?: never;
+        /**
+         * @description Mixin for any content-type ViewSet built on WorkflowMixin models.
+         *     Provides a shared `POST /<resource>/<pk>/transition/` action that
+         *     validates the target status, applies role-gated permission checks,
+         *     updates the object, and writes an AuditLog row.
+         */
+        delete: operations["v1_events_destroy"];
+        options?: never;
+        head?: never;
+        /**
+         * @description Mixin for any content-type ViewSet built on WorkflowMixin models.
+         *     Provides a shared `POST /<resource>/<pk>/transition/` action that
+         *     validates the target status, applies role-gated permission checks,
+         *     updates the object, and writes an AuditLog row.
+         */
+        patch: operations["v1_events_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/events/{slug}/transition/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * @description Mixin for any content-type ViewSet built on WorkflowMixin models.
+         *     Provides a shared `POST /<resource>/<pk>/transition/` action that
+         *     validates the target status, applies role-gated permission checks,
+         *     updates the object, and writes an AuditLog row.
+         */
+        post: operations["v1_events_transition_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/jobs/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description Mixin for any content-type ViewSet built on WorkflowMixin models.
+         *     Provides a shared `POST /<resource>/<pk>/transition/` action that
+         *     validates the target status, applies role-gated permission checks,
+         *     updates the object, and writes an AuditLog row.
+         */
+        get: operations["v1_jobs_list"];
+        put?: never;
+        /**
+         * @description Mixin for any content-type ViewSet built on WorkflowMixin models.
+         *     Provides a shared `POST /<resource>/<pk>/transition/` action that
+         *     validates the target status, applies role-gated permission checks,
+         *     updates the object, and writes an AuditLog row.
+         */
+        post: operations["v1_jobs_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/jobs/{slug}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description Mixin for any content-type ViewSet built on WorkflowMixin models.
+         *     Provides a shared `POST /<resource>/<pk>/transition/` action that
+         *     validates the target status, applies role-gated permission checks,
+         *     updates the object, and writes an AuditLog row.
+         */
+        get: operations["v1_jobs_retrieve"];
+        /**
+         * @description Mixin for any content-type ViewSet built on WorkflowMixin models.
+         *     Provides a shared `POST /<resource>/<pk>/transition/` action that
+         *     validates the target status, applies role-gated permission checks,
+         *     updates the object, and writes an AuditLog row.
+         */
+        put: operations["v1_jobs_update"];
+        post?: never;
+        /**
+         * @description Mixin for any content-type ViewSet built on WorkflowMixin models.
+         *     Provides a shared `POST /<resource>/<pk>/transition/` action that
+         *     validates the target status, applies role-gated permission checks,
+         *     updates the object, and writes an AuditLog row.
+         */
+        delete: operations["v1_jobs_destroy"];
+        options?: never;
+        head?: never;
+        /**
+         * @description Mixin for any content-type ViewSet built on WorkflowMixin models.
+         *     Provides a shared `POST /<resource>/<pk>/transition/` action that
+         *     validates the target status, applies role-gated permission checks,
+         *     updates the object, and writes an AuditLog row.
+         */
+        patch: operations["v1_jobs_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/jobs/{slug}/transition/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * @description Mixin for any content-type ViewSet built on WorkflowMixin models.
+         *     Provides a shared `POST /<resource>/<pk>/transition/` action that
+         *     validates the target status, applies role-gated permission checks,
+         *     updates the object, and writes an AuditLog row.
+         */
+        post: operations["v1_jobs_transition_create"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1675,6 +1924,48 @@ export interface components {
          * @enum {string}
          */
         AccessRequestStatusEnum: "pending" | "approved" | "denied";
+        /** @description An application as staff see it. Only `status` can be changed; the files are fetched through `files/`. */
+        Application: {
+            readonly id: number;
+            readonly kind: components["schemas"]["ApplicationKindEnum"];
+            readonly job_slug: string;
+            readonly job_title: string;
+            readonly full_name: string;
+            /** Format: email */
+            readonly email: string;
+            status?: components["schemas"]["ApplicationStatusEnum"];
+            /** Format: date-time */
+            readonly created_at: string;
+            /** Format: date-time */
+            readonly handled_at: string | null;
+            readonly handled_by: number | null;
+        };
+        /**
+         * @description * `fellowship` - Fellowship
+         *     * `internship` - Internship
+         *     * `job` - Job
+         * @enum {string}
+         */
+        ApplicationKindEnum: "fellowship" | "internship" | "job";
+        /**
+         * @description * `new` - New
+         *     * `reviewed` - Reviewed
+         * @enum {string}
+         */
+        ApplicationStatusEnum: "new" | "reviewed";
+        /** @description What an applicant sends. `website` is a honeypot: the form hides it, so only bots fill it in. */
+        ApplicationSubmission: {
+            kind: components["schemas"]["ApplicationKindEnum"];
+            job?: string | null;
+            full_name: string;
+            /** Format: email */
+            email: string;
+            /** Format: uri */
+            cv: string;
+            /** Format: uri */
+            sop: string;
+            website?: string;
+        };
         AuditLog: {
             readonly id: number;
             readonly actor: number;
@@ -1865,6 +2156,38 @@ export interface components {
          * @enum {string}
          */
         EmbedTypeEnum: "datawrapper" | "tableau" | "d3";
+        Event: {
+            readonly id: number;
+            slug: string;
+            kind?: components["schemas"]["EventKindEnum"];
+            title: string;
+            summary?: string;
+            body?: string;
+            /** Format: date */
+            start_date: string;
+            /** Format: date */
+            end_date?: string | null;
+            location?: string;
+            image_url?: string;
+            /** Format: uri */
+            image?: string | null;
+            registration_url?: string;
+            readonly status: components["schemas"]["WorkflowStatusEnum"];
+            readonly created_by: number;
+            readonly reviewed_by: number | null;
+            /** Format: date-time */
+            readonly created_at: string;
+            /** Format: date-time */
+            readonly updated_at: string;
+            /** Format: date-time */
+            readonly published_at: string | null;
+        };
+        /**
+         * @description * `event` - Event
+         *     * `campaign` - Campaign
+         * @enum {string}
+         */
+        EventKindEnum: "event" | "campaign";
         /**
          * @description * `team` - Team
          *     * `patron` - Patron
@@ -1877,15 +2200,28 @@ export interface components {
          * @enum {string}
          */
         GroupEnum: "team" | "patron" | "advisory" | "executive" | "fellow" | "past-fellow" | "author" | "partner";
-        /**
-         * @description * `news` - News
-         *     * `research` - Research paper
-         *     * `report` - Report
-         *     * `legislature` - Legislature
-         *     * `other` - Other
-         * @enum {string}
-         */
-        KindEnum: "news" | "research" | "report" | "legislature" | "other";
+        JobOpening: {
+            readonly id: number;
+            slug: string;
+            title: string;
+            summary?: string;
+            description?: string;
+            location?: string;
+            employment_type?: string;
+            rolling?: boolean;
+            /** Format: date */
+            deadline?: string | null;
+            display_order?: number;
+            readonly status: components["schemas"]["WorkflowStatusEnum"];
+            readonly created_by: number;
+            readonly reviewed_by: number | null;
+            /** Format: date-time */
+            readonly created_at: string;
+            /** Format: date-time */
+            readonly updated_at: string;
+            /** Format: date-time */
+            readonly published_at: string | null;
+        };
         /**
          * @description * `en` - English
          *     * `ml` - Malayalam
@@ -1907,7 +2243,7 @@ export interface components {
             publisher: string;
             /** Format: uri */
             url: string;
-            kind?: components["schemas"]["KindEnum"];
+            kind?: components["schemas"]["MentionKindEnum"];
             /** Format: date */
             date: string;
             summary?: string;
@@ -1925,6 +2261,15 @@ export interface components {
             /** Format: date-time */
             readonly published_at: string | null;
         };
+        /**
+         * @description * `news` - News
+         *     * `research` - Research paper
+         *     * `report` - Report
+         *     * `legislature` - Legislature
+         *     * `other` - Other
+         * @enum {string}
+         */
+        MentionKindEnum: "news" | "research" | "report" | "legislature" | "other";
         MyRole: {
             readonly id: number;
             /** Email address */
@@ -1945,6 +2290,21 @@ export interface components {
              */
             previous?: string | null;
             results: components["schemas"]["AccessRequest"][];
+        };
+        PaginatedApplicationList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["Application"][];
         };
         PaginatedAuditLogList: {
             /** @example 123 */
@@ -2050,6 +2410,36 @@ export interface components {
              */
             previous?: string | null;
             results: components["schemas"]["Document"][];
+        };
+        PaginatedEventList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["Event"][];
+        };
+        PaginatedJobOpeningList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["JobOpening"][];
         };
         PaginatedMentionList: {
             /** @example 123 */
@@ -2202,6 +2592,22 @@ export interface components {
         PatchedAccessRequestReview: {
             status?: components["schemas"]["AccessRequestReviewStatusEnum"];
         };
+        /** @description An application as staff see it. Only `status` can be changed; the files are fetched through `files/`. */
+        PatchedApplication: {
+            readonly id?: number;
+            readonly kind?: components["schemas"]["ApplicationKindEnum"];
+            readonly job_slug?: string;
+            readonly job_title?: string;
+            readonly full_name?: string;
+            /** Format: email */
+            readonly email?: string;
+            status?: components["schemas"]["ApplicationStatusEnum"];
+            /** Format: date-time */
+            readonly created_at?: string;
+            /** Format: date-time */
+            readonly handled_at?: string | null;
+            readonly handled_by?: number | null;
+        };
         PatchedCollection: {
             readonly id?: number;
             slug?: string;
@@ -2326,6 +2732,54 @@ export interface components {
             /** Format: date-time */
             readonly updated_at?: string;
         };
+        PatchedEvent: {
+            readonly id?: number;
+            slug?: string;
+            kind?: components["schemas"]["EventKindEnum"];
+            title?: string;
+            summary?: string;
+            body?: string;
+            /** Format: date */
+            start_date?: string;
+            /** Format: date */
+            end_date?: string | null;
+            location?: string;
+            image_url?: string;
+            /** Format: uri */
+            image?: string | null;
+            registration_url?: string;
+            readonly status?: components["schemas"]["WorkflowStatusEnum"];
+            readonly created_by?: number;
+            readonly reviewed_by?: number | null;
+            /** Format: date-time */
+            readonly created_at?: string;
+            /** Format: date-time */
+            readonly updated_at?: string;
+            /** Format: date-time */
+            readonly published_at?: string | null;
+        };
+        PatchedJobOpening: {
+            readonly id?: number;
+            slug?: string;
+            title?: string;
+            summary?: string;
+            description?: string;
+            location?: string;
+            employment_type?: string;
+            rolling?: boolean;
+            /** Format: date */
+            deadline?: string | null;
+            display_order?: number;
+            readonly status?: components["schemas"]["WorkflowStatusEnum"];
+            readonly created_by?: number;
+            readonly reviewed_by?: number | null;
+            /** Format: date-time */
+            readonly created_at?: string;
+            /** Format: date-time */
+            readonly updated_at?: string;
+            /** Format: date-time */
+            readonly published_at?: string | null;
+        };
         PatchedMention: {
             readonly id?: number;
             slug?: string;
@@ -2333,7 +2787,7 @@ export interface components {
             publisher?: string;
             /** Format: uri */
             url?: string;
-            kind?: components["schemas"]["KindEnum"];
+            kind?: components["schemas"]["MentionKindEnum"];
             /** Format: date */
             date?: string;
             summary?: string;
@@ -2804,6 +3258,147 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["AccessRequest"];
                 };
+            };
+        };
+    };
+    v1_applications_list: {
+        parameters: {
+            query?: {
+                /**
+                 * @description * `fellowship` - Fellowship
+                 *     * `internship` - Internship
+                 *     * `job` - Job
+                 */
+                kind?: "fellowship" | "internship" | "job";
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /**
+                 * @description * `new` - New
+                 *     * `reviewed` - Reviewed
+                 */
+                status?: "new" | "reviewed";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedApplicationList"];
+                };
+            };
+        };
+    };
+    v1_applications_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this application. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Application"];
+                };
+            };
+        };
+    };
+    v1_applications_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description A unique integer value identifying this application. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedApplication"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedApplication"];
+                "multipart/form-data": components["schemas"]["PatchedApplication"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Application"];
+                };
+            };
+        };
+    };
+    v1_applications_files_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                document: "cv" | "sop";
+                /** @description A unique integer value identifying this application. */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description {"file": "<short-lived URL>"} */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    v1_apply_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["ApplicationSubmission"];
+            };
+        };
+        responses: {
+            /** @description Received. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid fields. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Too many applications. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -3949,6 +4544,349 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Document"];
+                };
+            };
+        };
+    };
+    v1_events_list: {
+        parameters: {
+            query?: {
+                /**
+                 * @description * `event` - Event
+                 *     * `campaign` - Campaign
+                 */
+                kind?: "campaign" | "event";
+                /** @description A page number within the paginated result set. */
+                page?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedEventList"];
+                };
+            };
+        };
+    };
+    v1_events_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Event"];
+                "application/x-www-form-urlencoded": components["schemas"]["Event"];
+                "multipart/form-data": components["schemas"]["Event"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Event"];
+                };
+            };
+        };
+    };
+    v1_events_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Event"];
+                };
+            };
+        };
+    };
+    v1_events_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Event"];
+                "application/x-www-form-urlencoded": components["schemas"]["Event"];
+                "multipart/form-data": components["schemas"]["Event"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Event"];
+                };
+            };
+        };
+    };
+    v1_events_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    v1_events_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedEvent"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedEvent"];
+                "multipart/form-data": components["schemas"]["PatchedEvent"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Event"];
+                };
+            };
+        };
+    };
+    v1_events_transition_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Event"];
+                "application/x-www-form-urlencoded": components["schemas"]["Event"];
+                "multipart/form-data": components["schemas"]["Event"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Event"];
+                };
+            };
+        };
+    };
+    v1_jobs_list: {
+        parameters: {
+            query?: {
+                /** @description A page number within the paginated result set. */
+                page?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedJobOpeningList"];
+                };
+            };
+        };
+    };
+    v1_jobs_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["JobOpening"];
+                "application/x-www-form-urlencoded": components["schemas"]["JobOpening"];
+                "multipart/form-data": components["schemas"]["JobOpening"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobOpening"];
+                };
+            };
+        };
+    };
+    v1_jobs_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobOpening"];
+                };
+            };
+        };
+    };
+    v1_jobs_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["JobOpening"];
+                "application/x-www-form-urlencoded": components["schemas"]["JobOpening"];
+                "multipart/form-data": components["schemas"]["JobOpening"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobOpening"];
+                };
+            };
+        };
+    };
+    v1_jobs_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    v1_jobs_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedJobOpening"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedJobOpening"];
+                "multipart/form-data": components["schemas"]["PatchedJobOpening"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobOpening"];
+                };
+            };
+        };
+    };
+    v1_jobs_transition_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["JobOpening"];
+                "application/x-www-form-urlencoded": components["schemas"]["JobOpening"];
+                "multipart/form-data": components["schemas"]["JobOpening"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobOpening"];
                 };
             };
         };
