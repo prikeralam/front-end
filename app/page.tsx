@@ -2,9 +2,9 @@ import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { mottoSlide } from "./_content/projects";
-import { upcomingEvents, pastEvents } from "./_content/events";
 import { load } from "./_lib/api/load";
 import { getContentBlock } from "./_lib/api/contentBlocks";
+import { listEvents } from "./_lib/api/engage";
 import { listPartners, listPeopleByGroup } from "./_lib/api/people";
 import { listProjects } from "./_lib/api/projects";
 import { listPublications } from "./_lib/api/publications";
@@ -15,8 +15,7 @@ import MediaSlot from "./_ui/MediaSlot";
 import ThemeOrbit from "./_ui/home/ThemeOrbit";
 import ProjectStageTag from "./_ui/ProjectStageTag";
 import ThemePanel from "./_ui/home/ThemePanel";
-
-const featuredEvents = [...upcomingEvents, ...pastEvents].slice(0, 3);
+import EventCard from "./events/_ui/EventCard";
 
 /** Themes left out of the hero orbit (they still exist everywhere else). */
 const ORBIT_EXCLUDED_THEMES = new Set(["Economics", "Employment"]);
@@ -62,7 +61,7 @@ function splitHeadline(title: string): [string, string] {
 }
 
 export default async function HomePage() {
-  const [projects, research, themes, partners, executive, heroBlock, quoteBlock] = await Promise.all([
+  const [projects, research, themes, partners, executive, heroBlock, quoteBlock, events] = await Promise.all([
     load("projects", listProjects),
     load("research", listPublications),
     load("themes", listThemes),
@@ -70,7 +69,11 @@ export default async function HomePage() {
     load("executive council", () => listPeopleByGroup("executive")),
     load("hero", () => getContentBlock("hero")),
     load("quote", () => getContentBlock("chairman-quote")),
+    load("events", listEvents),
   ]);
+  // What's coming up first (soonest first), then the most recent past ones.
+  const allEvents = events.ok ? events.data : [];
+  const featuredEvents = [...allEvents.filter((e) => e.timing === "upcoming").reverse(), ...allEvents.filter((e) => e.timing === "past")].slice(0, 3);
 
   const featuredResearch = research.ok ? research.data.publications.slice(0, 3) : [];
   const orbitThemes = themes.ok
@@ -189,16 +192,10 @@ export default async function HomePage() {
       <section className="border-y border-[#e3e6f0] bg-white">
         <div className="mx-auto max-w-6xl px-6 py-16">
           <SectionIntro label="Engage" title="Featured events & campaigns" action={<Link href="/events" className={viewAll}>View all events &rarr;</Link>} />
+          {!events.ok && <LoadError what="our events" />}
+          {events.ok && featuredEvents.length === 0 && <NotPublishedYet>Events and campaigns will be published here soon.</NotPublishedYet>}
           <div className="mt-8 grid gap-5 sm:grid-cols-3">
-            {featuredEvents.map((e) => (
-              <Link key={e.slug} href={`/events/${e.slug}`} className="block overflow-hidden rounded-lg border border-[#e3e6f0] bg-white transition-shadow hover:shadow-[0_12px_28px_-16px_rgba(23,26,43,0.35)]">
-                {e.image && <MediaSlot need={e.image} />}
-                <div className="p-6">
-                  <span className="inline-block w-fit rounded bg-[#253D9A]/8 px-2 py-0.5 font-[family-name:var(--font-mono)] text-[11px] font-semibold uppercase tracking-[0.08em] text-[#253D9A]">{e.type}</span>
-                  <h3 className="mt-4 flex items-start gap-2 text-[17px] leading-snug text-[#22263a]">{e.title} <StatusTag status={e.status} /></h3>
-                </div>
-              </Link>
-            ))}
+            {featuredEvents.map((e) => <EventCard key={e.slug} event={e} />)}
           </div>
         </div>
       </section>

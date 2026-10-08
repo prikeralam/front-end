@@ -6,7 +6,7 @@ import { useState, type ComponentType, type SVGProps } from "react";
 import { canContributeContent, canReviewDrafts, isAdmin, sessionLabel, type Session } from "../../_lib/session";
 import { useLocalFlag } from "../../_lib/useLocalFlag";
 import { useSession } from "../../_lib/useSession";
-import { AdminIcon, ChevronIcon, CollapseIcon, ContentIcon, DataIcon, InboxIcon, OverviewIcon, PeopleIcon, ResearchIcon } from "./icons";
+import { AdminIcon, ChevronIcon, CollapseIcon, ContentIcon, DataIcon, EngageIcon, InboxIcon, OverviewIcon, PeopleIcon, ResearchIcon } from "./icons";
 
 type NavItem = { label: string; href: string };
 type NavSection = { key: string; label: string; icon: ComponentType<SVGProps<SVGSVGElement>>; items: NavItem[]; also?: (path: string) => boolean };
@@ -16,7 +16,17 @@ const COLLAPSE_KEY = "pri_sidebar_collapsed";
 /** Top-level headers; a header with one destination is a plain link, the rest open to show their pages. */
 function buildSections(session: Session | null): NavSection[] {
   const sections: NavSection[] = [{ key: "overview", label: "Overview", icon: OverviewIcon, items: [{ label: "Overview", href: "/dashboard" }] }];
-  if (canReviewDrafts(session)) sections.push({ key: "inbox", label: "Inbox", icon: InboxIcon, items: [{ label: "Inbox", href: "/dashboard/inbox" }] });
+  if (canReviewDrafts(session)) {
+    sections.push({
+      key: "inbox",
+      label: "Inbox",
+      icon: InboxIcon,
+      items: [
+        { label: "Messages", href: "/dashboard/inbox" },
+        { label: "Applications", href: "/dashboard/applications" },
+      ],
+    });
+  }
 
   if (canContributeContent(session)) {
     sections.push(
@@ -48,6 +58,15 @@ function buildSections(session: Session | null): NavSection[] {
         items: [
           { label: "Publications", href: "/dashboard/research" },
           { label: "Projects", href: "/dashboard/projects" },
+        ],
+      },
+      {
+        key: "engage",
+        label: "Engage",
+        icon: EngageIcon,
+        items: [
+          { label: "Events & campaigns", href: "/dashboard/engage/events" },
+          { label: "Job openings", href: "/dashboard/engage/jobs" },
         ],
       },
       {

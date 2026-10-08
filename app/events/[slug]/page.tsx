@@ -1,49 +1,42 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
-import { events, pastEventArchive } from "../../_content/events";
-import { PageHeader, StatusTag, FormMock, DocumentRow } from "../../_ui/kit";
+import { LoadError } from "../../_ui/ApiMessage";
+import { getEventBySlug } from "../../_lib/api/engage";
+import { load } from "../../_lib/api/load";
+import { PageHeader } from "../../_ui/kit";
 import MediaSlot from "../../_ui/MediaSlot";
-
-export function generateStaticParams() {
-  return events.map((e) => ({ slug: e.slug }));
-}
 
 export default async function EventDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const event = events.find((e) => e.slug === slug);
+  const result = await load("this event", () => getEventBySlug(slug));
+  if (!result.ok) {
+    return (
+      <>
+        <PageHeader kicker="Events & Campaigns" title="Event" />
+        <section className="mx-auto max-w-3xl px-6 py-16"><LoadError what="this event" /></section>
+      </>
+    );
+  }
+  const event = result.data;
   if (!event) notFound();
 
   return (
     <>
-      <PageHeader kicker={event.type} title={event.title} />
+      <PageHeader kicker={event.kind === "campaign" ? "Campaign" : "Event"} title={event.title} />
       <section className="mx-auto max-w-3xl px-6 py-16">
-        <div className="mb-6 flex items-center gap-2 text-sm text-[#5b5f74]">
-          {event.date} &middot; {event.time} &middot; {event.venue} <StatusTag status={event.status} />
-        </div>
-        {event.image && <MediaSlot need={event.image} className="max-w-lg" />}
-        <p className="mt-8 text-lg leading-relaxed text-[#4b4f66]">{event.description}</p>
-
-        {event.timing === "upcoming" ? (
-          <div className="mt-10">
-            <FormMock title="Register for this event" fields={["Full name", "Email", "Organisation"]} />
-          </div>
-        ) : (
-          <div className="mt-10 space-y-6">
-            <div>
-              <p className="mb-3 text-[12px] font-[family-name:var(--font-mono)] font-semibold uppercase tracking-[0.12em] text-[#8b8fa3]">Recording</p>
-              <MediaSlot need={pastEventArchive.recording} className="max-w-lg" />
-            </div>
-            <div>
-              <p className="mb-3 text-[12px] font-[family-name:var(--font-mono)] font-semibold uppercase tracking-[0.12em] text-[#8b8fa3]">Photo Gallery</p>
-              <MediaSlot need={pastEventArchive.gallery} className="max-w-lg" />
-            </div>
-            <div>
-              <p className="mb-3 text-[12px] font-[family-name:var(--font-mono)] font-semibold uppercase tracking-[0.12em] text-[#8b8fa3]">Report</p>
-              <ul className="grid gap-3">
-                <DocumentRow doc={pastEventArchive.report} />
-              </ul>
-            </div>
-          </div>
+        <p className="text-sm text-[#5b5f74]">{[event.dateLabel, event.location].filter(Boolean).join(" · ")}</p>
+        {event.image && <MediaSlot need={event.image} className="mt-6 max-w-lg" />}
+        {event.summary && <p className="mt-8 text-lg leading-relaxed text-[#4b4f66]">{event.summary}</p>}
+        {event.body && <div className="mt-6 whitespace-pre-line text-[15px] leading-relaxed text-[#4b4f66]">{event.body}</div>}
+        {event.registrationUrl && event.timing === "upcoming" && (
+          <a href={event.registrationUrl} target="_blank" rel="noopener noreferrer" className="mt-8 inline-flex items-center gap-1 rounded-md bg-[#253D9A] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#1B2C70]">
+            Register <span aria-hidden="true">&#8599;</span>
+            <span className="sr-only">(opens in a new tab)</span>
+          </a>
         )}
+        <div>
+          <Link href="/events" className="mt-8 inline-block text-[14px] font-semibold text-[#253D9A] hover:underline">&larr; All events &amp; campaigns</Link>
+        </div>
       </section>
     </>
   );
