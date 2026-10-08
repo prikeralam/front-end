@@ -1,13 +1,14 @@
 import type { JobListing } from "../_lib/types";
 
-// PLACEHOLDER — no open roles supplied.
+// The two openings PRI is hiring for. Both are rolling: there is no deadline, and
+// qualified applicants are hired whenever they apply. Moves to the backend in phase 3.
 export const jobs: JobListing[] = [
   {
     slug: "research-associate",
     title: "Research Associate",
     location: "To be confirmed",
     employment: "To be confirmed",
-    closes: "To be confirmed",
+    closes: "Rolling, apply any time",
     description: "Role description to be supplied.",
     responsibilities: ["Responsibility to be supplied.", "Responsibility to be supplied."],
     status: "placeholder",
@@ -17,26 +18,9 @@ export const jobs: JobListing[] = [
     title: "Data Analyst",
     location: "To be confirmed",
     employment: "To be confirmed",
-    closes: "To be confirmed",
+    closes: "Rolling, apply any time",
     description: "Role description to be supplied.",
     responsibilities: ["Responsibility to be supplied.", "Responsibility to be supplied."],
     status: "placeholder",
   },
-  {
-    slug: "communications-officer",
-    title: "Communications Officer",
-    location: "To be confirmed",
-    employment: "To be confirmed",
-    closes: "To be confirmed",
-    description: "Role description to be supplied.",
-    responsibilities: ["Responsibility to be supplied.", "Responsibility to be supplied."],
-    status: "placeholder",
-  },
-];
-
-export const involvementPaths = [
-  { title: "Volunteer", desc: "Support PRI's research, outreach, and community engagement work." },
-  { title: "Intern", desc: "Short-term placements across PRI's five research departments." },
-  { title: "Open roles", desc: "Current recruitment across research, data, and communications." },
-  { title: "Mailing list", desc: "Research updates, or media briefings for journalists." },
 ];

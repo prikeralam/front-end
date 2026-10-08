@@ -303,7 +303,7 @@ export function ResearcherOverview({ session }: OverviewProps) {
       <div>
         <SectionHeading>Your submissions</SectionHeading>
         {mySubmissions.length === 0 ? (
-          <div className="mt-6"><EmptyState message="You haven't submitted anything yet — get started below." /></div>
+          <div className="mt-6"><EmptyState message="You haven't submitted anything yet. Get started below." /></div>
         ) : (
           <ul className="mt-6 divide-y divide-[#e6e8f0] rounded-xl border border-[#e6e8f0] bg-white">
             {mySubmissions.map((s) => (

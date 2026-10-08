@@ -1,28 +1,6 @@
 import type { Person } from "../_lib/types";
 
-// PLACEHOLDER — no fellows, programmes, or timelines supplied yet.
-export const programmes = [
-  {
-    name: "Research Fellowship",
-    desc: "Programme to train the next generation of researchers and policymakers.",
-    duration: "To be confirmed",
-    status: "placeholder" as const,
-  },
-  {
-    name: "Internship Programme",
-    desc: "Short-term placements across PRI's five research departments.",
-    duration: "To be confirmed",
-    status: "placeholder" as const,
-  },
-];
-
-export const timeline = [
-  { stage: "Applications open", when: "To be confirmed" },
-  { stage: "Application deadline", when: "To be confirmed" },
-  { stage: "Shortlisting & interviews", when: "To be confirmed" },
-  { stage: "Programme begins", when: "To be confirmed" },
-];
-
+// PLACEHOLDER: fellow profiles other than Hisham are invented.
 export const fellows: Person[] = [
   {
     slug: "fellow-one",
@@ -31,7 +9,7 @@ export const fellows: Person[] = [
     group: "fellow",
     bio: "Biography and impact story to be supplied.",
     status: "placeholder",
-    photo: { label: "Fellow headshot — Human Capital Development", ratio: "square", kind: "photo" },
+    photo: { label: "Fellow headshot, Human Capital Development", ratio: "square", kind: "photo" },
   },
   {
     slug: "fellow-two",
@@ -40,7 +18,7 @@ export const fellows: Person[] = [
     group: "fellow",
     bio: "Biography and impact story to be supplied.",
     status: "placeholder",
-    photo: { label: "Fellow headshot — Economic Analysis", ratio: "square", kind: "photo" },
+    photo: { label: "Fellow headshot, Economic Analysis", ratio: "square", kind: "photo" },
   },
   {
     slug: "hisham",
@@ -55,7 +33,7 @@ export const fellows: Person[] = [
       "Provide data-driven policy recommendations to enhance equity and representation.",
     ],
     status: "real",
-    photo: { label: "Hisham — Research Fellow portrait", ratio: "square", kind: "photo" },
+    photo: { label: "Hisham, Research Fellow portrait", ratio: "square", kind: "photo" },
   },
   {
     slug: "past-fellow-one",
@@ -64,7 +42,7 @@ export const fellows: Person[] = [
     group: "past-fellow",
     bio: "Biography and impact story to be supplied.",
     status: "placeholder",
-    photo: { label: "Past fellow headshot — Demography & Health", ratio: "square", kind: "photo" },
+    photo: { label: "Past fellow headshot, Demography & Health", ratio: "square", kind: "photo" },
   },
   {
     slug: "past-fellow-two",
@@ -73,7 +51,7 @@ export const fellows: Person[] = [
     group: "past-fellow",
     bio: "Biography and impact story to be supplied.",
     status: "placeholder",
-    photo: { label: "Past fellow headshot — Society Development", ratio: "square", kind: "photo" },
+    photo: { label: "Past fellow headshot, Society Development", ratio: "square", kind: "photo" },
   },
 ];
 

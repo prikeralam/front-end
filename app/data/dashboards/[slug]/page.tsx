@@ -12,7 +12,7 @@ import DashboardView from "../_ui/DashboardView";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const spec = dashboardBySlug((await params).slug);
-  return spec ? { title: spec.title, description: spec.summary } : {};
+  return spec ? { title: spec.title, description: spec.summary, robots: { index: false, follow: false } } : {};
 }
 
 export default async function DashboardPage({ params }: { params: Promise<{ slug: string }> }) {

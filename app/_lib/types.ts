@@ -1,6 +1,6 @@
 /**
- * `real` — copy lifted from PRI's previous site, verified.
- * `placeholder` — invented so the layout reads; needs real input from PRI.
+ * `real`: copy lifted from PRI's previous site, verified.
+ * `placeholder`: invented so the layout reads; needs real input from PRI.
  */
 export type ContentStatus = "real" | "placeholder";
 
@@ -10,7 +10,7 @@ export type MediaNeed = {
   /** Shape hint shown in the slot, e.g. "16:9", "square", "3:2". */
   ratio: string;
   kind: "photo" | "logo" | "chart" | "map" | "video" | "diagram" | "document";
-  /** Real asset path (e.g. "/people/team/rashiq.jpg") once PRI has supplied one — takes priority over any stock/placeholder rendering. */
+  /** Real asset path (e.g. "/people/team/rashiq.jpg") once PRI has supplied one; takes priority over any stock/placeholder rendering. */
   src?: string;
 };
 
@@ -21,7 +21,7 @@ export type HeroProject = {
   blurb: string;
   status: ContentStatus;
   image: MediaNeed;
-  /** Overrides the default "Explore project →" / `/projects/{slug}` link — used by the motto slide. */
+  /** Overrides the default "Explore project →" / `/projects/{slug}` link, used by the motto slide. */
   ctaLabel?: string;
   ctaHref?: string;
 };
@@ -74,7 +74,7 @@ export type Dataset = {
   lastUpdated: string;
   status: ContentStatus;
   preview: MediaNeed | null;
-  /** Real downloadable files (path under /public), when supplied. Gated the same as everything else — only shown to sessions with "full" access. */
+  /** Real downloadable files (path under /public), when supplied. Gated the same as everything else: only shown to sessions with "full" access. */
   files?: { label: string; path: string }[];
   tags?: string[];
   /** Actual file format, when a real file exists. Distinct from `type`, which is a methodology classification. */
