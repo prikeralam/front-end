@@ -48,5 +48,7 @@ export function toPartner(person: ApiPerson): Partner {
       kind: "logo",
       src: person.photo || person.photo_url || undefined,
     },
+    // The backend only accepts https; checked again because it becomes a link.
+    website: person.website_url?.startsWith("https://") ? person.website_url : undefined,
   };
 }
