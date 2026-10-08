@@ -66,7 +66,7 @@ export function HBarChart({
   return <PlotlyChart id={id} height={height} data={data} layout={layout} fontFamily={palette.fontFamily} textColor={palette.text} />;
 }
 
-/** Vertical grouped bar — 2 or 3 series across shared categories. */
+/** Vertical grouped bar: 2 or 3 series across shared categories. */
 export function GroupedBarChart({
   id, categories, series, palette, yTitle, yRange, xTitle, height = 420,
 }: {

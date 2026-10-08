@@ -2,7 +2,7 @@
  * Curated, hand-verified Unsplash photography standing in for real PRI
  * photography (headshots, event photos, report covers, etc.) that hasn't
  * been supplied yet. Every id below was fetched and visually checked before
- * being added here — no unverified or auto-generated ids.
+ * being added here; no unverified or auto-generated ids.
  *
  * Swap for real PRI photography as it becomes available; until then this
  * keeps every MediaSlot "photo" need populated with something on-theme

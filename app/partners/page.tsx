@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { partnerForms } from "../_content/partners";
 import { LoadError, NotPublishedYet } from "../_ui/ApiMessage";
 import { load } from "../_lib/api/load";
 import { listPartners } from "../_lib/api/people";
@@ -7,7 +6,7 @@ import { listRecognition } from "../_lib/api/impact";
 import type { Recognition } from "../_lib/api/impactAdapter";
 import ThemePanel from "../_ui/home/ThemePanel";
 import type { Partner } from "../_lib/types";
-import { PageHeader, SectionHeading, FormMock, StatusTag } from "../_ui/kit";
+import { PageHeader, SectionHeading, StatusTag } from "../_ui/kit";
 import MediaSlot from "../_ui/MediaSlot";
 
 function PartnerGrid({ partners, emptyCopy }: { partners: Partner[]; emptyCopy: string }) {
@@ -64,7 +63,7 @@ export default async function PartnersPage() {
 
   return (
     <>
-      <PageHeader kicker="Partners & recognition" title="Institutions and collaborators working with PRI" />
+      <PageHeader kicker="People" title="Partners" />
 
       <section className="mx-auto max-w-6xl px-6 py-16">
         <SectionHeading>Institutions</SectionHeading>
@@ -86,15 +85,6 @@ export default async function PartnersPage() {
           <RecognitionGrid items={recognition.data} />
         </section>
       )}
-
-      <section className="mx-auto max-w-6xl px-6 py-16">
-        <SectionHeading>Get Involved as a Partner</SectionHeading>
-        <div className="mt-8 grid gap-5 sm:grid-cols-3">
-          {partnerForms.map((f) => (
-            <FormMock key={f.title} title={f.title} fields={["Organisation name", "Contact email", "Message"]} note={f.desc} />
-          ))}
-        </div>
-      </section>
     </>
   );
 }

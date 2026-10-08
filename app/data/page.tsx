@@ -2,14 +2,14 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { NotPublishedYet, LoadError } from "../_ui/ApiMessage";
 import { getDatasetPreviews, listDatasets } from "../_lib/api/datasets";
-import { listCollections } from "../_lib/api/impact";
+import { listCollections, listMentions } from "../_lib/api/impact";
+import { listPublications } from "../_lib/api/publications";
 import type { DatasetSummary } from "../_lib/datasetTypes";
 import { load } from "../_lib/api/load";
 import { SectionHeading } from "../_ui/kit";
-import DashboardCardLink from "./dashboards/_ui/DashboardCardLink";
-import { DASHBOARDS } from "./dashboards/_lib/specs";
 import DataSearch from "./_ui/DataSearch";
 import FeaturedDataset from "./_ui/FeaturedDataset";
+import MentionList from "./_ui/MentionList";
 
 const themeIcons: Record<string, ReactNode> = {
   Education: (
@@ -61,19 +61,27 @@ function pickFeatured(datasets: DatasetSummary[]): DatasetSummary | undefined {
 }
 
 export default async function DataPage() {
-  const [datasetsResult, collectionsResult] = await Promise.all([load("datasets", listDatasets), load("collections", listCollections)]);
+  const [datasetsResult, collectionsResult, mentions, publications] = await Promise.all([
+    load("datasets", listDatasets),
+    load("collections", listCollections),
+    load("mentions", listMentions),
+    load("publications", listPublications),
+  ]);
   const collections = collectionsResult.ok ? collectionsResult.data.slice(0, 3) : [];
   const datasets = datasetsResult.ok ? datasetsResult.data : [];
   const themes = Array.from(new Set(datasets.map((d) => d.theme).filter((t): t is string => !!t)));
   const themeCounts = themes.map((theme) => ({ theme, count: datasets.filter((d) => d.theme === theme).length }));
   const featured = pickFeatured(datasets);
   const featuredTable = featured ? (await getDatasetPreviews(featured)).table : null;
-  const dashboardCount = DASHBOARDS.length;
   const statLine = [
     `${datasets.length} ${datasets.length === 1 ? "dataset" : "datasets"}`,
     `${themes.length} ${themes.length === 1 ? "theme" : "themes"}`,
-    dashboardCount > 0 && `${dashboardCount} ${dashboardCount === 1 ? "dashboard" : "dashboards"}`,
-  ].filter(Boolean);
+  ];
+
+  // The PRI work each mention cites, by prefixed slug, for "Cites …" links. Unknown slugs are simply not linked.
+  const cited: Record<string, { href: string; title: string }> = {};
+  for (const p of publications.ok ? publications.data.publications : []) cited[`p:${p.slug}`] = { href: `/research/${p.slug}`, title: p.title };
+  for (const d of datasets) cited[`d:${d.slug}`] = { href: `/data/${d.slug}`, title: d.title };
 
   return (
     <>
@@ -144,18 +152,17 @@ export default async function DataPage() {
         </section>
       )}
 
-      <section className="border-t border-[#e3e6f0] bg-white">
+      {/* "Cited in" lives here until it grows enough for its own page again; /cited-in redirects to this anchor. */}
+      <section id="cited-in" className="scroll-mt-24 border-t border-[#e3e6f0] bg-white">
         <div className="mx-auto max-w-6xl px-6 py-16">
-          <div className="flex flex-wrap items-end justify-between gap-4">
-            <SectionHeading>Visualization Dashboards</SectionHeading>
-            <Link href="/data/dashboards" className="text-sm font-semibold text-[#253D9A] hover:underline">
-              All dashboards &rarr;
-            </Link>
-          </div>
-          <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {DASHBOARDS.map((d) => (
-              <DashboardCardLink key={d.slug} spec={d} />
-            ))}
+          <SectionHeading>Cited in</SectionHeading>
+          <p className="mt-2 max-w-2xl text-[15px] text-[#5b6280]">
+            Where PRI&rsquo;s research and data have been used: news coverage, research papers, reports and the legislature. Every card links to the original.
+          </p>
+          <div className="mt-8">
+            {!mentions.ok && <LoadError what="where PRI has been cited" />}
+            {mentions.ok && mentions.data.length === 0 && <NotPublishedYet>Coverage and citations will be listed here soon.</NotPublishedYet>}
+            {mentions.ok && mentions.data.length > 0 && <MentionList mentions={mentions.data} cited={cited} />}
           </div>
         </div>
       </section>
