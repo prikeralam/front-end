@@ -80,7 +80,7 @@ export default function DatasetAccess({ slug, accessState, files }: { slug: stri
             Sign in to request access
           </Link>
         ) : requested ? (
-          <p className="mt-3 text-sm font-semibold text-[#253D9A]">Request submitted — you will be able to download once it is approved.</p>
+          <p className="mt-3 text-sm font-semibold text-[#253D9A]">Request submitted. You will be able to download once it is approved.</p>
         ) : (
           <>
             <button onClick={handleRequest} disabled={busy} className={`mt-3 ${secondary}`}>

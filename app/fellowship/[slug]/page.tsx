@@ -37,10 +37,6 @@ export default async function FellowDetailPage({ params }: { params: Promise<{ s
             )}
           </div>
         </div>
-        <div className="mt-10 rounded-lg border border-[#e6e8f0] bg-white p-6">
-          <p className="text-[12px] font-[family-name:var(--font-mono)] font-semibold uppercase tracking-[0.12em] text-[#8b8fa3]">Linked publications</p>
-          <p className="mt-2 text-sm text-[#8b8fa3]">No publications linked yet.</p>
-        </div>
       </section>
     </>
   );

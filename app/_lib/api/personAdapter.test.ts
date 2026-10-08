@@ -29,7 +29,7 @@ describe("toPerson", () => {
       bio: "Leads operations.",
       status: "real",
       photo: {
-        label: "Dr. Noushad T — Director of Operations portrait",
+        label: "Portrait of Dr. Noushad T, Director of Operations",
         ratio: "square",
         kind: "photo",
         src: "https://cdn.example.org/people/noushad.jpg",

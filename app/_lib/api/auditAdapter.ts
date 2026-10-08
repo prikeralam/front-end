@@ -35,7 +35,7 @@ export function describeAuditEntry(entry: Pick<ApiAuditLog, "action" | "target" 
     case "access_request_review":
       return `Reviewed ${target}: ${change(meta(entry.metadata, "old_status"), meta(entry.metadata, "new_status"))}`.trim();
     default:
-      return `${words(entry.action).replace(/^./, (c) => c.toUpperCase())} — ${target}`;
+      return `${words(entry.action).replace(/^./, (c) => c.toUpperCase())}: ${target}`;
   }
 }
 

@@ -9,7 +9,7 @@ export default async function AnnualReportsPage() {
 
   return (
     <>
-      <PageHeader kicker="About" title="Annual Reports & Strategic Plans" />
+      <PageHeader kicker="About" title="Annual Reports" />
       <section className="mx-auto max-w-6xl px-6 pb-16 pt-8">
         {!result.ok && <LoadError what="the annual reports" />}
         {result.ok && result.data.length === 0 && <NotPublishedYet>Reports will be published here soon.</NotPublishedYet>}

@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { MENTION_KIND_LABELS, type Mention, type MentionKind } from "../_lib/api/impactAdapter";
+import { MENTION_KIND_LABELS, type Mention, type MentionKind } from "../../_lib/api/impactAdapter";
 
 type Cited = { href: string; title: string };
 

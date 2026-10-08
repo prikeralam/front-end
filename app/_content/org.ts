@@ -10,6 +10,9 @@ export const org = {
   tagline: "Driving Inclusive Development",
   summary:
     "A dedicated think tank committed to promoting inclusive development, social justice, and national integration through data-driven research and evidence-based policy advocacy.",
+  // The footer's "about PRI" paragraph, as supplied after the 2026-10-08 stakeholder meeting.
+  description:
+    "The Policy and Research Initiative (PRI) is a dedicated think tank. Through data-driven research, evidence-based policy advocacy, and strategic collaborations, PRI advances inclusive development, social justice, and national integration. To address socio-economic and political disparities, ensuring equal opportunities and fair representation, it brings together researchers, policymakers, community leaders, and civil society representatives.",
   intro:
     "PRI brings together researchers, policymakers, community leaders, and civil society representatives to address socio-economic and political disparities, ensuring equal opportunities and fair representation.",
   email: "contact@priresearch.in",
@@ -92,7 +95,7 @@ export const departments = [
   },
 ];
 
-/** Grouped navigation IA — shared across all three design variants. */
+/** Grouped navigation IA, shared across all three design variants. */
 export const nav = [
   {
     label: "About",
@@ -131,7 +134,6 @@ export const nav = [
     items: [
       { label: "Events & Campaigns", href: "/events" },
       { label: "Fellowships & Internships", href: "/fellowship" },
-      { label: "Cited in", href: "/cited-in" },
       { label: "Careers", href: "/careers" },
       { label: "Contact", href: "/contact" },
     ],
