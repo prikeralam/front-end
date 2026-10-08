@@ -14,12 +14,16 @@ export type MediaNeed = {
   src?: string;
 };
 
+export type ProjectStage = "ongoing" | "completed";
+
 /** A homepage hero slide: a project from the API, or the static motto slide. */
 export type HeroProject = {
   slug: string;
   title: string;
   blurb: string;
   status: ContentStatus;
+  /** Where the project stands; the motto slide has none. */
+  stage?: ProjectStage;
   image: MediaNeed;
   /** Overrides the default "Explore project →" / `/projects/{slug}` link, used by the motto slide. */
   ctaLabel?: string;
@@ -101,6 +105,8 @@ export type Partner = {
   type: "institution" | "researcher";
   status: ContentStatus;
   logo: MediaNeed | null;
+  /** The partner's own site (https), when staff have added it. */
+  website?: string;
 };
 
 export type JobListing = {

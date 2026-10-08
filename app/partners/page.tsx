@@ -18,6 +18,12 @@ function PartnerGrid({ partners, emptyCopy }: { partners: Partner[]; emptyCopy: 
           {p.logo && <MediaSlot need={p.logo} />}
           <h3 className="mt-4 flex items-center gap-2 text-[15px] font-semibold text-[#171a2b]">{p.name} <StatusTag status={p.status} /></h3>
           <p className="mt-2 text-sm text-[#5b5f74]">{p.description}</p>
+          {p.website && (
+            <a href={p.website} target="_blank" rel="noopener noreferrer" className="mt-3 inline-flex items-center gap-1 text-[13px] font-semibold text-[#253D9A] hover:underline">
+              Visit website <span aria-hidden="true">&#8599;</span>
+              <span className="sr-only">(opens in a new tab)</span>
+            </a>
+          )}
         </div>
       ))}
     </div>

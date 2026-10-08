@@ -15,8 +15,8 @@ const TABS: { key: InboxStatus | ""; label: string }[] = [
   { key: "", label: "All" },
 ];
 const categoryTone: Record<InboxMessage["category"], string> = {
-  research: "bg-[#253D9A]/10 text-[#253D9A]",
-  media: "bg-[#C9972C]/15 text-[#7a5a14]",
+  collaboration: "bg-[#253D9A]/10 text-[#253D9A]",
+  data_request: "bg-[#C9972C]/15 text-[#7a5a14]",
   general: "bg-[#8b8fa3]/12 text-[#4f5878]",
 };
 const pagerClass =

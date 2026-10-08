@@ -14,8 +14,9 @@ async function fetchProfiles(group?: ApiPerson["group"]): Promise<ApiPerson[]> {
   const profiles = await collectAllPages(async (page) =>
     unwrap(await api.GET(PEOPLE_PATH, { params: { query: { group, page } } }), PEOPLE_PATH),
   );
-  // The API lists newest-first and has no display-order field (backend gap); creation order is the seeded display order.
-  return profiles.sort((a, b) => a.id - b.id);
+  // Staff set `display_order`; ties (and an older backend without the field) keep creation order. Sorted here
+  // as well as by the API because pages are collected one at a time.
+  return profiles.sort((a, b) => (a.display_order ?? 0) - (b.display_order ?? 0) || a.id - b.id);
 }
 
 /** Published people in one group, following pagination. Throws `ApiError` on any non-2xx response. */

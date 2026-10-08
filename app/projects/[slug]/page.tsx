@@ -5,7 +5,8 @@ import { LoadError } from "../../_ui/ApiMessage";
 import { load } from "../../_lib/api/load";
 import { getProjectBySlug } from "../../_lib/api/projects";
 import { heroProjectPhotos } from "../../_lib/stockPhotos";
-import { PageHeader, StatusTag } from "../../_ui/kit";
+import { PageHeader } from "../../_ui/kit";
+import ProjectStageTag from "../../_ui/ProjectStageTag";
 
 export default async function ProjectDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -26,7 +27,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
     <>
       <PageHeader kicker="Project" title={project.title} />
       <section className="mx-auto max-w-3xl px-6 py-16">
-        <StatusTag status={project.status} />
+        {project.stage && <ProjectStageTag stage={project.stage} />}
         <div className="relative mt-6 aspect-[3/2] overflow-hidden rounded-lg">
           <Image src={photo} alt={project.title} fill className="object-cover" sizes="(min-width: 768px) 700px, 100vw" />
         </div>

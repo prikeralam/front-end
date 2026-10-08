@@ -23,7 +23,7 @@ async function visitorKey(): Promise<string> {
 
 function check(input: ContactInput): Partial<Record<ContactField, string>> {
   const errors: Partial<Record<ContactField, string>> = {};
-  if (!isCategory(input.category)) errors.category = "Choose what your message is about.";
+  if (!isCategory(input.category)) errors.category = "Choose an enquiry type.";
   const name = text(input.name);
   if (!name || name.length > LIMITS.name) errors.name = "Enter your name (up to 120 characters).";
   const email = text(input.email);

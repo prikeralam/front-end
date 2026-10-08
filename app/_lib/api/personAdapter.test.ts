@@ -61,6 +61,13 @@ describe("isPersonGroup", () => {
 });
 
 describe("toPartner", () => {
+  it("links to the partner's website only when it is https", () => {
+    const partner = { ...apiPerson, group: "partner" as const, role_title: "Partner institution" };
+    expect(toPartner({ ...partner, website_url: "https://safi.ac.in" }).website).toBe("https://safi.ac.in");
+    expect(toPartner({ ...partner, website_url: "javascript:alert(1)" }).website).toBeUndefined();
+    expect(toPartner({ ...partner, website_url: "" }).website).toBeUndefined();
+  });
+
   it("treats a role_title containing institution as an institution, anything else as a researcher", () => {
     const institution = toPartner({ ...apiPerson, group: "partner", role_title: "Partner institution" });
     const researcher = toPartner({ ...apiPerson, group: "partner", role_title: "Research fellow" });
