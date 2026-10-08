@@ -1,31 +1,38 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { jobs } from "../../../_content/jobs";
-import { PageHeader, StatusTag } from "../../../_ui/kit";
-
-export function generateStaticParams() {
-  return jobs.map((j) => ({ slug: j.slug }));
-}
+import { LoadError } from "../../../_ui/ApiMessage";
+import { getJobBySlug } from "../../../_lib/api/engage";
+import { jobAvailability } from "../../../_lib/api/engageAdapter";
+import { load } from "../../../_lib/api/load";
+import { PageHeader } from "../../../_ui/kit";
 
 export default async function JobDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const job = jobs.find((j) => j.slug === slug);
+  const result = await load("this role", () => getJobBySlug(slug));
+  if (!result.ok) {
+    return (
+      <>
+        <PageHeader kicker="Careers" title="Open role" />
+        <section className="mx-auto max-w-3xl px-6 py-16"><LoadError what="this role" /></section>
+      </>
+    );
+  }
+  const job = result.data;
   if (!job) notFound();
 
   return (
     <>
       <PageHeader kicker="Careers" title={job.title} />
       <section className="mx-auto max-w-3xl px-6 py-16">
-        <div className="mb-6 flex items-center gap-2 text-sm text-[#5b5f74]">
-          {job.closes} <StatusTag status={job.status} />
-        </div>
-        <p className="text-lg leading-relaxed text-[#4b4f66]">{job.description}</p>
-        <ul className="mt-6 list-disc space-y-2 pl-5 text-[15px] leading-relaxed text-[#4b4f66]">
-          {job.responsibilities.map((r) => <li key={r}>{r}</li>)}
-        </ul>
-        <Link href="/fellowship/apply" className="mt-8 inline-block rounded-md bg-[#253D9A] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#1B2C70]">
-          Apply &rarr;
+        <p className="text-sm text-[#5b5f74]">{[jobAvailability(job), job.location, job.employment].filter(Boolean).join(" · ")}</p>
+        {job.summary && <p className="mt-6 text-lg leading-relaxed text-[#4b4f66]">{job.summary}</p>}
+        {job.description && <div className="mt-6 whitespace-pre-line text-[15px] leading-relaxed text-[#4b4f66]">{job.description}</div>}
+        <Link href={`/fellowship/apply?role=${encodeURIComponent(job.slug)}`} className="mt-8 inline-block rounded-md bg-[#253D9A] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#1B2C70]">
+          Apply for this role &rarr;
         </Link>
+        <div>
+          <Link href="/careers" className="mt-6 inline-block text-[14px] font-semibold text-[#253D9A] hover:underline">&larr; All open roles</Link>
+        </div>
       </section>
     </>
   );
