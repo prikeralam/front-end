@@ -234,6 +234,41 @@ export const RESOURCES: Record<ContentTypeKey, Resource> = {
       return `${count} ${count === 1 ? "dataset" : "datasets"}`;
     },
   },
+  job: {
+    path: "/api/v1/jobs/",
+    lookup: "slug",
+    slugFrom: (v) => v.title,
+    fields: [
+      { key: "title", label: "Role", kind: "text" },
+      { key: "summary", label: "Summary", kind: "textarea", optional: true, help: "One or two sentences shown under the role." },
+      { key: "description", label: "Description", kind: "textarea", optional: true, help: "Responsibilities and what you look for. Line breaks are kept." },
+      { key: "location", label: "Location", kind: "text", optional: true },
+      { key: "employment_type", label: "Employment type", kind: "text", optional: true, help: "e.g. Full time, Part time, Contract." },
+      { key: "rolling", label: "Applications", kind: "select", options: options(["true", "Rolling: apply any time"], ["false", "Until a deadline"]) },
+      { key: "deadline", label: "Deadline", kind: "date", optional: true, help: "Only used when applications are not rolling." },
+      { key: "display_order", label: "Display order", kind: "number", optional: true, emptyValue: 0, help: "Lower numbers appear first on the careers page." },
+    ],
+    title: (v) => v.title,
+    subtitle: (v) => (v.rolling === "false" && v.deadline ? `Until ${v.deadline}` : "Rolling"),
+  },
+  event: {
+    path: "/api/v1/events/",
+    lookup: "slug",
+    slugFrom: (v) => [v.title, v.start_date.slice(0, 4)].filter(Boolean).join(" "),
+    fields: [
+      { key: "kind", label: "Kind", kind: "select", options: options(["event", "Event"], ["campaign", "Campaign"]) },
+      { key: "title", label: "Title", kind: "text" },
+      { key: "start_date", label: "Start date", kind: "date" },
+      { key: "end_date", label: "End date", kind: "date", optional: true, help: "For campaigns and events over several days." },
+      { key: "location", label: "Location", kind: "text", optional: true },
+      { key: "summary", label: "Summary", kind: "textarea", optional: true, help: "Shown at the top of the event page." },
+      { key: "body", label: "Details", kind: "textarea", optional: true, help: "Programme, speakers, outcomes. Line breaks are kept." },
+      { key: "image", label: "Image", kind: "image", urlKey: "image_url", optional: true },
+      { key: "registration_url", label: "Registration link", kind: "text", optional: true, help: "An https:// form or ticket page. Shown as a Register button until the event is over." },
+    ],
+    title: (v) => v.title,
+    subtitle: (v) => [v.kind === "campaign" ? "Campaign" : "Event", v.start_date, v.location].filter(Boolean).join(" · "),
+  },
 };
 
 // ---------------------------------------------------------------------------
@@ -326,6 +361,9 @@ export function toPayload(type: ContentTypeKey, values: Record<string, string>, 
     else if (field.kind === "number") {
       if (raw && !/^-?\d+$/.test(raw)) return { ok: false, message: `${field.label} must be a whole number.` };
       payload[field.key] = raw ? Number(raw) : (field.emptyValue ?? null);
+    } else if (field.kind === "date") {
+      // The API takes null, not "", for "no date".
+      payload[field.key] = raw || null;
     } else if (field.key === "sub_theme") payload.sub_theme = Number(raw);
     else payload[field.key] = raw;
   }

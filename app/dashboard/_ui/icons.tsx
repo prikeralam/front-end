@@ -115,3 +115,10 @@ export const MenuIcon = (p: P) => (
     <path d="M3.5 5.5h13M3.5 10h13M3.5 14.5h13" />
   </Icon>
 );
+
+export const EngageIcon = (p: P) => (
+  <Icon {...p}>
+    <rect x="3" y="4.25" width="14" height="12.5" rx="2" />
+    <path d="M3 8.25h14M7 2.75v3M13 2.75v3M7 11.75h2M11 11.75h2M7 14h2" />
+  </Icon>
+);

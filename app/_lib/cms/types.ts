@@ -23,7 +23,9 @@ export type ContentTypeKey =
   | "dataset"
   | "mention"
   | "recognition"
-  | "collection";
+  | "collection"
+  | "job"
+  | "event";
 
 export const contentTypeLabel: Record<ContentTypeKey, string> = {
   "content-block": "Content block",
@@ -37,6 +39,8 @@ export const contentTypeLabel: Record<ContentTypeKey, string> = {
   mention: "Mention",
   recognition: "Recognition",
   collection: "Collection",
+  job: "Job opening",
+  event: "Event or campaign",
 };
 
 export const ALL_CONTENT_TYPES = Object.keys(contentTypeLabel) as ContentTypeKey[];

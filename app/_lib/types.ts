@@ -87,15 +87,18 @@ export type Dataset = {
 
 export type PRIEvent = {
   slug: string;
+  kind: "event" | "campaign";
   title: string;
-  description: string;
-  type: "Webinar" | "Launch" | "Workshop" | "Advocacy Day" | "Roundtable";
-  date: string;
-  time: string;
-  venue: string;
-  timing: "upcoming" | "past";
-  status: ContentStatus;
+  summary: string;
+  body: string;
+  /** ISO dates from the API; `dateLabel` is for display. */
+  startDate: string;
+  endDate: string | null;
+  dateLabel: string;
+  location: string;
   image: MediaNeed | null;
+  registrationUrl?: string;
+  timing: "upcoming" | "past";
 };
 
 export type Partner = {
@@ -112,12 +115,14 @@ export type Partner = {
 export type JobListing = {
   slug: string;
   title: string;
+  summary: string;
+  description: string;
   location: string;
   employment: string;
-  closes: string;
-  description: string;
-  responsibilities: string[];
-  status: ContentStatus;
+  /** Rolling roles take applications at any time. */
+  rolling: boolean;
+  /** Formatted deadline, only for roles that are not rolling. */
+  deadline: string | null;
 };
 
 export type PRIDocument = {

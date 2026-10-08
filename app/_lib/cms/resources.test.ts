@@ -139,10 +139,23 @@ describe("image fields", () => {
     expect(toPayload("person-profile", { ...values, photo: REMOVE_IMAGE }, "update")).toMatchObject({ payload: { photo: null } });
   });
 
-  it("gives people, partners, projects, publications, mentions and recognition an image field", () => {
+  it("gives people, partners, projects, publications, mentions, recognition and events an image field", () => {
     const withImages = Object.entries(RESOURCES).filter(([, r]) => r.fields.some((f) => f.kind === "image")).map(([type]) => type);
 
-    expect(withImages.sort()).toEqual(["mention", "partner", "person-profile", "project", "publication", "recognition"]);
+    expect(withImages.sort()).toEqual(["event", "mention", "partner", "person-profile", "project", "publication", "recognition"]);
+  });
+});
+
+describe("phase 3 types", () => {
+  it("sends a job's rolling choice as given and a blank deadline as null", () => {
+    const values = { title: "Data Analyst", summary: "", description: "", location: "", employment_type: "", rolling: "true", deadline: "", display_order: "" };
+    expect(toPayload("job", values, "create")).toMatchObject({ ok: true, payload: { slug: "data-analyst", rolling: "true", deadline: null, display_order: 0 } });
+  });
+
+  it("needs an event's start date, sends a blank end date as null, and dates its slug", () => {
+    const values = { kind: "campaign", title: "Data literacy", start_date: "2026-11-01", end_date: "", location: "", summary: "", body: "", image_url: "", registration_url: "" };
+    expect(toPayload("event", values, "create")).toMatchObject({ ok: true, payload: { slug: "data-literacy-2026", kind: "campaign", end_date: null } });
+    expect(toPayload("event", { ...values, start_date: "" }, "create")).toEqual({ ok: false, message: "Start date is required." });
   });
 });
 
