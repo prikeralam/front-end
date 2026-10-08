@@ -3,6 +3,13 @@ import { PageHeader } from "../_ui/kit";
 import { load } from "../_lib/api/load";
 import { listPublications } from "../_lib/api/publications";
 import ResearchExplorer from "./_ui/ResearchExplorer";
+import { pageMetadata } from "../_lib/seo";
+
+export const metadata = pageMetadata({
+  title: "Research & Publications",
+  description: "Reports, working papers, briefs and data stories from the Policy and Research Initiative on education, health, demography, migration and public policy in Kerala.",
+  path: "/research",
+});
 
 export default async function ResearchPage() {
   const result = await load("research", listPublications);

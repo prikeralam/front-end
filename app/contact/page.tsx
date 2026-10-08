@@ -1,9 +1,13 @@
-import type { Metadata } from "next";
 import { org } from "../_content/org";
 import { PageHeader } from "../_ui/kit";
 import ContactForm from "./_ui/ContactForm";
+import { pageMetadata } from "../_lib/seo";
 
-export const metadata: Metadata = { title: "Contact" };
+export const metadata = pageMetadata({
+  title: "Contact",
+  description: "Contact the Policy and Research Initiative in Malappuram, Kerala: general enquiries, collaborations and data requests.",
+  path: "/contact",
+});
 
 export default function ContactPage() {
   return (

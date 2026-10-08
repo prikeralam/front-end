@@ -1,12 +1,16 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { listDatasets } from "../../_lib/api/datasets";
 import { listCollections } from "../../_lib/api/impact";
 import { load } from "../../_lib/api/load";
 import { LoadError, NotPublishedYet } from "../../_ui/ApiMessage";
 import { PageHeader } from "../../_ui/kit";
+import { pageMetadata } from "../../_lib/seo";
 
-export const metadata: Metadata = { title: "Collections" };
+export const metadata = pageMetadata({
+  title: "Dataset Collections",
+  description: "Curated collections of datasets from the Policy and Research Initiative's data repository, grouped by the questions they answer.",
+  path: "/data/collections",
+});
 
 export default async function CollectionsPage() {
   const [collections, datasets] = await Promise.all([load("collections", listCollections), load("datasets", () => listDatasets())]);

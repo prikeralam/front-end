@@ -21,7 +21,7 @@ export default function ThemeOrbit({ themes }: { themes: string[] }) {
       <div className="absolute inset-[22%] animate-[pri-spin_45s_linear_infinite_reverse] rounded-full border border-dashed border-[#cdd6f3]" />
       <div className="absolute inset-[38%] rounded-full border border-[#e3e6f0]" />
       <div className="absolute inset-[39.5%] grid place-items-center rounded-full bg-white shadow-[0_0_0_12px_rgba(37,61,154,0.07),0_12px_32px_-12px_rgba(23,26,43,0.3)]">
-        <Image src="/logo.png" alt="" width={64} height={64} className="h-[58%] w-[58%] object-contain" priority />
+        <Image src="/logo.png" alt="Policy and Research Initiative logo" width={64} height={64} className="h-[58%] w-[58%] object-contain" priority />
       </div>
 
       {lanes.map((lane) => (

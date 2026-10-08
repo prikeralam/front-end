@@ -3,6 +3,13 @@ import { NotPublishedYet, LoadError } from "../../_ui/ApiMessage";
 import { listDocuments } from "../../_lib/api/documents";
 import { load } from "../../_lib/api/load";
 import { PageHeader, DocumentRow, SectionHeading } from "../../_ui/kit";
+import { pageMetadata } from "../../_lib/seo";
+
+export const metadata = pageMetadata({
+  title: "Annual Reports",
+  description: "Annual reports of the Policy and Research Initiative (PRI), covering its research, programmes and finances.",
+  path: "/about/annual-reports",
+});
 
 export default async function AnnualReportsPage() {
   const result = await load("annual reports", () => listDocuments("annual-report"));

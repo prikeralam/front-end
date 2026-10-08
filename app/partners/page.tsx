@@ -8,6 +8,7 @@ import ThemePanel from "../_ui/home/ThemePanel";
 import type { Partner } from "../_lib/types";
 import { PageHeader, SectionHeading, StatusTag } from "../_ui/kit";
 import MediaSlot from "../_ui/MediaSlot";
+import { pageMetadata } from "../_lib/seo";
 
 function PartnerGrid({ partners, emptyCopy }: { partners: Partner[]; emptyCopy: string }) {
   if (partners.length === 0) return <NotPublishedYet>{emptyCopy}</NotPublishedYet>;
@@ -37,7 +38,7 @@ function RecognitionGrid({ items }: { items: Recognition[] }) {
         <li key={r.slug} className="group flex flex-col overflow-hidden rounded-lg border border-[#e3e6f0] bg-white transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0_16px_32px_-18px_rgba(23,26,43,0.4)] motion-reduce:hover:translate-y-0">
           {r.image ? (
             <div className="relative aspect-[16/9] overflow-hidden bg-[#eef1f9]">
-              <Image src={r.image} alt="" fill sizes="(max-width: 640px) 100vw, 380px" className="object-cover transition-transform duration-500 group-hover:scale-105" />
+              <Image src={r.image} alt={r.title} fill sizes="(max-width: 640px) 100vw, 380px" className="object-cover transition-transform duration-500 group-hover:scale-105" />
             </div>
           ) : (
             <ThemePanel slug={r.slug} index={i} />
@@ -60,6 +61,12 @@ function RecognitionGrid({ items }: { items: Recognition[] }) {
     </ul>
   );
 }
+
+export const metadata = pageMetadata({
+  title: "Partners",
+  description: "Institutions and researchers working with the Policy and Research Initiative, and the recognition PRI has received.",
+  path: "/partners",
+});
 
 export default async function PartnersPage() {
   const [result, recognition] = await Promise.all([load("partners", listPartners), load("recognition", listRecognition)]);

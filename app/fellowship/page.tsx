@@ -1,8 +1,15 @@
 import Link from "next/link";
 import { currentFellows } from "../_content/fellows";
 import { PageHeader, SectionHeading, PersonCard } from "../_ui/kit";
+import { pageMetadata } from "../_lib/seo";
 
 const featuredFellows = currentFellows.filter((f) => f.slug === "hisham");
+
+export const metadata = pageMetadata({
+  title: "Fellowships & Internships",
+  description: "Fellowships and internships at the Policy and Research Initiative, open on a rolling basis with no deadline.",
+  path: "/fellowship",
+});
 
 export default function FellowshipPage() {
   return (

@@ -1,5 +1,12 @@
 import { org, vision, missionPoints, departments } from "../_content/org";
 import { PageHeader, SectionHeading } from "../_ui/kit";
+import { pageMetadata } from "../_lib/seo";
+
+export const metadata = pageMetadata({
+  title: "About PRI",
+  description: "Who we are: the Policy and Research Initiative's vision, mission and work for inclusive development, social justice and national integration in Kerala and India.",
+  path: "/about",
+});
 
 export default function AboutPage() {
   return (

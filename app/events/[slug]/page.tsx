@@ -5,6 +5,22 @@ import { getEventBySlug } from "../../_lib/api/engage";
 import { load } from "../../_lib/api/load";
 import { PageHeader } from "../../_ui/kit";
 import MediaSlot from "../../_ui/MediaSlot";
+import type { Metadata } from "next";
+import { eventJsonLd, pageMetadata } from "../../_lib/seo";
+import JsonLd from "../../_ui/JsonLd";
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const result = await load("this event", () => getEventBySlug(slug));
+  const event = result.ok ? result.data : null;
+  if (!event) return { title: "Events & Campaigns" };
+  return pageMetadata({
+    title: event.title,
+    description: event.summary || `${event.kind === "campaign" ? "A campaign" : "An event"} by the Policy and Research Initiative, ${event.dateLabel}.`,
+    path: `/events/${event.slug}`,
+    image: event.image?.src,
+  });
+}
 
 export default async function EventDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -22,6 +38,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ sl
 
   return (
     <>
+      <JsonLd data={eventJsonLd(event)} />
       <PageHeader kicker={event.kind === "campaign" ? "Campaign" : "Event"} title={event.title} />
       <section className="mx-auto max-w-3xl px-6 py-16">
         <p className="text-sm text-[#5b5f74]">{[event.dateLabel, event.location].filter(Boolean).join(" · ")}</p>

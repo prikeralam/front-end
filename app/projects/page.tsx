@@ -5,6 +5,13 @@ import { listProjects } from "../_lib/api/projects";
 import { PageHeader } from "../_ui/kit";
 import MediaSlot from "../_ui/MediaSlot";
 import ProjectStageTag from "../_ui/ProjectStageTag";
+import { pageMetadata } from "../_lib/seo";
+
+export const metadata = pageMetadata({
+  title: "Projects",
+  description: "The Policy and Research Initiative's research projects, ongoing and completed.",
+  path: "/projects",
+});
 
 export default async function ProjectsPage() {
   const result = await load("projects", listProjects);

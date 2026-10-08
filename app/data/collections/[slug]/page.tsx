@@ -8,6 +8,16 @@ import type { DatasetSummary } from "../../../_lib/datasetTypes";
 import { LoadError, NotPublishedYet } from "../../../_ui/ApiMessage";
 import { PageHeader } from "../../../_ui/kit";
 import DatasetRow from "../../_ui/DatasetRow";
+import type { Metadata } from "next";
+import { pageMetadata } from "../../../_lib/seo";
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const result = await load("this collection", () => getCollection(slug));
+  const c = result.ok ? result.data : null;
+  if (!c) return { title: "Collections" };
+  return pageMetadata({ title: `${c.title} (data collection)`, description: c.description, path: `/data/collections/${c.slug}` });
+}
 
 export default async function CollectionPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;

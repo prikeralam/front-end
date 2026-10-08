@@ -5,6 +5,19 @@ import { listDatasets, listTopThemes } from "../../../_lib/api/datasets";
 import { load } from "../../../_lib/api/load";
 import { PageHeader } from "../../../_ui/kit";
 import ThemeDatasetGrid from "../../_ui/ThemeDatasetGrid";
+import type { Metadata } from "next";
+import { pageMetadata } from "../../../_lib/seo";
+
+export async function generateMetadata({ params }: { params: Promise<{ theme: string }> }): Promise<Metadata> {
+  const theme = decodeURIComponent((await params).theme);
+  const themes = await load("themes", listTopThemes);
+  const info = themes.ok ? themes.data.find((t) => t.name === theme) : undefined;
+  return pageMetadata({
+    title: `${theme} data`,
+    description: info?.description || `${theme} datasets for Kerala from the Policy and Research Initiative's data repository.`,
+    path: `/data/theme/${encodeURIComponent(theme)}`,
+  });
+}
 
 export default async function DataThemePage({ params }: { params: Promise<{ theme: string }> }) {
   const { theme: rawTheme } = await params;
