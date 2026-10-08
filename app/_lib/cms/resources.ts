@@ -82,6 +82,7 @@ export const RESOURCES: Record<ContentTypeKey, Resource> = {
       { key: "photo", label: "Photo", kind: "image", urlKey: "photo_url", optional: true },
       { key: "linkedin_url", label: "LinkedIn profile", kind: "text", optional: true, help: "The https://www.linkedin.com/in/… address. Shown as an icon on the public profile." },
       { key: "email", label: "Public email", kind: "text", optional: true, help: "Shown on the public profile. Leave blank to keep it private." },
+      { key: "display_order", label: "Display order", kind: "number", optional: true, emptyValue: 0, help: "Lower numbers appear first on the public page (1, 2, 3…). People with the same number keep the order they were added in." },
     ],
     title: (v) => v.name,
     subtitle: (v) => [v.role_title, PERSON_GROUPS.find((g) => g.value === v.group)?.label].filter(Boolean).join(" · "),
@@ -98,6 +99,8 @@ export const RESOURCES: Record<ContentTypeKey, Resource> = {
       { key: "role_title", label: "Type", kind: "select", options: options(["Partner institution", "Institution"], ["Partner researcher", "Researcher"]) },
       { key: "bio", label: "Description", kind: "textarea", optional: true },
       { key: "photo", label: "Logo", kind: "image", urlKey: "photo_url", optional: true },
+      { key: "website_url", label: "Website", kind: "text", optional: true, help: "The partner's own site, starting with https://. Their card on the Partners page links to it." },
+      { key: "display_order", label: "Display order", kind: "number", optional: true, emptyValue: 0, help: "Lower numbers appear first on the public page (1, 2, 3…). People with the same number keep the order they were added in." },
     ],
     title: (v) => v.name,
     subtitle: (v) => v.role_title,
@@ -128,6 +131,7 @@ export const RESOURCES: Record<ContentTypeKey, Resource> = {
       { key: "slug", label: "Slug", kind: "text" },
       { key: "title", label: "Title", kind: "text" },
       { key: "blurb", label: "Blurb", kind: "textarea" },
+      { key: "stage", label: "Stage", kind: "select", options: options(["ongoing", "Ongoing"], ["completed", "Completed"]), help: "Shown as a tag on the project's cards." },
       { key: "image", label: "Image", kind: "image", urlKey: "image_url", optional: true },
       { key: "cta_label", label: "Button label", kind: "text", optional: true },
       { key: "cta_href", label: "Button link", kind: "text", optional: true },
@@ -321,7 +325,7 @@ export function toPayload(type: ContentTypeKey, values: Record<string, string>, 
     else if (field.key === "tags") payload.tags = raw ? raw.split(",").map((t) => t.trim()).filter(Boolean) : [];
     else if (field.kind === "number") {
       if (raw && !/^-?\d+$/.test(raw)) return { ok: false, message: `${field.label} must be a whole number.` };
-      payload[field.key] = raw ? Number(raw) : null;
+      payload[field.key] = raw ? Number(raw) : (field.emptyValue ?? null);
     } else if (field.key === "sub_theme") payload.sub_theme = Number(raw);
     else payload[field.key] = raw;
   }

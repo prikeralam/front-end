@@ -11,7 +11,7 @@ vi.mock("next/headers", () => ({ headers: async () => new Headers({ "x-real-ip":
 const { sendContactMessageAction } = await import("./contactActions");
 
 const answer = (status: number, error?: unknown) => ({ error, response: { status, ok: status >= 200 && status < 300 } });
-const valid = { category: "research", name: " Asha ", email: " asha@example.org ", message: "  I'd like to discuss your study.  " };
+const valid = { category: "collaboration", name: " Asha ", email: " asha@example.org ", message: "  I'd like to discuss your study.  " };
 let ip = 0;
 
 beforeEach(() => {
@@ -24,7 +24,7 @@ describe("sendContactMessageAction", () => {
     POST.mockResolvedValueOnce(answer(201));
     expect(await sendContactMessageAction(valid)).toEqual({ ok: true });
     expect(POST).toHaveBeenCalledWith("/api/v1/contact/", {
-      body: { category: "research", name: "Asha", email: "asha@example.org", message: "I'd like to discuss your study." },
+      body: { category: "collaboration", name: "Asha", email: "asha@example.org", message: "I'd like to discuss your study." },
     });
   });
 

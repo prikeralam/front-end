@@ -13,6 +13,7 @@ import { LoadError, NotPublishedYet } from "./_ui/ApiMessage";
 import { StatusTag } from "./_ui/kit";
 import MediaSlot from "./_ui/MediaSlot";
 import ThemeOrbit from "./_ui/home/ThemeOrbit";
+import ProjectStageTag from "./_ui/ProjectStageTag";
 import ThemePanel from "./_ui/home/ThemePanel";
 
 const featuredEvents = [...upcomingEvents, ...pastEvents].slice(0, 3);
@@ -128,6 +129,7 @@ export default async function HomePage() {
             >
               <ThemePanel slug={p.slug} index={i} />
               <div className="flex flex-1 flex-col gap-2 p-6">
+                {p.stage && <ProjectStageTag stage={p.stage} />}
                 <h3 className="text-[20px] leading-snug text-[#171a2b]">{p.title}</h3>
                 <p className="flex-1 text-[14.5px] leading-relaxed text-[#5b6280]">{p.blurb}</p>
                 <span className="mt-2 inline-flex items-center gap-1 text-[13.5px] font-semibold text-[#253D9A]">
@@ -209,7 +211,8 @@ export default async function HomePage() {
             {institutions.map((p) => (
               <li key={p.slug}>
                 <Link
-                  href="/partners"
+                  href={p.website ?? "/partners"}
+                  {...(p.website ? { target: "_blank", rel: "noopener noreferrer" } : {})}
                   className="group flex h-full flex-col items-center justify-center gap-3 rounded-lg border border-[#e3e6f0] bg-white px-4 py-6 text-center transition-colors hover:border-[#cdd6f3]"
                 >
                   {p.logo?.src && (

@@ -14,7 +14,7 @@ const ok = (data: unknown) => ({ ok: true, status: 200, data, message: "" });
 const bad = (status: number) => ({ ok: false, status, data: null, message: "" });
 const apiMessage = (over: Record<string, unknown> = {}) => ({
   id: 3,
-  category: "media",
+  category: "data_request",
   name: "Ravi",
   email: "ravi@example.org",
   message: "Interview request.",
@@ -41,7 +41,7 @@ describe("listInboxAction", () => {
       count: 1,
       hasNext: false,
       hasPrevious: false,
-      messages: [{ id: 3, category: "media", name: "Ravi", email: "ravi@example.org", message: "Interview request.", status: "new", createdAt: "2026-09-30T08:00:00Z", handledAt: null, handledBy: null }],
+      messages: [{ id: 3, category: "data_request", name: "Ravi", email: "ravi@example.org", message: "Interview request.", status: "new", createdAt: "2026-09-30T08:00:00Z", handledAt: null, handledBy: null }],
     });
   });
 

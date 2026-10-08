@@ -69,21 +69,22 @@ export default function ContactForm({ email: orgEmail }: { email: string }) {
         {error}
       </div>
 
-      <fieldset className="mt-6" aria-describedby={describe("category")}>
-        <legend className={labelClass}>What is it about?</legend>
-        <div className="grid grid-cols-3 gap-1 rounded-md border border-[#dcdee8] bg-[#f7f8fc] p-1">
+      <div className="mt-6">
+        <label htmlFor="contact-category" className={labelClass}>Enquiry type</label>
+        <select
+          id="contact-category"
+          value={category}
+          onChange={(e) => setCategory(e.target.value as ContactCategory)}
+          aria-invalid={!!fieldErrors.category}
+          aria-describedby={describe("category")}
+          className={`${inputClass} h-11 px-2`}
+        >
           {CONTACT_CATEGORIES.map((c) => (
-            <label
-              key={c}
-              className="cursor-pointer rounded-[5px] px-2 py-2 text-center text-[14px] font-semibold text-[#4b4f66] transition-colors has-[:checked]:bg-white has-[:checked]:text-[#253D9A] has-[:checked]:shadow-[0_1px_3px_rgba(23,26,43,0.12)] has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-[#253D9A]"
-            >
-              <input type="radio" name="category" value={c} checked={category === c} onChange={() => setCategory(c)} className="sr-only" />
-              {contactCategoryLabels[c]}
-            </label>
+            <option key={c} value={c}>{contactCategoryLabels[c]}</option>
           ))}
-        </div>
+        </select>
         {fieldErrors.category && <p id="contact-category-error" className={fieldError}>{fieldErrors.category}</p>}
-      </fieldset>
+      </div>
 
       <div className="mt-5 grid gap-5 sm:grid-cols-2">
         <div>
