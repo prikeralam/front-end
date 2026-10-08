@@ -51,10 +51,10 @@ function StoryBody({ slug }: { slug: string }) {
         <Figure key="c1" caption="Malappuram's average batch size is nearly double Pathanamthitta's, and the only district above 60 students per batch alongside Wayanad and Kasargode.">
           <HBarChart id="chart-batch-v2" labels={batch.labels} values={batch.values} palette={palette} xTitle="Students per Plus One batch" refLines={[{ x: educationCharts.keralaAvgBatch, label: "All-Kerala avg: 54" }]} invertGradient />
         </Figure>,
-        <Figure key="c2" caption="Malappuram and Kasargode offer the smallest share of science batches in Kerala — roughly 9 to 11 percentage points below the state average.">
+        <Figure key="c2" caption="Malappuram and Kasargode offer the smallest share of science batches in Kerala, roughly 9 to 11 percentage points below the state average.">
           <HBarChart id="chart-science-v2" labels={science.labels} values={science.values} palette={palette} xTitle="Share of batches that are Science stream (%)" refLines={[{ x: educationCharts.keralaAvgScience, label: "All-Kerala avg: 51%" }]} />
         </Figure>,
-        <Figure key="c3" caption="Each point is a district. Larger average batch size tracks with a smaller share of science batches — Malappuram sits at the crowded, science-scarce end of the line.">
+        <Figure key="c3" caption="Each point is a district. Larger average batch size tracks with a smaller share of science batches: Malappuram sits at the crowded, science-scarce end of the line.">
           <ScatterChart
             id="chart-scatter-v2"
             palette={palette}
@@ -97,11 +97,11 @@ function StoryBody({ slug }: { slug: string }) {
           yRange={[0, 60]}
         />
       </Figure>,
-      <Figure key="c2" caption="Each religion's share of Kerala's population changes by age bracket — Muslims are the youngest-skewing group, Hindus the oldest-skewing.">
+      <Figure key="c2" caption="Each religion's share of Kerala's population changes by age bracket. Muslims are the youngest-skewing group, Hindus the oldest-skewing.">
         <GroupedBarChart
           id="chart-age-v2"
           palette={palette}
-          categories={["Under 18", "18–40", "40+"]}
+          categories={["Under 18", "18-40", "40+"]}
           series={[
             { name: "Hindu", values: demographyCharts.ageHindu, color: palette.primary },
             { name: "Muslim", values: demographyCharts.ageMuslim, color: palette.secondary },
@@ -112,7 +112,7 @@ function StoryBody({ slug }: { slug: string }) {
           xTitle="Age bracket"
         />
       </Figure>,
-      <Figure key="c3" caption="Percentage points above or below each group's own overall 2024 population share, by age bracket — Muslims' under-18 over-representation and over-40 under-representation are both the largest of the three groups.">
+      <Figure key="c3" caption="Percentage points above or below each group's own overall 2024 population share, by age bracket. Muslims' under-18 over-representation and over-40 under-representation are both the largest of the three groups.">
         <DivergingBarChart
           id="chart-representation-v2"
           palette={palette}
@@ -172,7 +172,7 @@ function StoryBody({ slug }: { slug: string }) {
         <Figure key="c3" caption="The doctor-access gap between the best- and worst-served districts is close to 2-to-1: 3,754 people per doctor in Pathanamthitta versus 7,437 in Malappuram.">
           <HBarChart id="chart-doctor-v2" palette={palette} labels={doctor.labels} values={doctor.values} xTitle="People per government-hospital doctor" invertGradient />
         </Figure>,
-        <Figure key="c4" caption="Malappuram and Pathanamthitta anchor opposite ends of all three indicators — the gap isn't confined to one part of the health system.">
+        <Figure key="c4" caption="Malappuram and Pathanamthitta anchor opposite ends of all three indicators; the gap isn't confined to one part of the health system.">
           <GroupedBarChart
             id="chart-compare-v2"
             palette={palette}
@@ -213,7 +213,7 @@ function StoryBody({ slug }: { slug: string }) {
             xTitle="Emigrant share minus population share (points)"
           />
         </Figure>,
-        <Figure key="c3" caption="Muslim emigrants are the most concentrated on Gulf destinations of any religious group in Kerala — 22 points above the Christian figure.">
+        <Figure key="c3" caption="Muslim emigrants are the most concentrated on Gulf destinations of any religious group in Kerala, 22 points above the Christian figure.">
           <VBarChart
             id="chart-gulf-v2"
             palette={palette}

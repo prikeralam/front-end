@@ -4,7 +4,8 @@ import { PageHeader } from "../../_ui/kit";
 import DashboardCardLink from "./_ui/DashboardCardLink";
 import { DASHBOARDS } from "./_lib/specs";
 
-export const metadata: Metadata = { title: "Dashboards" };
+// Deferred to a later phase (2026-10-08): nothing links here and search engines are asked not to index it.
+export const metadata: Metadata = { title: "Dashboards", robots: { index: false, follow: false } };
 
 export default function DashboardsPage() {
   return (

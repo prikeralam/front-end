@@ -17,6 +17,10 @@ const nextConfig: NextConfig = {
     // The actions cap dataset files at 20 MB (others at 10 MB), so this leaves room for the form fields around one.
     serverActions: { bodySizeLimit: "21mb" },
   },
+  async redirects() {
+    // "Cited in" folded into the bottom of /data (2026-10-08) until it grows enough for its own page again.
+    return [{ source: "/cited-in", destination: "/data#cited-in", permanent: true }];
+  },
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "images.unsplash.com" },

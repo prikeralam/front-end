@@ -1,44 +1,22 @@
 import Link from "next/link";
-import { programmes, timeline, currentFellows } from "../_content/fellows";
-import { PageHeader, SectionHeading, PersonCard, StatusTag } from "../_ui/kit";
+import { currentFellows } from "../_content/fellows";
+import { PageHeader, SectionHeading, PersonCard } from "../_ui/kit";
 
 const featuredFellows = currentFellows.filter((f) => f.slug === "hisham");
 
 export default function FellowshipPage() {
   return (
     <>
-      <PageHeader
-        kicker="Fellowship & Internship Portal"
-        title="Programmes to train the next generation of researchers and policymakers"
-      />
+      <PageHeader kicker="Engage" title="Fellowships & Internships" />
 
       <section className="mx-auto max-w-6xl px-6 py-16">
-        <div className="grid gap-5 sm:grid-cols-2">
-          {programmes.map((p) => (
-            <div key={p.name} className="rounded-lg border border-[#e6e8f0] bg-white p-6">
-              <h3 className="flex items-center gap-2 text-lg font-bold text-[#171a2b]">
-                {p.name} <StatusTag status={p.status} />
-              </h3>
-              <p className="mt-2 text-sm text-[#5b5f74]">{p.desc}</p>
-              <p className="mt-3 text-[12px] font-semibold uppercase tracking-wide text-[#8b8fa3]">Duration: {p.duration}</p>
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-8 rounded-lg border border-[#e6e8f0] bg-white p-6">
-          <p className="text-xs font-[family-name:var(--font-mono)] font-semibold uppercase tracking-[0.12em] text-[#8b8fa3]">Timeline</p>
-          <div className="mt-4 grid gap-4 sm:grid-cols-4">
-            {timeline.map((t) => (
-              <div key={t.stage}>
-                <p className="text-[13px] font-semibold text-[#171a2b]">{t.stage}</p>
-                <p className="mt-1 text-[12px] text-[#8b8fa3]">{t.when}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="mt-8">
-          <Link href="/fellowship/apply" className="inline-block rounded-md bg-[#253D9A] px-6 py-3 text-sm font-semibold text-white hover:bg-[#1B2C70]">
+        <div className="rounded-lg border border-[#e6e8f0] bg-white p-8">
+          <h2 className="text-2xl text-[#171a2b]">Apply for internships and fellowships</h2>
+          <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-[#5b5f74]">
+            Applications are open on a rolling basis, with no deadline. Send us your CV and a statement of purpose
+            whenever you are ready, and we will get back to you.
+          </p>
+          <Link href="/fellowship/apply" className="mt-6 inline-block rounded-md bg-[#253D9A] px-6 py-3 text-sm font-semibold text-white hover:bg-[#1B2C70]">
             Apply now &rarr;
           </Link>
         </div>

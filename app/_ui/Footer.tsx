@@ -9,17 +9,17 @@ const socials = [
   },
   {
     label: "Facebook",
-    href: "#",
+    href: "",
     path: "M13.5 21v-7.5H16l.4-3H13.5V8.4c0-.87.24-1.46 1.49-1.46H16.5V4.34C16.2 4.3 15.2 4.2 14 4.2c-2.4 0-4 1.46-4 4.15v2.15H7.5v3h2.5V21h3.5Z",
   },
   {
     label: "X",
-    href: "#",
+    href: "",
     path: "M4 4h4.2l4 5.6L16.7 4H20l-6.3 7.9L20.3 20H16l-4.3-6-5 6H3.5l6.7-8.2L4 4Z",
   },
   {
     label: "Instagram",
-    href: "#",
+    href: "https://www.instagram.com/priresearch",
     path: "M8 3h8a5 5 0 0 1 5 5v8a5 5 0 0 1-5 5H8a5 5 0 0 1-5-5V8a5 5 0 0 1 5-5Zm0 2a3 3 0 0 0-3 3v8a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3V8a3 3 0 0 0-3-3H8Zm4 3.5a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9Zm0 2a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5ZM17.25 6.75a1 1 0 1 1 0 2 1 1 0 0 1 0-2Z",
   },
 ];
@@ -44,8 +44,8 @@ export default function Footer() {
       <div className="mx-auto max-w-6xl px-6 py-14">
         <div className="grid gap-10 sm:grid-cols-6">
           <div className="sm:col-span-2">
-            <span className="text-lg font-bold text-white">{org.short}</span>
-            <p className="mt-3 max-w-sm text-sm leading-relaxed text-white/55">{org.summary}</p>
+            <span className="text-lg font-bold text-white">{org.name}</span>
+            <p className="mt-3 max-w-sm text-sm leading-relaxed text-white/55">{org.description}</p>
           </div>
           {footerColumns.map((n) => (
             <div key={n.label} className="text-sm">
@@ -78,10 +78,10 @@ export default function Footer() {
             <Link href="/account" className="text-xs font-semibold uppercase tracking-[0.12em] text-white/55 transition-colors hover:text-white">
               Login
             </Link>
-            {/* TODO: real social URLs */}
+            {/* Facebook and X have no PRI profile yet; they show once their href is filled in. */}
             <div className="flex items-center gap-4">
-              {socials.map((s) => (
-                <a key={s.label} href={s.href} aria-label={s.label} className="text-white/55 transition-colors hover:text-white">
+              {socials.filter((s) => s.href).map((s) => (
+                <a key={s.label} href={s.href} aria-label={s.label} target="_blank" rel="noopener noreferrer" className="text-white/55 transition-colors hover:text-white">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                     <path d={s.path} />
                   </svg>

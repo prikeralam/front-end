@@ -27,7 +27,7 @@ describe("describeAuditEntry", () => {
   });
 
   it("falls back to a readable generic line for unknown actions", () => {
-    expect(describeAuditEntry({ action: "dataset_purged", target: "dataset:9", metadata: {} })).toBe("Dataset purged — dataset #9");
+    expect(describeAuditEntry({ action: "dataset_purged", target: "dataset:9", metadata: {} })).toBe("Dataset purged: dataset #9");
   });
 });
 

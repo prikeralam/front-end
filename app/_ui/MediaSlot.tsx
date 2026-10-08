@@ -33,7 +33,7 @@ export default function MediaSlot({ need, className = "" }: { need: MediaNeed; c
         <Image src={photoUrl} alt={need.label} fill sizes="(max-width: 768px) 100vw, 400px" className={fit} />
         {!need.src && (
           <span className="absolute bottom-2 right-2 rounded bg-black/45 px-2 py-0.5 text-[9px] font-[family-name:var(--font-mono)] font-semibold uppercase tracking-[0.08em] text-white/85">
-            Stock photo — placeholder
+            Stock photo, placeholder
           </span>
         )}
       </div>

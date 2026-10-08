@@ -1,23 +1,8 @@
 import Image from "next/image";
 import { donatePayment, bankDetails, upiPayment } from "../_content/donate";
-import { load } from "../_lib/api/load";
-import { listPeopleByGroup } from "../_lib/api/people";
-import { listPublications } from "../_lib/api/publications";
 import { PageHeader, SectionHeading, StatusTag } from "../_ui/kit";
 
-export default async function DonatePage() {
-  const [research, executive, team] = await Promise.all([
-    load("research", listPublications),
-    load("the executive council", () => listPeopleByGroup("executive")),
-    load("our team", () => listPeopleByGroup("team")),
-  ]);
-  const count = (loaded: { ok: true; data: unknown[] } | { ok: false }) => (loaded.ok ? String(loaded.data.length) : "—");
-  const impactStats = [
-    { value: research.ok ? String(research.data.publications.length) : "—", label: "Published research stories" },
-    { value: count(executive), label: "Executive Council members" },
-    { value: count(team), label: "Team members driving the work" },
-  ];
-
+export default function DonatePage() {
   return (
     <>
       <PageHeader
@@ -27,23 +12,46 @@ export default async function DonatePage() {
       />
 
       <section className="mx-auto max-w-6xl px-6 py-16">
-        <SectionHeading>Our impact</SectionHeading>
-        <div className="mt-8 grid gap-5 sm:grid-cols-3">
-          {impactStats.map((s) => (
-            <div key={s.label} className="rounded-lg border border-[#e6e8f0] bg-white p-6">
-              <p className="font-[family-name:var(--font-mono)] text-3xl font-semibold text-[#253D9A]">{s.value}</p>
-              <p className="mt-2 text-sm text-[#5b5f74]">{s.label}</p>
-            </div>
-          ))}
-        </div>
-      </section>
+        <SectionHeading>Ways to give</SectionHeading>
 
-      <section className="border-y border-[#e6e8f0] bg-white">
-        <div className="mx-auto max-w-6xl px-6 py-16">
-          <SectionHeading>Ways to give</SectionHeading>
+        <div className="mt-8 grid gap-5 md:grid-cols-2">
+          <div className="rounded-lg border border-[#e6e8f0] bg-white p-6">
+            <p className="text-[15px] font-semibold text-[#171a2b]">Scan and pay with UPI</p>
+            <p className="mt-1 text-[13px] text-[#5b6280]">Use Google Pay, PhonePe, Paytm, BHIM or any UPI app.</p>
+            <Image
+              src={upiPayment.qrImage}
+              alt={`UPI QR code to pay Policy and Research Initiative (${upiPayment.upiId})`}
+              width={452}
+              height={592}
+              className="mt-4 h-auto w-full max-w-[220px] rounded-md border border-[#e6e8f0]"
+            />
+            <p className="mt-3 text-xs font-[family-name:var(--font-mono)] font-semibold uppercase tracking-[0.12em] text-[#8b8fa3]">UPI ID</p>
+            <p className="mt-1 break-all font-[family-name:var(--font-mono)] text-[13px] text-[#171a2b]">{upiPayment.upiId}</p>
+          </div>
 
-          <div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-            <div className="rounded-lg border border-[#e6e8f0] bg-white p-6">
+          <div className="flex flex-col rounded-lg border border-[#e6e8f0] bg-white p-6">
+            <p className="flex items-center gap-2 text-[15px] font-semibold text-[#171a2b]">
+              Bank transfer <StatusTag status={bankDetails.status} />
+            </p>
+            <dl className="mt-4 grid gap-3 text-sm">
+              <div>
+                <dt className="text-xs font-[family-name:var(--font-mono)] font-semibold uppercase tracking-[0.12em] text-[#8b8fa3]">Account name</dt>
+                <dd className="mt-1 text-[#171a2b]">{bankDetails.accountName}</dd>
+              </div>
+              <div>
+                <dt className="text-xs font-[family-name:var(--font-mono)] font-semibold uppercase tracking-[0.12em] text-[#8b8fa3]">Account number</dt>
+                <dd className="mt-1 text-[#171a2b]">{bankDetails.accountNumber}</dd>
+              </div>
+              <div>
+                <dt className="text-xs font-[family-name:var(--font-mono)] font-semibold uppercase tracking-[0.12em] text-[#8b8fa3]">IFSC</dt>
+                <dd className="mt-1 text-[#171a2b]">{bankDetails.ifsc}</dd>
+              </div>
+              <div>
+                <dt className="text-xs font-[family-name:var(--font-mono)] font-semibold uppercase tracking-[0.12em] text-[#8b8fa3]">Bank &amp; branch</dt>
+                <dd className="mt-1 text-[#171a2b]">{bankDetails.bankName}, {bankDetails.branch}</dd>
+              </div>
+            </dl>
+            <div className="mt-6 border-t border-[#e6e8f0] pt-6">
               <p className="flex items-center gap-2 text-[15px] font-semibold text-[#171a2b]">
                 Pay online via Razorpay <StatusTag status={donatePayment.status} />
               </p>
@@ -61,44 +69,6 @@ export default async function DonatePage() {
                   Razorpay link coming soon
                 </button>
               )}
-            </div>
-
-            <div className="rounded-lg border border-[#e6e8f0] bg-white p-6">
-              <p className="text-[15px] font-semibold text-[#171a2b]">Scan and pay with UPI</p>
-              <p className="mt-1 text-[13px] text-[#5b6280]">Use Google Pay, PhonePe, Paytm, BHIM or any UPI app.</p>
-              <Image
-                src={upiPayment.qrImage}
-                alt={`UPI QR code to pay Policy and Research Initiative (${upiPayment.upiId})`}
-                width={452}
-                height={592}
-                className="mt-4 h-auto w-full max-w-[220px] rounded-md border border-[#e6e8f0]"
-              />
-              <p className="mt-3 text-xs font-[family-name:var(--font-mono)] font-semibold uppercase tracking-[0.12em] text-[#8b8fa3]">UPI ID</p>
-              <p className="mt-1 break-all font-[family-name:var(--font-mono)] text-[13px] text-[#171a2b]">{upiPayment.upiId}</p>
-            </div>
-
-            <div className="rounded-lg border border-[#e6e8f0] bg-white p-6">
-              <p className="flex items-center gap-2 text-[15px] font-semibold text-[#171a2b]">
-                Bank transfer <StatusTag status={bankDetails.status} />
-              </p>
-              <dl className="mt-4 grid gap-3 text-sm">
-                <div>
-                  <dt className="text-xs font-[family-name:var(--font-mono)] font-semibold uppercase tracking-[0.12em] text-[#8b8fa3]">Account name</dt>
-                  <dd className="mt-1 text-[#171a2b]">{bankDetails.accountName}</dd>
-                </div>
-                <div>
-                  <dt className="text-xs font-[family-name:var(--font-mono)] font-semibold uppercase tracking-[0.12em] text-[#8b8fa3]">Account number</dt>
-                  <dd className="mt-1 text-[#171a2b]">{bankDetails.accountNumber}</dd>
-                </div>
-                <div>
-                  <dt className="text-xs font-[family-name:var(--font-mono)] font-semibold uppercase tracking-[0.12em] text-[#8b8fa3]">IFSC</dt>
-                  <dd className="mt-1 text-[#171a2b]">{bankDetails.ifsc}</dd>
-                </div>
-                <div>
-                  <dt className="text-xs font-[family-name:var(--font-mono)] font-semibold uppercase tracking-[0.12em] text-[#8b8fa3]">Bank &amp; branch</dt>
-                  <dd className="mt-1 text-[#171a2b]">{bankDetails.bankName}, {bankDetails.branch}</dd>
-                </div>
-              </dl>
             </div>
           </div>
         </div>

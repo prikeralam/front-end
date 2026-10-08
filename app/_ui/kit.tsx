@@ -118,7 +118,7 @@ export function FilterBar({ facets }: { facets: { label: string; options: string
           </select>
         </label>
       ))}
-      {!wired && <span className="text-[12px] text-[#8b8fa3]">Filters are a visual mock — not wired yet.</span>}
+      {!wired && <span className="text-[12px] text-[#8b8fa3]">Filters are a visual mock, not wired yet.</span>}
     </div>
   );
 }
