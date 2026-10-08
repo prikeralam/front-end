@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { PageHeader, SectionHeading } from "../_ui/kit";
+import { pageMetadata } from "../_lib/seo";
 
 const sections = [
   { title: "Patrons", href: "/people/patrons", desc: "Individuals who lend PRI their name and support." },
@@ -7,6 +8,12 @@ const sections = [
   { title: "Partners", href: "/partners", desc: "Institutions and researchers collaborating with PRI." },
   { title: "Our Team", href: "/people/team", desc: "PRI's staff, who run the day-to-day work of the institute." },
 ];
+
+export const metadata = pageMetadata({
+  title: "People",
+  description: "The people behind the Policy and Research Initiative: chief patrons, executive council, advisory body, partners and team.",
+  path: "/people",
+});
 
 export default function PeoplePage() {
   return (

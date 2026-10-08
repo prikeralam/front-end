@@ -4,6 +4,13 @@ import { listJobs } from "../../_lib/api/engage";
 import { load } from "../../_lib/api/load";
 import { PageHeader } from "../../_ui/kit";
 import ApplicationForm from "./ApplicationForm";
+import { pageMetadata } from "../../_lib/seo";
+
+export const metadata = pageMetadata({
+  title: "Apply",
+  description: "Apply for a fellowship, an internship or an open role at the Policy and Research Initiative.",
+  path: "/fellowship/apply",
+});
 
 export default async function FellowshipApplyPage({ searchParams }: { searchParams: Promise<{ role?: string }> }) {
   const { role } = await searchParams;

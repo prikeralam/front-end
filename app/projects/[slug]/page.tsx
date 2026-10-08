@@ -7,6 +7,16 @@ import { getProjectBySlug } from "../../_lib/api/projects";
 import { heroProjectPhotos } from "../../_lib/stockPhotos";
 import { PageHeader } from "../../_ui/kit";
 import ProjectStageTag from "../../_ui/ProjectStageTag";
+import type { Metadata } from "next";
+import { pageMetadata } from "../../_lib/seo";
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const result = await load("this project", () => getProjectBySlug(slug));
+  const project = result.ok ? result.data : null;
+  if (!project) return { title: "Projects" };
+  return pageMetadata({ title: project.title, description: project.blurb, path: `/projects/${project.slug}`, image: project.image.src ?? heroProjectPhotos[project.slug] });
+}
 
 export default async function ProjectDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
