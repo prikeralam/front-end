@@ -8,6 +8,9 @@ import MediaSlot from "../../_ui/MediaSlot";
 import ProfileLinks from "../_ui/ProfileLinks";
 import { load } from "../../_lib/api/load";
 import { getPersonBySlug } from "../../_lib/api/people";
+import type { Metadata } from "next";
+import { pageMetadata, personJsonLd } from "../../_lib/seo";
+import JsonLd from "../../_ui/JsonLd";
 
 const groupLabel: Record<string, string> = {
   team: "Team",
@@ -31,6 +34,20 @@ const groupBackLabel: Record<string, string> = {
   author: "Research",
 };
 
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const result = await load("this profile", () => getPersonBySlug(slug));
+  const person = result.ok ? result.data : null;
+  if (!person) return { title: "People" };
+  return pageMetadata({
+    title: `${person.name}, ${person.role}`,
+    description: person.bio || `${person.name}, ${person.role} at the Policy and Research Initiative (PRI).`,
+    path: `/people/${person.slug}`,
+    image: person.photo?.src,
+    type: "profile",
+  });
+}
+
 export default async function PersonDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const result = await load("this profile", () => getPersonBySlug(slug));
@@ -50,6 +67,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ s
 
   return (
     <>
+      <JsonLd data={personJsonLd(person)} />
       <PageHeader kicker={groupLabel[person.group] ?? "People"} title={person.name} />
       <section className="mx-auto max-w-3xl px-6 py-16">
         <div className="grid gap-8 sm:grid-cols-[200px_1fr]">

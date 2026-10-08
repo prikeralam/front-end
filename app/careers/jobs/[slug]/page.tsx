@@ -2,9 +2,24 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { LoadError } from "../../../_ui/ApiMessage";
 import { getJobBySlug } from "../../../_lib/api/engage";
-import { jobAvailability } from "../../../_lib/api/engageAdapter";
+import { jobAvailability, todayInIndia } from "../../../_lib/api/engageAdapter";
 import { load } from "../../../_lib/api/load";
 import { PageHeader } from "../../../_ui/kit";
+import type { Metadata } from "next";
+import { jobPostingJsonLd, pageMetadata } from "../../../_lib/seo";
+import JsonLd from "../../../_ui/JsonLd";
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const result = await load("this role", () => getJobBySlug(slug));
+  const job = result.ok ? result.data : null;
+  if (!job) return { title: "Careers" };
+  return pageMetadata({
+    title: `${job.title} (job opening)`,
+    description: job.summary || `${job.title} at the Policy and Research Initiative. Applications are open on a rolling basis.`,
+    path: `/careers/jobs/${job.slug}`,
+  });
+}
 
 export default async function JobDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -22,6 +37,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ slug
 
   return (
     <>
+      <JsonLd data={jobPostingJsonLd(job, todayInIndia())} />
       <PageHeader kicker="Careers" title={job.title} />
       <section className="mx-auto max-w-3xl px-6 py-16">
         <p className="text-sm text-[#5b5f74]">{[jobAvailability(job), job.location, job.employment].filter(Boolean).join(" · ")}</p>

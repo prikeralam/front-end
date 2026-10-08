@@ -10,6 +10,7 @@ import { SectionHeading } from "../_ui/kit";
 import DataSearch from "./_ui/DataSearch";
 import FeaturedDataset from "./_ui/FeaturedDataset";
 import MentionList from "./_ui/MentionList";
+import { pageMetadata } from "../_lib/seo";
 
 const themeIcons: Record<string, ReactNode> = {
   Education: (
@@ -59,6 +60,12 @@ const fallbackIcon = (
 function pickFeatured(datasets: DatasetSummary[]): DatasetSummary | undefined {
   return [...datasets].reverse().find((d) => d.accessState === "full" && d.fileFormat !== null && d.fileFormat !== "GeoJSON");
 }
+
+export const metadata = pageMetadata({
+  title: "Data Repository & Library",
+  description: "Open data for Kerala's policy questions: datasets behind PRI's research on education, health, demography and migration, with previews, sources and citations.",
+  path: "/data",
+});
 
 export default async function DataPage() {
   const [datasetsResult, collectionsResult, mentions, publications] = await Promise.all([

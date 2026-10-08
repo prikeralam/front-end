@@ -2,9 +2,18 @@ import { notFound } from "next/navigation";
 import { fellows } from "../../_content/fellows";
 import { PageHeader, StatusTag } from "../../_ui/kit";
 import MediaSlot from "../../_ui/MediaSlot";
+import type { Metadata } from "next";
+import { pageMetadata } from "../../_lib/seo";
 
 export function generateStaticParams() {
   return fellows.map((f) => ({ slug: f.slug }));
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const fellow = fellows.find((f) => f.slug === slug);
+  if (!fellow) return { title: "Fellowships & Internships" };
+  return pageMetadata({ title: `${fellow.name}, ${fellow.role}`, description: fellow.bio, path: `/fellowship/${fellow.slug}`, image: fellow.photo?.src, type: "profile" });
 }
 
 export default async function FellowDetailPage({ params }: { params: Promise<{ slug: string }> }) {
