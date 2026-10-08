@@ -4,11 +4,17 @@ import Header from "./_ui/Header";
 import Footer from "./_ui/Footer";
 import ScrollReveal from "./_ui/ScrollReveal";
 import { headingFont, bodyFont, monoFont } from "./fonts";
+import { DEFAULT_DESCRIPTION, DEFAULT_SHARE_IMAGE, SITE_NAME, SITE_URL } from "./_lib/seo";
 
 export const metadata: Metadata = {
-  // The tab reads "PRI"; a page that sets its own title shows it as "<title> | PRI".
-  title: { default: "PRI", template: "%s | PRI" },
-  description: "The public website and research platform for the Policy and Research Initiative (PRI).",
+  // Canonical links and share images resolve against the production domain, whichever environment serves the page.
+  metadataBase: new URL(SITE_URL),
+  // Pages that set a title show "<title> | Policy and Research Initiative"; the homepage sets its own in full.
+  title: { default: `${SITE_NAME} (PRI)`, template: `%s | ${SITE_NAME}` },
+  description: DEFAULT_DESCRIPTION,
+  applicationName: SITE_NAME,
+  openGraph: { siteName: SITE_NAME, locale: "en_IN", type: "website", images: [DEFAULT_SHARE_IMAGE] },
+  twitter: { card: "summary_large_image", images: [DEFAULT_SHARE_IMAGE] },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

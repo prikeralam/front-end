@@ -4,6 +4,13 @@ import { listJobs } from "../_lib/api/engage";
 import { jobAvailability } from "../_lib/api/engageAdapter";
 import { load } from "../_lib/api/load";
 import { PageHeader, SectionHeading } from "../_ui/kit";
+import { pageMetadata } from "../_lib/seo";
+
+export const metadata = pageMetadata({
+  title: "Careers",
+  description: "Open roles at the Policy and Research Initiative. Applications are open on a rolling basis.",
+  path: "/careers",
+});
 
 export default async function CareersPage() {
   const result = await load("open roles", listJobs);

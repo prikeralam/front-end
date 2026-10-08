@@ -1,6 +1,13 @@
 import Image from "next/image";
 import { donatePayment, bankDetails, upiPayment } from "../_content/donate";
 import { PageHeader, SectionHeading, StatusTag } from "../_ui/kit";
+import { pageMetadata } from "../_lib/seo";
+
+export const metadata = pageMetadata({
+  title: "Donate",
+  description: "Support the Policy and Research Initiative's independent, data-driven research by UPI, bank transfer or online payment.",
+  path: "/donate",
+});
 
 export default function DonatePage() {
   return (

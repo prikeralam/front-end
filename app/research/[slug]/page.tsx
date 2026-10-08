@@ -11,6 +11,9 @@ import { dataStories, educationCharts, demographyCharts, healthCharts, migration
 import { HBarChart, GroupedBarChart, DivergingBarChart, ScatterChart, LineChart, VBarChart, HBarSimpleChart, type ChartPalette } from "../_ui/dataStoryCharts";
 import { PageHeader, SectionHeading, StatusTag } from "../../_ui/kit";
 import MediaSlot from "../../_ui/MediaSlot";
+import type { Metadata } from "next";
+import { pageMetadata, publicationJsonLd } from "../../_lib/seo";
+import JsonLd from "../../_ui/JsonLd";
 
 const palette: ChartPalette = {
   primary: "#253D9A",
@@ -288,6 +291,14 @@ function StoryBody({ slug }: { slug: string }) {
   );
 }
 
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const result = await load("this publication", () => getPublicationBySlug(slug));
+  const pub = result.ok ? result.data?.publication : null;
+  if (!pub) return { title: "Research" };
+  return pageMetadata({ title: pub.title, description: pub.abstract, path: `/research/${pub.slug}`, image: pub.cover?.src, type: "article" });
+}
+
 export default async function PublicationDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const result = await load("this publication", () => getPublicationBySlug(slug));
@@ -307,6 +318,7 @@ export default async function PublicationDetailPage({ params }: { params: Promis
 
   return (
     <>
+      <JsonLd data={publicationJsonLd(pub, pub.authors.map((s) => authors[s]).filter(Boolean))} />
       <PageHeader kicker={`${pub.format} · ${pub.theme}`} title={pub.title} />
       <section className="mx-auto max-w-3xl px-6 py-16">
         <div className="flex items-center gap-2 text-sm text-[#5b5f74]">

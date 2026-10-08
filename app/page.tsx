@@ -16,6 +16,8 @@ import ThemeOrbit from "./_ui/home/ThemeOrbit";
 import ProjectStageTag from "./_ui/ProjectStageTag";
 import ThemePanel from "./_ui/home/ThemePanel";
 import EventCard from "./events/_ui/EventCard";
+import JsonLd from "./_ui/JsonLd";
+import { DEFAULT_DESCRIPTION, organizationJsonLd, pageMetadata, SITE_NAME, websiteJsonLd } from "./_lib/seo";
 
 /** Themes left out of the hero orbit (they still exist everywhere else). */
 const ORBIT_EXCLUDED_THEMES = new Set(["Economics", "Employment"]);
@@ -60,6 +62,12 @@ function splitHeadline(title: string): [string, string] {
   return sentences.length > 1 ? [sentences.slice(0, -1).join(" "), sentences[sentences.length - 1]] : ["", title];
 }
 
+export const metadata = {
+  ...pageMetadata({ title: `${SITE_NAME} (PRI)`, description: DEFAULT_DESCRIPTION, path: "/" }),
+  // The full name leads, and the template's " | Policy and Research Initiative" would only repeat it.
+  title: { absolute: `${SITE_NAME} (PRI) | Think tank in Kerala` },
+};
+
 export default async function HomePage() {
   const [projects, research, themes, partners, executive, heroBlock, quoteBlock, events] = await Promise.all([
     load("projects", listProjects),
@@ -88,6 +96,7 @@ export default async function HomePage() {
 
   return (
     <>
+      <JsonLd data={[organizationJsonLd(), websiteJsonLd()]} />
       {/* Hero */}
       <section className="relative overflow-hidden border-b border-[#e3e6f0] bg-[radial-gradient(1000px_520px_at_88%_4%,rgba(37,61,154,0.10),transparent_62%),radial-gradient(760px_460px_at_0%_100%,rgba(37,61,154,0.05),transparent_60%)] after:pointer-events-none after:absolute after:inset-0 after:bg-[radial-gradient(circle,rgba(37,61,154,0.14)_1px,transparent_1.4px)] after:bg-[length:28px_28px] after:[mask-image:linear-gradient(100deg,transparent_45%,#000_90%)]">
         <div className="pri-motion relative z-10 mx-auto grid max-w-6xl items-center gap-12 px-6 py-16 md:grid-cols-[1.05fr_0.95fr] md:py-20">
@@ -214,7 +223,7 @@ export default async function HomePage() {
                 >
                   {p.logo?.src && (
                     <span className="relative block h-14 w-full">
-                      <Image src={p.logo.src} alt="" fill sizes="200px" className="object-contain opacity-70 grayscale transition-[filter,opacity] duration-300 group-hover:opacity-100 group-hover:grayscale-0" />
+                      <Image src={p.logo.src} alt={`${p.name} logo`} fill sizes="200px" className="object-contain opacity-70 grayscale transition-[filter,opacity] duration-300 group-hover:opacity-100 group-hover:grayscale-0" />
                     </span>
                   )}
                   <span className="text-[13px] font-semibold leading-snug text-[#4b4f66] group-hover:text-[#253D9A]">{p.name}</span>

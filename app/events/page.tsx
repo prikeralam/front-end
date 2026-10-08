@@ -5,6 +5,7 @@ import { load } from "../_lib/api/load";
 import type { PRIEvent } from "../_lib/types";
 import { PageHeader, SectionHeading } from "../_ui/kit";
 import EventCard from "./_ui/EventCard";
+import { pageMetadata } from "../_lib/seo";
 
 const FILTERS = [
   { value: "", label: "All" },
@@ -20,6 +21,12 @@ function EventGrid({ events, empty }: { events: PRIEvent[]; empty: string }) {
     </div>
   );
 }
+
+export const metadata = pageMetadata({
+  title: "Events & Campaigns",
+  description: "Seminars, roundtables, launches and campaigns by the Policy and Research Initiative.",
+  path: "/events",
+});
 
 export default async function EventsPage({ searchParams }: { searchParams: Promise<{ kind?: string }> }) {
   const { kind: requested } = await searchParams;
