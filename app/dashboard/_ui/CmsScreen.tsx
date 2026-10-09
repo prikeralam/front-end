@@ -12,6 +12,7 @@ import DatasetFormatsPanel from "./DatasetFormatsPanel";
 import Drawer from "./Drawer";
 import { ImageIcon, PlusIcon, SearchIcon } from "./icons";
 import SimpleDraftForm from "./SimpleDraftForm";
+import StoryPreviewPanel from "./StoryPreviewPanel";
 
 type DrawerState = { mode: "create" } | { mode: "edit"; record: CmsRecord } | null;
 type StatusFilter = WorkflowStatus | "all";
@@ -225,6 +226,9 @@ export default function CmsScreen({
           />
         )}
         {drawer?.mode === "edit" && type === "dataset" && <DatasetFormatsPanel key={`formats-${drawer.record.key}`} slug={drawer.record.key} />}
+        {drawer?.mode === "edit" && type === "publication" && (
+          <StoryPreviewPanel key={`story-${drawer.record.key}`} slug={drawer.record.key} title={drawer.record.title} onChanged={reload} />
+        )}
       </Drawer>
     </>
   );

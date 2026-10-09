@@ -2864,6 +2864,8 @@ export interface components {
             cover_url?: string;
             /** Format: uri */
             cover?: string | null;
+            /** Format: uri */
+            story_html?: string | null;
             readonly status?: components["schemas"]["WorkflowStatusEnum"];
             readonly created_by?: number;
             readonly reviewed_by?: number | null;
@@ -3017,6 +3019,8 @@ export interface components {
             cover_url?: string;
             /** Format: uri */
             cover?: string | null;
+            /** Format: uri */
+            story_html?: string | null;
             readonly status: components["schemas"]["WorkflowStatusEnum"];
             readonly created_by: number;
             readonly reviewed_by: number | null;

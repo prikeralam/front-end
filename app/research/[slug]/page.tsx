@@ -5,10 +5,12 @@ import { notFound } from "next/navigation";
 import { LoadError } from "../../_ui/ApiMessage";
 import { load } from "../../_lib/api/load";
 import { getPublicationBySlug } from "../../_lib/api/publications";
+import { fetchStoryHtml } from "../../_lib/api/stories";
 import { formatPublicationDate } from "../../_lib/api/publicationAdapter";
 import { stockPhotoFor } from "../../_lib/stockPhotos";
 import { dataStories, educationCharts, demographyCharts, healthCharts, migrationCharts } from "../../_content/dataStories";
 import { HBarChart, GroupedBarChart, DivergingBarChart, ScatterChart, LineChart, VBarChart, HBarSimpleChart, type ChartPalette } from "../_ui/dataStoryCharts";
+import StoryFrame from "../_ui/StoryFrame";
 import { PageHeader, SectionHeading, StatusTag } from "../../_ui/kit";
 import MediaSlot from "../../_ui/MediaSlot";
 import type { Metadata } from "next";
@@ -312,14 +314,17 @@ export default async function PublicationDetailPage({ params }: { params: Promis
   }
   if (!result.data) notFound();
   const { publication: pub, authors } = result.data;
-  // The API has no body or chart data (backend gap G3): data stories keep their hand-built bodies, keyed by slug.
+  // An uploaded story file wins; the four stories written before uploads existed keep their hand-built bodies.
+  const storyUrl = pub.storyUrl;
+  const uploaded = storyUrl ? await load("this story file", () => fetchStoryHtml(storyUrl)) : null;
   const story = dataStories[slug];
   const author = authors[pub.authors[0]];
 
   return (
     <>
       <JsonLd data={publicationJsonLd(pub, pub.authors.map((s) => authors[s]).filter(Boolean))} />
-      <PageHeader kicker={`${pub.format} · ${pub.theme}`} title={pub.title} />
+      {/* An uploaded story carries no title or summary of its own (see docs/data-stories.md), so the abstract leads. */}
+      <PageHeader kicker={`${pub.format} · ${pub.theme}`} title={pub.title} intro={uploaded ? pub.abstract : undefined} />
       <section className="mx-auto max-w-3xl px-6 py-16">
         <div className="flex items-center gap-2 text-sm text-[#5b5f74]">
           {author?.photo && (
@@ -332,10 +337,22 @@ export default async function PublicationDetailPage({ params }: { params: Promis
           ) : (
             pub.authors.join(", ")
           )}
-          &middot; {formatPublicationDate(pub.date)} <StatusTag status={pub.status} />
+          {(author || pub.authors.length > 0) && <span aria-hidden="true">&middot;</span>}
+          {formatPublicationDate(pub.date)} <StatusTag status={pub.status} />
         </div>
-        {pub.cover && <MediaSlot need={pub.cover} className="mt-6" />}
-        {story ? (
+        {/* Only a real cover, and never on a data story: its cover is a still of one of its own charts, so it belongs
+            on cards (and link previews), not above the story that shows the chart itself. */}
+        {pub.cover?.src && pub.format !== "Data Story" && <MediaSlot need={pub.cover} className="mt-6" />}
+        {uploaded ? (
+          uploaded.ok ? (
+            // On phones the story's own side padding is the gutter, so the frame bleeds past the column's.
+            <StoryFrame html={uploaded.data} title={pub.title} className="-mx-6 mt-8 !w-[calc(100%+3rem)] sm:mx-0 sm:!w-full" />
+          ) : (
+            <div className="mt-8">
+              <LoadError what="this story" />
+            </div>
+          )
+        ) : story ? (
           <StoryBody slug={slug} />
         ) : (
           <>
