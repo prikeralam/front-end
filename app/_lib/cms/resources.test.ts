@@ -199,9 +199,14 @@ describe("belongsToType / objectPath", () => {
     expect(objectPath("publication", "study")).toBe("/api/v1/publications/study/");
   });
 
-  it("gives every resource fields, and exactly the file types carry a file field", () => {
-    const withFiles = Object.entries(RESOURCES).filter(([, r]) => r.fields.some((f) => f.kind === "file")).map(([type]) => type);
+  it("gives every resource fields: documents and datasets require a file, publications take an optional story file", () => {
+    const withFiles = (optional: boolean) =>
+      Object.entries(RESOURCES)
+        .filter(([, r]) => r.fields.some((f) => f.kind === "file" && Boolean(f.optional) === optional))
+        .map(([type]) => type)
+        .sort();
 
-    expect(withFiles.sort()).toEqual(["dataset", "document"]);
+    expect(withFiles(false)).toEqual(["dataset", "document"]);
+    expect(withFiles(true)).toEqual(["publication"]);
   });
 });

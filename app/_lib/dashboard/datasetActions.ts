@@ -1,6 +1,7 @@
 "use server";
 
 import { backendRequest } from "../api/backendRequest";
+import { refreshPublicPages } from "../api/publicCache";
 import { uncachedApi } from "../api/client";
 import { getDatasetDetail, listDatasets } from "../api/datasets";
 import { unwrap } from "../api/request";
@@ -139,7 +140,9 @@ export async function addExtraFormatAction(slug: string, form: FormData): Promis
   upload.append("format", format);
   upload.append("file", file, file.name);
   const result = await backendRequest("POST", `/api/v1/datasets/${slug}/files/`, { accessToken, form: upload });
-  return result.ok ? { ok: true } : refusal(result.status, result.data);
+  if (!result.ok) return refusal(result.status, result.data);
+  refreshPublicPages();
+  return { ok: true };
 }
 
 /** Removes one of the dataset's other formats; the backend deletes the stored file. */
@@ -150,5 +153,7 @@ export async function removeExtraFormatAction(slug: string, id: number): Promise
   const accessToken = await getAccessToken();
   if (!accessToken) return signedOutChange;
   const result = await backendRequest("DELETE", `/api/v1/datasets/${slug}/files/${id}/`, { accessToken });
-  return result.ok ? { ok: true } : refusal(result.status, result.data);
+  if (!result.ok) return refusal(result.status, result.data);
+  refreshPublicPages();
+  return { ok: true };
 }

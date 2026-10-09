@@ -1,0 +1,53 @@
+<!-- TEST FIXTURE, never publish. Checks that an uploaded story can't reach the site.
+     1. Upload as-is: the backend must refuse it, naming https://evil.example/steal.js.
+     2. Delete the <script src="https://evil.example/..."> line and upload again: it is accepted. Preview it; every
+        line below must read BLOCKED, and the site must not navigate away or open dialogs. -->
+<script src="https://evil.example/steal.js"></script>
+
+<div id="hostile" style="font:15px/1.6 system-ui,sans-serif;padding:16px;border:2px dashed #E4633F;border-radius:8px">
+  <h2 style="margin:0 0 8px">Sandbox check</h2>
+  <ul id="results" style="margin:0;padding-left:20px"></ul>
+</div>
+
+<script>
+(function () {
+  var list = document.getElementById("results");
+  function report(name, attempt) {
+    var outcome;
+    try {
+      var value = attempt();
+      outcome = value === undefined || value === "" || value === null ? "BLOCKED (empty)" : "LEAKED: " + String(value).slice(0, 80);
+    } catch (e) {
+      outcome = "BLOCKED (" + e.name + ")";
+    }
+    var li = document.createElement("li");
+    li.textContent = name + ": " + outcome;
+    li.style.color = outcome.indexOf("LEAKED") === 0 ? "#B4432A" : "#0A7F62";
+    list.appendChild(li);
+  }
+
+  report("origin is opaque", function () { return location.origin === "null" ? "" : location.origin; });
+  report("read site cookies", function () { return document.cookie; });
+  report("localStorage", function () { localStorage.setItem("x", "1"); return localStorage.getItem("x"); });
+  report("read parent page", function () { return parent.document.title; });
+  report("read parent URL", function () { return parent.location.href; });
+  // Browsers block these either by throwing or by ignoring the call, so the real check is that the page around this
+  // frame stays put and no dialog appears.
+  function attempt(name, fn) {
+    var li = document.createElement("li");
+    try { fn(); li.textContent = name + ": ignored (check the page did not change)"; } catch (e) { li.textContent = name + ": BLOCKED (" + e.name + ")"; }
+    li.style.color = "#0A7F62";
+    list.appendChild(li);
+  }
+  attempt("navigate the site away", function () { top.location.href = "https://evil.example/"; });
+  attempt("open a dialog", function () { alert("hi"); });
+  attempt("submit a form to the top window", function () {
+    var f = document.createElement("form"); f.action = "https://evil.example/"; f.target = "_top"; document.body.appendChild(f); f.submit();
+  });
+  // A fetch from the opaque origin carries no site cookies; with CORS it can't read the response either.
+  fetch("/api/auth/session").then(function (r) { return r.text(); }).then(
+    function (t) { report("fetch site session", function () { return t; }); },
+    function (e) { report("fetch site session", function () { throw e; }); }
+  );
+})();
+</script>
