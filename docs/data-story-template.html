@@ -1,0 +1,80 @@
+<!-- PRI data story starter. Copy this file, rename the root id (#pri-story) to something unique to the story, and
+     write the body. Rules: docs/data-stories.md. No title, byline or date here: the website shows those. -->
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+
+<style>
+#pri-story{
+  --blue:#253D9A; --coral:#E4633F; --ink:#171a2b; --ink-2:#4b4f66; --muted:#8b8fa3; --rule:#e6e8f0; --wash:#f3f5fb;
+  font-family:"Public Sans",system-ui,sans-serif; color:var(--ink); background:#fff;
+  font-size:16px; line-height:1.7; max-width:760px; margin:0 auto; padding:8px 0 40px;
+}
+#pri-story *{box-sizing:border-box}
+#pri-story h2{font-size:clamp(21px,3.4vw,26px);line-height:1.25;margin:44px 0 10px;font-weight:700}
+#pri-story h3{font-size:18px;margin:28px 0 8px;font-weight:600}
+#pri-story p{margin:0 0 14px;color:var(--ink-2)}
+#pri-story a{color:var(--blue)}
+
+/* Key figures */
+#pri-story .figures{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:8px 0 24px}
+#pri-story .figures div{border:1px solid var(--rule);border-radius:8px;padding:14px}
+#pri-story .figures b{display:block;font-family:"IBM Plex Mono",monospace;font-size:26px;color:var(--blue);line-height:1.1}
+#pri-story .figures span{display:block;font-size:13px;color:var(--ink-2);margin-top:4px}
+@media (max-width:560px){#pri-story .figures{grid-template-columns:1fr}}
+
+/* Figures */
+#pri-story figure{margin:22px 0 30px;border:1px solid var(--rule);border-radius:8px;padding:14px}
+#pri-story .take{font-weight:600;margin:0 0 4px;color:var(--ink)}
+#pri-story figcaption{font-size:13.5px;color:var(--muted);margin-top:10px;line-height:1.5}
+
+/* Data table */
+#pri-story details{border:1px solid var(--rule);border-radius:8px;padding:0 14px;margin:24px 0}
+#pri-story summary{cursor:pointer;font-weight:600;padding:12px 0}
+#pri-story .table{overflow-x:auto}
+#pri-story table{border-collapse:collapse;width:100%;font-size:14px;font-variant-numeric:tabular-nums;margin-bottom:14px}
+#pri-story th,#pri-story td{padding:6px 8px;border-bottom:1px solid var(--rule);text-align:right}
+#pri-story th:first-child,#pri-story td:first-child{text-align:left}
+
+/* Sources */
+#pri-story .notes{border-top:1px solid var(--rule);padding-top:16px;font-size:13.5px;color:var(--muted)}
+#pri-story .notes h3{font:600 12px "IBM Plex Mono",monospace;letter-spacing:.12em;text-transform:uppercase;margin:0 0 8px;color:var(--muted)}
+#pri-story .notes ol{padding-left:20px;margin:0}
+</style>
+
+<article id="pri-story" lang="en">
+  <div class="figures">
+    <div><b>00,000</b><span>What this number is</span></div>
+    <div><b>00%</b><span>What this number is</span></div>
+    <div><b>0.0x</b><span>What this number is</span></div>
+  </div>
+
+  <p>Opening paragraph. Footnotes link like this.<sup><a href="#n1">1</a></sup></p>
+
+  <h2>First section</h2>
+  <p>Text.</p>
+  <figure>
+    <p class="take">One sentence saying what the chart shows.</p>
+    <div id="chart-1" role="img" aria-label="Describe the chart and its main finding in words."></div>
+    <figcaption><b>Source:</b> … <b>Note:</b> …</figcaption>
+  </figure>
+
+  <details>
+    <summary>View the full data</summary>
+    <div class="table"><table><thead><tr><th>Name</th><th>Value</th></tr></thead><tbody><tr><td>…</td><td>…</td></tr></tbody></table></div>
+  </details>
+
+  <section class="notes">
+    <h3>Sources &amp; notes</h3>
+    <ol><li id="n1">Source and caveats.</li></ol>
+  </section>
+  <noscript><p>The interactive charts need JavaScript. All figures are in the data table above.</p></noscript>
+</article>
+
+<!-- Libraries: an exact version from cdnjs or jsdelivr only, e.g.
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script> -->
+<script>
+(function () {
+  "use strict";
+  var root = document.getElementById("pri-story");
+  // Draw charts into elements inside `root`. Colours: #253D9A (main), #E4633F (emphasis), #c9c3b4 (context).
+})();
+</script>

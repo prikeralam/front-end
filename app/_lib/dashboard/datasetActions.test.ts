@@ -2,6 +2,9 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("server-only", () => ({}));
 
+const updateTag = vi.fn();
+vi.mock("next/cache", () => ({ updateTag }));
+
 const getAccessToken = vi.fn();
 vi.mock("../auth/serverAuth", () => ({ getAccessToken }));
 
@@ -206,6 +209,7 @@ describe("other formats of a dataset", () => {
     backendRequest.mockResolvedValueOnce(ok(null, 204));
     expect(await removeExtraFormatAction("plus-one", 4)).toEqual({ ok: true });
     expect(backendRequest).toHaveBeenCalledWith("DELETE", "/api/v1/datasets/plus-one/files/4/", { accessToken: "tok" });
+    expect(updateTag).toHaveBeenCalledWith("public-api");
     expect(await removeExtraFormatAction("plus-one", -1)).toMatchObject({ ok: false });
     expect(backendRequest).toHaveBeenCalledTimes(1);
 

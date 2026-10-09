@@ -1,0 +1,722 @@
+<!-- PRI data story body: Kerala health capacity and the Malabar gap. Upload as the publication's story file. Title, summary, byline and date come from the dashboard. All styles are scoped to #pri-hs. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+
+<style>
+#pri-hs{
+  /* PRI palette: PRI blue for Malabar and accents; red/green kept as the story's worse/better scale */
+  --ink:#14171F; --ink-2:#3D4452; --muted:#5F6878; --rule:#D5DBE7;
+  --paper:#FFFFFF; --wash:#EEF1F8; --slide:#DDE3F0;
+  --red:#C62828; --coral:#E5533D; --sand:#F1E6C8; --teal:#12B39A; --green:#0A7F62;
+  --yellow:#FFF200; --tag:#0B0B0B;
+  --malabar:#253D9A; --rest:#8C9BB8;
+  --m-phc:#253D9A; --m-bed:#C2581B; --m-doc:#0A7F62;
+  font-family:"Public Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  color:var(--ink); background:var(--paper); line-height:1.65; font-size:17px;
+  max-width:760px; margin:0 auto; padding:24px 16px 48px; box-sizing:border-box;
+  -webkit-font-smoothing:antialiased;
+}
+#pri-hs *, #pri-hs *::before, #pri-hs *::after{box-sizing:border-box}
+#pri-hs h1, #pri-hs h2, #pri-hs h3, #pri-hs .hs-kicker, #pri-hs .hs-pill, #pri-hs .hs-btn, #pri-hs .hs-stat b{font-family:"Public Sans",sans-serif}
+#pri-hs .hs-kicker{display:inline-flex;align-items:center;gap:8px;background:var(--tag);color:#fff;font-weight:600;font-size:13px;letter-spacing:.06em;text-transform:uppercase;padding:5px 22px 5px 12px;clip-path:polygon(0 0,calc(100% - 12px) 0,100% 50%,calc(100% - 12px) 100%,0 100%)}
+#pri-hs h1{font-size:clamp(28px,5vw,40px);line-height:1.15;margin:18px 0 12px;font-weight:700;letter-spacing:-.01em}
+#pri-hs .hs-dek{font-size:19px;color:var(--ink-2);margin:0 0 14px;line-height:1.5}
+#pri-hs .hs-byline{font-size:14px;color:var(--muted);margin:0 0 28px;padding-bottom:18px;border-bottom:1px solid var(--rule)}
+#pri-hs .hs-byline a{color:var(--ink);font-weight:600;text-decoration:none;border-bottom:1px solid var(--rule)}
+#pri-hs h2{font-size:clamp(22px,3.6vw,27px);line-height:1.25;margin:44px 0 12px;font-weight:700}
+#pri-hs h3{font-size:18px;margin:28px 0 8px;font-weight:600}
+#pri-hs p{margin:0 0 16px}
+#pri-hs a{color:var(--malabar)}
+#pri-hs abbr{text-decoration:none;border-bottom:1px dotted var(--muted);cursor:help}
+#pri-hs .hs-num{font-variant-numeric:tabular-nums;white-space:nowrap}
+#pri-hs .hs-def{background:var(--wash);border-left:4px solid var(--malabar);padding:12px 16px;margin:18px 0 22px;font-size:15.5px;border-radius:0 6px 6px 0}
+#pri-hs .hs-def p{margin:0}
+
+/* key figures */
+#pri-hs .hs-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:22px 0 26px}
+#pri-hs .hs-stat{background:var(--wash);border-radius:8px;padding:12px 12px 10px}
+#pri-hs .hs-stat b{display:block;font-size:24px;font-weight:700;line-height:1.1;font-variant-numeric:tabular-nums}
+#pri-hs .hs-stat span{display:block;font-size:13px;color:var(--ink-2);line-height:1.35;margin-top:4px}
+#pri-hs .hs-stat.is-norm{background:var(--paper);border:1.5px dashed var(--green)}
+@media (max-width:620px){#pri-hs .hs-stats{grid-template-columns:repeat(2,1fr)}}
+
+/* figures */
+#pri-hs figure{margin:26px -4px 30px;padding:18px 16px 14px;background:var(--paper);border:1px solid var(--rule);border-radius:10px}
+#pri-hs .hs-take{font-family:"Public Sans",sans-serif;font-weight:600;font-size:16.5px;line-height:1.4;margin:0 0 4px}
+#pri-hs .hs-fig-sub{font-size:13.5px;color:var(--muted);margin:0 0 12px}
+#pri-hs .hs-controls{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;margin:0 0 12px;font-size:14px}
+#pri-hs .hs-seg{display:inline-flex;border:1px solid var(--rule);border-radius:999px;padding:3px;background:var(--wash)}
+#pri-hs .hs-btn{appearance:none;border:0;background:transparent;color:var(--ink-2);font-size:13px;font-weight:600;padding:6px 12px;border-radius:999px;cursor:pointer;line-height:1.2}
+#pri-hs .hs-btn[aria-pressed="true"]{background:var(--tag);color:#fff}
+#pri-hs .hs-btn:focus-visible, #pri-hs .hs-chk input:focus-visible{outline:3px solid var(--yellow);outline-offset:2px;box-shadow:0 0 0 5px var(--tag)}
+#pri-hs .hs-chk{display:inline-flex;align-items:center;gap:6px;cursor:pointer;color:var(--ink-2);font-weight:500}
+#pri-hs .hs-chk input{width:16px;height:16px;accent-color:var(--tag);margin:0}
+#pri-hs .hs-key{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--ink-2)}
+#pri-hs .hs-chart{width:100%;position:relative}
+#pri-hs .hs-chart svg{display:block;width:100%;height:auto;overflow:visible}
+#pri-hs svg text{font-family:"Public Sans",sans-serif;fill:var(--ink)}
+#pri-hs svg .t-muted{fill:var(--muted)}
+#pri-hs svg .t-name{font-size:12.5px}
+#pri-hs svg .t-val, #pri-hs svg .t-ref{paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round}
+#pri-hs svg .t-val{font-size:12px;font-variant-numeric:tabular-nums;font-weight:600}
+#pri-hs svg .t-ref{font-size:11.5px;font-weight:600}
+#pri-hs svg .axis text{font-size:11px;fill:var(--muted)}
+#pri-hs svg .axis line, #pri-hs svg .axis path{stroke:var(--rule)}
+#pri-hs svg .grid line{stroke:#EBEEF4}
+#pri-hs svg [tabindex]:focus{outline:none}
+#pri-hs svg [tabindex]:focus-visible > rect, #pri-hs svg [tabindex]:focus-visible > path, #pri-hs svg [tabindex]:focus-visible > circle{stroke:var(--tag);stroke-width:3}
+#pri-hs figcaption{font-size:13px;color:var(--muted);line-height:1.5;margin-top:12px;padding-top:10px;border-top:1px solid var(--rule)}
+#pri-hs figcaption b{color:var(--ink-2)}
+
+/* map layout */
+#pri-hs .hs-map-wrap{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:620px){#pri-hs .hs-map-wrap{grid-template-columns:1fr}}
+#pri-hs .hs-pills{display:flex;flex-direction:column;gap:7px}
+#pri-hs .hs-pill{display:flex;justify-content:space-between;align-items:center;gap:10px;border-radius:999px;padding:7px 14px;font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:.02em}
+#pri-hs .hs-pill .v{font-size:19px;font-weight:700;font-variant-numeric:tabular-nums;text-transform:none}
+#pri-hs .hs-pill.bad1{background:var(--red);color:#fff}
+#pri-hs .hs-pill.bad2{background:#B23A2E;color:#fff}
+#pri-hs .hs-pill.avg{background:var(--yellow);color:var(--tag);margin:6px 0}
+#pri-hs .hs-pill.good{background:var(--green);color:#fff}
+#pri-hs .hs-pill-lab{font-size:12px;color:var(--muted);margin:10px 0 2px;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+#pri-hs .hs-legend{margin-top:14px}
+#pri-hs .hs-legend .bar{height:10px;border-radius:5px}
+#pri-hs .hs-legend .ticks{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;margin-top:3px}
+#pri-hs .hs-legend .cap{font-size:12px;color:var(--ink-2);margin-bottom:4px}
+
+/* callouts */
+#pri-hs .hs-callout{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:4px 0 14px}
+#pri-hs .hs-callout div{background:var(--wash);border-radius:8px;padding:10px 12px}
+#pri-hs .hs-callout b{display:block;font-family:"Public Sans",sans-serif;font-size:22px;line-height:1.1;font-variant-numeric:tabular-nums}
+#pri-hs .hs-callout span{font-size:12.5px;color:var(--ink-2);line-height:1.35;display:block;margin-top:3px}
+@media (max-width:520px){#pri-hs .hs-callout{grid-template-columns:1fr}}
+
+/* tooltip */
+#pri-hs .hs-tip{position:fixed;z-index:9999;pointer-events:none;background:var(--tag);color:#fff;font-size:13px;line-height:1.45;padding:10px 12px;border-radius:8px;max-width:270px;box-shadow:0 6px 24px rgba(0,0,0,.22)}
+#pri-hs .hs-tip[hidden]{display:none}
+#pri-hs .hs-tip strong{font-family:"Public Sans",sans-serif;font-size:14px;display:block;margin-bottom:3px}
+#pri-hs .hs-tip .r{display:flex;justify-content:space-between;gap:14px}
+#pri-hs .hs-tip .r span:last-child{font-variant-numeric:tabular-nums;font-weight:600}
+#pri-hs .hs-tip .tag{display:inline-block;font-size:11px;background:rgba(255,255,255,.16);padding:1px 7px;border-radius:999px;margin-bottom:5px}
+#pri-hs .hs-tip em{font-style:normal;color:#C9D1E3;font-size:12px}
+
+/* table */
+#pri-hs details{margin:26px 0;border:1px solid var(--rule);border-radius:10px;padding:0 14px}
+#pri-hs summary{cursor:pointer;font-family:"Public Sans",sans-serif;font-weight:600;padding:12px 0}
+#pri-hs .hs-table-wrap{overflow-x:auto;margin:0 -14px 14px;padding:0 14px}
+#pri-hs table{border-collapse:collapse;width:100%;font-size:14px;font-variant-numeric:tabular-nums;min-width:580px}
+#pri-hs th, #pri-hs td{padding:7px 8px;border-bottom:1px solid var(--rule);text-align:right}
+#pri-hs th:first-child, #pri-hs td:first-child, #pri-hs th:nth-child(2), #pri-hs td:nth-child(2){text-align:left}
+#pri-hs thead th{font-weight:600;font-size:12.5px;color:var(--ink-2);vertical-align:bottom}
+#pri-hs thead th button{all:unset;cursor:pointer;display:inline}
+#pri-hs thead th button:focus-visible{outline:2px solid var(--tag)}
+#pri-hs tr.is-total td{font-weight:700;background:var(--wash)}
+
+/* notes */
+#pri-hs .hs-notes{font-size:14.5px;color:var(--ink-2)}
+#pri-hs .hs-notes ol{padding-left:22px;margin:0 0 16px}
+#pri-hs .hs-notes li{margin-bottom:8px}
+#pri-hs sup a{text-decoration:none;font-size:12px;font-weight:600}
+#pri-hs .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+#pri-hs ul.hs-list{padding-left:20px;margin:0 0 16px}
+#pri-hs ul.hs-list li{margin-bottom:8px}
+</style>
+
+<article id="pri-hs" lang="en">
+
+  <div class="hs-stats" role="list" aria-label="Kerala state averages">
+    <div class="hs-stat" role="listitem"><b>36,303</b><span>people per primary health centre (Kerala)</span></div>
+    <div class="hs-stat" role="listitem"><b>928</b><span>people per government hospital bed (Kerala)</span></div>
+    <div class="hs-stat" role="listitem"><b>5,570</b><span>people per government doctor (Kerala)</span></div>
+    <div class="hs-stat is-norm" role="listitem"><b>30,000</b><span>people per PHC: Government of Kerala policy norm</span></div>
+  </div>
+
+  <h2>Introduction</h2>
+  <p>Kerala holds an unusual place in development studies. For decades it has served as the standard example of "good health at low cost". The explanation most scholars favour is public action. Early investment in literacy, a dense network of public facilities, and sustained political pressure to keep those facilities staffed and used are usually treated as the foundations of that record.</p>
+  <p>The data in this story do not measure health outcomes, so they cannot test that claim directly.<sup><a href="#hs-n1">1</a></sup> What they do capture is one of the mechanisms the argument depends on: the reach of the public system. Kerala runs <span class="hs-num">985</span> primary health centres for an estimated <span class="hs-num">35,758,189</span> people.<sup><a href="#hs-n2">2</a></sup></p>
+  <div class="hs-def">
+    <p><b>Two terms used throughout.</b> A <b>primary health centre (PHC)</b> is the first level of the government health system with a doctor, typically serving one or a few panchayats. A <b>population-per-unit ratio</b> divides a district's population by its number of PHCs, beds or doctors. It shows how many people share each unit, so <b>a higher number means thinner capacity</b>.</p>
+  </div>
+  <p>On these measures, one PHC in Kerala serves <span class="hs-num">36,303</span> people on average, one government hospital bed serves <span class="hs-num">928</span>, and one government doctor serves <span class="hs-num">5,570</span>. Read at the state level, the figures describe a public system with wide reach, which is consistent with the Kerala model argument. The district figures are less reassuring.</p>
+
+  <h2>Averages that hide a two-to-one gap</h2>
+  <p>The Government of Kerala's health policy sets a norm of one PHC for every <span class="hs-num">30,000</span> people. The state average of <span class="hs-num">36,303</span> already sits above that line, and only 2 of 14 districts meet it: Pathanamthitta (<span class="hs-num">23,046</span>) and Idukki (<span class="hs-num">23,654</span>).</p>
+  <p>At the other end, Malappuram's <span class="hs-num">103</span> PHCs serve <span class="hs-num">4,846,282</span> people, or <span class="hs-num">47,051</span> per centre. That is about 1.3 times the state average and about double the Pathanamthitta figure. Kozhikode follows at <span class="hs-num">44,171</span>.</p>
+  <p>The same districts appear at the bottom of the bed and doctor rankings. Malappuram has <span class="hs-num">1,861</span> people per government hospital bed, almost exactly twice the state average of <span class="hs-num">928</span> and 3.2 times Pathanamthitta's <span class="hs-num">589</span>. Malappuram (<span class="hs-num">7,437</span>) and Kozhikode (<span class="hs-num">7,245</span>) also have the most people per government doctor, against a state average of <span class="hs-num">5,570</span>.</p>
+
+  <figure aria-labelledby="hs-f1-take">
+    <p class="hs-take" id="hs-f1-take">On every measure, Malappuram is the darkest red and Pathanamthitta the deepest green.</p>
+    <p class="hs-fig-sub">Population per unit, by district. Higher (redder) means each unit serves more people. Hover or tap a district for exact values.</p>
+    <div class="hs-controls">
+      <div class="hs-seg" role="group" aria-label="Choose measure for the map">
+        <button class="hs-btn" data-m="ppp" aria-pressed="true">Per PHC</button>
+        <button class="hs-btn" data-m="bed" aria-pressed="false">Per bed</button>
+        <button class="hs-btn" data-m="doc" aria-pressed="false">Per doctor</button>
+      </div>
+    </div>
+    <div class="hs-map-wrap">
+      <div class="hs-chart" id="hs-c1" role="group" aria-label="Schematic tile map of Kerala's 14 districts arranged north to south, coloured by population per unit for the selected measure. Malappuram is the darkest red on all three measures."></div>
+      <div>
+        <div id="hs-c1-pills"></div>
+        <div class="hs-legend" id="hs-c1-legend"></div>
+      </div>
+    </div>
+    <figcaption><b>Source:</b> Health at Glance 2024; CAG Report on Public Health 2024; List of modern medical institutions 2024-25 (as compiled in PRI's health slides). Population figures are for 2024. <b>Caveats:</b> Schematic tile layout, not to scale; tiles keep each district's rough north–south position and coast/interior side. The colour scale is centred on each measure's Kerala average. Beds and doctors are in government hospitals only. The source material does not say which publication supplied which indicator.</figcaption>
+  </figure>
+
+  <figure aria-labelledby="hs-f2-take">
+    <p class="hs-take" id="hs-f2-take">Twelve of 14 districts exceed the 30,000-per-PHC norm, and Malappuram and Kozhikode exceed it by the widest margins.</p>
+    <p class="hs-fig-sub">Population per primary health centre, 2024.</p>
+    <div class="hs-controls">
+      <div class="hs-seg" role="group" aria-label="Sort order">
+        <button class="hs-btn" data-sort="val" aria-pressed="true">Highest first</button>
+        <button class="hs-btn" data-sort="geo" aria-pressed="false">North to south</button>
+      </div>
+      <label class="hs-chk"><input type="checkbox" id="hs-c2-hl"> Highlight Malabar</label>
+    </div>
+    <div class="hs-chart" id="hs-c2" role="group" aria-label="Horizontal bar chart of population per PHC by district, with reference lines for the 30,000 policy norm and the 36,303 state average. Malappuram is highest at 47,051 and Pathanamthitta lowest at 23,046."></div>
+    <figcaption><b>Source:</b> Health at Glance 2024; CAG Report on Public Health 2024; List of modern medical institutions 2024-25. Population 2024; PHC counts as published. <b>Caveats:</b> The 30,000 line is the Government of Kerala health policy norm as stated in the source slides. Ratios count PHCs only, not sub-centres, family health centres under other names, or private clinics; how the source classifies facilities is not stated. Malabar markers (■) follow the six-district definition used in this story.</figcaption>
+  </figure>
+
+  <figure aria-labelledby="hs-f3-take">
+    <p class="hs-take" id="hs-f3-take">Five districts trail the state average on all three measures, and three of them, Malappuram, Kozhikode and Palakkad, are in Malabar.</p>
+    <p class="hs-fig-sub">Each district's ratio as a share of the Kerala average (100 = state average; right of the line = thinner capacity). Districts run north to south.</p>
+    <div class="hs-controls" role="group" aria-label="Show or hide measures">
+      <label class="hs-chk"><input type="checkbox" data-k="ppp" checked> <svg width="14" height="14" aria-hidden="true"><circle cx="7" cy="7" r="5.5" fill="#253D9A"/></svg> Per PHC</label>
+      <label class="hs-chk"><input type="checkbox" data-k="bed" checked> <svg width="14" height="14" aria-hidden="true"><rect x="2" y="2" width="10" height="10" fill="#C2581B"/></svg> Per bed</label>
+      <label class="hs-chk"><input type="checkbox" data-k="doc" checked> <svg width="14" height="14" aria-hidden="true"><path d="M7 1.5 L13 12.5 L1 12.5Z" fill="#0A7F62"/></svg> Per doctor</label>
+    </div>
+    <div class="hs-chart" id="hs-c3" role="group" aria-label="Dot plot comparing each district's population per PHC, per bed and per doctor with the state average. Malappuram, Kozhikode, Palakkad, Thrissur and Kollam are above the average on all three. Kasaragod, Kannur, Wayanad, Alappuzha, Kottayam and Pathanamthitta are below it on all three."></div>
+    <figcaption><b>Source:</b> Health at Glance 2024; CAG Report on Public Health 2024; List of modern medical institutions 2024-25. Index calculated by PRI as district ratio ÷ Kerala average × 100, using the published averages (36,303 per PHC; 928 per bed; 5,570 per doctor). <b>Caveats:</b> An index of 200 means twice as many people per unit as the state average. Beds and doctors are government hospitals only.</figcaption>
+  </figure>
+
+  <h2>Reading the gap as a Malabar question</h2>
+  <p>Most discussion of these figures stops at Malappuram. The district is the extreme case, but the gap is easier to understand at the scale of the region. In this story, <b>Malabar</b> means the six northern districts of Kasaragod, Kannur, Wayanad, Kozhikode, Malappuram and Palakkad. This approximates the British-era Malabar district, whose boundaries do not match today's districts exactly.<sup><a href="#hs-n7">7</a></sup></p>
+  <p>Malabar holds <b>45.8%</b> of Kerala's estimated population but <b>42.7%</b> of its PHCs. Taken together, its <span class="hs-num">421</span> PHCs serve <span class="hs-num">16,361,782</span> people: <span class="hs-num">38,864</span> per centre, compared with <span class="hs-num">34,391</span> in the other eight districts.<sup><a href="#hs-n4">4</a></sup></p>
+
+  <figure aria-labelledby="hs-f4-take">
+    <p class="hs-take" id="hs-f4-take">Malabar residents share each PHC, bed and doctor with more people than residents of the rest of Kerala, and the gap is widest for beds.</p>
+    <p class="hs-fig-sub">Population per unit for Malabar and the rest of Kerala combined. Toggle Palakkad to test the regional definition.</p>
+    <div class="hs-controls">
+      <label class="hs-chk"><input type="checkbox" id="hs-c4-pkd" checked> Count Palakkad as Malabar</label>
+    </div>
+    <div class="hs-callout" id="hs-c4-call" aria-live="polite"></div>
+    <div class="hs-chart" id="hs-c4" role="group" aria-label="Paired bar chart comparing Malabar with the rest of Kerala on population per PHC, per bed and per doctor. Malabar has more people per unit on all three."></div>
+    <figcaption><b>Source:</b> PRI calculation from district data in Health at Glance 2024; CAG Report on Public Health 2024; List of modern medical institutions 2024-25. <b>Caveats:</b> The PHC comparison uses published populations and PHC counts directly. <b>Bed and doctor figures (†) are derived</b>: the source gives ratios, not counts, so PRI back-calculated each district's implied beds and doctors (population ÷ ratio) and summed them. Implied beds reproduce the published state average (928); implied doctors give about 5,689 per doctor statewide against a published 5,570, so treat the doctor comparison as indicative only.</figcaption>
+  </figure>
+
+  <p>The regional gap compounds when converted into facilities. If every district were brought up to the 30,000 norm, the twelve districts above it would need <b>234</b> more PHCs between them. <b>127</b> of those, or 54%, would be in Malabar: 59 in Malappuram, 37 in Kozhikode and 19 in Palakkad.</p>
+  <p>Run the same sum at state level and the shortfall falls to 207, because the spare capacity in Idukki and Pathanamthitta offsets part of the gap elsewhere. In practice, a PHC in the Pathanamthitta hills cannot serve a family in Malappuram. The district-level figure is the more realistic measure of need.</p>
+
+  <figure aria-labelledby="hs-f5-take">
+    <p class="hs-take" id="hs-f5-take">Meeting the 30,000 norm would take 234 more PHCs across 12 districts, and 127 of them would be in Malabar.</p>
+    <p class="hs-fig-sub">Additional PHCs needed to reach one per 30,000 people (illustrative arithmetic). Bars left of zero show districts already better than the norm.</p>
+    <div class="hs-controls">
+      <div class="hs-seg" role="group" aria-label="Filter districts">
+        <button class="hs-btn" data-f="all" aria-pressed="true">All districts</button>
+        <button class="hs-btn" data-f="mal" aria-pressed="false">Malabar only</button>
+        <button class="hs-btn" data-f="rest" aria-pressed="false">Rest of Kerala</button>
+      </div>
+    </div>
+    <div class="hs-chart" id="hs-c5" role="group" aria-label="Diverging bar chart of additional PHCs each district would need to meet the 30,000 norm. Malappuram needs 59, Kozhikode 37, Ernakulam 27; Pathanamthitta and Idukki already have 11 and 9 more than the norm requires."></div>
+    <figcaption><b>Source:</b> PRI calculation from Population 2024 and PHC counts (Health at Glance 2024; CAG Report on Public Health 2024; List of modern medical institutions 2024-25) and the Government of Kerala norm of 30,000 people per PHC. <b>Method:</b> PHCs needed = population ÷ 30,000, rounded up to a whole centre, minus existing PHCs. <b>Caveats:</b> This is arithmetic, not a siting plan. Actual need depends on geography, travel time and the wider facility network, which the data do not cover.</figcaption>
+  </figure>
+
+  <h3>Malabar is not uniform</h3>
+  <p>The regional averages hide a sharp internal split. Three Malabar districts, <b>Kasaragod, Kannur and Wayanad</b>, are better than the state average on all three measures. Kannur's <span class="hs-num">30,643</span> people per PHC is the third-lowest ratio in Kerala, and Wayanad has the third-lowest population per bed (<span class="hs-num">638</span>) and the second-lowest per doctor (<span class="hs-num">3,930</span>).</p>
+  <p>The weight of the gap sits in what this story calls central Malabar: <b>Malappuram, Kozhikode and Palakkad</b>. These are also Malabar's three most populous districts. Together they hold <span class="hs-num">11,328,507</span> people, 31.7% of the state, with 264 PHCs, or <span class="hs-num">42,911</span> people per centre. Palakkad's PHC ratio (<span class="hs-num">36,679</span>) is close to the state average, but its bed (<span class="hs-num">1,111</span>) and doctor (<span class="hs-num">6,722</span>) ratios are the fourth- and third-highest in Kerala.</p>
+  <p>Nor is the south immune. Kollam trails the average on all three measures, with <span class="hs-num">40,112</span> people per PHC, <span class="hs-num">1,158</span> per bed and <span class="hs-num">6,290</span> per doctor. Thrissur, which borders Malappuram and Palakkad, does the same (<span class="hs-num">38,097</span>; <span class="hs-num">964</span>; <span class="hs-num">6,293</span>). Ernakulam (<span class="hs-num">38,656</span> per PHC) and Thiruvananthapuram (<span class="hs-num">37,798</span>) are also above the PHC average, though both have better-than-average bed ratios (<span class="hs-num">787</span> and <span class="hs-num">721</span>). Alappuzha (<span class="hs-num">32,784</span>; <span class="hs-num">632</span>; <span class="hs-num">4,760</span>) and Kottayam (<span class="hs-num">30,677</span>; <span class="hs-num">706</span>; <span class="hs-num">4,701</span>) do well on all three. Idukki is the one district with a split profile among the best performers: it has the second-lowest PHC ratio but an above-average <span class="hs-num">961</span> people per bed.</p>
+
+  <h2>What the pattern suggests, and what it does not</h2>
+  <p>The three measures move together. Districts that rank poorly on PHCs tend to rank poorly on doctors and beds as well. A Spearman rank correlation, which scores from −1 to 1 how closely two rankings agree, is <b>0.84</b> between the PHC and doctor rankings, <b>0.69</b> between PHCs and beds, and <b>0.85</b> between beds and doctors. With only 14 districts these figures are descriptive rather than conclusive, but they suggest one shared driver rather than three unrelated shortfalls.</p>
+
+  <figure aria-labelledby="hs-f6-take">
+    <p class="hs-take" id="hs-f6-take">Districts short of PHCs also tend to be short of doctors and beds, which points to a shared cause rather than isolated gaps.</p>
+    <p class="hs-fig-sub">Each bubble is a district, sized by population. Dashed lines mark the Kerala averages; the top-right area is thinner than average on both measures.</p>
+    <div class="hs-controls">
+      <div class="hs-seg" role="group" aria-label="Choose vertical axis">
+        <button class="hs-btn" data-y="doc" aria-pressed="true">vs doctors</button>
+        <button class="hs-btn" data-y="bed" aria-pressed="false">vs beds</button>
+      </div>
+      <span class="hs-key"><svg width="12" height="12" aria-hidden="true"><circle cx="6" cy="6" r="5.5" fill="#253D9A"/></svg> Malabar</span>
+      <span class="hs-key"><svg width="12" height="12" aria-hidden="true"><circle cx="6" cy="6" r="5" fill="#fff" stroke="#5F6878" stroke-width="1.5"/></svg> Rest of Kerala</span>
+    </div>
+    <div class="hs-chart" id="hs-c6" role="group" aria-label="Scatter plot of population per PHC against population per doctor or per bed. Malappuram and Kozhikode sit in the top-right corner; Pathanamthitta and Idukki in the lower left."></div>
+    <p class="hs-fig-sub" id="hs-c6-rho" aria-live="polite" style="margin:8px 0 0"></p>
+    <figcaption><b>Source:</b> Health at Glance 2024; CAG Report on Public Health 2024; List of modern medical institutions 2024-25. Spearman correlation calculated by PRI. <b>Caveats:</b> 14 observations; correlation does not establish cause. Bubble area is proportional to Population 2024.</figcaption>
+  </figure>
+
+  <p>Several explanations fit this pattern, and the data cannot separate them.</p>
+  <ul class="hs-list">
+    <li><b>Facilities may not have kept pace with population.</b> The most stretched districts are the most populous ones. Facility networks change slowly, so if population grew faster in some districts than others, their ratios would worsen without any active disinvestment. The dataset has no time series, so this cannot be checked here.<sup><a href="#hs-n8">8</a></sup></li>
+    <li><b>History may matter.</b> Travancore and Cochin, the princely states that became southern and central Kerala, are usually credited with earlier public investment in schools and health services than British-ruled Malabar. A legacy of that difference is plausible, but nothing in these figures tests it.</li>
+    <li><b>Ratios favour sparse, hilly districts by design.</b> Idukki, Wayanad and Pathanamthitta are hilly. A facility there may serve fewer people but a larger area, and planners commonly allow smaller catchments in such terrain. A low population-per-PHC figure in a hill district is not the same as easier access.</li>
+    <li><b>Facilities are counted where they stand, not where their patients live.</b> Large hospitals draw patients across district lines. Thiruvananthapuram's better-than-average bed (<span class="hs-num">721</span>) and doctor (<span class="hs-num">5,158</span>) ratios, alongside an above-average PHC ratio, would be consistent with tertiary care concentrated in the capital, though the data do not show patient flows.</li>
+    <li><b>The private sector is outside the frame.</b> These ratios cover government capacity only. If some districts lean more on private hospitals, total capacity there may be less stretched than the ratios imply. For households that cannot pay private fees, the public ratio remains the relevant one.</li>
+  </ul>
+  <p>Two further limits apply. These are inputs, not outcomes: a thinner network does not by itself show worse health. And the data are only broken down by district. They cannot speak to differences by income, gender, rural or urban residence, or community, all of which would sharpen the picture.<sup><a href="#hs-n5">5</a></sup></p>
+
+  <h2>Excellence on average, inequality in distribution</h2>
+  <p>Kerala's state averages describe a public health network with real reach. The district figures show that this reach is unevenly shared. The gap between the best- and worst-served districts is roughly two to one on PHCs (<span class="hs-num">23,046</span> against <span class="hs-num">47,051</span>) and doctors (<span class="hs-num">3,754</span> against <span class="hs-num">7,437</span>), and more than three to one on beds (<span class="hs-num">589</span> against <span class="hs-num">1,861</span>). The thinnest coverage is concentrated in central Malabar, where nearly a third of Kerala's people live.</p>
+  <p>The data point to four implications for policy.</p>
+  <ul class="hs-list">
+    <li><b>Plan to the district, not the average.</b> A state average that sits near a norm can coexist with millions of people well outside it. Norms are more useful when monitored district by district.</li>
+    <li><b>Treat central Malabar as a priority for new capacity.</b> On the norm arithmetic, Malappuram, Kozhikode and Palakkad account for 115 of the 234 PHCs needed. They also hold the three highest doctor ratios and three of the four highest bed ratios.</li>
+    <li><b>Match facilities with people.</b> Because PHC, bed and doctor shortfalls move together, adding buildings without posts, or posts without beds, is unlikely to close the gap.</li>
+    <li><b>Fill the evidence gaps.</b> District outcome data, private-sector capacity, sanctioned versus filled posts, and breakdowns below the district would let the Kerala model claim be tested against distribution as well as averages.</li>
+  </ul>
+  <p>The Kerala model rests on the idea that public provision, widely spread, produces good health at modest cost. These figures suggest the provision is real but not evenly spread. Whether that unevenness shows up in health outcomes is the next question the data need to answer.</p>
+
+  <details>
+    <summary>View the full data</summary>
+    <div class="hs-table-wrap">
+      <table id="hs-table">
+        <caption class="sr-only">District-level population and public health capacity, Kerala, 2024. Click a column heading to sort.</caption>
+        <thead><tr>
+          <th scope="col"><button data-col="name">District</button></th>
+          <th scope="col"><button data-col="region">Region</button></th>
+          <th scope="col"><button data-col="pop">Population 2024</button></th>
+          <th scope="col"><button data-col="phc">PHCs</button></th>
+          <th scope="col"><button data-col="ppp">Pop. per PHC</button></th>
+          <th scope="col"><button data-col="bed">Pop. per govt bed</button></th>
+          <th scope="col"><button data-col="doc">Pop. per govt doctor</button></th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </details>
+
+  <section class="hs-notes" aria-labelledby="hs-notes-h">
+    <h3 id="hs-notes-h">Sources &amp; notes</h3>
+    <p><b>Sources:</b> Health at Glance 2024; CAG Report on Public Health 2024; List of modern medical institutions 2024-25. Figures as compiled in PRI's health slides (pp. 32–34). Government of Kerala health policy norm of 30,000 people per PHC as stated in the same slides.</p>
+    <ol>
+      <li id="hs-n1"><b>No outcome data.</b> The dataset contains no health outcome indicators (for example, infant mortality or life expectancy) and no comparison with other Indian states. The opening section therefore states the Kerala model thesis as framing from the literature; it is not tested here. Citations and comparative figures should be added before publication if the argument is to rest on them.</li>
+      <li id="hs-n2"><b>Population.</b> District populations are labelled "Population 2024". India has not published census figures for 2024, so these are presumably projections; the method and source of the projection are not stated.</li>
+      <li id="hs-n3"><b>Source attribution.</b> Three publications are cited jointly for all three indicators. Which publication supplied which figure, and the reference date of each count, is not specified.</li>
+      <li id="hs-n4"><b>Derived figures.</b> Regional aggregates, shares, the shortfall arithmetic, the index and the correlations are PRI calculations from the district data. Bed and doctor counts are not given, only ratios; regional bed and doctor figures are back-calculated. Implied beds sum to a state ratio of 928, matching the published average. Implied doctors give about 5,689 people per doctor statewide against a published 5,570, which suggests some doctors are not attributed to districts or a different population base was used. The published averages are used wherever possible.</li>
+      <li id="hs-n5"><b>Dimensions not available.</b> The data are disaggregated by district only. No breakdown by income, gender, rural/urban residence or community is available, so those dimensions are not analysed.</li>
+      <li id="hs-n6"><b>Scope of "government hospitals".</b> The source does not define which institutions are counted for beds and doctors (for example, whether medical college hospitals are included). Private facilities are excluded throughout.</li>
+      <li id="hs-n7"><b>Definition of Malabar.</b> Six districts: Kasaragod, Kannur, Wayanad, Kozhikode, Malappuram, Palakkad. The historical Malabar district and today's districts do not align exactly (parts of present-day Thrissur and Palakkad had different histories). The Malabar comparison chart lets readers exclude Palakkad: on that five-district definition, Malabar has 39,409 people per PHC against 34,687 elsewhere.</li>
+      <li id="hs-n8"><b>No time series.</b> All figures are a single snapshot, so trends cannot be shown or tested.</li>
+      <li id="hs-n9"><b>Spelling.</b> The source uses both "Kasaragode" and "Kasaragod"; this story uses Kasaragod.</li>
+    </ol>
+  </section>
+
+  <div class="hs-tip" role="status" aria-live="polite" hidden></div>
+  <noscript><p><em>The interactive charts need JavaScript. All figures are listed in the data table above.</em></p></noscript>
+</article>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script>
+(function(){
+  "use strict";
+  var root = document.getElementById("pri-hs");
+  if (!root || !window.d3) return;
+
+  /* ---------- data (exactly as published) ---------- */
+  var D = [
+    {name:"Kasaragod",          pop:1464666, phc:43,  ppp:34062, bed:894,  doc:4860, ns:1},
+    {name:"Kannur",             pop:2696567, phc:88,  ppp:30643, bed:915,  doc:5267, ns:2},
+    {name:"Wayanad",            pop:872042,  phc:26,  ppp:33540, bed:638,  doc:3930, ns:3},
+    {name:"Kozhikode",          pop:3401199, phc:77,  ppp:44171, bed:1204, doc:7245, ns:4},
+    {name:"Malappuram",         pop:4846282, phc:103, ppp:47051, bed:1861, doc:7437, ns:5},
+    {name:"Palakkad",           pop:3081026, phc:84,  ppp:36679, bed:1111, doc:6722, ns:6},
+    {name:"Thrissur",           pop:3352542, phc:88,  ppp:38097, bed:964,  doc:6293, ns:7},
+    {name:"Ernakulam",          pop:3556356, phc:92,  ppp:38656, bed:787,  doc:5799, ns:8},
+    {name:"Idukki",             pop:1088090, phc:46,  ppp:23654, bed:961,  doc:4315, ns:9},
+    {name:"Kottayam",           pop:1993993, phc:65,  ppp:30677, bed:706,  doc:4701, ns:10},
+    {name:"Alappuzha",          pop:2163763, phc:66,  ppp:32784, bed:632,  doc:4760, ns:11},
+    {name:"Pathanamthitta",     pop:1152319, phc:50,  ppp:23046, bed:589,  doc:3754, ns:12},
+    {name:"Kollam",             pop:2687520, phc:67,  ppp:40112, bed:1158, doc:6290, ns:13},
+    {name:"Thiruvananthapuram", pop:3401824, phc:90,  ppp:37798, bed:721,  doc:5158, ns:14}
+  ];
+  var ST = {pop:35758189, phc:985, ppp:36303, bed:928, doc:5570, norm:30000};
+  var MAL = ["Kasaragod","Kannur","Wayanad","Kozhikode","Malappuram","Palakkad"];
+  D.forEach(function(d){ d.mal = MAL.indexOf(d.name) > -1; d.region = d.mal ? "Malabar" : "Rest of Kerala"; });
+
+  var M = {
+    ppp:{label:"Population per PHC", short:"per PHC", unit:"people per PHC", avg:ST.ppp},
+    bed:{label:"Population per government hospital bed", short:"per bed", unit:"people per bed", avg:ST.bed},
+    doc:{label:"Population per government doctor", short:"per doctor", unit:"people per doctor", avg:ST.doc}
+  };
+  var C = {good:"#0A7F62", mid:"#F1E6C8", bad:"#C62828", ink:"#14171F", muted:"#5F6878", rule:"#D5DBE7",
+           malabar:"#253D9A", rest:"#8C9BB8", wash:"#EEF1F8", yellow:"#FFF200",
+           phc:"#253D9A", bedc:"#C2581B", docc:"#0A7F62"};
+  var f = d3.format(",");
+  function pct(v){ return (v>0?"+":"") + d3.format(".0f")(v) + "%"; }
+  function vsAvg(v, avg){ return pct((v/avg - 1)*100) + " vs Kerala average"; }
+  function rank(m, d){ var s = D.slice().sort(function(a,b){return b[m]-a[m];}); return s.indexOf(d)+1; }
+  function colorScale(m){
+    var v = D.map(function(d){return d[m];});
+    return d3.scaleLinear().domain([d3.min(v), M[m].avg, d3.max(v)]).range([C.good, C.mid, C.bad]).interpolate(d3.interpolateLab).clamp(true);
+  }
+  function textOn(fill){ return d3.hcl(fill).l > 60 ? C.ink : "#FFFFFF"; }
+  function width(el){ return Math.max(280, el.getBoundingClientRect().width); }
+
+  /* ---------- tooltip ---------- */
+  var tip = root.querySelector(".hs-tip");
+  function place(x, y){
+    tip.hidden = false;
+    var r = tip.getBoundingClientRect(), vw = window.innerWidth, vh = window.innerHeight;
+    var left = x + 14, top = y + 14;
+    if (left + r.width > vw - 8) left = x - r.width - 14;
+    if (left < 8) left = 8;
+    if (top + r.height > vh - 8) top = y - r.height - 14;
+    if (top < 8) top = 8;
+    tip.style.left = left + "px"; tip.style.top = top + "px";
+  }
+  function row(k, v){ return '<div class="r"><span>' + k + '</span><span>' + v + '</span></div>'; }
+  function bindTip(sel, html){
+    sel.attr("tabindex", 0)
+      .on("pointerenter pointermove", function(ev, d){ tip.innerHTML = html(d); place(ev.clientX, ev.clientY); })
+      .on("pointerleave", function(ev){ if (ev.pointerType !== "touch") tip.hidden = true; })
+      .on("focus", function(ev, d){ tip.innerHTML = html(d); var b = this.getBoundingClientRect(); place(b.right, b.top); })
+      .on("blur", function(){ tip.hidden = true; })
+      .classed("hs-tipped", true);
+  }
+  document.addEventListener("pointerdown", function(ev){
+    if (!ev.target.closest || !ev.target.closest(".hs-tipped")) tip.hidden = true;
+  });
+  window.addEventListener("scroll", function(){ tip.hidden = true; }, {passive:true});
+
+  function districtTip(d){
+    return '<strong>' + d.name + '</strong><span class="tag">' + d.region + '</span>' +
+      row("Population 2024", f(d.pop)) + row("PHCs", f(d.phc)) +
+      row("Pop. per PHC", f(d.ppp)) + row("Pop. per govt bed", f(d.bed)) + row("Pop. per govt doctor", f(d.doc));
+  }
+
+  /* segmented buttons helper */
+  function seg(container, attr, onChange){
+    var btns = container.querySelectorAll("[data-" + attr + "]");
+    btns.forEach(function(b){
+      b.addEventListener("click", function(){
+        btns.forEach(function(x){ x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+        onChange(b.getAttribute("data-" + attr));
+      });
+    });
+  }
+
+  /* ================= Chart 1: tile map ================= */
+  var c1 = {m:"ppp"};
+  var TILES = {Kasaragod:[0,0], Kannur:[0,1], Wayanad:[1,1], Kozhikode:[0,2], Malappuram:[0,3], Palakkad:[1,3],
+    Thrissur:[0,4], Ernakulam:[0,5], Idukki:[1,5], Alappuzha:[0,6], Kottayam:[1,6], Kollam:[0,7], Pathanamthitta:[1,7], Thiruvananthapuram:[0,8]};
+  function drawC1(){
+    var el = root.querySelector("#hs-c1"), m = c1.m, cs = colorScale(m);
+    var tw = 128, th = 62, gap = 6, shift = 16, padL = 34;
+    var W = padL + 2*tw + gap + 8*shift + 30, H = 9*(th+gap);
+    el.innerHTML = "";
+    var svg = d3.select(el).append("svg").attr("viewBox", "0 0 " + W + " " + H).attr("focusable", "false");
+    // region brackets
+    var mTop = 0, mBot = 4*(th+gap) - gap;
+    svg.append("line").attr("x1", 14).attr("x2", 14).attr("y1", mTop+2).attr("y2", mBot-2).attr("stroke", C.malabar).attr("stroke-width", 3).attr("stroke-linecap", "round");
+    svg.append("text").attr("transform", "translate(8," + (mBot/2) + ") rotate(-90)").attr("text-anchor", "middle").attr("font-size", 11).attr("font-weight", 700).attr("letter-spacing", ".12em").attr("fill", C.malabar).text("MALABAR");
+    svg.append("line").attr("x1", 14).attr("x2", 14).attr("y1", mBot+gap+2).attr("y2", H-gap-2).attr("stroke", C.rest).attr("stroke-width", 3).attr("stroke-linecap", "round");
+    svg.append("text").attr("transform", "translate(8," + ((mBot+gap+H)/2) + ") rotate(-90)").attr("text-anchor", "middle").attr("font-size", 11).attr("font-weight", 600).attr("letter-spacing", ".12em").attr("class", "t-muted").text("REST OF KERALA");
+
+    var g = svg.selectAll("g.tile").data(D).join("g").attr("class", "tile")
+      .attr("role", "img")
+      .attr("aria-label", function(d){ return d.name + ": " + f(d[m]) + " " + M[m].unit; })
+      .attr("transform", function(d){ var p = TILES[d.name]; return "translate(" + (padL + p[0]*(tw+gap) + p[1]*shift) + "," + (p[1]*(th+gap)) + ")"; });
+    g.append("rect").attr("width", function(d){ return d.name === "Thiruvananthapuram" ? tw*1.45 : tw; }).attr("height", th).attr("rx", 7)
+      .attr("fill", function(d){ return cs(d[m]); })
+      .attr("stroke", function(d){ return d.mal ? C.malabar : "#fff"; }).attr("stroke-width", function(d){ return d.mal ? 1.5 : 1; });
+    g.append("text").attr("x", 9).attr("y", 20).attr("font-size", 13.5).attr("font-weight", 500)
+      .attr("fill", function(d){ return textOn(cs(d[m])); }).text(function(d){ return d.name; });
+    g.append("text").attr("x", 9).attr("y", 49).attr("font-size", 21).attr("font-weight", 700).attr("font-family", "Public Sans, sans-serif")
+      .style("font-variant-numeric", "tabular-nums")
+      .attr("fill", function(d){ return textOn(cs(d[m])); }).text(function(d){ return f(d[m]); });
+    bindTip(g, function(d){
+      return '<strong>' + d.name + '</strong><span class="tag">' + d.region + '</span>' +
+        row(M[m].label.replace("Population", "Pop."), f(d[m])) +
+        row("Kerala average", f(M[m].avg)) +
+        row("Rank (1 = thinnest)", rank(m, d) + " of 14") +
+        '<em>' + vsAvg(d[m], M[m].avg) + '</em>';
+    });
+
+    // pills, like PRI slides
+    var s = D.slice().sort(function(a,b){ return b[m]-a[m]; });
+    var p = root.querySelector("#hs-c1-pills");
+    p.innerHTML = '<div class="hs-pill-lab">Thinnest coverage</div>' +
+      '<div class="hs-pill bad1"><span>' + s[0].name + '</span><span class="v">' + f(s[0][m]) + '</span></div>' +
+      '<div class="hs-pill bad2"><span>' + s[1].name + '</span><span class="v">' + f(s[1][m]) + '</span></div>' +
+      '<div class="hs-pill avg"><span>Kerala average</span><span class="v">' + f(M[m].avg) + '</span></div>' +
+      '<div class="hs-pill-lab">Best coverage</div>' +
+      '<div class="hs-pill good"><span>' + s[13].name + '</span><span class="v">' + f(s[13][m]) + '</span></div>' +
+      '<div class="hs-pill good"><span>' + s[12].name + '</span><span class="v">' + f(s[12][m]) + '</span></div>';
+    var mn = s[13][m], mx = s[0][m], av = M[m].avg, posAvg = (av - mn)/(mx - mn)*100;
+    root.querySelector("#hs-c1-legend").innerHTML =
+      '<div class="cap">' + M[m].label + '</div>' +
+      '<div class="bar" style="background:linear-gradient(90deg,' + C.good + ' 0%,' + C.mid + ' ' + posAvg.toFixed(1) + '%,' + C.bad + ' 100%)"></div>' +
+      '<div class="ticks"><span>' + f(mn) + '</span><span>avg ' + f(av) + '</span><span>' + f(mx) + '</span></div>';
+  }
+  seg(root.querySelector("#hs-c1").closest("figure"), "m", function(v){ c1.m = v; drawC1(); });
+
+  /* ================= Chart 2: PHC bars ================= */
+  var c2 = {sort:"val", hl:false};
+  function drawC2(){
+    var el = root.querySelector("#hs-c2"), W = width(el), narrow = W < 520;
+    var mg = {t:34, r:narrow?46:56, b:26, l:narrow?132:142}, rh = narrow?25:27;
+    var data = D.slice().sort(c2.sort === "val" ? function(a,b){return b.ppp-a.ppp;} : function(a,b){return a.ns-b.ns;});
+    var H = mg.t + mg.b + rh*data.length, cs = colorScale("ppp");
+    var x = d3.scaleLinear().domain([0, 50000]).range([mg.l, W-mg.r]);
+    var y = d3.scaleBand().domain(data.map(function(d){return d.name;})).range([mg.t, H-mg.b]).padding(0.22);
+    el.innerHTML = "";
+    var svg = d3.select(el).append("svg").attr("viewBox", "0 0 " + W + " " + H).attr("focusable", "false");
+    svg.append("g").attr("class", "grid").selectAll("line").data(x.ticks(5)).join("line")
+      .attr("x1", x).attr("x2", x).attr("y1", mg.t-4).attr("y2", H-mg.b);
+    svg.append("g").attr("class", "axis").attr("transform", "translate(0," + (H-mg.b) + ")")
+      .call(d3.axisBottom(x).tickValues(narrow ? [0,25000,50000] : [0,10000,20000,30000,40000,50000]).tickFormat(function(v){ return v===0 ? "0" : d3.format(",")(v); }).tickSizeOuter(0));
+    var bars = svg.append("g").selectAll("g").data(data).join("g")
+      .attr("role", "img").attr("aria-label", function(d){ return d.name + ": " + f(d.ppp) + " people per PHC"; })
+      .attr("opacity", function(d){ return c2.hl && !d.mal ? 0.28 : 1; });
+    bars.append("rect").attr("x", x(0)).attr("y", function(d){return y(d.name);}).attr("height", y.bandwidth())
+      .attr("width", function(d){ return x(d.ppp) - x(0); }).attr("rx", 3).attr("fill", function(d){ return cs(d.ppp); })
+      .attr("stroke", "rgba(0,0,0,.08)");
+    bars.append("text").attr("class", "t-name").attr("x", mg.l - 8).attr("y", function(d){ return y(d.name) + y.bandwidth()/2; })
+      .attr("dy", "0.35em").attr("text-anchor", "end").attr("font-weight", function(d){ return d.mal ? 600 : 400; })
+      .attr("font-size", narrow ? 11 : 12.5)
+      .text(function(d){ return (d.mal ? "■ " : "") + d.name; })
+      .each(function(d){ if (d.mal) d3.select(this).attr("fill", C.malabar); });
+    bars.append("text").attr("class", "t-val").attr("x", function(d){ return x(d.ppp) + 5; })
+      .attr("y", function(d){ return y(d.name) + y.bandwidth()/2; }).attr("dy", "0.35em").text(function(d){ return f(d.ppp); });
+    bindTip(bars, function(d){
+      var gap = Math.ceil(d.pop/ST.norm) - d.phc;
+      return districtTip(d).replace(/<div class="r"><span>Pop\. per govt bed.*$/, "") +
+        '<em>' + vsAvg(d.ppp, ST.ppp) + '<br>' + (d.ppp > ST.norm ? pct((d.ppp/ST.norm-1)*100) + " above the 30,000 norm" : "Meets the 30,000 norm") + '</em>';
+    });
+    // reference lines
+    [{v:ST.norm, lab:narrow ? "Norm 30,000" : "Policy norm 30,000", col:C.good, dash:"5 4", anchor:"end"},
+     {v:ST.ppp, lab:narrow ? "Avg 36,303" : "Kerala avg 36,303", col:C.ink, dash:"none", anchor:"start"}].forEach(function(r){
+      svg.append("line").attr("x1", x(r.v)).attr("x2", x(r.v)).attr("y1", mg.t-8).attr("y2", H-mg.b)
+        .attr("stroke", r.col).attr("stroke-width", 1.6).attr("stroke-dasharray", r.dash);
+      svg.append("text").attr("class", "t-ref").attr("x", x(r.v) + (r.anchor==="end" ? -4 : 4)).attr("y", mg.t-14)
+        .attr("text-anchor", r.anchor).attr("fill", r.col).attr("font-size", narrow?10.5:11.5).text(r.lab);
+    });
+  }
+  (function(){
+    var fig = root.querySelector("#hs-c2").closest("figure");
+    seg(fig, "sort", function(v){ c2.sort = v; drawC2(); });
+    root.querySelector("#hs-c2-hl").addEventListener("change", function(e){ c2.hl = e.target.checked; drawC2(); });
+  })();
+
+  /* ================= Chart 3: index dot plot ================= */
+  var c3 = {on:{ppp:true, bed:true, doc:true}};
+  var SHAPE = {ppp:d3.symbolCircle, bed:d3.symbolSquare, doc:d3.symbolTriangle};
+  var MCOL = {ppp:C.phc, bed:C.bedc, doc:C.docc};
+  function drawC3(){
+    var el = root.querySelector("#hs-c3"), W = width(el), narrow = W < 520;
+    var mg = {t:28, r:18, b:30, l:narrow?126:138}, rh = narrow?28:30;
+    var data = D.slice().sort(function(a,b){return a.ns-b.ns;});
+    var H = mg.t + mg.b + rh*data.length;
+    var x = d3.scaleLinear().domain([50, 210]).range([mg.l, W-mg.r]);
+    var y = d3.scaleBand().domain(data.map(function(d){return d.name;})).range([mg.t, H-mg.b]);
+    var keys = ["ppp","bed","doc"].filter(function(k){ return c3.on[k]; });
+    el.innerHTML = "";
+    var svg = d3.select(el).append("svg").attr("viewBox", "0 0 " + W + " " + H).attr("focusable", "false");
+    // Malabar band
+    var yTop = y("Kasaragod"), yBot = y("Palakkad") + y.bandwidth();
+    svg.append("rect").attr("x", 0).attr("y", yTop).attr("width", W).attr("height", yBot - yTop).attr("fill", C.wash).attr("rx", 6);
+    svg.append("text").attr("x", W - mg.r - 4).attr("y", yTop + 14).attr("text-anchor", "end").attr("font-size", 10.5).attr("font-weight", 700).attr("letter-spacing", ".1em").attr("fill", C.malabar).text("MALABAR");
+    svg.append("g").attr("class", "grid").selectAll("line").data(x.ticks(narrow?5:8)).join("line")
+      .attr("x1", x).attr("x2", x).attr("y1", mg.t).attr("y2", H-mg.b);
+    svg.append("g").attr("class", "axis").attr("transform", "translate(0," + (H-mg.b) + ")").call(d3.axisBottom(x).ticks(narrow?5:8).tickSizeOuter(0));
+    svg.append("line").attr("x1", x(100)).attr("x2", x(100)).attr("y1", mg.t-6).attr("y2", H-mg.b).attr("stroke", C.ink).attr("stroke-width", 1.6);
+    svg.append("text").attr("class", "t-ref").attr("x", x(100)).attr("y", mg.t-10).attr("text-anchor", "middle").text("Kerala average = 100");
+    svg.append("text").attr("class", "t-muted").attr("font-size", 11).attr("x", W-mg.r).attr("y", mg.t-10).attr("text-anchor", "end").text("thinner →");
+    var rows = svg.append("g").selectAll("g").data(data).join("g").attr("transform", function(d){ return "translate(0," + (y(d.name) + y.bandwidth()/2) + ")"; });
+    rows.append("text").attr("class", "t-name").attr("x", mg.l - 10).attr("dy", "0.35em").attr("text-anchor", "end")
+      .attr("font-size", narrow ? 11 : 12.5).attr("font-weight", function(d){ return d.mal ? 600 : 400; })
+      .attr("fill", function(d){ return d.mal ? C.malabar : C.ink; }).text(function(d){ return d.name; });
+    rows.append("line").attr("stroke", "#B9C1D0").attr("stroke-width", 2)
+      .attr("x1", function(d){ var v = keys.map(function(k){ return d[k]/M[k].avg*100; }); return v.length ? x(d3.min(v)) : 0; })
+      .attr("x2", function(d){ var v = keys.map(function(k){ return d[k]/M[k].avg*100; }); return v.length ? x(d3.max(v)) : 0; });
+    keys.forEach(function(k){
+      var pts = rows.append("g").datum(function(d){ return d; })
+        .attr("role", "img").attr("aria-label", function(d){ return d.name + ", " + M[k].short + ": " + f(d[k]); })
+        .attr("transform", function(d){ return "translate(" + x(d[k]/M[k].avg*100) + ",0)"; });
+      pts.append("path").attr("d", d3.symbol().type(SHAPE[k]).size(narrow?70:90)).attr("fill", MCOL[k]).attr("stroke", "#fff").attr("stroke-width", 1.2);
+      bindTip(pts, function(d){
+        var idx = d[k]/M[k].avg*100;
+        return '<strong>' + d.name + '</strong><span class="tag">' + d.region + '</span>' +
+          row(M[k].label.replace("Population", "Pop."), f(d[k])) + row("Kerala average", f(M[k].avg)) +
+          row("Index (avg = 100)", d3.format(".0f")(idx)) + '<em>' + vsAvg(d[k], M[k].avg) + '</em>';
+      });
+    });
+  }
+  root.querySelector("#hs-c3").closest("figure").querySelectorAll("input[data-k]").forEach(function(cb){
+    cb.addEventListener("change", function(){ c3.on[cb.getAttribute("data-k")] = cb.checked; drawC3(); });
+  });
+
+  /* ================= Chart 4: Malabar vs rest ================= */
+  var c4 = {pkd:true};
+  function agg(list){
+    var pop = d3.sum(list, function(d){return d.pop;}), phc = d3.sum(list, function(d){return d.phc;});
+    var beds = d3.sum(list, function(d){return d.pop/d.bed;}), docs = d3.sum(list, function(d){return d.pop/d.doc;});
+    return {pop:pop, phc:phc, ppp:pop/phc, bed:pop/beds, doc:pop/docs};
+  }
+  function drawC4(){
+    var el = root.querySelector("#hs-c4"), W = width(el), narrow = W < 520;
+    var inM = function(d){ return d.mal && (c4.pkd || d.name !== "Palakkad"); };
+    var A = agg(D.filter(inM)), B = agg(D.filter(function(d){ return !inM(d); }));
+    var nM = D.filter(inM).length;
+    root.querySelector("#hs-c4-call").innerHTML =
+      '<div><b>' + d3.format(".1f")(A.pop/ST.pop*100) + '%</b><span>of Kerala\'s population lives in Malabar (' + nM + ' districts)</span></div>' +
+      '<div><b>' + d3.format(".1f")(A.phc/ST.phc*100) + '%</b><span>of Kerala\'s PHCs are in Malabar (' + f(A.phc) + ' of 985)</span></div>' +
+      '<div><b>' + f(Math.round(A.ppp)) + '</b><span>people per PHC in Malabar, vs ' + f(Math.round(B.ppp)) + ' elsewhere</span></div>';
+    var panels = [{k:"ppp", t:"Per PHC", derived:false}, {k:"bed", t:"Per govt bed †", derived:true}, {k:"doc", t:"Per govt doctor †", derived:true}];
+    var mg = {l:narrow?104:128, r:narrow?56:70}, ph = 74, H = panels.length*ph + 6;
+    el.innerHTML = "";
+    var svg = d3.select(el).append("svg").attr("viewBox", "0 0 " + W + " " + H).attr("focusable", "false");
+    panels.forEach(function(p, i){
+      var g = svg.append("g").attr("transform", "translate(0," + (i*ph) + ")");
+      var mx = Math.max(A[p.k], B[p.k], M[p.k].avg) * 1.12;
+      var x = d3.scaleLinear().domain([0, mx]).range([mg.l, W-mg.r]);
+      g.append("text").attr("x", 0).attr("y", 13).attr("font-size", 12.5).attr("font-weight", 700).attr("font-family", "Public Sans, sans-serif").text(p.t);
+      var rowsData = [{lab:"Malabar", v:A[p.k], col:C.malabar, grp:A}, {lab:"Rest of Kerala", v:B[p.k], col:C.rest, grp:B}];
+      var gg = g.selectAll("g").data(rowsData).join("g").attr("transform", function(d, j){ return "translate(0," + (22 + j*23) + ")"; })
+        .attr("role", "img").attr("aria-label", function(d){ return d.lab + " " + p.t + ": " + f(Math.round(d.v)); });
+      gg.append("text").attr("class", "t-name").attr("x", mg.l - 8).attr("y", 9).attr("dy", "0.35em").attr("text-anchor", "end").attr("font-size", narrow?11:12.5).text(function(d){ return d.lab; });
+      gg.append("rect").attr("x", x(0)).attr("y", 0).attr("height", 18).attr("rx", 3).attr("width", function(d){ return x(d.v) - x(0); }).attr("fill", function(d){ return d.col; });
+      gg.append("text").attr("class", "t-val").attr("x", function(d){ return x(d.v) + 5; }).attr("y", 9).attr("dy", "0.35em").text(function(d){ return f(Math.round(d.v)); });
+      g.append("line").attr("x1", x(M[p.k].avg)).attr("x2", x(M[p.k].avg)).attr("y1", 18).attr("y2", 22+23+20).attr("stroke", C.ink).attr("stroke-dasharray", "4 3").attr("stroke-width", 1.4);
+      g.append("text").attr("class", "t-ref").attr("x", x(M[p.k].avg) - 4).attr("y", 13).attr("text-anchor", "end").attr("font-size", 10.5).text("Kerala " + f(M[p.k].avg));
+      bindTip(gg, function(d){
+        var s = '<strong>' + d.lab + '</strong><span class="tag">' + (d.lab === "Malabar" ? nM + " districts" : (14 - nM) + " districts") + '</span>' +
+          row("Population 2024", f(d.grp.pop));
+        if (p.k === "ppp") s += row("PHCs", f(d.grp.phc));
+        s += row(M[p.k].label.replace("Population", "Pop."), f(Math.round(d.v))) + row("Kerala average", f(M[p.k].avg));
+        if (p.derived) s += '<em>Derived: sum of population ÷ sum of implied ' + (p.k === "bed" ? "beds" : "doctors") + ' (district population ÷ district ratio).</em>';
+        return s;
+      });
+    });
+  }
+  root.querySelector("#hs-c4-pkd").addEventListener("change", function(e){ c4.pkd = e.target.checked; drawC4(); });
+
+  /* ================= Chart 5: shortfall to norm ================= */
+  var c5 = {f:"all"};
+  D.forEach(function(d){ d.need = Math.ceil(d.pop/ST.norm); d.gap = d.need - d.phc; });
+  function drawC5(){
+    var el = root.querySelector("#hs-c5"), W = width(el), narrow = W < 520;
+    var data = D.filter(function(d){ return c5.f === "all" || (c5.f === "mal" ? d.mal : !d.mal); })
+      .sort(function(a,b){ return b.gap - a.gap; });
+    var mg = {t:30, r:narrow?40:48, b:26, l:narrow?132:142}, rh = narrow?25:27;
+    var H = mg.t + mg.b + rh*data.length;
+    var x = d3.scaleLinear().domain([-15, 62]).range([mg.l, W-mg.r]);
+    var y = d3.scaleBand().domain(data.map(function(d){return d.name;})).range([mg.t, H-mg.b]).padding(0.22);
+    el.innerHTML = "";
+    var svg = d3.select(el).append("svg").attr("viewBox", "0 0 " + W + " " + H).attr("focusable", "false");
+    svg.append("g").attr("class", "grid").selectAll("line").data(x.ticks(6)).join("line").attr("x1", x).attr("x2", x).attr("y1", mg.t-4).attr("y2", H-mg.b);
+    svg.append("g").attr("class", "axis").attr("transform", "translate(0," + (H-mg.b) + ")").call(d3.axisBottom(x).ticks(narrow?4:7).tickSizeOuter(0));
+    var pos = data.filter(function(d){return d.gap > 0;}), tot = d3.sum(pos, function(d){return d.gap;});
+    var malTot = d3.sum(D.filter(function(d){ return d.mal && d.gap > 0; }), function(d){ return d.gap; });
+    var allTot = d3.sum(D.filter(function(d){ return d.gap > 0; }), function(d){ return d.gap; });
+    var head = c5.f === "all" ? ((narrow ? "Shortfall " : "Total shortfall: ") + tot + " PHCs · Malabar " + malTot + " (" + d3.format(".0f")(malTot/allTot*100) + "%)")
+      : (c5.f === "mal" ? "Malabar shortfall: " + tot + " of " + allTot + " PHCs" : "Rest of Kerala shortfall: " + tot + " of " + allTot + " PHCs");
+    svg.append("text").attr("x", narrow ? 0 : mg.l).attr("y", 14).attr("font-size", 12.5).attr("font-weight", 700).attr("font-family", "Public Sans, sans-serif").text(head);
+    var bars = svg.append("g").selectAll("g").data(data).join("g")
+      .attr("role", "img").attr("aria-label", function(d){ return d.name + ": " + (d.gap >= 0 ? d.gap + " more PHCs needed" : (-d.gap) + " PHCs above the norm"); });
+    bars.append("rect").attr("y", function(d){return y(d.name);}).attr("height", y.bandwidth()).attr("rx", 3)
+      .attr("x", function(d){ return x(Math.min(0, d.gap)); }).attr("width", function(d){ return Math.abs(x(d.gap) - x(0)); })
+      .attr("fill", function(d){ return d.gap < 0 ? C.good : (d.mal ? C.malabar : C.rest); });
+    bars.append("text").attr("class", "t-name").attr("x", mg.l - 8).attr("y", function(d){ return y(d.name) + y.bandwidth()/2; }).attr("dy", "0.35em")
+      .attr("text-anchor", "end").attr("font-size", narrow?11:12.5).attr("font-weight", function(d){ return d.mal ? 600 : 400; })
+      .attr("fill", function(d){ return d.mal ? C.malabar : C.ink; }).text(function(d){ return (d.mal ? "■ " : "") + d.name; });
+    bars.append("text").attr("class", "t-val").attr("y", function(d){ return y(d.name) + y.bandwidth()/2; }).attr("dy", "0.35em")
+      .attr("x", function(d){ return d.gap >= 0 ? x(d.gap) + 5 : x(0) + 5; }).attr("text-anchor", "start")
+      .text(function(d){ return d.gap > 0 ? "+" + d.gap : String(d.gap).replace("-", "−"); });
+    svg.append("line").attr("x1", x(0)).attr("x2", x(0)).attr("y1", mg.t-4).attr("y2", H-mg.b).attr("stroke", C.ink).attr("stroke-width", 1.4);
+    bindTip(bars, function(d){
+      return '<strong>' + d.name + '</strong><span class="tag">' + d.region + '</span>' +
+        row("Population 2024", f(d.pop)) + row("÷ 30,000 =", d3.format(",.2f")(d.pop/ST.norm)) +
+        row("PHCs needed (rounded up)", f(d.need)) + row("PHCs today", f(d.phc)) +
+        row(d.gap >= 0 ? "Shortfall" : "Above norm by", f(Math.abs(d.gap)));
+    });
+  }
+  seg(root.querySelector("#hs-c5").closest("figure"), "f", function(v){ c5.f = v; drawC5(); });
+
+  /* ================= Chart 6: scatter ================= */
+  var c6 = {y:"doc"};
+  function spearman(a, b){
+    function rk(v){ var s = v.map(function(x,i){return [x,i];}).sort(function(p,q){return p[0]-q[0];}), r = []; s.forEach(function(p,j){ r[p[1]] = j+1; }); return r; }
+    var ra = rk(a), rb = rk(b), n = a.length, s = 0;
+    for (var i=0;i<n;i++) s += Math.pow(ra[i]-rb[i], 2);
+    return 1 - 6*s/(n*(n*n-1));
+  }
+  function drawC6(){
+    var el = root.querySelector("#hs-c6"), W = width(el), narrow = W < 520, ky = c6.y;
+    var mg = {t:18, r:narrow?24:24, b:46, l:narrow?52:62}, H = Math.round(Math.min(460, Math.max(320, W*0.68)));
+    var x = d3.scaleLinear().domain([20000, 50000]).range([mg.l, W-mg.r]);
+    var y = d3.scaleLinear().domain(ky === "doc" ? [3500, 8000] : [500, 2000]).range([H-mg.b, mg.t]);
+    var r = d3.scaleSqrt().domain([0, d3.max(D, function(d){return d.pop;})]).range([0, narrow?17:22]);
+    el.innerHTML = "";
+    var svg = d3.select(el).append("svg").attr("viewBox", "0 0 " + W + " " + H).attr("focusable", "false");
+    svg.append("rect").attr("x", x(ST.ppp)).attr("y", mg.t).attr("width", x.range()[1]-x(ST.ppp)).attr("height", y(M[ky].avg)-mg.t).attr("fill", "#FBEDEA");
+    if (!narrow) svg.append("text").attr("x", W-mg.r-6).attr("y", y(M[ky].avg)-7).attr("text-anchor", "end").attr("font-size", 11).attr("font-weight", 600).attr("fill", "#9E2A1E").text("Thinner than average on both");
+    svg.append("g").attr("class", "grid").selectAll("line").data(y.ticks(5)).join("line").attr("x1", mg.l).attr("x2", W-mg.r).attr("y1", y).attr("y2", y);
+    svg.append("g").attr("class", "axis").attr("transform", "translate(0," + (H-mg.b) + ")").call(d3.axisBottom(x).tickValues(narrow ? [20000,30000,40000,50000] : [20000,25000,30000,35000,40000,45000,50000]).tickFormat(d3.format(",")).tickSizeOuter(0));
+    svg.append("g").attr("class", "axis").attr("transform", "translate(" + mg.l + ",0)").call(d3.axisLeft(y).ticks(5).tickFormat(d3.format(",")).tickSizeOuter(0));
+    svg.append("text").attr("class", "t-muted").attr("font-size", 11.5).attr("x", (mg.l + W - mg.r)/2).attr("y", H-8).attr("text-anchor", "middle").text("Population per PHC →");
+    svg.append("text").attr("class", "t-muted").attr("font-size", 11.5).attr("transform", "translate(13," + ((mg.t + H - mg.b)/2) + ") rotate(-90)").attr("text-anchor", "middle")
+      .text((ky === "doc" ? "Population per govt doctor" : "Population per govt bed") + " →");
+    svg.append("line").attr("x1", x(ST.ppp)).attr("x2", x(ST.ppp)).attr("y1", mg.t).attr("y2", H-mg.b).attr("stroke", C.ink).attr("stroke-dasharray", "4 3");
+    svg.append("line").attr("x1", mg.l).attr("x2", W-mg.r).attr("y1", y(M[ky].avg)).attr("y2", y(M[ky].avg)).attr("stroke", C.ink).attr("stroke-dasharray", "4 3");
+    svg.append("text").attr("class", "t-ref").attr("font-size", 10.5).attr("x", x(ST.ppp) - 4).attr("y", mg.t + 12).attr("text-anchor", "end").text("avg 36,303");
+    svg.append("text").attr("class", "t-ref").attr("font-size", 10.5).attr("x", mg.l + 4).attr("y", y(M[ky].avg) - 5).text("avg " + f(M[ky].avg));
+    var data = D.slice().sort(function(a,b){ return b.pop - a.pop; });
+    var pts = svg.append("g").selectAll("g").data(data).join("g")
+      .attr("role", "img").attr("aria-label", function(d){ return d.name + ": " + f(d.ppp) + " per PHC, " + f(d[ky]) + " " + M[ky].short; })
+      .attr("transform", function(d){ return "translate(" + x(d.ppp) + "," + y(d[ky]) + ")"; });
+    pts.append("circle").attr("r", function(d){ return r(d.pop); })
+      .attr("fill", function(d){ return d.mal ? C.malabar : "#FFFFFF"; }).attr("fill-opacity", function(d){ return d.mal ? 0.88 : 0.9; })
+      .attr("stroke", function(d){ return d.mal ? "#fff" : C.muted; }).attr("stroke-width", 1.5);
+    var showLab = function(d){ return !narrow || d.mal || ["Pathanamthitta","Idukki","Kollam"].indexOf(d.name) > -1; };
+    var OFF = {Thrissur:[-1,1], Ernakulam:[1,1], Thiruvananthapuram:[1,1], Kollam:[1,-1], Palakkad:[-1,-1], Kannur:[-1,1], Kottayam:[-1,1], Alappuzha:[0,1], Kasaragod:[1,-1], Wayanad:[1,1], Idukki:[1,-1], Pathanamthitta:[1,1], Malappuram:[0,1], Kozhikode:[-1,-1]};
+    pts.filter(showLab).append("text").attr("font-size", narrow?10:11).attr("font-weight", function(d){ return d.mal ? 600 : 400; })
+      .attr("fill", function(d){ return d.mal ? C.malabar : C.ink; })
+      .attr("x", function(d){ var o = OFF[d.name] || [1,-1]; return o[0]*(r(d.pop) + 3); })
+      .attr("y", function(d){ var o = OFF[d.name] || [1,-1]; return o[0] === 0 ? o[1]*(r(d.pop) + 8) : o[1]*(r(d.pop)*0.6 + 4); })
+      .attr("dy", "0.35em").attr("text-anchor", function(d){ var o = (OFF[d.name] || [1])[0]; return o > 0 ? "start" : (o < 0 ? "end" : "middle"); })
+      .style("paint-order", "stroke").attr("stroke", "#fff").attr("stroke-width", 3).attr("stroke-linejoin", "round")
+      .text(function(d){ return d.name === "Thiruvananthapuram" && narrow ? "T'puram" : d.name; });
+    bindTip(pts, districtTip);
+    var rho = spearman(D.map(function(d){return d.ppp;}), D.map(function(d){return d[ky];}));
+    root.querySelector("#hs-c6-rho").textContent = "Spearman rank correlation, population per PHC vs " + (ky === "doc" ? "per doctor" : "per bed") + ": " + d3.format(".2f")(rho) + " (n = 14 districts).";
+  }
+  seg(root.querySelector("#hs-c6").closest("figure"), "y", function(v){ c6.y = v; drawC6(); });
+
+  /* ================= Data table ================= */
+  var tsort = {col:"ppp", dir:-1};
+  function drawTable(){
+    var rows = D.slice().sort(function(a,b){
+      var A = a[tsort.col], B = b[tsort.col];
+      return (typeof A === "string" ? A.localeCompare(B) : A - B) * tsort.dir;
+    });
+    var html = rows.map(function(d){
+      return "<tr><td>" + d.name + "</td><td>" + d.region + "</td><td>" + f(d.pop) + "</td><td>" + d.phc + "</td><td>" + f(d.ppp) + "</td><td>" + f(d.bed) + "</td><td>" + f(d.doc) + "</td></tr>";
+    }).join("");
+    html += '<tr class="is-total"><td>All Kerala</td><td>—</td><td>' + f(ST.pop) + "</td><td>" + ST.phc + "</td><td>" + f(ST.ppp) + "</td><td>" + f(ST.bed) + "</td><td>" + f(ST.doc) + "</td></tr>";
+    root.querySelector("#hs-table tbody").innerHTML = html;
+    root.querySelectorAll("#hs-table thead th").forEach(function(th){
+      var c = th.querySelector("button").getAttribute("data-col");
+      th.setAttribute("aria-sort", c === tsort.col ? (tsort.dir > 0 ? "ascending" : "descending") : "none");
+    });
+  }
+  root.querySelectorAll("#hs-table thead button").forEach(function(b){
+    b.addEventListener("click", function(){
+      var c = b.getAttribute("data-col");
+      tsort.dir = tsort.col === c ? -tsort.dir : (c === "name" || c === "region" ? 1 : -1);
+      tsort.col = c; drawTable();
+    });
+  });
+
+  /* ---------- render + resize ---------- */
+  function all(){ drawC1(); drawC2(); drawC3(); drawC4(); drawC5(); drawC6(); }
+  all(); drawTable();
+  var lastW = root.clientWidth, t;
+  window.addEventListener("resize", function(){
+    clearTimeout(t);
+    t = setTimeout(function(){ if (Math.abs(root.clientWidth - lastW) > 4){ lastW = root.clientWidth; drawC2(); drawC3(); drawC4(); drawC5(); drawC6(); } }, 150);
+  });
+})();
+</script>

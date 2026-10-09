@@ -1,10 +1,10 @@
 import "server-only";
 import { connection } from "next/server";
 import createClient from "openapi-fetch";
+import { publicFetchCache } from "./publicCache";
 import type { paths } from "./schema";
 
 const DEFAULT_API_URL = "http://localhost:8000";
-const REVALIDATE_SECONDS = 300;
 
 /** Base URL of the Django backend, without the `/api/v1` prefix (the schema's paths already include it). */
 export function apiBaseUrl(): string {
@@ -16,10 +16,10 @@ export const api = createClient<paths>({
   baseUrl: apiBaseUrl(),
   // Render pages that read the API per request, never at build time: the image is built with no backend reachable
   // and promoted from staging to production, so a build-time render would bake in an error state or staging data.
-  // Responses are still cached, so the backend sees at most one request per endpoint per revalidate window.
+  // Responses are still cached (see publicCache.ts): dashboard edits expire them at once, otherwise after a minute.
   fetch: async (request) => {
     await connection();
-    return fetch(request, { next: { revalidate: REVALIDATE_SECONDS } });
+    return fetch(request, publicFetchCache);
   },
 });
 

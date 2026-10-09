@@ -53,6 +53,14 @@ describe("toPublication", () => {
     expect(mapped.theme).toBe("Other");
   });
 
+  it("passes the uploaded story's URL through, and leaves it out when there is none", () => {
+    expect(toPublication({ ...apiPublication, story_html: "https://bucket.example.org/stories/abc.txt?sig=1" }, lookups).storyUrl).toBe(
+      "https://bucket.example.org/stories/abc.txt?sig=1",
+    );
+    expect(toPublication(apiPublication, lookups).storyUrl).toBeUndefined();
+    expect(toPublication({ ...apiPublication, story_html: null }, lookups).storyUrl).toBeUndefined();
+  });
+
   it("uses the API cover when present, otherwise the hand-picked stock cover for known stories", () => {
     expect(toPublication({ ...apiPublication, cover_url: "https://cdn.example.org/c.jpg" }, lookups).cover?.src).toBe("https://cdn.example.org/c.jpg");
     expect(toPublication(apiPublication, lookups).cover?.src).toContain("unsplash");

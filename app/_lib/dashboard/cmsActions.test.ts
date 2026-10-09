@@ -2,6 +2,9 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("server-only", () => ({}));
 
+const updateTag = vi.fn();
+vi.mock("next/cache", () => ({ updateTag }));
+
 const getAccessToken = vi.fn();
 vi.mock("../auth/serverAuth", () => ({ getAccessToken }));
 
@@ -35,7 +38,7 @@ const form = (entries: Record<string, string | File>) => {
 const testimonialForm = () => form({ quote: "Great", attribution: "Dr. A", role: "" });
 
 beforeEach(() => {
-  for (const fn of [getAccessToken, backendRequest, backendListAll]) fn.mockReset();
+  for (const fn of [getAccessToken, backendRequest, backendListAll, updateTag]) fn.mockReset();
   getAccessToken.mockResolvedValue("tok");
 });
 
@@ -244,12 +247,15 @@ describe("transitionCmsAction / deleteCmsAction", () => {
 
     expect(result).toMatchObject({ ok: true, record: { status: "in_review" } });
     expect(backendRequest).toHaveBeenCalledWith("POST", "/api/v1/testimonials/9/transition/", { accessToken: "tok", json: { status: "in_review" } });
+    // Public pages drop their cached copy, so the change shows on the next page load.
+    expect(updateTag).toHaveBeenCalledWith("public-api");
   });
 
   it("refuses an unknown status or key, and reports a backend refusal", async () => {
     expect(await transitionCmsAction("testimonial", "9", "deleted" as never)).toEqual({ ok: false, message: "That request isn't valid." });
     expect(await transitionCmsAction("testimonial", "9/../1", "draft")).toEqual({ ok: false, message: "That request isn't valid." });
     expect(backendRequest).not.toHaveBeenCalled();
+    expect(updateTag).not.toHaveBeenCalled();
 
     backendRequest.mockResolvedValueOnce(bad(403));
     expect(await transitionCmsAction("testimonial", "9", "published")).toEqual({ ok: false, message: "Your role isn't allowed to do that." });
