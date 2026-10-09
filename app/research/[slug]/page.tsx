@@ -340,8 +340,9 @@ export default async function PublicationDetailPage({ params }: { params: Promis
           {(author || pub.authors.length > 0) && <span aria-hidden="true">&middot;</span>}
           {formatPublicationDate(pub.date)} <StatusTag status={pub.status} />
         </div>
-        {/* Only a real cover here; the stock placeholder suits list cards, not the top of the publication itself. */}
-        {pub.cover?.src && <MediaSlot need={pub.cover} className="mt-6" />}
+        {/* Only a real cover, and never on a data story: its cover is a still of one of its own charts, so it belongs
+            on cards (and link previews), not above the story that shows the chart itself. */}
+        {pub.cover?.src && pub.format !== "Data Story" && <MediaSlot need={pub.cover} className="mt-6" />}
         {uploaded ? (
           uploaded.ok ? (
             // On phones the story's own side padding is the gutter, so the frame bleeds past the column's.
