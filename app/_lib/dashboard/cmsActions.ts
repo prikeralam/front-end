@@ -158,7 +158,7 @@ const randomSuffix = () => `-${Math.random().toString(36).slice(2, 6)}`;
 
 async function send(type: ContentTypeKey, mode: "create" | "update", key: string | null, form: FormData): Promise<CmsMutation> {
   const resource = RESOURCES[type];
-  const fileField = resource.fields.find((f) => f.kind === "file");
+  const fileField = resource.fields.find((f) => f.kind === "file" && !f.optional);
   const uploads = uploadsFrom(type, form);
   if (uploads.error) return { ok: false, message: uploads.error };
   if (mode === "create" && fileField && !uploads.files.some(([key]) => key === fileField.key)) return { ok: false, message: `${fileField.label} is required.` };

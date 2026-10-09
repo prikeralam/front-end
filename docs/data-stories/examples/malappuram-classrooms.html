@@ -1,0 +1,189 @@
+<!-- PRI data story body: Plus One crowding in Malappuram. Example for docs/data-stories.md: charts drawn with Plotly
+     (pinned, from jsdelivr). Title, summary, byline and date come from the dashboard. Styles are scoped to #pri-ed. -->
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+
+<style>
+#pri-ed{
+  --blue:#253D9A; --coral:#E4633F; --ink:#171a2b; --ink-2:#4b4f66; --muted:#8b8fa3; --rule:#e6e8f0; --wash:#f3f5fb;
+  font-family:"Public Sans",system-ui,sans-serif; color:var(--ink); background:#fff;
+  font-size:16px; line-height:1.7; max-width:760px; margin:0 auto; padding:8px 0 40px;
+}
+#pri-ed *{box-sizing:border-box}
+#pri-ed h2{font-size:clamp(21px,3.4vw,26px);line-height:1.25;margin:44px 0 10px;font-weight:700;letter-spacing:-.01em}
+#pri-ed p{margin:0 0 14px;color:var(--ink-2)}
+#pri-ed .ed-hook{border:1px solid var(--rule);border-left:4px solid var(--blue);border-radius:8px;padding:22px 24px;margin:8px 0 24px}
+#pri-ed .ed-hook b{display:block;font-family:"IBM Plex Mono",monospace;font-size:clamp(26px,5vw,36px);color:var(--blue);line-height:1.15}
+#pri-ed .ed-hook p{margin:10px 0 0}
+#pri-ed figure{margin:22px 0 30px;border:1px solid var(--rule);border-radius:8px;padding:10px}
+/* No padding or border on the chart element itself: Plotly sizes to it and would overflow by that much. */
+#pri-ed .ed-chart{min-height:340px}
+#pri-ed figcaption{font-size:13.5px;color:var(--muted);margin-top:8px;line-height:1.5}
+#pri-ed .ed-controls{display:flex;gap:6px;margin:0 0 10px}
+#pri-ed .ed-controls button{font:600 13px "Public Sans",sans-serif;border:1px solid var(--rule);background:var(--wash);color:var(--ink-2);border-radius:6px;padding:6px 12px;cursor:pointer}
+#pri-ed .ed-controls button[aria-pressed="true"]{background:var(--blue);border-color:var(--blue);color:#fff}
+#pri-ed .ed-controls button:focus-visible{outline:3px solid var(--coral);outline-offset:2px}
+#pri-ed .ed-callouts{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:26px 0}
+#pri-ed .ed-callouts div{border:1px solid var(--rule);border-radius:8px;padding:16px}
+#pri-ed .ed-callouts span{display:block;font-size:13px;color:var(--muted)}
+#pri-ed .ed-callouts b{display:block;font-family:"IBM Plex Mono",monospace;font-size:24px;margin:2px 0}
+#pri-ed .bad{color:var(--coral)} #pri-ed .good{color:var(--blue)}
+@media (max-width:520px){#pri-ed .ed-callouts{grid-template-columns:1fr}}
+#pri-ed .ed-why{background:#0A2E28;color:#fff;border-radius:8px;padding:26px;margin:40px 0 28px}
+#pri-ed .ed-why h2{color:#fff;margin-top:0}
+#pri-ed .ed-why p{color:rgba(255,255,255,.82)}
+#pri-ed details{border:1px solid var(--rule);border-radius:8px;padding:0 14px;margin:24px 0}
+#pri-ed summary{cursor:pointer;font-weight:600;padding:12px 0}
+#pri-ed .ed-table{overflow-x:auto}
+#pri-ed table{border-collapse:collapse;width:100%;font-size:14px;font-variant-numeric:tabular-nums;margin-bottom:14px}
+#pri-ed th,#pri-ed td{padding:6px 8px;border-bottom:1px solid var(--rule);text-align:right}
+#pri-ed th:first-child,#pri-ed td:first-child{text-align:left}
+#pri-ed .ed-notes{border-top:1px solid var(--rule);padding-top:16px;font-size:13.5px;color:var(--muted)}
+#pri-ed .ed-notes h3{font:600 12px "IBM Plex Mono",monospace;letter-spacing:.12em;text-transform:uppercase;margin:0 0 8px}
+#pri-ed .ed-notes ol{padding-left:20px;margin:0}
+#pri-ed .ed-notes li{margin-bottom:6px}
+</style>
+
+<article id="pri-ed" lang="en">
+  <div class="ed-hook">
+    <b>65 students a batch</b>
+    <p>That's the average Plus One batch size in Malappuram in 2025, nearly double the 36 students per batch in Pathanamthitta, Kerala's smallest, and well above the statewide average of 54.</p>
+  </div>
+
+  <p>Kerala added 3.87 lakh Plus One seats across 7,223 batches in 2025. But that capacity isn't spread evenly, and district-level enrollment data shows the same district, Malappuram, carrying both the heaviest classroom load and the thinnest access to the science stream in the state.<sup><a href="#ed-n1">1</a></sup></p>
+
+  <h2>The most crowded classrooms in the state</h2>
+  <p>Malappuram enrolled 70,472 Plus One students across 1,080 batches in 2025, an average of 65 students per batch, the highest of any district and 11 above the all-Kerala average of 54. Wayanad (60) and Kasargode (60) are the next most crowded. Pathanamthitta (36), Idukki (43) and Kottayam (43) run the smallest batches in the state.</p>
+  <figure>
+    <div class="ed-controls" role="group" aria-label="Choose measure">
+      <button type="button" data-m="batch" aria-pressed="true">Students per batch</button>
+      <button type="button" data-m="science" aria-pressed="false">Science share</button>
+    </div>
+    <div class="ed-chart" id="ed-c1" role="img" aria-label="Bar chart by district. Malappuram has the largest batches (65 students) and, with Kasargode, the smallest science share."></div>
+    <figcaption id="ed-c1-cap">Malappuram's average batch size is nearly double Pathanamthitta's.</figcaption>
+  </figure>
+
+  <h2>Fewer options in the science stream</h2>
+  <p>Only 42% of Malappuram's Plus One batches are science batches, tied for the lowest share in Kerala with Kasargode (40%), against a statewide average of 51%. Kottayam has the most science capacity, at 63% of its batches, followed by Pathanamthitta at 58%.</p>
+
+  <h2>Crowding and stream access move together</h2>
+  <p>Plotting batch size against science-stream share across all 14 districts shows a clear pattern: the districts with the largest average batches are also the districts with the smallest share of science batches. Where the district hasn't been able to open enough batches to match demand, existing seats get stretched thinner and skew toward humanities and commerce rather than science, which needs labs and specialised staff to expand.</p>
+  <figure>
+    <div class="ed-chart" id="ed-c2" role="img" aria-label="Scatter plot of students per batch against science share. Malappuram sits at the crowded, science-scarce end."></div>
+    <figcaption>Each point is a district. Larger batches track with a smaller share of science batches.</figcaption>
+  </figure>
+
+  <h2>Where it's headed: seat demand, 2027-2036</h2>
+  <p>Using 2012-2027 birth records for the district, the projected number of Plus One aspirants in Malappuram eases only slightly over the coming decade, from 84,265 in 2027 to 77,442 in 2036, an 8.1% decline. Demand rises through the early 2030s, peaking at 86,106 in 2033.<sup><a href="#ed-n2">2</a></sup></p>
+  <figure>
+    <div class="ed-chart" id="ed-c3" role="img" aria-label="Line chart of projected Plus One aspirants in Malappuram, 2027 to 2036, peaking at 86,106 in 2033."></div>
+    <figcaption>Demand is projected to stay above 82,000 in eight of the ten years to 2036.</figcaption>
+  </figure>
+
+  <div class="ed-callouts">
+    <div><span>Peak projected demand</span><b class="bad">86,106</b><span>expected students, 2033</span></div>
+    <div><span>Lowest projected demand</span><b class="good">77,442</b><span>expected students, 2036</span></div>
+  </div>
+
+  <div class="ed-why">
+    <h2>Why this matters</h2>
+    <p>Malappuram's Plus One pressure isn't a temporary bulge. Demand stays near or above 82,000 students a year through 2035. Combined with the most crowded batches and the thinnest science access in the state, that points to a specific gap: more science batches, not just more batches, in the district that needs them most.</p>
+  </div>
+
+  <details>
+    <summary>View the full data</summary>
+    <div class="ed-table"><table id="ed-table"><thead><tr><th>District</th><th>Students per batch</th><th>Science batches (%)</th></tr></thead><tbody></tbody></table></div>
+  </details>
+
+  <section class="ed-notes">
+    <h3>Sources &amp; notes</h3>
+    <ol>
+      <li id="ed-n1">Plus One seat and batch distribution by district, 2025. Kerala Economic Review 2025 (p.21).</li>
+      <li id="ed-n2">Plus One seat requirement forecast for Malappuram, 2027-2036, from 2012-2027 birth records (p.22). The source describes the range as "between 84,000 and 77,000"; the year-by-year figures peak at 86,106 in 2033.</li>
+    </ol>
+  </section>
+  <noscript><p>The interactive charts need JavaScript. All figures are in the data table above.</p></noscript>
+</article>
+
+<script src="https://cdn.jsdelivr.net/npm/plotly.js-basic-dist-min@2.35.2/plotly-basic.min.js"></script>
+<script>
+(function () {
+  "use strict";
+  var root = document.getElementById("pri-ed");
+  var districts = ["Malappuram","Wayanad","Kasargode","Kozhikkode","Kannur","Palakkad","Thiruvananthapuram","Thrissur","Kollam","Ernakulam","Alappuzha","Kottayam","Idukki","Pathanamthitta"];
+  var batch = [65,60,60,59,59,58,52,51,49,49,46,43,43,36];
+  var science = [42,44,40,47,47,47,58,54,57,57,57,63,51,58];
+  var years = [2027,2028,2029,2030,2031,2032,2033,2034,2035,2036];
+  var demand = [84265,82437,83055,82969,82118,84359,86106,84920,81330,77442];
+  var BLUE = "#253D9A", CORAL = "#E4633F", GREY = "#c9c3b4", INK = "#171a2b";
+
+  var tbody = root.querySelector("#ed-table tbody");
+  districts.forEach(function (d, i) {
+    var tr = document.createElement("tr");
+    tr.innerHTML = "<td>" + d + "</td><td>" + batch[i] + "</td><td>" + science[i] + "</td>";
+    tbody.appendChild(tr);
+  });
+  if (!window.Plotly) return;
+
+  var font = { family: "Public Sans, sans-serif", color: INK, size: 12 };
+  var config = { displayModeBar: false, responsive: true };
+  var narrow = function () { return root.getBoundingClientRect().width < 520; };
+
+  var MEASURES = {
+    batch: { values: batch, avg: 54, label: "Students per Plus One batch", avgLabel: "Kerala avg: 54", cap: "Malappuram's average batch size is nearly double Pathanamthitta's.", worstHigh: true },
+    science: { values: science, avg: 51, label: "Science batches (%)", avgLabel: "Kerala avg: 51%", cap: "Malappuram and Kasargode offer the smallest share of science batches, 9 to 11 points below the state average.", worstHigh: false }
+  };
+
+  function drawBars(m) {
+    var spec = MEASURES[m];
+    var order = districts.map(function (d, i) { return { d: d, v: spec.values[i] }; })
+      .sort(function (a, b) { return spec.worstHigh ? a.v - b.v : b.v - a.v; });
+    Plotly.react("ed-c1", [{
+      type: "bar", orientation: "h",
+      y: order.map(function (o) { return o.d; }), x: order.map(function (o) { return o.v; }),
+      marker: { color: order.map(function (o) { return o.d === "Malappuram" ? CORAL : BLUE; }) },
+      hovertemplate: "%{y}: %{x}<extra></extra>"
+    }], {
+      font: font, height: 440, margin: { l: narrow() ? 120 : 140, r: 20, t: 10, b: 44 },
+      xaxis: { title: { text: spec.label }, gridcolor: "#e6e8f0", zeroline: false },
+      yaxis: { automargin: true },
+      shapes: [{ type: "line", x0: spec.avg, x1: spec.avg, yref: "paper", y0: 0, y1: 1, line: { color: INK, dash: "dot", width: 1.5 } }],
+      annotations: [{ x: spec.avg, yref: "paper", y: 1.02, text: spec.avgLabel, showarrow: false, font: { size: 11 } }],
+      plot_bgcolor: "#fff", paper_bgcolor: "#fff"
+    }, config);
+    root.querySelector("#ed-c1-cap").textContent = spec.cap;
+  }
+
+  root.querySelectorAll(".ed-controls button").forEach(function (b, _, all) {
+    b.addEventListener("click", function () {
+      all.forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+      drawBars(b.getAttribute("data-m"));
+    });
+  });
+  drawBars("batch");
+
+  Plotly.newPlot("ed-c2", [{
+    type: "scatter", mode: "markers+text",
+    x: batch, y: science, text: districts.map(function (d) { return d === "Malappuram" || d === "Pathanamthitta" ? d : ""; }),
+    textposition: "top center", customdata: districts,
+    marker: { size: 12, color: districts.map(function (d) { return d === "Malappuram" ? CORAL : d === "Pathanamthitta" ? BLUE : GREY; }), line: { color: "#fff", width: 1 } },
+    hovertemplate: "%{customdata}<br>%{x} per batch, %{y}% science<extra></extra>"
+  }], {
+    font: font, height: 380, margin: { l: 56, r: 20, t: 20, b: 50 },
+    xaxis: { title: { text: "Students per batch" }, gridcolor: "#e6e8f0" },
+    yaxis: { title: { text: "Science batches (%)" }, gridcolor: "#e6e8f0" },
+    plot_bgcolor: "#fff", paper_bgcolor: "#fff"
+  }, config);
+
+  Plotly.newPlot("ed-c3", [{
+    type: "scatter", mode: "lines+markers", x: years, y: demand,
+    line: { color: BLUE, width: 3 }, marker: { size: 7, color: BLUE },
+    hovertemplate: "%{x}: %{y:,} aspirants<extra></extra>"
+  }], {
+    font: font, height: 340, margin: { l: 64, r: 20, t: 20, b: 44 },
+    xaxis: { dtick: 1, gridcolor: "#e6e8f0" },
+    yaxis: { title: { text: "Expected Plus One aspirants" }, range: [74000, 89000], gridcolor: "#e6e8f0", tickformat: "," },
+    annotations: [{ x: 2033, y: 86106, text: "peak: 86,106", ay: -26, font: { size: 11 } }],
+    plot_bgcolor: "#fff", paper_bgcolor: "#fff"
+  }, config);
+})();
+</script>

@@ -60,6 +60,8 @@ export type Publication = {
   views: number;
   status: ContentStatus;
   cover: MediaNeed | null;
+  /** Where the uploaded story body (one HTML file) can be read, for data stories that have one. */
+  storyUrl?: string;
 };
 
 export type Dataset = {
