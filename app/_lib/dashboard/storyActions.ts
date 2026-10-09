@@ -1,6 +1,7 @@
 "use server";
 
 import { backendRequest } from "../api/backendRequest";
+import { refreshPublicPages } from "../api/publicCache";
 import { fetchStoryHtml } from "../api/stories";
 import { getAccessToken } from "../auth/serverAuth";
 import { KEY_PATTERN, objectPath } from "../cms/resources";
@@ -45,6 +46,9 @@ export async function removeStoryAction(slug: string): Promise<{ ok: true } | { 
   const form = new FormData();
   form.append("story_html", "");
   const result = await backendRequest("PATCH", objectPath("publication", slug), { accessToken, form });
-  if (result.ok) return { ok: true };
+  if (result.ok) {
+    refreshPublicPages();
+    return { ok: true };
+  }
   return { ok: false, message: result.status === 403 ? "Your role isn't allowed to do that." : result.message || "We couldn't remove the story file." };
 }

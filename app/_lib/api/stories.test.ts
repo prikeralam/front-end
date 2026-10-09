@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("server-only", () => ({}));
+vi.mock("next/cache", () => ({ updateTag: vi.fn() }));
 
 const { fetchStoryHtml, MAX_STORY_CHARS } = await import("./stories");
 
@@ -13,7 +14,7 @@ describe("fetchStoryHtml", () => {
     const fetchMock = respond("<p>Story</p>");
     vi.stubGlobal("fetch", fetchMock);
     expect(await fetchStoryHtml("https://bucket.example.org/stories/a.txt?X-Amz-Signature=1")).toBe("<p>Story</p>");
-    expect(fetchMock.mock.calls[0][1]).toEqual({ next: { revalidate: 300 } });
+    expect(fetchMock.mock.calls[0][1]).toEqual({ next: { revalidate: 60, tags: ["public-api"] } });
     await fetchStoryHtml("http://localhost:8000/media/stories/a.txt", { fresh: true });
     expect(fetchMock.mock.calls[1][1]).toEqual({ cache: "no-store" });
   });

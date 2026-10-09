@@ -76,7 +76,7 @@ the site's own title, abstract, byline and date.
 - Backend: `Publication.story_html` (website-backend `apps/publications`). The validators enforce the extension, size,
   UTF-8 and script hosts. The file is stored as `stories/<random>.txt`, so opening its raw URL shows the source as text
   instead of running it.
-- Frontend: `_lib/api/stories.ts` fetches the text on the server (cached for 5 minutes on public pages, uncached for
+- Frontend: `_lib/api/stories.ts` fetches the text on the server (cached on public pages like other API reads, and refreshed as soon as an editor saves in the dashboard; uncached for
   the dashboard preview). `research/_ui/StoryFrame.tsx` renders it with `srcdoc` and
   `sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox"`. **Never add `allow-same-origin`**: that would
   let the story run as this site. `_lib/storyFrame.ts` adds a base style and a small bridge script that reports the

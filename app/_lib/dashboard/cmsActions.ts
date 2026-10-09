@@ -1,6 +1,7 @@
 "use server";
 
 import { backendListAll, backendRequest, type BackendResult } from "../api/backendRequest";
+import { refreshPublicPages } from "../api/publicCache";
 import { listPeopleById } from "../api/people";
 import { listDatasets } from "../api/datasets";
 import { listPublications } from "../api/publications";
@@ -183,6 +184,7 @@ async function send(type: ContentTypeKey, mode: "create" | "update", key: string
 
   if (!("data" in result)) return { ok: false, message: result.message };
   if (!result.ok) return failure(result);
+  refreshPublicPages();
   return { ok: true, record: toCmsRecord(type, result.data as ApiRecord) };
 }
 
@@ -203,7 +205,9 @@ export async function transitionCmsAction(type: ContentTypeKey, key: string, nex
   if (!accessToken) return signedOut;
 
   const result = await backendRequest("POST", `${objectPath(type, key)}transition/`, { accessToken, json: { status: next } });
-  return result.ok ? { ok: true, record: toCmsRecord(type, result.data as ApiRecord) } : failure(result);
+  if (!result.ok) return failure(result);
+  refreshPublicPages();
+  return { ok: true, record: toCmsRecord(type, result.data as ApiRecord) };
 }
 
 export async function deleteCmsAction(type: ContentTypeKey, key: string): Promise<CmsMutation> {
@@ -212,5 +216,7 @@ export async function deleteCmsAction(type: ContentTypeKey, key: string): Promis
   if (!accessToken) return signedOut;
 
   const result = await backendRequest("DELETE", objectPath(type, key), { accessToken });
-  return result.ok ? { ok: true } : failure(result);
+  if (!result.ok) return failure(result);
+  refreshPublicPages();
+  return { ok: true };
 }
