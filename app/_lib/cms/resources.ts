@@ -158,7 +158,14 @@ export const RESOURCES: Record<ContentTypeKey, Resource> = {
       { key: "authors", label: "Author", kind: "select", optionsFrom: "authors", optional: true },
       { key: "tags", label: "Tags", kind: "text", optional: true, help: "Comma-separated." },
       { key: "visibility", label: "Visibility", kind: "select", options: options(["public", "Public"], ["private", "Private"]) },
-      { key: "cover", label: "Cover image", kind: "image", urlKey: "cover_url", optional: true },
+      {
+        key: "cover",
+        label: "Cover image",
+        kind: "image",
+        urlKey: "cover_url",
+        optional: true,
+        help: "Needed before publishing: it is the image on the publication's card in the research list. Drafts can be saved without one.",
+      },
       {
         key: "story_html",
         label: "Story file (HTML)",

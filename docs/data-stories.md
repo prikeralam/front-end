@@ -41,7 +41,8 @@ Examples that follow these rules are in [`data-stories/examples/`](data-stories/
 ## Publishing
 
 1. In the dashboard, go to **Research & Publications → + New**. Choose **Format: Data story**, then fill in the title,
-   abstract, sub-theme, date, author and cover.
+   abstract, sub-theme, date, author and cover. A draft can be saved without a cover, but it can't be published
+   without one, because the cover is the image on the story's card in the research list.
 2. Under **Story file (HTML)**, choose the file and save. The new publication is saved as a draft.
 3. Open the draft again. **Story file → Preview story** shows the file exactly as the public page will frame it. Fix
    any warning shown there, such as a duplicate main heading.
