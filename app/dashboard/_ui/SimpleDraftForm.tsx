@@ -82,7 +82,7 @@ export default function SimpleDraftForm({
             ) : f.kind === "lines" ? (
               <textarea id={id} name={f.key} defaultValue={initial ?? ""} required={required} readOnly={readOnly} rows={5} className={`${controlClass} py-2 leading-relaxed`} />
             ) : f.kind === "textarea" ? (
-              <textarea id={id} name={f.key} defaultValue={initial ?? ""} required={required} readOnly={readOnly} rows={4} className={`${controlClass} py-2 leading-relaxed`} />
+              <textarea id={id} name={f.key} defaultValue={initial ?? ""} required={required} readOnly={readOnly} rows={f.rows ?? 4} className={`${controlClass} py-2 leading-relaxed`} />
             ) : f.kind === "multiselect" ? (
               opts.length === 0 ? (
                 <p id={id} className="rounded-lg border border-dashed border-[#d3d8e8] px-3 py-3 text-[13px] text-[#7d86a8]">

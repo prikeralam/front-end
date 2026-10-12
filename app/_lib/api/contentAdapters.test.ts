@@ -34,6 +34,16 @@ describe("toProject", () => {
     });
   });
 
+  it("splits facts into label and text, and defaults both new fields for an older backend", () => {
+    const mapped = toProject({ ...project, facts: ["Project duration: Nov 2025 - Feb 2026", "Unlabelled"], details: "## A" });
+    expect(mapped.facts).toEqual([
+      { label: "Project duration", text: "Nov 2025 - Feb 2026" },
+      { label: "", text: "Unlabelled" },
+    ]);
+    expect(mapped.details).toBe("## A");
+    expect(toProject(project)).toMatchObject({ facts: [], details: "" });
+  });
+
   it("carries the project's stage, defaulting to ongoing for a backend without it", () => {
     expect(toProject({ ...project, stage: "completed" }).stage).toBe("completed");
     expect(toProject(project).stage).toBe("ongoing");

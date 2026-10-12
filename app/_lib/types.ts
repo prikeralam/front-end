@@ -28,6 +28,10 @@ export type HeroProject = {
   /** Overrides the default "Explore project →" / `/projects/{slug}` link, used by the motto slide. */
   ctaLabel?: string;
   ctaHref?: string;
+  /** The project page's fact sheet, e.g. {label: "Project duration", text: "November 2025 - February 2026"}. */
+  facts?: { label: string; text: string }[];
+  /** The long write-up, parsed by `parseProjectDetails`; empty when there is none. */
+  details?: string;
 };
 
 export type Person = {
