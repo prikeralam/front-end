@@ -1,17 +1,14 @@
 import type { ReactNode } from "react";
-import Image from "next/image";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { LoadError } from "../../_ui/ApiMessage";
 import { load } from "../../_lib/api/load";
 import { getPublicationBySlug } from "../../_lib/api/publications";
 import { fetchStoryHtml } from "../../_lib/api/stories";
-import { formatPublicationDate } from "../../_lib/api/publicationAdapter";
-import { stockPhotoFor } from "../../_lib/stockPhotos";
 import { dataStories, educationCharts, demographyCharts, healthCharts, migrationCharts } from "../../_content/dataStories";
 import { HBarChart, GroupedBarChart, DivergingBarChart, ScatterChart, LineChart, VBarChart, HBarSimpleChart, type ChartPalette } from "../_ui/dataStoryCharts";
+import ArticleHeader from "../_ui/ArticleHeader";
 import StoryFrame from "../_ui/StoryFrame";
-import { PageHeader, SectionHeading, StatusTag } from "../../_ui/kit";
+import { PageHeader, SectionHeading } from "../../_ui/kit";
 import MediaSlot from "../../_ui/MediaSlot";
 import type { Metadata } from "next";
 import { pageMetadata, publicationJsonLd } from "../../_lib/seo";
@@ -318,46 +315,31 @@ export default async function PublicationDetailPage({ params }: { params: Promis
   const storyUrl = pub.storyUrl;
   const uploaded = storyUrl ? await load("this story file", () => fetchStoryHtml(storyUrl)) : null;
   const story = dataStories[slug];
-  const author = authors[pub.authors[0]];
+  const people = pub.authors.map((s) => authors[s]).filter(Boolean);
+  // Data stories get a wider column for their charts; the header shares whichever column the text uses.
+  const column = uploaded || story ? "max-w-[55rem]" : "max-w-3xl";
 
   return (
     <>
-      <JsonLd data={publicationJsonLd(pub, pub.authors.map((s) => authors[s]).filter(Boolean))} />
-      {/* An uploaded story carries no title or summary of its own (see docs/data-stories.md), so the abstract leads. */}
-      <PageHeader kicker={`${pub.format} · ${pub.theme}`} title={pub.title} intro={uploaded ? pub.abstract : undefined} />
-      <section className="mx-auto max-w-3xl px-6 py-16">
-        <div className="flex items-center gap-2 text-sm text-[#5b5f74]">
-          {author?.photo && (
-            <Link href={`/people/${author.slug}`} className="relative h-7 w-7 shrink-0 overflow-hidden rounded-full bg-white">
-              <Image src={author.photo.src ?? stockPhotoFor(author.photo) ?? ""} alt={author.name} fill sizes="28px" className="object-cover" />
-            </Link>
-          )}
-          {author ? (
-            <Link href={`/people/${author.slug}`} className="font-semibold hover:text-[#253D9A]">{author.name}</Link>
-          ) : (
-            pub.authors.join(", ")
-          )}
-          {(author || pub.authors.length > 0) && <span aria-hidden="true">&middot;</span>}
-          {formatPublicationDate(pub.date)} <StatusTag status={pub.status} />
-        </div>
+      <JsonLd data={publicationJsonLd(pub, people)} />
+      {/* The abstract is the standfirst: an uploaded story carries no title or summary of its own (docs/data-stories.md). */}
+      <ArticleHeader pub={pub} people={people} column={column} />
+      <section className={`mx-auto ${column} px-6 pb-16 pt-10`}>
         {/* Only a real cover, and never on a data story: its cover is a still of one of its own charts, so it belongs
             on cards (and link previews), not above the story that shows the chart itself. */}
-        {pub.cover?.src && pub.format !== "Data Story" && <MediaSlot need={pub.cover} className="mt-6" />}
+        {pub.cover?.src && pub.format !== "Data Story" && <MediaSlot need={pub.cover} className="mb-8" />}
         {uploaded ? (
           uploaded.ok ? (
             // On phones the story's own side padding is the gutter, so the frame bleeds past the column's.
-            <StoryFrame html={uploaded.data} title={pub.title} className="-mx-6 mt-8 !w-[calc(100%+3rem)] sm:mx-0 sm:!w-full" />
+            <StoryFrame html={uploaded.data} title={pub.title} className="-mx-6 !w-[calc(100%+3rem)] sm:mx-0 sm:!w-full" />
           ) : (
-            <div className="mt-8">
-              <LoadError what="this story" />
-            </div>
+            <LoadError what="this story" />
           )
         ) : story ? (
           <StoryBody slug={slug} />
         ) : (
           <>
-            <p className="mt-8 text-lg leading-relaxed text-[#4b4f66]">{pub.abstract}</p>
-            <div className="mt-10 flex flex-wrap gap-3">
+            <div className="flex flex-wrap gap-3">
               <button disabled className="cursor-not-allowed rounded-md bg-[#253D9A]/40 px-5 py-2.5 text-sm font-semibold text-white">
                 Download PDF (not wired)
               </button>
