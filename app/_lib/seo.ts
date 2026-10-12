@@ -142,20 +142,34 @@ export function personJsonLd(person: Person): JsonLd {
   };
 }
 
+const ATTENDANCE_MODE: Record<NonNullable<PRIEvent["mode"]>, string> = {
+  in_person: "https://schema.org/OfflineEventAttendanceMode",
+  online: "https://schema.org/OnlineEventAttendanceMode",
+  hybrid: "https://schema.org/MixedEventAttendanceMode",
+};
+
+/** "2026-12-14" plus "09:30" -> "2026-12-14T09:30:00+05:30" (PRI's events are in India); the date alone otherwise. */
+function eventDateTime(date: string, time: string | null): string {
+  return time ? `${date}T${time}:00+05:30` : date;
+}
+
 export function eventJsonLd(event: PRIEvent): JsonLd {
+  const place = { "@type": "Place", name: event.location || "Kerala, India", address: event.location || "Kerala, India" };
+  const images = [event.image?.src, ...event.gallery.map((g) => g.src)].filter((src): src is string => Boolean(src));
   return {
     "@context": "https://schema.org",
     "@type": "Event",
     name: event.title,
     description: summarize(event.summary || event.body, 300) || undefined,
-    startDate: event.startDate,
-    endDate: event.endDate ?? undefined,
-    eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+    startDate: eventDateTime(event.startDate, event.startTime),
+    endDate: event.endDate ? eventDateTime(event.endDate, event.endTime) : event.endTime ? eventDateTime(event.startDate, event.endTime) : undefined,
+    eventAttendanceMode: ATTENDANCE_MODE[event.mode ?? "in_person"],
     eventStatus: "https://schema.org/EventScheduled",
-    location: { "@type": "Place", name: event.location || "Kerala, India", address: event.location || "Kerala, India" },
-    image: event.image?.src ? [absoluteUrl(event.image.src)] : undefined,
+    location: event.mode === "online" ? { "@type": "VirtualLocation", name: event.location || "Online" } : place,
+    image: images.length > 0 ? images.map(absoluteUrl) : undefined,
     url: absoluteUrl(`/events/${event.slug}`),
-    organizer: PUBLISHER,
+    performer: event.speakers.length > 0 ? event.speakers.map((s) => ({ "@type": "Person", name: s.name })) : undefined,
+    organizer: [PUBLISHER, ...event.collaborators.map((name) => ({ "@type": "Organization", name }))],
   };
 }
 
