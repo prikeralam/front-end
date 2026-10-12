@@ -58,6 +58,7 @@ export function toEvent(event: ApiEvent, today: string): PRIEvent {
     endDate: end,
     // A date that isn't fixed yet reads as the note; start_date still orders it and decides upcoming/past.
     dateLabel: event.date_note?.trim() || dateRange(event.start_date, end),
+    dateFixed: !event.date_note?.trim(),
     timeLabel: timeRange(event.start_time, event.end_time),
     startTime: event.start_time ? event.start_time.slice(0, 5) : null,
     endTime: event.end_time ? event.end_time.slice(0, 5) : null,
