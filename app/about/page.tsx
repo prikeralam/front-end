@@ -1,5 +1,4 @@
 import type { ReactNode } from "react";
-import Image from "next/image";
 import { org, vision, missionPoints } from "../_content/org";
 import { pageMetadata } from "../_lib/seo";
 import { load } from "../_lib/api/load";
@@ -76,9 +75,8 @@ export default async function AboutPage() {
 
   return (
     <>
-      {/* The hero's photo hangs over the band's lower edge, so the band leaves room beneath the text. */}
       <section className="relative overflow-hidden border-b border-[#e3e6f0] bg-[radial-gradient(1100px_420px_at_85%_-10%,rgba(37,61,154,0.11),transparent_62%),radial-gradient(700px_320px_at_0%_120%,rgba(37,61,154,0.05),transparent_60%)] after:pointer-events-none after:absolute after:inset-0 after:bg-[radial-gradient(circle,rgba(37,61,154,0.16)_1px,transparent_1.4px)] after:bg-[length:26px_26px] after:[mask-image:linear-gradient(100deg,transparent_55%,#000_92%)]">
-        <div className="relative z-10 mx-auto max-w-6xl px-6 pb-36 pt-16 sm:pb-48 sm:pt-20">
+        <div className="relative z-10 mx-auto max-w-6xl px-6 pb-16 pt-16 sm:pb-20 sm:pt-20">
           <p className={`flex items-center gap-2.5 ${label}`}>
             <span aria-hidden="true" className="h-2 w-2 bg-[#253D9A]" />
             About PRI
@@ -87,11 +85,6 @@ export default async function AboutPage() {
           <p className="mt-6 max-w-2xl text-pretty text-lg leading-relaxed text-[#4b4f66] sm:text-xl">{statement}</p>
         </div>
       </section>
-      <div className="relative mx-auto -mt-28 max-w-6xl px-6 sm:-mt-40">
-        <div className="relative aspect-[4/3] overflow-hidden rounded-lg shadow-[0_24px_60px_-24px_rgba(23,26,43,0.35)] sm:aspect-[21/9]">
-          <Image src="/gallery/policy-roundtable-1.jpg" alt="PRI researchers and guests around the table at a policy roundtable" fill priority sizes="(min-width: 1152px) 1104px, 100vw" className="object-cover" />
-        </div>
-      </div>
 
       <Band>
         <div className="grid gap-10 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] lg:gap-16">
