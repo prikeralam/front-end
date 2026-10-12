@@ -131,6 +131,7 @@ describe("structured data", () => {
       gallery: [],
       kind: "event",
       dateLabel: "",
+      dateFixed: true,
       timing: "upcoming",
     };
     expect(eventJsonLd(event)).toMatchObject({ "@type": "Event", startDate: "2026-11-01", url: "https://priresearch.in/events/launch" });
