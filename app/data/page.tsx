@@ -6,7 +6,7 @@ import { listCollections, listMentions } from "../_lib/api/impact";
 import { listPublications } from "../_lib/api/publications";
 import type { DatasetSummary } from "../_lib/datasetTypes";
 import { load } from "../_lib/api/load";
-import { SectionHeading } from "../_ui/kit";
+import { BandKicker, DARK_BAND, SectionHeading } from "../_ui/kit";
 import DataSearch from "./_ui/DataSearch";
 import FeaturedDataset from "./_ui/FeaturedDataset";
 import MentionList from "./_ui/MentionList";
@@ -92,18 +92,15 @@ export default async function DataPage() {
 
   return (
     <>
-      <section className="relative overflow-hidden border-b border-[#e3e6f0] bg-[radial-gradient(1100px_420px_at_85%_-10%,rgba(37,61,154,0.11),transparent_62%)] after:pointer-events-none after:absolute after:inset-0 after:bg-[radial-gradient(circle,rgba(37,61,154,0.14)_1px,transparent_1.4px)] after:bg-[length:26px_26px] after:[mask-image:linear-gradient(100deg,transparent_55%,#000_92%)]">
+      <section className={DARK_BAND}>
         <div className={`relative z-10 mx-auto grid max-w-6xl items-start gap-10 px-6 pb-14 pt-14 ${featured && featuredTable ? "lg:grid-cols-[1.1fr_0.9fr]" : ""}`}>
           <div className="grid gap-5">
-            <p className="flex items-center gap-2.5 font-[family-name:var(--font-mono)] text-[11.5px] font-semibold uppercase tracking-[0.14em] text-[#253D9A]">
-              <span aria-hidden="true" className="h-2 w-2 bg-[#253D9A]" />
-              Data Repository & Library
-            </p>
-            <h1 className="max-w-[18ch] text-balance text-[36px] leading-[1.08] tracking-tight text-[#171a2b] sm:text-[48px]">Open data for Kerala&rsquo;s policy questions</h1>
+            <BandKicker>Data Repository & Library</BandKicker>
+            <h1 className="max-w-[18ch] text-balance text-[36px] leading-[1.08] tracking-tight text-white sm:text-[48px]">Open data for Kerala&rsquo;s policy questions</h1>
             {datasetsResult.ok && datasets.length > 0 && (
-              <p className="font-[family-name:var(--font-mono)] text-[13px] font-semibold text-[#253D9A]">{statLine.join(" · ")}</p>
+              <p className="font-[family-name:var(--font-mono)] text-[13px] font-semibold text-[#aebbf0]">{statLine.join(" · ")}</p>
             )}
-            <p className="max-w-[56ch] text-pretty text-[16.5px] leading-relaxed text-[#4b4f66]">
+            <p className="max-w-[56ch] text-pretty text-[16.5px] leading-relaxed text-white/75">
               Datasets behind PRI&rsquo;s research, with previews, sources and citations. Some are open to everyone; others are available on request.
             </p>
             {datasetsResult.ok && datasets.length > 0 && <DataSearch datasets={datasets} suggestions={themes} />}

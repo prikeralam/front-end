@@ -5,7 +5,7 @@ import type { DatasetSummary } from "../../_lib/datasetTypes";
 import { matchesQuery } from "./datasetSearch";
 import DatasetRow from "./DatasetRow";
 
-/** Search across every dataset, with the themes as one-tap searches. Results replace nothing; they appear below. */
+/** Search across every dataset, with the themes as one-tap searches. Results replace nothing; they appear below. Sits on the Data page's dark header band. */
 export default function DataSearch({ datasets, suggestions }: { datasets: DatasetSummary[]; suggestions: string[] }) {
   const [query, setQuery] = useState("");
   const results = useMemo(() => datasets.filter((d) => matchesQuery(d, query)), [datasets, query]);
@@ -33,7 +33,7 @@ export default function DataSearch({ datasets, suggestions }: { datasets: Datase
       </form>
       {suggestions.length > 0 && (
         <div className="flex flex-wrap items-center gap-2">
-          <span className="font-[family-name:var(--font-mono)] text-[11px] font-semibold uppercase tracking-[0.1em] text-[#6f7899]">Popular</span>
+          <span className="font-[family-name:var(--font-mono)] text-[11px] font-semibold uppercase tracking-[0.1em] text-[#aebbf0]">Popular</span>
           {suggestions.map((s) => (
             <button
               key={s}
@@ -41,7 +41,7 @@ export default function DataSearch({ datasets, suggestions }: { datasets: Datase
               onClick={() => setQuery(query === s ? "" : s)}
               aria-pressed={query === s}
               className={`rounded-md border px-2.5 py-1 text-[12.5px] font-semibold transition-colors ${
-                query === s ? "border-[#253D9A] bg-[#253D9A] text-white" : "border-[#d9ddea] bg-white text-[#3a4263] hover:border-[#253D9A] hover:text-[#253D9A]"
+                query === s ? "border-white bg-white text-[#16245c] ring-2 ring-white/40" : "border-white/25 bg-white/10 text-white hover:border-white/60 hover:bg-white/15"
               }`}
             >
               {s}
@@ -52,7 +52,7 @@ export default function DataSearch({ datasets, suggestions }: { datasets: Datase
 
       {searching && (
         <div className="mt-2" aria-live="polite">
-          <p className="mb-3 text-[13px] text-[#5b6280]">
+          <p className="mb-3 text-[13px] text-white/75">
             {results.length === 0 ? `No datasets match “${query.trim()}”.` : `${results.length} ${results.length === 1 ? "dataset" : "datasets"} for “${query.trim()}”`}
           </p>
           {results.length > 0 && (
