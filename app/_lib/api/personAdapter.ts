@@ -15,14 +15,14 @@ export function toPerson(person: ApiPerson, group: Person["group"]): Person {
   return {
     slug: person.slug,
     name: person.name,
-    role: person.role_title,
+    role: person.role_title ?? "",
     group,
     bio: person.bio || undefined,
     linkedin: person.linkedin_url || undefined,
     email: person.email || undefined,
     status: "real",
     photo: {
-      label: `Portrait of ${person.name}, ${person.role_title}`,
+      label: person.role_title ? `Portrait of ${person.name}, ${person.role_title}` : `Portrait of ${person.name}`,
       ratio: "square",
       kind: "photo",
       // An uploaded photo wins over the link; neither leaves `src` unset, which falls back to the themed stock portrait like before.
@@ -40,7 +40,7 @@ export function toPartner(person: ApiPerson): Partner {
     slug: person.slug,
     name: person.name,
     description: person.bio ?? "",
-    type: /institution/i.test(person.role_title) ? "institution" : "researcher",
+    type: /institution/i.test(person.role_title ?? "") ? "institution" : "researcher",
     status: "real",
     logo: {
       label: `${person.name} logo`,
