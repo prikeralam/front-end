@@ -13,6 +13,11 @@ export const MAX_STORY_HEIGHT = 60000;
 export const STORY_SANDBOX = "allow-scripts allow-popups allow-popups-to-escape-sandbox";
 
 const BASE_STYLE = "<style>html,body{margin:0;background:transparent}</style>";
+/**
+ * Comes after the story's own CSS. Story files cap their wrapper at 760px (docs/data-story-template.html); the page
+ * sets the column width, so the cap on the body's direct children is lifted and the story fills the frame.
+ */
+export const WIDTH_STYLE = "<style>body>*{max-width:none!important}</style>";
 
 // Runs inside the story. Plain ES5 so it works whatever the story's own scripts expect.
 const BRIDGE = `<script>(function(){
@@ -53,6 +58,8 @@ const BRIDGE = `<script>(function(){
  */
 export function wrapStoryHtml(html: string): string {
   const prelude = BASE_STYLE + BRIDGE;
+  const bodyEnd = /<\/body\s*>/i.exec(html);
+  html = bodyEnd ? html.slice(0, bodyEnd.index) + WIDTH_STYLE + html.slice(bodyEnd.index) : html + WIDTH_STYLE;
   const head = /<head\b[^>]*>/i.exec(html);
   if (head) return html.slice(0, head.index + head[0].length) + prelude + html.slice(head.index + head[0].length);
   const doctype = /^\s*<!doctype[^>]*>/i.exec(html);
