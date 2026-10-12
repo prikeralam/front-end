@@ -101,6 +101,8 @@ export type PRIEvent = {
   startDate: string;
   endDate: string | null;
   dateLabel: string;
+  /** False while the date is only a note ("December 2026, 3rd or 4th week"), so nothing offers to add it to a calendar. */
+  dateFixed: boolean;
   /** "9:30 AM - 5:00 PM", "11:00 AM", or "" when no time is set. Local (India) time, shown as entered. */
   timeLabel: string;
   /** HH:MM start time from the API, for structured data; null when none. */
