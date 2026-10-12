@@ -53,8 +53,11 @@ export type DynamicOptions = "sub-themes" | "authors" | "publications" | "datase
 export type FieldConfig = {
   key: string;
   label: string;
-  /** `image` is an optional upload paired with a link field (`urlKey`); the upload wins when both are set. */
-  kind: "text" | "textarea" | "select" | "multiselect" | "date" | "number" | "file" | "image";
+  /**
+   * `image` is an optional upload paired with a link field (`urlKey`); the upload wins when both are set. `lines` is a
+   * textarea sent as a list, one item per line; `time` is an HH:MM clock time.
+   */
+  kind: "text" | "textarea" | "lines" | "select" | "multiselect" | "date" | "time" | "number" | "file" | "image";
   options?: FieldOption[];
   optionsFrom?: DynamicOptions;
   /** Not required to submit. */
