@@ -3034,7 +3034,7 @@ export interface components {
             readonly id: number;
             slug: string;
             name: string;
-            role_title: string;
+            role_title?: string;
             group: components["schemas"]["GroupEnum"];
             bio?: string;
             photo_url?: string;

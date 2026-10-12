@@ -76,7 +76,7 @@ export const RESOURCES: Record<ContentTypeKey, Resource> = {
     slugFrom: (v) => v.name,
     fields: [
       { key: "name", label: "Name", kind: "text" },
-      { key: "role_title", label: "Role / title", kind: "text" },
+      { key: "role_title", label: "Role / title", kind: "text", optional: true, help: "Required for everyone except Advisory Body members, whose role isn't shown." },
       { key: "group", label: "Group", kind: "select", options: PERSON_GROUPS },
       { key: "bio", label: "Bio", kind: "textarea", optional: true },
       { key: "photo", label: "Photo", kind: "image", urlKey: "photo_url", optional: true },

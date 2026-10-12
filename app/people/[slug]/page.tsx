@@ -40,8 +40,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const person = result.ok ? result.data : null;
   if (!person) return { title: "People" };
   return pageMetadata({
-    title: `${person.name}, ${person.role}`,
-    description: person.bio || `${person.name}, ${person.role} at the Policy and Research Initiative (PRI).`,
+    // Advisory Body members may have no role.
+    title: person.role ? `${person.name}, ${person.role}` : person.name,
+    description: person.bio || `${person.name}${person.role ? `, ${person.role}` : ""} at the Policy and Research Initiative (PRI).`,
     path: `/people/${person.slug}`,
     image: person.photo?.src,
     type: "profile",
