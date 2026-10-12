@@ -2908,6 +2908,8 @@ export interface components {
             cta_label?: string;
             cta_href?: string;
             stage?: components["schemas"]["StageEnum"];
+            facts?: string[];
+            details?: string;
             readonly status?: components["schemas"]["WorkflowStatusEnum"];
             readonly created_by?: number;
             readonly reviewed_by?: number | null;
@@ -3034,7 +3036,7 @@ export interface components {
             readonly id: number;
             slug: string;
             name: string;
-            role_title: string;
+            role_title?: string;
             group: components["schemas"]["GroupEnum"];
             bio?: string;
             photo_url?: string;
@@ -3063,6 +3065,8 @@ export interface components {
             cta_label?: string;
             cta_href?: string;
             stage?: components["schemas"]["StageEnum"];
+            facts?: string[];
+            details?: string;
             readonly status: components["schemas"]["WorkflowStatusEnum"];
             readonly created_by: number;
             readonly reviewed_by: number | null;

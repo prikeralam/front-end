@@ -70,7 +70,7 @@ export default function PeopleGrid({ people, groupLabel }: { people: Person[]; g
                 </div>
                 <div className="flex flex-1 flex-col gap-1 px-3 pt-3.5 sm:px-4">
                   <p className="font-[family-name:var(--font-heading)] text-[16px] leading-snug text-[#171a2b] transition-colors group-hover:text-[#253D9A]">{p.name}</p>
-                  <p className="font-[family-name:var(--font-mono)] text-[10.5px] uppercase leading-snug tracking-[0.08em] text-[#6f7899]">{p.role}</p>
+                  {p.role && <p className="font-[family-name:var(--font-mono)] text-[10.5px] uppercase leading-snug tracking-[0.08em] text-[#6f7899]">{p.role}</p>}
                 </div>
               </Link>
               {/* Icons on the left, "Read profile" bottom right; on narrow cards the link wraps onto its own line. */}
@@ -114,7 +114,7 @@ export default function PeopleGrid({ people, groupLabel }: { people: Person[]; g
                 <h2 id="person-dialog-name" className="border-l-[3px] border-[#253D9A] pl-3.5 font-[family-name:var(--font-heading)] text-[26px] leading-tight text-[#171a2b]">
                   {open.name}
                 </h2>
-                <p className="mt-1.5 pl-[17px] font-[family-name:var(--font-mono)] text-[11.5px] uppercase tracking-[0.08em] text-[#6f7899]">{open.role}</p>
+                {open.role && <p className="mt-1.5 pl-[17px] font-[family-name:var(--font-mono)] text-[11.5px] uppercase tracking-[0.08em] text-[#6f7899]">{open.role}</p>}
               </div>
               <p className="text-[15px] leading-relaxed text-[#4b4f66]">{open.bio || "A biography will be added soon."}</p>
               <div className="mt-1 grid justify-items-start gap-4">
