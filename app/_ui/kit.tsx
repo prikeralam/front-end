@@ -69,7 +69,7 @@ export function PersonCard({ person }: { person: Person }) {
         {person.name}
         <StatusTag status={person.status} />
       </p>
-      <p className="mt-0.5 text-[12px] text-[#5b5f74]">{person.role}</p>
+      {person.role && <p className="mt-0.5 text-[12px] text-[#5b5f74]">{person.role}</p>}
       {person.bio && <p className="mt-2 text-[11px] leading-relaxed text-[#5b5f74]">{person.bio}</p>}
     </div>
   );

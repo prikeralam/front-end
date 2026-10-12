@@ -73,6 +73,8 @@ export type FieldConfig = {
   /** For `image` fields: the API's link field that sits beside the upload, e.g. `photo_url`. */
   urlKey?: string;
   help?: string;
+  /** Height of a `textarea` field, in lines; 4 when unset. */
+  rows?: number;
 };
 
 /** One content object as the CMS screens see it, whatever resource it came from. */

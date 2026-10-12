@@ -68,6 +68,12 @@ describe("toPartner", () => {
     expect(toPartner({ ...partner, website_url: "" }).website).toBeUndefined();
   });
 
+  it("leaves the role out of the portrait label when there is none (Advisory Body)", () => {
+    const person = toPerson({ ...apiPerson, group: "advisory", role_title: "" }, "advisory");
+    expect(person.role).toBe("");
+    expect(person.photo?.label).toBe(`Portrait of ${apiPerson.name}`);
+  });
+
   it("treats a role_title containing institution as an institution, anything else as a researcher", () => {
     const institution = toPartner({ ...apiPerson, group: "partner", role_title: "Partner institution" });
     const researcher = toPartner({ ...apiPerson, group: "partner", role_title: "Research fellow" });
