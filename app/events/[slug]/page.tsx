@@ -77,14 +77,10 @@ export default async function EventDetailPage({ params }: { params: Promise<{ sl
       <JsonLd data={eventJsonLd(event)} />
       <EventHero event={event} />
 
-      {event.image?.src && (
-        <div className="mx-auto max-w-6xl px-6 pt-10">
-          <EventPoster image={event.image} />
-        </div>
-      )}
-
       <div className="mx-auto grid max-w-6xl gap-10 px-6 py-12 lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-14">
         <div className="min-w-0">
+          {/* First in the reading column: under the title on phones, beside the details card on desktop. */}
+          {event.image?.src && <EventPoster image={event.image} />}
           {about.length > 0 && (
             <Section title={event.kind === "campaign" ? "About this campaign" : "About this event"}>
               <div className="space-y-4">
