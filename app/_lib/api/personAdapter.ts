@@ -25,6 +25,7 @@ export function toPerson(person: ApiPerson, group: Person["group"]): Person {
       label: person.role_title ? `Portrait of ${person.name}, ${person.role_title}` : `Portrait of ${person.name}`,
       ratio: "square",
       kind: "photo",
+      anchor: "top",
       // An uploaded photo wins over the link; neither leaves `src` unset, which falls back to the themed stock portrait like before.
       src: person.photo || person.photo_url || undefined,
     },

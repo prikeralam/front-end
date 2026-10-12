@@ -27,7 +27,7 @@ export default function MediaSlot({ need, className = "" }: { need: MediaNeed; c
   const photoUrl = need.src ?? stockPhotoFor(need);
 
   if (photoUrl) {
-    const fit = need.kind === "logo" ? "object-contain p-3" : "object-cover";
+    const fit = need.kind === "logo" ? "object-contain p-3" : need.anchor === "top" ? "object-cover object-top" : "object-cover";
     return (
       <div className={`relative ${ratioClass(need.ratio)} overflow-hidden rounded-lg ${className}`}>
         <Image src={photoUrl} alt={need.label} fill sizes="(max-width: 768px) 100vw, 400px" className={fit} />
