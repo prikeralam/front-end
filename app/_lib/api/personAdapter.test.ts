@@ -32,6 +32,7 @@ describe("toPerson", () => {
         label: "Portrait of Dr. Noushad T, Director of Operations",
         ratio: "square",
         kind: "photo",
+        anchor: "top",
         src: "https://cdn.example.org/people/noushad.jpg",
       },
     });

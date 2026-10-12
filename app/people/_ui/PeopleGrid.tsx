@@ -22,7 +22,8 @@ function PortraitPlaceholder() {
 function Portrait({ person, sizes, className = "" }: { person: Person; sizes: string; className?: string }) {
   const src = person.photo?.src;
   return src ? (
-    <Image src={src} alt={`Portrait of ${person.name}`} fill sizes={sizes} className={`object-cover ${className}`} />
+    // Anchored to the top: a portrait cropped to a square (or the wide pop-up) loses its bottom, never the head.
+    <Image src={src} alt={`Portrait of ${person.name}`} fill sizes={sizes} className={`object-cover object-top ${className}`} />
   ) : (
     <PortraitPlaceholder />
   );
@@ -65,7 +66,7 @@ export default function PeopleGrid({ people, groupLabel }: { people: Person[]; g
                   <Portrait
                     person={p}
                     sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 280px"
-                    className="grayscale transition-[filter,transform] duration-500 ease-[cubic-bezier(.22,1,.36,1)] group-hover:scale-[1.03] group-hover:grayscale-0 group-focus-within:grayscale-0 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+                    className="grayscale transition-[filter,transform] duration-500 ease-[cubic-bezier(.22,1,.36,1)] origin-top group-hover:scale-[1.03] group-hover:grayscale-0 group-focus-within:grayscale-0 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
                   />
                 </div>
                 <div className="flex flex-1 flex-col gap-1 px-3 pt-3.5 sm:px-4">

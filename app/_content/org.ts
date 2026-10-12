@@ -47,54 +47,6 @@ export const missionPoints = [
   "Empower decision-makers and the public through knowledge sharing and capacity building.",
 ];
 
-export const departments = [
-  {
-    name: "Center for Human Capital Development",
-    areas: [
-      "Educational Statistics",
-      "Occupational and Employment Patterns",
-      "Skill Development and Capacity Building",
-      "Accessibility and Opportunities",
-    ],
-  },
-  {
-    name: "Center for Economic Analysis",
-    areas: [
-      "Wealth and Income Distribution",
-      "Market Participation and Ownership Patterns",
-      "Budget Allocation and Expenditure",
-      "Agriculture and Industry",
-      "Public Infrastructure",
-      "Environment and Resilience",
-    ],
-  },
-  {
-    name: "Department of Society Development",
-    areas: [
-      "Organizations and Community Institutions",
-      "Philanthropic and Welfare Activities",
-      "Inter-religious Harmony",
-      "Resource Allocation and Optimization",
-    ],
-  },
-  {
-    name: "Center for Governance and Policy Analysis",
-    areas: [
-      "Public Policy Analysis",
-      "Political Participation and Legislative Representation",
-      "Schemes and Programmes",
-    ],
-  },
-  {
-    name: "Demography & Health Research Unit",
-    areas: [
-      "Demography and Population Studies",
-      "Migration and Remittances",
-      "Healthcare Accessibility and Delivery",
-    ],
-  },
-];
-
 /** Grouped navigation IA, shared across all three design variants. */
 export const nav = [
   {
