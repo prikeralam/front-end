@@ -79,6 +79,8 @@ export default function SimpleDraftForm({
             </label>
             {f.kind === "image" ? (
               <ImageField field={f} id={id} uploadedUrl={initial || undefined} linkUrl={f.urlKey ? initialValues?.[f.urlKey] || undefined : undefined} />
+            ) : f.kind === "lines" ? (
+              <textarea id={id} name={f.key} defaultValue={initial ?? ""} required={required} readOnly={readOnly} rows={5} className={`${controlClass} py-2 leading-relaxed`} />
             ) : f.kind === "textarea" ? (
               <textarea id={id} name={f.key} defaultValue={initial ?? ""} required={required} readOnly={readOnly} rows={4} className={`${controlClass} py-2 leading-relaxed`} />
             ) : f.kind === "multiselect" ? (
@@ -120,7 +122,7 @@ export default function SimpleDraftForm({
               <input
                 id={id}
                 name={f.key}
-                type={f.kind === "date" ? "date" : f.kind === "number" ? "number" : "text"}
+                type={f.kind === "date" ? "date" : f.kind === "time" ? "time" : f.kind === "number" ? "number" : "text"}
                 defaultValue={initial ?? ""}
                 required={required}
                 readOnly={readOnly}

@@ -182,6 +182,27 @@ describe("phase D types", () => {
   });
 });
 
+describe("event details", () => {
+  const base = { kind: "event", title: "Conclave", start_date: "2026-12-14", end_date: "", location: "", summary: "", body: "", image_url: "", registration_url: "", date_note: "", mode: "" };
+
+  it("sends one-per-line fields as lists without blank lines, and times as HH:MM or null", () => {
+    const result = toPayload("event", { ...base, speakers: "Lead speaker: Muhammed Thufail\r\n  \n Presided by: Dr. Anees Vavad ", focus_areas: "", collaborators: "SAFI Institutions", start_time: "09:30", end_time: "" }, "create");
+    expect(result).toMatchObject({
+      ok: true,
+      payload: { speakers: ["Lead speaker: Muhammed Thufail", "Presided by: Dr. Anees Vavad"], focus_areas: [], collaborators: ["SAFI Institutions"], start_time: "09:30", end_time: null },
+    });
+  });
+
+  it("refuses a time that isn't HH:MM", () => {
+    expect(toPayload("event", { ...base, start_time: "9.30am", end_time: "", speakers: "", focus_areas: "", collaborators: "" }, "create")).toMatchObject({ ok: false, message: expect.stringContaining("Start time") });
+  });
+
+  it("shows API lists one per line and API times without seconds in the form", () => {
+    const record = toCmsRecord("event", { id: 1, status: "draft", created_by: 1, updated_at: "", slug: "c", ...base, start_time: "09:30:00", end_time: null, speakers: ["A: B", "C"], focus_areas: [], collaborators: null } as unknown as ApiRecord);
+    expect([record.values.speakers, record.values.start_time, record.values.end_time, record.values.collaborators]).toEqual(["A: B\nC", "09:30", "", ""]);
+  });
+});
+
 describe("belongsToType / objectPath", () => {
   it("splits the shared people endpoint into people and partners", () => {
     const partner = { ...base, group: "partner" } as ApiRecord;

@@ -97,8 +97,21 @@ export type PRIEvent = {
   startDate: string;
   endDate: string | null;
   dateLabel: string;
+  /** "9:30 AM - 5:00 PM", "11:00 AM", or "" when no time is set. Local (India) time, shown as entered. */
+  timeLabel: string;
+  /** HH:MM start time from the API, for structured data; null when none. */
+  startTime: string | null;
+  endTime: string | null;
   location: string;
+  mode: "in_person" | "online" | "hybrid" | null;
+  collaborators: string[];
+  /** "Role: Name" lines split on the first ": "; a line without one is a name with no role. */
+  speakers: { role: string; name: string }[];
+  /** Focus areas, each with an optional heading ("Heading: detail"). */
+  focusAreas: { heading?: string; text: string }[];
   image: MediaNeed | null;
+  /** Gallery photos, in order. The cover (`image`) is not repeated here. */
+  gallery: MediaNeed[];
   registrationUrl?: string;
   timing: "upcoming" | "past";
 };
