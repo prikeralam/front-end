@@ -1,6 +1,17 @@
-import { org, vision, missionPoints, departments } from "../_content/org";
-import { PageHeader, SectionHeading } from "../_ui/kit";
+import type { ReactNode } from "react";
+import Image from "next/image";
+import { org, vision, missionPoints } from "../_content/org";
 import { pageMetadata } from "../_lib/seo";
+import { load } from "../_lib/api/load";
+import { getContentBlock } from "../_lib/api/contentBlocks";
+import { listPublications } from "../_lib/api/publications";
+import { listDatasets } from "../_lib/api/datasets";
+import { listProjects } from "../_lib/api/projects";
+import { listEvents } from "../_lib/api/engage";
+import { paragraphs } from "../_lib/eventPage";
+import { aboutStats, missionTiles } from "../_lib/aboutPage";
+import MissionTiles from "./_ui/MissionTiles";
+import ExploreCards from "./_ui/ExploreCards";
 
 export const metadata = pageMetadata({
   title: "About PRI",
@@ -8,60 +19,126 @@ export const metadata = pageMetadata({
   path: "/about",
 });
 
-export default function AboutPage() {
+const label = "font-[family-name:var(--font-mono)] text-[11.5px] font-semibold uppercase tracking-[0.14em] text-[#253D9A]";
+
+/** A block's text from the dashboard, or PRI's own copy in `org.ts` when the block is missing or the API is down. */
+async function blockText(slug: string, fallback: string): Promise<string> {
+  const result = await load(slug, () => getContentBlock(slug));
+  return (result.ok && result.data?.body.trim()) || fallback;
+}
+
+/** How many of something are published, or undefined when it can't be read (the figure is then left out). */
+async function count(what: string, read: () => Promise<unknown[]>): Promise<number | undefined> {
+  const result = await load(what, read);
+  return result.ok ? result.data.length : undefined;
+}
+
+/** "First sentence. The rest." -> the first sentence as the pull quote's lead, the rest beneath it. */
+function splitLead(text: string): [string, string] {
+  const match = /^(.+?[.!?])\s+([\s\S]+)$/.exec(text.trim());
+  return match ? [match[1], match[2]] : [text.trim(), ""];
+}
+
+function SectionTitle({ kicker, title }: { kicker: string; title: string }) {
+  return (
+    <div className="max-w-2xl">
+      <p className={`flex items-center gap-2.5 ${label}`}>
+        <span aria-hidden="true" className="h-2 w-2 bg-[#253D9A]" />
+        {kicker}
+      </p>
+      <h2 className="mt-4 text-balance font-[family-name:var(--font-heading)] text-3xl leading-tight tracking-tight text-[#171a2b] sm:text-4xl">{title}</h2>
+    </div>
+  );
+}
+
+function Band({ children, white = false }: { children: ReactNode; white?: boolean }) {
+  return (
+    <section className={white ? "border-y border-[#e3e6f0] bg-white" : ""}>
+      <div className="mx-auto max-w-6xl px-6 py-20 sm:py-24">{children}</div>
+    </section>
+  );
+}
+
+export default async function AboutPage() {
+  const [statement, whoWeAre, visionText, missionText, publications, datasets, projects, events] = await Promise.all([
+    blockText("organization-statement", org.summary),
+    blockText("who-we-are", org.intro),
+    blockText("our-vision", vision.text),
+    blockText("our-mission", missionPoints.join("\n")),
+    count("publications", async () => (await listPublications()).publications),
+    count("datasets", () => listDatasets()),
+    count("projects", () => listProjects()),
+    count("events", () => listEvents()),
+  ]);
+  const [visionLead, visionRest] = splitLead(visionText);
+  const tiles = missionTiles(paragraphs(missionText));
+  const stats = aboutStats({ publications, datasets, projects, events });
+
   return (
     <>
-      <PageHeader kicker="Who we are" title={org.tagline} intro={org.summary} />
-
-      <section className="mx-auto max-w-6xl px-6 py-16">
-        <SectionHeading>Who We Are</SectionHeading>
-        <div className="mt-8 grid gap-8 lg:grid-cols-2">
-          <div className="rounded-lg border border-[#e6e8f0] bg-white p-8">
-            <p className="text-xs font-[family-name:var(--font-mono)] font-semibold uppercase tracking-[0.12em] text-[#8b8fa3]">Who We Are</p>
-            <p className="mt-4 text-lg leading-relaxed text-[#4b4f66]">{org.intro}</p>
-          </div>
-          <div className="rounded-lg bg-[#253D9A] p-8 text-white">
-            <p className="text-xs font-[family-name:var(--font-mono)] font-semibold uppercase tracking-[0.12em] text-white/60">Our Vision</p>
-            <p className="mt-4 text-lg leading-relaxed">{vision.text}</p>
-          </div>
+      {/* The hero's photo hangs over the band's lower edge, so the band leaves room beneath the text. */}
+      <section className="relative overflow-hidden border-b border-[#e3e6f0] bg-[radial-gradient(1100px_420px_at_85%_-10%,rgba(37,61,154,0.11),transparent_62%),radial-gradient(700px_320px_at_0%_120%,rgba(37,61,154,0.05),transparent_60%)] after:pointer-events-none after:absolute after:inset-0 after:bg-[radial-gradient(circle,rgba(37,61,154,0.16)_1px,transparent_1.4px)] after:bg-[length:26px_26px] after:[mask-image:linear-gradient(100deg,transparent_55%,#000_92%)]">
+        <div className="relative z-10 mx-auto max-w-6xl px-6 pb-36 pt-16 sm:pb-48 sm:pt-20">
+          <p className={`flex items-center gap-2.5 ${label}`}>
+            <span aria-hidden="true" className="h-2 w-2 bg-[#253D9A]" />
+            About PRI
+          </p>
+          <h1 className="mt-5 max-w-4xl text-balance text-[2.5rem] leading-[1.05] tracking-tight text-[#171a2b] sm:text-6xl">{org.tagline}</h1>
+          <p className="mt-6 max-w-2xl text-pretty text-lg leading-relaxed text-[#4b4f66] sm:text-xl">{statement}</p>
         </div>
+      </section>
+      <div className="relative mx-auto -mt-28 max-w-6xl px-6 sm:-mt-40">
+        <div className="relative aspect-[4/3] overflow-hidden rounded-lg shadow-[0_24px_60px_-24px_rgba(23,26,43,0.35)] sm:aspect-[21/9]">
+          <Image src="/gallery/policy-roundtable-1.jpg" alt="PRI researchers and guests around the table at a policy roundtable" fill priority sizes="(min-width: 1152px) 1104px, 100vw" className="object-cover" />
+        </div>
+      </div>
 
-        <div className="mt-8 rounded-lg border border-[#e6e8f0] bg-white p-8">
-          <p className="text-2xl font-bold tracking-tight text-[#171a2b]">Our Mission</p>
-          <div className="mt-6 grid gap-6 sm:grid-cols-2">
-            {missionPoints.map((point, i) => (
-              <div key={point} className="flex gap-4">
-                <span className="font-[family-name:var(--font-mono)] text-sm font-semibold text-[#253D9A]">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <span className="text-lg leading-relaxed text-[#4b4f66]">{point}</span>
+      <Band>
+        <div className="grid gap-10 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] lg:gap-16">
+          <div>
+            <SectionTitle kicker="Our purpose" title="Who we are" />
+            <p className="mt-8 text-pretty text-xl leading-relaxed text-[#3a3e56]">{whoWeAre}</p>
+          </div>
+          <figure className="relative flex flex-col justify-center overflow-hidden rounded-lg bg-[#253D9A] p-8 text-white sm:p-10">
+            <span aria-hidden="true" className="pointer-events-none absolute -right-2 -top-10 font-[family-name:var(--font-heading)] text-[11rem] leading-none text-white/10">&ldquo;</span>
+            <p className="relative font-[family-name:var(--font-mono)] text-[11.5px] font-semibold uppercase tracking-[0.14em] text-white/60">Our vision</p>
+            <blockquote className="relative mt-5">
+              <p className="text-pretty font-[family-name:var(--font-heading)] text-2xl leading-snug sm:text-[1.7rem]">{visionLead}</p>
+              {visionRest && <p className="mt-4 text-[15.5px] leading-relaxed text-white/75">{visionRest}</p>}
+            </blockquote>
+          </figure>
+        </div>
+      </Band>
+
+      {tiles.length > 0 && (
+        <Band white>
+          <SectionTitle kicker="Our mission" title="What we do" />
+          <div className="mt-12">
+            <MissionTiles tiles={tiles} />
+          </div>
+        </Band>
+      )}
+
+      {stats.length > 0 && (
+        <Band>
+          <SectionTitle kicker="By the numbers" title="Our work so far" />
+          <dl className={`mt-12 grid gap-8 sm:grid-cols-2 ${stats.length >= 4 ? "lg:grid-cols-4" : stats.length === 3 ? "lg:grid-cols-3" : ""}`}>
+            {stats.map((stat) => (
+              <div key={stat.label} className="border-t-2 border-[#253D9A] pt-5">
+                <dd className="font-[family-name:var(--font-heading)] text-5xl tracking-tight text-[#253D9A] sm:text-6xl">{stat.value}</dd>
+                <dt className="mt-2 font-[family-name:var(--font-mono)] text-[12px] font-semibold uppercase tracking-[0.12em] text-[#5b5f74]">{stat.label}</dt>
               </div>
             ))}
-          </div>
-        </div>
-      </section>
+          </dl>
+        </Band>
+      )}
 
-      <section className="mx-auto max-w-6xl px-6 py-16">
-        <SectionHeading>Research &amp; Analysis Wing</SectionHeading>
-        <p className="mt-2 max-w-2xl text-[15px] text-[#5b5f74]">
-          Five specialised departments examining gaps, inequalities, and opportunities across different societal sections.
-        </p>
-        <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {departments.map((d, i) => (
-            <div key={d.name} className="rounded-lg border border-[#e6e8f0] p-6">
-              <span className="font-[family-name:var(--font-mono)] text-xs font-semibold text-[#253D9A]">
-                {String(i + 1).padStart(2, "0")}
-              </span>
-              <h3 className="mt-3 text-[16px] font-bold leading-snug text-[#171a2b]">{d.name}</h3>
-              <ul className="mt-4 space-y-1.5">
-                {d.areas.map((a) => (
-                  <li key={a} className="text-[13px] leading-relaxed text-[#5b5f74]">{a}</li>
-                ))}
-              </ul>
-            </div>
-          ))}
+      <Band white>
+        <SectionTitle kicker="Explore further" title="Get to know PRI" />
+        <div className="mt-12">
+          <ExploreCards />
         </div>
-      </section>
+      </Band>
     </>
   );
 }
