@@ -1,14 +1,12 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { NotPublishedYet, LoadError } from "../_ui/ApiMessage";
-import { getDatasetPreviews, listDatasets } from "../_lib/api/datasets";
+import { listDatasets } from "../_lib/api/datasets";
 import { listCollections, listMentions } from "../_lib/api/impact";
 import { listPublications } from "../_lib/api/publications";
-import type { DatasetSummary } from "../_lib/datasetTypes";
 import { load } from "../_lib/api/load";
 import { BandKicker, DARK_BAND, SectionHeading } from "../_ui/kit";
 import DataSearch from "./_ui/DataSearch";
-import FeaturedDataset from "./_ui/FeaturedDataset";
 import MentionList from "./_ui/MentionList";
 import { pageMetadata } from "../_lib/seo";
 
@@ -56,11 +54,6 @@ const fallbackIcon = (
   </svg>
 );
 
-/** The newest dataset anyone can open that has a table to show, for the featured frame. */
-function pickFeatured(datasets: DatasetSummary[]): DatasetSummary | undefined {
-  return [...datasets].reverse().find((d) => d.accessState === "full" && d.fileFormat !== null && d.fileFormat !== "GeoJSON");
-}
-
 export const metadata = pageMetadata({
   title: "Data Repository & Library",
   description: "Open data for Kerala's policy questions: datasets behind PRI's research on education, health, demography and migration, with previews, sources and citations.",
@@ -78,8 +71,6 @@ export default async function DataPage() {
   const datasets = datasetsResult.ok ? datasetsResult.data : [];
   const themes = Array.from(new Set(datasets.map((d) => d.theme).filter((t): t is string => !!t)));
   const themeCounts = themes.map((theme) => ({ theme, count: datasets.filter((d) => d.theme === theme).length }));
-  const featured = pickFeatured(datasets);
-  const featuredTable = featured ? (await getDatasetPreviews(featured)).table : null;
   const statLine = [
     `${datasets.length} ${datasets.length === 1 ? "dataset" : "datasets"}`,
     `${themes.length} ${themes.length === 1 ? "theme" : "themes"}`,
@@ -93,7 +84,7 @@ export default async function DataPage() {
   return (
     <>
       <section className={DARK_BAND}>
-        <div className={`relative z-10 mx-auto grid max-w-6xl items-start gap-10 px-6 pb-14 pt-14 ${featured && featuredTable ? "lg:grid-cols-[1.1fr_0.9fr]" : ""}`}>
+        <div className="relative z-10 mx-auto grid max-w-6xl items-start gap-10 px-6 pb-14 pt-14">
           <div className="grid gap-5">
             <BandKicker>Data Repository & Library</BandKicker>
             <h1 className="max-w-[18ch] text-balance text-[36px] leading-[1.08] tracking-tight text-white sm:text-[48px]">Open data for Kerala&rsquo;s policy questions</h1>
@@ -103,9 +94,12 @@ export default async function DataPage() {
             <p className="max-w-[56ch] text-pretty text-[16.5px] leading-relaxed text-white/75">
               Datasets behind PRI&rsquo;s research, with previews, sources and citations. Some are open to everyone; others are available on request.
             </p>
-            {datasetsResult.ok && datasets.length > 0 && <DataSearch datasets={datasets} suggestions={themes} />}
+            {datasetsResult.ok && datasets.length > 0 && (
+              <div className="max-w-3xl">
+                <DataSearch datasets={datasets} suggestions={themes} />
+              </div>
+            )}
           </div>
-          {featured && featuredTable && <FeaturedDataset dataset={featured} table={featuredTable} />}
         </div>
       </section>
 
