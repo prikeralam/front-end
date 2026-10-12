@@ -1,6 +1,7 @@
 import type { components } from "./schema";
 import type { HeroProject } from "../types";
 import type { PRIDocument } from "../types";
+import { splitLabelled } from "./engageAdapter";
 
 type ApiProject = components["schemas"]["Project"];
 type ApiDocument = components["schemas"]["Document"];
@@ -21,6 +22,8 @@ export function toProject(project: ApiProject): HeroProject {
     },
     ctaLabel: project.cta_label || undefined,
     ctaHref: project.cta_href || undefined,
+    facts: (project.facts ?? []).filter(Boolean).map(splitLabelled),
+    details: project.details ?? "",
   };
 }
 

@@ -115,6 +115,12 @@ body {
     transform: translateY(24px);
   }
 }
+@keyframes pri-unfold {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   .pri-motion,
   .pri-motion * {
