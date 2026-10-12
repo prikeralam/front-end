@@ -94,7 +94,7 @@ export default function AccountPage() {
 
   return (
     <>
-      <PageHeader kicker="Sign in" title="Access your data dashboard" />
+      <PageHeader compact kicker="Sign in" title="Access your data dashboard" />
       <section className="mx-auto max-w-md px-6 py-16">
         {existing === "checking" ? (
           <div className={`${cardClass} min-h-[18rem]`} aria-busy="true">

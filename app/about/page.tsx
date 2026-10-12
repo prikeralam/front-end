@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { org, vision, missionPoints } from "../_content/org";
 import { pageMetadata } from "../_lib/seo";
+import { BandKicker, DARK_BAND } from "../_ui/kit";
 import { load } from "../_lib/api/load";
 import { getContentBlock } from "../_lib/api/contentBlocks";
 import { listPublications } from "../_lib/api/publications";
@@ -75,14 +76,11 @@ export default async function AboutPage() {
 
   return (
     <>
-      <section className="relative overflow-hidden border-b border-[#e3e6f0] bg-[radial-gradient(1100px_420px_at_85%_-10%,rgba(37,61,154,0.11),transparent_62%),radial-gradient(700px_320px_at_0%_120%,rgba(37,61,154,0.05),transparent_60%)] after:pointer-events-none after:absolute after:inset-0 after:bg-[radial-gradient(circle,rgba(37,61,154,0.16)_1px,transparent_1.4px)] after:bg-[length:26px_26px] after:[mask-image:linear-gradient(100deg,transparent_55%,#000_92%)]">
+      <section className={DARK_BAND}>
         <div className="relative z-10 mx-auto max-w-6xl px-6 pb-16 pt-16 sm:pb-20 sm:pt-20">
-          <p className={`flex items-center gap-2.5 ${label}`}>
-            <span aria-hidden="true" className="h-2 w-2 bg-[#253D9A]" />
-            About PRI
-          </p>
-          <h1 className="mt-5 max-w-4xl text-balance text-[2.5rem] leading-[1.05] tracking-tight text-[#171a2b] sm:text-6xl">{org.tagline}</h1>
-          <p className="mt-6 max-w-2xl text-pretty text-lg leading-relaxed text-[#4b4f66] sm:text-xl">{statement}</p>
+          <BandKicker>About PRI</BandKicker>
+          <h1 className="mt-5 max-w-4xl text-balance text-[2.5rem] leading-[1.05] tracking-tight text-white sm:text-6xl">{org.tagline}</h1>
+          <p className="mt-6 max-w-2xl text-pretty text-lg leading-relaxed text-white/75 sm:text-xl">{statement}</p>
         </div>
       </section>
 
