@@ -112,8 +112,45 @@ describe("structured data", () => {
   });
 
   it("gives events their dates and jobs a posting date", () => {
-    const event = { slug: "launch", title: "Launch", summary: "", body: "", startDate: "2026-11-01", endDate: null, location: "", image: null, kind: "event", dateLabel: "", timing: "upcoming" } as PRIEvent;
+    const event: PRIEvent = {
+      slug: "launch",
+      title: "Launch",
+      summary: "",
+      body: "",
+      startDate: "2026-11-01",
+      endDate: null,
+      startTime: null,
+      endTime: null,
+      timeLabel: "",
+      location: "",
+      mode: null,
+      collaborators: [],
+      speakers: [],
+      focusAreas: [],
+      image: null,
+      gallery: [],
+      kind: "event",
+      dateLabel: "",
+      timing: "upcoming",
+    };
     expect(eventJsonLd(event)).toMatchObject({ "@type": "Event", startDate: "2026-11-01", url: "https://priresearch.in/events/launch" });
+    const conclave = eventJsonLd({
+      ...event,
+      startTime: "09:30",
+      endTime: "17:00",
+      mode: "hybrid",
+      location: "Thiruvananthapuram",
+      speakers: [{ role: "Lead speaker", name: "Muhammed Thufail" }],
+      collaborators: ["SAFI Institutions"],
+    });
+    expect(conclave).toMatchObject({
+      startDate: "2026-11-01T09:30:00+05:30",
+      endDate: "2026-11-01T17:00:00+05:30",
+      eventAttendanceMode: "https://schema.org/MixedEventAttendanceMode",
+      performer: [{ "@type": "Person", name: "Muhammed Thufail" }],
+    });
+    expect((conclave.organizer as { name: string }[]).map((o) => o.name)).toEqual(["Policy and Research Initiative", "SAFI Institutions"]);
+    expect(eventJsonLd({ ...event, mode: "online" }).location).toMatchObject({ "@type": "VirtualLocation" });
     const job = { slug: "data-analyst", title: "Data Analyst", summary: "", description: "", location: "", employment: "", rolling: true, deadline: null };
     expect(jobPostingJsonLd(job, "2026-10-08")).toMatchObject({ "@type": "JobPosting", datePosted: "2026-10-08", hiringOrganization: { name: "Policy and Research Initiative" } });
   });

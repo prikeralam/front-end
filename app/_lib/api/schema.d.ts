@@ -823,6 +823,40 @@ export interface paths {
         patch: operations["v1_events_partial_update"];
         trace?: never;
     };
+    "/api/v1/events/{slug}/images/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Add a photo to the event's gallery (JPG, PNG or WebP up to 5 MB, optional caption). */
+        post: operations["v1_events_images_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/events/{slug}/images/{image_id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** @description Remove one gallery photo; its stored file is deleted too. */
+        delete: operations["v1_events_images_destroy"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/events/{slug}/transition/": {
         parameters: {
             query?: never;
@@ -1976,6 +2010,8 @@ export interface components {
             /** Format: date-time */
             readonly timestamp: string;
         };
+        /** @enum {unknown} */
+        BlankEnum: "";
         /**
          * @description * `general` - General Enquiry
          *     * `collaboration` - Collaboration
@@ -2168,9 +2204,19 @@ export interface components {
             /** Format: date */
             end_date?: string | null;
             location?: string;
+            mode?: components["schemas"]["EventModeEnum"] | components["schemas"]["BlankEnum"];
+            /** Format: time */
+            start_time?: string | null;
+            /** Format: time */
+            end_time?: string | null;
+            date_note?: string;
+            collaborators?: string[];
+            speakers?: string[];
+            focus_areas?: string[];
             image_url?: string;
             /** Format: uri */
             image?: string | null;
+            readonly images: components["schemas"]["EventImage"][];
             registration_url?: string;
             readonly status: components["schemas"]["WorkflowStatusEnum"];
             readonly created_by: number;
@@ -2182,12 +2228,26 @@ export interface components {
             /** Format: date-time */
             readonly published_at: string | null;
         };
+        /** @description A gallery photo. Written as multipart (`image`, optional `caption`); reads as its URL (presigned on S3). */
+        EventImage: {
+            readonly id: number;
+            /** Format: uri */
+            image: string;
+            caption?: string;
+        };
         /**
          * @description * `event` - Event
          *     * `campaign` - Campaign
          * @enum {string}
          */
         EventKindEnum: "event" | "campaign";
+        /**
+         * @description * `in_person` - In person
+         *     * `online` - Online
+         *     * `hybrid` - Hybrid
+         * @enum {string}
+         */
+        EventModeEnum: "in_person" | "online" | "hybrid";
         /**
          * @description * `team` - Team
          *     * `patron` - Patron
@@ -2744,9 +2804,19 @@ export interface components {
             /** Format: date */
             end_date?: string | null;
             location?: string;
+            mode?: components["schemas"]["EventModeEnum"] | components["schemas"]["BlankEnum"];
+            /** Format: time */
+            start_time?: string | null;
+            /** Format: time */
+            end_time?: string | null;
+            date_note?: string;
+            collaborators?: string[];
+            speakers?: string[];
+            focus_areas?: string[];
             image_url?: string;
             /** Format: uri */
             image?: string | null;
+            readonly images?: components["schemas"]["EventImage"][];
             registration_url?: string;
             readonly status?: components["schemas"]["WorkflowStatusEnum"];
             readonly created_by?: number;
@@ -4696,6 +4766,52 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["Event"];
                 };
+            };
+        };
+    };
+    v1_events_images_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["EventImage"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EventImage"];
+                };
+            };
+        };
+    };
+    v1_events_images_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                image_id: string;
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

@@ -276,14 +276,21 @@ export const RESOURCES: Record<ContentTypeKey, Resource> = {
       { key: "title", label: "Title", kind: "text" },
       { key: "start_date", label: "Start date", kind: "date" },
       { key: "end_date", label: "End date", kind: "date", optional: true, help: "For campaigns and events over several days." },
-      { key: "location", label: "Location", kind: "text", optional: true },
-      { key: "summary", label: "Summary", kind: "textarea", optional: true, help: "Shown at the top of the event page." },
-      { key: "body", label: "Details", kind: "textarea", optional: true, help: "Programme, speakers, outcomes. Line breaks are kept." },
-      { key: "image", label: "Image", kind: "image", urlKey: "image_url", optional: true },
+      { key: "date_note", label: "Date note", kind: "text", optional: true, help: "Only while the exact date isn't fixed, e.g. “December 2026 (3rd or 4th week)”. Shown instead of the date; the start date still sorts the event and decides Upcoming or Past." },
+      { key: "start_time", label: "Start time", kind: "time", optional: true },
+      { key: "end_time", label: "End time", kind: "time", optional: true },
+      { key: "location", label: "Venue", kind: "text", optional: true },
+      { key: "mode", label: "Mode", kind: "select", optional: true, options: options(["in_person", "In person"], ["online", "Online"], ["hybrid", "Hybrid"]) },
+      { key: "summary", label: "Summary", kind: "textarea", optional: true, help: "One or two sentences, shown under the title and on cards." },
+      { key: "focus_areas", label: "Focus areas", kind: "lines", optional: true, help: "One per line. Start a line with a short heading and a colon to show it in bold, e.g. “Demographic transition: Fertility declines across communities”." },
+      { key: "speakers", label: "Speakers & participants", kind: "lines", optional: true, help: "One per line, as “Role: Name (detail)”, e.g. “Lead speaker: Muhammed Thufail”." },
+      { key: "collaborators", label: "Collaborators", kind: "lines", optional: true, help: "One organisation per line." },
+      { key: "body", label: "Other details", kind: "textarea", optional: true, help: "Anything else, e.g. outcomes. Line breaks are kept." },
+      { key: "image", label: "Cover image", kind: "image", urlKey: "image_url", optional: true, help: "Shown on the event's card and at the top of its page. Add more photos under Photos after saving." },
       { key: "registration_url", label: "Registration link", kind: "text", optional: true, help: "An https:// form or ticket page. Shown as a Register button until the event is over." },
     ],
     title: (v) => v.title,
-    subtitle: (v) => [v.kind === "campaign" ? "Campaign" : "Event", v.start_date, v.location].filter(Boolean).join(" · "),
+    subtitle: (v) => [v.kind === "campaign" ? "Campaign" : "Event", v.date_note || v.start_date, v.location].filter(Boolean).join(" · "),
   },
 };
 
@@ -322,6 +329,9 @@ export function toValues(resource: Resource, record: ApiRecord): Record<string, 
     resource.fields.flatMap((f): [string, string][] => {
       if (f.kind === "file") return [[f.key, ""]];
       if (f.kind === "image") return [[f.key, asString(record[f.key])], ...(f.urlKey ? [[f.urlKey, asString(record[f.urlKey])] as [string, string]] : [])];
+      if (f.kind === "lines") return [[f.key, Array.isArray(record[f.key]) ? (record[f.key] as unknown[]).map(String).join("\n") : ""]];
+      // The API sends "09:30:00"; the time input takes "09:30".
+      if (f.kind === "time") return [[f.key, asString(record[f.key]).slice(0, 5)]];
       return [[f.key, f.key === "authors" ? asString((record.authors as unknown[] | undefined)?.[0]) : asString(record[f.key])]];
     }),
   );
@@ -377,9 +387,12 @@ export function toPayload(type: ContentTypeKey, values: Record<string, string>, 
     else if (field.kind === "number") {
       if (raw && !/^-?\d+$/.test(raw)) return { ok: false, message: `${field.label} must be a whole number.` };
       payload[field.key] = raw ? Number(raw) : (field.emptyValue ?? null);
-    } else if (field.kind === "date") {
-      // The API takes null, not "", for "no date".
+    } else if (field.kind === "date" || field.kind === "time") {
+      // The API takes null, not "", for "no date" or "no time".
+      if (field.kind === "time" && raw && !/^([01]\d|2[0-3]):[0-5]\d$/.test(raw)) return { ok: false, message: `${field.label} must be a time like 09:30.` };
       payload[field.key] = raw || null;
+    } else if (field.kind === "lines") {
+      payload[field.key] = raw ? raw.split(/\r?\n/).map((line) => line.trim()).filter(Boolean) : [];
     } else if (field.key === "sub_theme") payload.sub_theme = Number(raw);
     else payload[field.key] = raw;
   }
