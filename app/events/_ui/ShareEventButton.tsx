@@ -6,7 +6,7 @@ import { shareProfile } from "../../people/_ui/shareProfile";
 const NOTICE: Record<string, string> = { copied: "Link copied", failed: "Couldn't copy the link" };
 
 /** Shares the event through the device's share sheet, or copies its address where there is none. */
-export default function ShareEventButton({ slug, title, className }: { slug: string; title: string; className: string }) {
+export default function ShareEventButton({ slug, title, className, noticeClassName = "text-[#5b5f74]" }: { slug: string; title: string; className: string; noticeClassName?: string }) {
   const [notice, setNotice] = useState<string | null>(null);
 
   async function handleShare() {
@@ -26,7 +26,7 @@ export default function ShareEventButton({ slug, title, className }: { slug: str
         </svg>
         Share
       </button>
-      <span role="status" aria-live="polite" className="pointer-events-none absolute left-0 top-full mt-1.5 whitespace-nowrap text-[12px] text-[#5b5f74]">
+      <span role="status" aria-live="polite" className={`pointer-events-none absolute left-0 top-full mt-1.5 whitespace-nowrap text-[12px] ${noticeClassName}`}>
         {notice}
       </span>
     </span>

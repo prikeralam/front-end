@@ -12,7 +12,7 @@ export const metadata = pageMetadata({
 export default function ContactPage() {
   return (
     <>
-      <PageHeader kicker="Contact" title="Get in touch" intro="Get in touch with our team to learn more about our research, explore collaboration opportunities, or join our mission for inclusive development." />
+      <PageHeader compact kicker="Contact" title="Get in touch" intro="Get in touch with our team to learn more about our research, explore collaboration opportunities, or join our mission for inclusive development." />
 
       <section className="mx-auto max-w-6xl px-6 py-16">
         <div className="relative grid items-start gap-8 lg:grid-cols-[1.15fr_0.85fr]">

@@ -25,7 +25,7 @@ export default async function ResetPasswordPage({ searchParams }: Props) {
 
   return (
     <>
-      <PageHeader kicker="Account" title={fromLink ? "Set your password" : "Reset your password"} />
+      <PageHeader compact kicker="Account" title={fromLink ? "Set your password" : "Reset your password"} />
       <section className="mx-auto max-w-md px-6 py-16">
         <ResetPasswordForm uid={uid} token={token} />
       </section>
