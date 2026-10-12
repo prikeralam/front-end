@@ -20,7 +20,7 @@ export default async function FellowshipApplyPage({ searchParams }: { searchPara
 
   return (
     <>
-      <PageHeader kicker="Engage" title="Apply" />
+      <PageHeader compact kicker="Engage" title="Apply" />
       <section className="mx-auto max-w-3xl px-6 py-16">
         <Link href="/fellowship" className="text-[14px] font-semibold text-[#253D9A] hover:underline">&larr; Fellowships &amp; Internships</Link>
         <div className="mt-8">

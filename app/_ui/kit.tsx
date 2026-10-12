@@ -12,18 +12,33 @@ export function StatusTag({ status }: { status: ContentStatus }) {
   );
 }
 
-export function PageHeader({ kicker, title, intro }: { kicker: string; title: string; intro?: string }) {
+/**
+ * The dark PRI-blue band behind every public page's header (after the research article header, minus its dot grid),
+ * so pages start on the brand colour instead of near-white. Text on it uses white and `#aebbf0` for labels.
+ */
+export const DARK_BAND =
+  "relative overflow-hidden bg-[#16245c] bg-[radial-gradient(900px_420px_at_85%_-20%,rgba(76,104,214,0.5),transparent_65%),radial-gradient(600px_300px_at_-10%_120%,rgba(37,61,154,0.55),transparent_60%)]";
+
+/** The mono label above a title on the dark band, with its square marker. */
+export function BandKicker({ children }: { children: ReactNode }) {
   return (
-    <section className="relative overflow-hidden border-b border-[#e3e6f0] bg-[radial-gradient(1100px_420px_at_85%_-10%,rgba(37,61,154,0.11),transparent_62%),radial-gradient(700px_320px_at_0%_120%,rgba(37,61,154,0.05),transparent_60%)] after:pointer-events-none after:absolute after:inset-0 after:bg-[radial-gradient(circle,rgba(37,61,154,0.16)_1px,transparent_1.4px)] after:bg-[length:26px_26px] after:[mask-image:linear-gradient(100deg,transparent_55%,#000_92%)]">
-      <div className="relative z-10 mx-auto max-w-6xl px-6 pb-14 pt-16">
-        <p className="flex items-center gap-2.5 font-[family-name:var(--font-mono)] text-[11.5px] font-semibold uppercase tracking-[0.14em] text-[#253D9A]">
-          <span aria-hidden="true" className="h-2 w-2 bg-[#253D9A]" />
-          {kicker}
-        </p>
-        <h1 className="mt-5 max-w-3xl text-balance text-4xl leading-[1.08] tracking-tight text-[#171a2b] sm:text-5xl">
+    <p className="flex items-center gap-2.5 font-[family-name:var(--font-mono)] text-[11.5px] font-semibold uppercase tracking-[0.14em] text-[#aebbf0]">
+      <span aria-hidden="true" className="h-2 w-2 bg-[#aebbf0]" />
+      {children}
+    </p>
+  );
+}
+
+/** A public page's header on the dark band. `compact` keeps a form page's form near the top of the screen. */
+export function PageHeader({ kicker, title, intro, compact = false }: { kicker: string; title: string; intro?: string; compact?: boolean }) {
+  return (
+    <section className={DARK_BAND}>
+      <div className={`relative z-10 mx-auto max-w-6xl px-6 ${compact ? "pb-10 pt-10 sm:pt-12" : "pb-14 pt-14 sm:pt-16"}`}>
+        <BandKicker>{kicker}</BandKicker>
+        <h1 className={`mt-5 max-w-3xl text-balance leading-[1.08] tracking-tight text-white ${compact ? "text-3xl sm:text-4xl" : "text-4xl sm:text-5xl"}`}>
           {title}
         </h1>
-        {intro && <p className="mt-5 max-w-2xl text-pretty text-lg leading-relaxed text-[#4b4f66]">{intro}</p>}
+        {intro && <p className="mt-5 max-w-2xl text-pretty text-lg leading-relaxed text-white/75">{intro}</p>}
       </div>
     </section>
   );
