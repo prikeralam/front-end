@@ -190,7 +190,7 @@ export default async function HomePage() {
             </figure>
             {chairman.photo?.src && (
               <div className="relative mx-auto aspect-[4/5] w-full max-w-[240px] overflow-hidden rounded-lg md:w-[240px]">
-                <Image src={chairman.photo.src} alt={`Portrait of ${chairman.name}`} fill sizes="240px" className="object-cover grayscale" />
+                <Image src={chairman.photo.src} alt={`Portrait of ${chairman.name}`} fill sizes="240px" className="object-cover object-top grayscale" />
               </div>
             )}
           </div>

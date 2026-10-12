@@ -12,6 +12,8 @@ export type MediaNeed = {
   kind: "photo" | "logo" | "chart" | "map" | "video" | "diagram" | "document";
   /** Real asset path (e.g. "/people/team/rashiq.jpg") once PRI has supplied one; takes priority over any stock/placeholder rendering. */
   src?: string;
+  /** Which part survives a crop: "top" for portraits, so a tall photo in a square frame keeps the head. Centre when unset. */
+  anchor?: "top";
 };
 
 export type ProjectStage = "ongoing" | "completed";
