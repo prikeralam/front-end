@@ -67,6 +67,8 @@ describe("toPayload", () => {
     );
 
     expect(result).toMatchObject({ ok: true, payload: { sub_theme: 12, authors: [38], tags: ["Health", "Data"], slug: "study" } });
+    const several = toPayload("publication", { title: "S", abstract: "A", format: "report", sub_theme: "12", language: "en", date: "2026-03-01", authors: "38,40, x", tags: "", visibility: "public" }, "create");
+    expect(several).toMatchObject({ ok: true, payload: { authors: [38, 40] } });
   });
 
   it("clears optional list fields when blank", () => {
@@ -107,7 +109,7 @@ describe("toCmsRecord", () => {
       status: "draft",
       createdBy: 3,
       title: "Study",
-      values: { authors: "38", tags: "Health, Data", sub_theme: "12", format: "data_story" },
+      values: { authors: "38, 40", tags: "Health, Data", sub_theme: "12", format: "data_story" },
     });
     expect(record.subtitle).toBe("data story · 2026-03-01");
   });

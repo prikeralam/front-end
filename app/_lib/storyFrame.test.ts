@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { MAX_STORY_HEIGHT, STORY_MESSAGE, STORY_SANDBOX, parseStoryMessage, storyWarnings, wrapStoryHtml } from "./storyFrame";
+import { MAX_STORY_HEIGHT, STORY_MESSAGE, STORY_SANDBOX, WIDTH_STYLE, parseStoryMessage, storyWarnings, wrapStoryHtml } from "./storyFrame";
 
 const count = (haystack: string, needle: string) => haystack.split(needle).length - 1;
 const BRIDGE_MARK = "new ResizeObserver(report)";
@@ -12,7 +12,7 @@ describe("wrapStoryHtml", () => {
     expect(out.indexOf("html,body{margin:0")).toBeLessThan(out.indexOf("#s{color:red}"));
     // The bridge runs before the story's own scripts, which may be slow to load.
     expect(out.indexOf(BRIDGE_MARK)).toBeLessThan(out.indexOf("https://cdn.example/x.js"));
-    expect(out.endsWith(story)).toBe(true);
+    expect(out.endsWith(story + WIDTH_STYLE)).toBe(true);
     expect(count(out, BRIDGE_MARK)).toBe(1);
   });
 
@@ -20,7 +20,8 @@ describe("wrapStoryHtml", () => {
     const out = wrapStoryHtml("<!DOCTYPE html><html><head><title>x</title></head><body><p>Hi</p></body></html>");
     expect(out).toMatch(/^<!DOCTYPE html><html><head><style>html,body\{margin:0/);
     expect(out.indexOf(BRIDGE_MARK)).toBeLessThan(out.indexOf("<title>"));
-    expect(out.endsWith("<body><p>Hi</p></body></html>")).toBe(true);
+    // The width rule comes last in the body, after the story's own CSS, so it wins over the story's 760px cap.
+    expect(out.endsWith(`<body><p>Hi</p>${WIDTH_STYLE}</body></html>`)).toBe(true);
     expect(count(out, "<!doctype")).toBe(0);
   });
 
