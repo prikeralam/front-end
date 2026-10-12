@@ -1,13 +1,12 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
-import { stockPhotoFor } from "../../_lib/stockPhotos";
 import { formatPublicationDate } from "../../_lib/api/publicationAdapter";
 import type { Person, Publication } from "../../_lib/types";
 import { FilterBar, StatusTag, EmptyState } from "../../_ui/kit";
 import MediaSlot from "../../_ui/MediaSlot";
+import Byline from "./Byline";
 
 const sortOptions = ["Latest", "Most read"];
 
@@ -48,7 +47,7 @@ export default function ResearchExplorer({ publications, authors }: { publicatio
       ) : (
         <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map((p) => {
-            const author = authors[p.authors[0]];
+            const people = p.authors.map((slug) => authors[slug]).filter(Boolean);
             return (
               <Link key={p.slug} href={`/research/${p.slug}`} className="group overflow-hidden rounded-lg border border-[#e6e8f0] bg-white transition-shadow hover:shadow-[0_2px_16px_rgba(23,26,43,0.10)]">
                 {p.cover && <MediaSlot need={p.cover} />}
@@ -62,14 +61,11 @@ export default function ResearchExplorer({ publications, authors }: { publicatio
                     {p.title}
                     <StatusTag status={p.status} />
                   </h3>
-                  <div className="mt-4 flex items-center gap-2">
-                    {author?.photo && (
-                      <div className="relative h-7 w-7 shrink-0 overflow-hidden rounded-full bg-white">
-                        <Image src={author.photo.src ?? stockPhotoFor(author.photo) ?? ""} alt={author.name} fill sizes="28px" className="object-cover" />
-                      </div>
-                    )}
-                    <p className="text-[13px] text-[#8b8fa3]">{author?.name ?? p.authors.join(", ")} &middot; {formatPublicationDate(p.date)}</p>
-                  </div>
+                  <p className="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] text-[#8b8fa3]">
+                    <Byline people={people} />
+                    {people.length > 0 && <span aria-hidden="true">&middot;</span>}
+                    {formatPublicationDate(p.date)}
+                  </p>
                 </div>
               </Link>
             );

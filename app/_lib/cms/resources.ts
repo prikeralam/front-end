@@ -170,7 +170,7 @@ export const RESOURCES: Record<ContentTypeKey, Resource> = {
       { key: "sub_theme", label: "Sub-theme", kind: "select", optionsFrom: "sub-themes" },
       { key: "language", label: "Language", kind: "select", options: options(["en", "English"], ["ml", "Malayalam"]) },
       { key: "date", label: "Publication date", kind: "date" },
-      { key: "authors", label: "Author", kind: "select", optionsFrom: "authors", optional: true },
+      { key: "authors", label: "Authors", kind: "multiselect", optionsFrom: "authors", optional: true, help: "Tick everyone who worked on it. Each one gets a byline and the publication on their profile." },
       { key: "tags", label: "Tags", kind: "text", optional: true, help: "Comma-separated." },
       { key: "visibility", label: "Visibility", kind: "select", options: options(["public", "Public"], ["private", "Private"]) },
       {
@@ -347,7 +347,7 @@ export function toValues(resource: Resource, record: ApiRecord): Record<string, 
       if (f.kind === "lines") return [[f.key, Array.isArray(record[f.key]) ? (record[f.key] as unknown[]).map(String).join("\n") : ""]];
       // The API sends "09:30:00"; the time input takes "09:30".
       if (f.kind === "time") return [[f.key, asString(record[f.key]).slice(0, 5)]];
-      return [[f.key, f.key === "authors" ? asString((record.authors as unknown[] | undefined)?.[0]) : asString(record[f.key])]];
+      return [[f.key, asString(record[f.key])]];
     }),
   );
 }
@@ -394,7 +394,8 @@ export function toPayload(type: ContentTypeKey, values: Record<string, string>, 
     const raw = (values[field.key] ?? "").trim();
     if (!raw && !field.optional) return { ok: false, message: `${field.label} is required.` };
 
-    if (field.key === "authors") payload.authors = raw ? [Number(raw)] : [];
+    // Authors are people's ids, unlike the other multiselects, which link by slug.
+    if (field.key === "authors") payload.authors = raw ? raw.split(",").map((id) => Number(id.trim())).filter((id) => Number.isInteger(id) && id > 0) : [];
     else if (field.kind === "multiselect") payload[field.key] = raw ? raw.split(",").map((t) => t.trim()).filter(Boolean) : [];
     // Links to other objects by slug: an empty choice clears the link.
     else if (field.optionsFrom === "publications" || field.optionsFrom === "datasets") payload[field.key] = raw || null;
