@@ -69,9 +69,16 @@ describe("fetchMe", () => {
   it("sends the token and derives a display name from the email when there is no name", async () => {
     GET.mockResolvedValueOnce(ok(me));
 
-    expect(await fetchMe("tok")).toEqual({ id: 12, email: "admin@demo.example", role: "admin", name: "admin", mustChangePassword: false });
+    // No email_verified field (an older backend): admin-made accounts count as confirmed.
+    expect(await fetchMe("tok")).toEqual({ id: 12, email: "admin@demo.example", role: "admin", name: "admin", mustChangePassword: false, emailVerified: true });
     expect(uncachedApi).toHaveBeenCalledWith("tok");
     expect(GET.mock.calls[0]).toContain("/api/v1/users/me/");
+  });
+
+  it("passes on an unconfirmed email", async () => {
+    GET.mockResolvedValueOnce(ok({ ...me, role: "public", email_verified: false }));
+
+    expect(await fetchMe("tok")).toMatchObject({ role: "public", emailVerified: false });
   });
 
   it("uses the full name and passes on a pending password change", async () => {

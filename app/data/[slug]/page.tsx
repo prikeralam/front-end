@@ -43,7 +43,7 @@ export default async function DatasetDetailPage({ params }: { params: Promise<{ 
       <JsonLd data={datasetJsonLd(ds)} />
       <PageHeader kicker={`${ds.type ?? "Dataset"} · ${ds.theme ?? "Uncategorised"}`} title={ds.title} />
       <section className="mx-auto max-w-5xl px-6 py-12">
-        <DatasetView ds={ds} previews={previews} access={<DatasetAccess slug={ds.slug} accessState={ds.accessState} files={ds.files} />} />
+        <DatasetView ds={ds} previews={previews} access={<DatasetAccess slug={ds.slug} accessState={ds.accessState} files={ds.files} formats={ds.formats} />} />
       </section>
     </>
   );
