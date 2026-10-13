@@ -238,7 +238,7 @@ export default async function HomePage() {
       <section className="relative overflow-hidden border-t border-[#e3e6f0] bg-[radial-gradient(760px_380px_at_86%_-10%,rgba(37,61,154,0.12),transparent_62%),radial-gradient(560px_340px_at_2%_110%,rgba(37,61,154,0.07),transparent_62%)]">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-8 px-6 py-16 md:py-20">
           <div className="grid max-w-xl gap-3">
-            <h2 className="text-balance text-[30px] leading-tight text-[#171a2b] sm:text-[38px]">Do you want to work or partner with us?</h2>
+            <h2 className="text-balance text-[30px] leading-tight text-[#171a2b] sm:text-[38px]">Do you want to work with us?</h2>
             <p className="text-[16px] leading-relaxed text-[#4b4f66]">We are always glad to hear from researchers, institutions and people who want to join our team.</p>
           </div>
           <div className="flex flex-wrap gap-3">
