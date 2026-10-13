@@ -25,6 +25,8 @@ export const STATIC_PATHS: { path: string; priority: number; changeFrequency: Fr
   { path: "/about/annual-reports", priority: 0.5, changeFrequency: "monthly" },
   { path: "/contact", priority: 0.5, changeFrequency: "monthly" },
   { path: "/donate", priority: 0.4, changeFrequency: "monthly" },
+  { path: "/privacy", priority: 0.2, changeFrequency: "monthly" },
+  { path: "/terms", priority: 0.2, changeFrequency: "monthly" },
 ];
 
 export type SitemapSources = {
