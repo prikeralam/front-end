@@ -1,36 +1,5 @@
-import { parseProjectDetails, splitBold, type DetailBlock, type DetailSection } from "../../_lib/projectDetails";
-
-function Inline({ text }: { text: string }) {
-  return (
-    <>
-      {splitBold(text).map((part, i) =>
-        part.bold ? <strong key={i} className="font-semibold text-[#171a2b]">{part.text}</strong> : <span key={i}>{part.text}</span>,
-      )}
-    </>
-  );
-}
-
-function Blocks({ blocks, size = "base" }: { blocks: DetailBlock[]; size?: "lead" | "base" }) {
-  const text = size === "lead" ? "text-[17px] leading-[1.75]" : "text-[15.5px] leading-relaxed";
-  return (
-    <div className="space-y-4">
-      {blocks.map((block, i) =>
-        block.kind === "paragraph" ? (
-          <p key={i} className={`${text} text-[#4b4f66]`}><Inline text={block.text} /></p>
-        ) : (
-          <ul key={i} className="space-y-3">
-            {block.items.map((item, j) => (
-              <li key={j} className={`relative pl-5 ${text} text-[#4b4f66]`}>
-                <span aria-hidden="true" className="absolute left-0 top-[0.7em] h-[5px] w-[5px] rounded-[1px] bg-[#253D9A]/60" />
-                <Inline text={item} />
-              </li>
-            ))}
-          </ul>
-        ),
-      )}
-    </div>
-  );
-}
+import { parseProjectDetails, type DetailSection } from "../../_lib/projectDetails";
+import { Blocks } from "../../_ui/RichText";
 
 /** The plus that turns into a minus while its item is open. */
 function Toggle() {

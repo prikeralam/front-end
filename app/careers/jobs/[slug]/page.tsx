@@ -1,4 +1,5 @@
 import Link from "next/link";
+import RichText from "../../../_ui/RichText";
 import { notFound } from "next/navigation";
 import { LoadError } from "../../../_ui/ApiMessage";
 import { getJobBySlug } from "../../../_lib/api/engage";
@@ -42,7 +43,11 @@ export default async function JobDetailPage({ params }: { params: Promise<{ slug
       <section className="mx-auto max-w-3xl px-6 py-16">
         <p className="text-sm text-[#5b5f74]">{[jobAvailability(job), job.location, job.employment].filter(Boolean).join(" · ")}</p>
         {job.summary && <p className="mt-6 text-lg leading-relaxed text-[#4b4f66]">{job.summary}</p>}
-        {job.description && <div className="mt-6 whitespace-pre-line text-[15px] leading-relaxed text-[#4b4f66]">{job.description}</div>}
+        {job.description && (
+          <div className="mt-10">
+            <RichText text={job.description} />
+          </div>
+        )}
         <Link href={`/fellowship/apply?role=${encodeURIComponent(job.slug)}`} className="mt-8 inline-block rounded-md bg-[#253D9A] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#1B2C70]">
           Apply for this role &rarr;
         </Link>
