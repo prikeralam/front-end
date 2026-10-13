@@ -113,7 +113,6 @@ export default function ProjectDetails({ text }: { text: string }) {
           <h2 className="mb-2 flex items-center gap-3 font-[family-name:var(--font-mono)] text-[11.5px] font-semibold uppercase tracking-[0.14em] text-[#253D9A]">
             In detail
             <span aria-hidden="true" className="h-px flex-1 bg-[#e3e6f0]" />
-            <span className="font-normal normal-case tracking-normal text-[#8b8fa3]">Select a heading to read more</span>
           </h2>
           {sections.map((section, i) => <Section key={i} section={section} index={i} />)}
         </section>
