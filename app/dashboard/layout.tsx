@@ -20,6 +20,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         router.replace("/account");
         return;
       }
+      // Visitors who signed up to download data have an account page, not the staff dashboard.
+      if (check.session?.role === "public") {
+        router.replace("/account");
+        return;
+      }
       setVerified(check.session);
     });
   }, [router]);

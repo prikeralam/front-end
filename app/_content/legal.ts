@@ -11,7 +11,8 @@ The Policy and Research Initiative (PRI) is a registered society (Reg. No. MPM/C
 
 - **When you contact us:** your name, email address, the type of enquiry and your message.
 - **When you apply for a fellowship, internship or job:** your name, email address, the role you apply for, and the CV and statement of purpose you upload.
-- **When you have an account** (accounts are created by PRI staff for researchers and team members): your name, email address and role, and a record of the datasets you request access to and the decisions on those requests.
+- **When you create an account** (needed to download datasets): your name, email address and password, your organisation if you give it, what you will use the data for, and whether you want our updates by email. We store your password only in a scrambled form that cannot be read back.
+- **When you use your account:** a record that you confirmed your email address, the datasets you request access to, and the decisions on those requests. PRI staff accounts are created by PRI.
 - **Technical information:** like every website, our servers briefly see your IP address and browser details when you visit. We use the IP address of form submissions only to limit spam, and we do not build profiles from it.
 
 We do not use advertising, analytics or tracking tools, and we do not track you across other websites.
@@ -20,7 +21,9 @@ We do not use advertising, analytics or tracking tools, and we do not track you 
 
 - To reply to your message and to keep a record of the conversation.
 - To assess your application and contact you about it.
-- To let you sign in, and to decide and record requests for restricted datasets.
+- To let you sign in and download datasets, to confirm your email address, and to decide and record requests for restricted datasets.
+- To understand who uses PRI's data (for example, how many downloads are for research or journalism), so we can improve it.
+- To send you updates about PRI's research and data, only if you ask for them; you can stop them at any time from your account page.
 - To keep the website secure and working, for example by limiting repeated sign-in attempts and spam.
 
 ## Cookies and storage in your browser
@@ -37,7 +40,7 @@ There are no advertising or analytics cookies. The map on our Contact page is pr
 We do not sell or rent personal information. We share it only with services that help us run the site, and only as far as needed:
 
 - **Amazon Web Services** hosts the website, its database and uploaded files, in its Mumbai (India) region.
-- **Our email provider** delivers contact messages and account emails (such as password links) to their recipients.
+- **Our email provider** delivers contact messages and account emails (such as confirmation and password links) to their recipients.
 - **Google Maps** shows our office location on the Contact page.
 - **Donations** are made on Razorpay's payment page, through your UPI app or by bank transfer. These happen outside this website, and we never see your card or bank details.
 
@@ -46,7 +49,7 @@ We may also disclose information when the law requires it.
 ## How long we keep it
 
 - Contact messages and applications are kept for as long as they are useful to answer you or to consider you for a role, and are then deleted.
-- Account information is kept while your account is active. Accounts are deactivated, not deleted, so that past decisions remain on record; you can ask us to delete yours.
+- Account information is kept while your account is active. Accounts are deactivated, not deleted, so that past decisions remain on record; you can ask us to delete yours at any time.
 - Database backups are kept for 30 days.
 
 ## Your rights
@@ -92,7 +95,7 @@ Some datasets are available on request or only to PRI staff. If you are given ac
 
 ## Accounts
 
-Accounts are created by PRI. Keep your password to yourself, and tell us at once if you think someone else has used your account. We may suspend accounts that are misused.
+You need a free account to download datasets. Give accurate details when you sign up and confirm your email address. Keep your password to yourself, and tell us at once if you think someone else has used your account. We may suspend accounts that are misused, for example ones created to collect data in bulk.
 
 ## What you send us
 

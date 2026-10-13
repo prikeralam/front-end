@@ -13,6 +13,12 @@ export type ManagedUser = {
   mustChangePassword: boolean;
   joinedAt: string;
   lastLoginAt: string | null;
+  /** Visitors confirm their email before downloading; staff accounts count as confirmed. */
+  emailVerified: boolean;
+  /** Sign-up answers (blank for staff). */
+  organisation: string;
+  purpose: string;
+  newsletter: boolean;
 };
 
 export type ApiUser = {
@@ -26,6 +32,10 @@ export type ApiUser = {
   must_change_password: boolean;
   date_joined: string;
   last_login: string | null;
+  email_verified?: boolean;
+  organisation?: string;
+  purpose?: string;
+  newsletter_opt_in?: boolean;
 };
 
 /** Full name when the account has one, otherwise the local part of the email. */
@@ -49,5 +59,10 @@ export function toManagedUser(user: ApiUser): ManagedUser {
     mustChangePassword: user.must_change_password,
     joinedAt: user.date_joined,
     lastLoginAt: user.last_login,
+    // An older backend without these fields had only admin-made accounts.
+    emailVerified: user.email_verified ?? true,
+    organisation: user.organisation ?? "",
+    purpose: user.purpose ?? "",
+    newsletter: !!user.newsletter_opt_in,
   };
 }

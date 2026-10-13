@@ -47,7 +47,7 @@ export default function DashboardThemePage({ params }: { params: Promise<{ theme
                 </div>
 
                 <div className="flex shrink-0 items-center gap-2 self-center">
-                  {d.accessState === "full" && (
+                  {(d.accessState === "full" || d.accessState === "signin") && (
                     <Link
                       href={`/dashboard/theme/${encodeURIComponent(theme)}/data/${d.slug}`}
                       className="rounded-full bg-[#253D9A] px-3 py-1.5 text-[12px] font-semibold text-white hover:bg-[#1B2C70]"

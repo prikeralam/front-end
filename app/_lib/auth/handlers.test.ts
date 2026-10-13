@@ -5,12 +5,17 @@ vi.mock("server-only", () => ({}));
 const jar = { set: vi.fn(), delete: vi.fn(), get: vi.fn() };
 vi.mock("next/headers", () => ({ cookies: async () => jar }));
 
-const service = { login: vi.fn(), resolveSession: vi.fn(), revokeRefresh: vi.fn() };
+const service = { login: vi.fn(), resolveSession: vi.fn(), revokeRefresh: vi.fn(), register: vi.fn() };
 class InvalidCredentialsError extends Error {}
 class TooManyAttemptsError extends Error {}
-vi.mock("./authService", () => ({ ...service, InvalidCredentialsError, TooManyAttemptsError }));
+class RegistrationError extends Error {
+  constructor(readonly fields: Record<string, string>) {
+    super("refused");
+  }
+}
+vi.mock("./authService", () => ({ ...service, InvalidCredentialsError, TooManyAttemptsError, RegistrationError }));
 
-const { handleLogin, handleLogout, handleSession } = await import("./handlers");
+const { handleLogin, handleLogout, handleSession, handleSignup } = await import("./handlers");
 
 const user = { id: 12, email: "admin@demo.example", role: "admin", name: "admin" };
 const tokens = { access: "h.e30.s", refresh: "h.e30.s" };
@@ -30,6 +35,7 @@ beforeEach(() => {
   service.login.mockReset();
   service.resolveSession.mockReset();
   service.revokeRefresh.mockReset();
+  service.register.mockReset();
 });
 
 describe("handleLogin", () => {
@@ -189,5 +195,82 @@ describe("handleSession", () => {
 
     expect((await handleSession()).status).toBe(503);
     expect(jar.delete).not.toHaveBeenCalled();
+  });
+});
+
+describe("handleSignup", () => {
+  const signup = { name: "Asha K Menon", email: " Asha@Example.org ", password: "a-long-pass", organisation: " Calicut ", purpose: "research", newsletter: true, terms: true, next: "/data/x" };
+  let ip = 0;
+  // Each test signs up from its own address, so the per-visitor limit doesn't carry over between tests.
+  const signupRequest = (body: unknown, headers: Record<string, string> = {}) =>
+    new Request("https://pri.example/api/auth/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-real-ip": `10.0.0.${++ip}`, ...headers },
+      body: JSON.stringify(body),
+    });
+
+  it("creates the account, signs the visitor in and returns them, never the tokens", async () => {
+    service.register.mockResolvedValueOnce(undefined);
+    service.login.mockResolvedValueOnce(tokens);
+    service.resolveSession.mockResolvedValueOnce({ user: { ...user, role: "public", emailVerified: false }, access: tokens.access, accessWasRefreshed: false });
+
+    const response = await handleSignup(signupRequest(signup));
+
+    expect(response.status).toBe(201);
+    expect(await response.json()).toEqual({ user: { ...user, role: "public", emailVerified: false } });
+    expect(service.register).toHaveBeenCalledWith({
+      email: "asha@example.org",
+      password: "a-long-pass",
+      first_name: "Asha",
+      last_name: "K Menon",
+      organisation: "Calicut",
+      purpose: "research",
+      newsletter_opt_in: true,
+      next: "/data/x",
+    });
+    expect(service.login).toHaveBeenCalledWith("asha@example.org", "a-long-pass");
+    expect(jar.set).toHaveBeenCalledTimes(2);
+  });
+
+  it("answers 202 without cookies when the address already had an account (its owner is emailed instead)", async () => {
+    service.register.mockResolvedValueOnce(undefined);
+    service.login.mockRejectedValueOnce(new InvalidCredentialsError());
+
+    const response = await handleSignup(signupRequest(signup));
+
+    expect(response.status).toBe(202);
+    expect(await response.json()).toEqual({ pending: true });
+    expect(jar.set).not.toHaveBeenCalled();
+  });
+
+  it("checks the fields itself and drops an unsafe return path", async () => {
+    const bad = await handleSignup(signupRequest({ ...signup, email: "nope", terms: false }));
+    expect(bad.status).toBe(400);
+    expect((await bad.json()).fields).toMatchObject({ email: expect.any(String), terms: expect.any(String) });
+    expect(service.register).not.toHaveBeenCalled();
+
+    service.register.mockResolvedValueOnce(undefined);
+    service.login.mockRejectedValueOnce(new InvalidCredentialsError());
+    await handleSignup(signupRequest({ ...signup, next: "https://evil.example" }));
+    expect(service.register.mock.calls[0][0].next).toBe("");
+  });
+
+  it("passes the backend's field messages back under the form's names", async () => {
+    service.register.mockRejectedValueOnce(new RegistrationError({ password: "This password is too common." }));
+
+    const response = await handleSignup(signupRequest(signup));
+
+    expect(response.status).toBe(400);
+    expect(await response.json()).toEqual({ fields: { password: "This password is too common." } });
+  });
+
+  it("refuses cross-site requests and limits sign-ups per visitor", async () => {
+    expect((await handleSignup(signupRequest(signup, { Origin: "https://evil.example" }))).status).toBe(403);
+
+    service.register.mockResolvedValue(undefined);
+    service.login.mockRejectedValue(new InvalidCredentialsError());
+    const statuses = [];
+    for (let i = 0; i < 6; i++) statuses.push((await handleSignup(signupRequest(signup, { "x-real-ip": "10.9.9.9" }))).status);
+    expect(statuses).toEqual([202, 202, 202, 202, 202, 429]);
   });
 });
