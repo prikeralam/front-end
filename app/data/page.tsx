@@ -87,13 +87,10 @@ export default async function DataPage() {
         <div className="relative z-10 mx-auto grid max-w-6xl items-start gap-10 px-6 pb-14 pt-14">
           <div className="grid gap-5">
             <BandKicker>Data Repository & Library</BandKicker>
-            <h1 className="max-w-[18ch] text-balance text-[36px] leading-[1.08] tracking-tight text-white sm:text-[48px]">Open data for Kerala&rsquo;s policy questions</h1>
+            <h1 className="max-w-[18ch] text-balance text-[36px] leading-[1.08] tracking-tight text-white sm:text-[48px]">Curated datasets for your policy questions</h1>
             {datasetsResult.ok && datasets.length > 0 && (
               <p className="font-[family-name:var(--font-mono)] text-[13px] font-semibold text-[#aebbf0]">{statLine.join(" · ")}</p>
             )}
-            <p className="max-w-[56ch] text-pretty text-[16.5px] leading-relaxed text-white/75">
-              Datasets behind PRI&rsquo;s research, with previews, sources and citations. Some are open to everyone; others are available on request.
-            </p>
             {datasetsResult.ok && datasets.length > 0 && (
               <div className="max-w-3xl">
                 <DataSearch datasets={datasets} suggestions={themes} />
@@ -154,9 +151,6 @@ export default async function DataPage() {
       <section id="cited-in" className="scroll-mt-24 border-t border-[#e3e6f0] bg-white">
         <div className="mx-auto max-w-6xl px-6 py-16">
           <SectionHeading>Cited in</SectionHeading>
-          <p className="mt-2 max-w-2xl text-[15px] text-[#5b6280]">
-            Where PRI&rsquo;s research and data have been used: news coverage, research papers, reports and the legislature. Every card links to the original.
-          </p>
           <div className="mt-8">
             {!mentions.ok && <LoadError what="where PRI has been cited" />}
             {mentions.ok && mentions.data.length === 0 && <NotPublishedYet>Coverage and citations will be listed here soon.</NotPublishedYet>}
