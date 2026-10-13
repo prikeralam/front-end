@@ -1519,6 +1519,28 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/register/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * @description A visitor creates their own account (role `public`) and is emailed a link to confirm their address.
+         *
+         *     Answers 202 the same way whether or not the address is new, so it can't reveal which addresses have
+         *     accounts: an existing account's owner is emailed a sign-in and reset link instead.
+         */
+        post: operations["v1_register_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/testimonials/": {
         parameters: {
             query?: never;
@@ -1713,7 +1735,7 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * @description Exchanges a username and password for an access/refresh token pair.
+         * @description Exchanges a username or email address, and a password, for an access/refresh token pair.
          *
          *     Throttled per username: the sixth attempt within a minute answers 429.
          */
@@ -1914,6 +1936,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/users/me/resend-verification/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Emails the signed-in user a new confirmation link, unless their address is already confirmed. */
+        post: operations["v1_users_me_resend_verification_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/users/me/role/": {
         parameters: {
             query?: never;
@@ -1924,6 +1963,23 @@ export interface paths {
         get: operations["v1_users_me_role_retrieve"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/verify-email/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Confirms an address from an emailed link. Each link works once. */
+        post: operations["v1_verify_email_create"];
         delete?: never;
         options?: never;
         head?: never;
@@ -3006,8 +3062,9 @@ export interface components {
         /**
          * @description A user as admins see them, and as a user sees themselves at /users/me/.
          *
-         *     Only contact details are writable here: the role has its own audited endpoint, `is_active` its
-         *     deactivate/reactivate actions, and passwords their own flows.
+         *     Only contact details and sign-up answers are writable here: the role has its own audited endpoint,
+         *     `is_active` its deactivate/reactivate actions, passwords their own flows, and `email_verified` changes
+         *     only through a confirmation link.
          */
         PatchedUser: {
             readonly id?: number;
@@ -3031,6 +3088,10 @@ export interface components {
             readonly date_joined?: string;
             /** Format: date-time */
             readonly last_login?: string | null;
+            readonly email_verified?: boolean;
+            organisation?: string;
+            purpose?: components["schemas"]["PurposeEnum"] | components["schemas"]["BlankEnum"];
+            newsletter_opt_in?: boolean;
         };
         PersonProfile: {
             readonly id: number;
@@ -3122,6 +3183,17 @@ export interface components {
          * @enum {string}
          */
         PublicationVisibilityEnum: "public" | "private";
+        /**
+         * @description * `research` - Research
+         *     * `journalism` - Journalism
+         *     * `policy` - Policy or government
+         *     * `teaching` - Teaching or study
+         *     * `business` - Business
+         *     * `personal` - Personal interest
+         *     * `other` - Other
+         * @enum {string}
+         */
+        PurposeEnum: "research" | "journalism" | "policy" | "teaching" | "business" | "personal" | "other";
         Recognition: {
             readonly id: number;
             slug: string;
@@ -3141,6 +3213,26 @@ export interface components {
             readonly updated_at: string;
             /** Format: date-time */
             readonly published_at: string | null;
+        };
+        /** @description A visitor's own sign-up. The email doubles as the username; `next` is where the confirmation link returns. */
+        Register: {
+            /** Format: email */
+            email: string;
+            password: string;
+            first_name: string;
+            /** @default  */
+            last_name: string;
+            /** @default  */
+            organisation: string;
+            purpose: components["schemas"]["PurposeEnum"];
+            /** @default false */
+            newsletter_opt_in: boolean;
+            /** @default  */
+            next: string;
+        };
+        ResendVerification: {
+            /** @default  */
+            next: string;
         };
         /**
          * @description * `public` - Donor / Visitor
@@ -3214,8 +3306,9 @@ export interface components {
         /**
          * @description A user as admins see them, and as a user sees themselves at /users/me/.
          *
-         *     Only contact details are writable here: the role has its own audited endpoint, `is_active` its
-         *     deactivate/reactivate actions, and passwords their own flows.
+         *     Only contact details and sign-up answers are writable here: the role has its own audited endpoint,
+         *     `is_active` its deactivate/reactivate actions, passwords their own flows, and `email_verified` changes
+         *     only through a confirmation link.
          */
         User: {
             readonly id: number;
@@ -3239,6 +3332,10 @@ export interface components {
             readonly date_joined: string;
             /** Format: date-time */
             readonly last_login: string | null;
+            readonly email_verified: boolean;
+            organisation?: string;
+            purpose?: components["schemas"]["PurposeEnum"] | components["schemas"]["BlankEnum"];
+            newsletter_opt_in?: boolean;
         };
         /** @description Creates an account with either a temporary password or, when none is given, an emailed invite. */
         UserCreate: {
@@ -3263,7 +3360,15 @@ export interface components {
             readonly date_joined: string;
             /** Format: date-time */
             readonly last_login: string | null;
+            email_verified?: boolean;
+            organisation?: string;
+            purpose?: components["schemas"]["PurposeEnum"] | components["schemas"]["BlankEnum"];
+            newsletter_opt_in?: boolean;
             password?: string;
+        };
+        VerifyEmail: {
+            uid: string;
+            token: string;
         };
         /**
          * @description * `draft` - Draft
@@ -6033,6 +6138,30 @@ export interface operations {
             };
         };
     };
+    v1_register_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Register"];
+                "application/x-www-form-urlencoded": components["schemas"]["Register"];
+                "multipart/form-data": components["schemas"]["Register"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     v1_testimonials_list: {
         parameters: {
             query?: {
@@ -6867,6 +6996,30 @@ export interface operations {
             };
         };
     };
+    v1_users_me_resend_verification_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["ResendVerification"];
+                "application/x-www-form-urlencoded": components["schemas"]["ResendVerification"];
+                "multipart/form-data": components["schemas"]["ResendVerification"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     v1_users_me_role_retrieve: {
         parameters: {
             query?: never;
@@ -6883,6 +7036,30 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["MyRole"];
                 };
+            };
+        };
+    };
+    v1_verify_email_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VerifyEmail"];
+                "application/x-www-form-urlencoded": components["schemas"]["VerifyEmail"];
+                "multipart/form-data": components["schemas"]["VerifyEmail"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

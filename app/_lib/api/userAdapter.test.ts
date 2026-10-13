@@ -28,7 +28,16 @@ describe("toManagedUser", () => {
       mustChangePassword: false,
       joinedAt: "2026-09-28T10:00:00Z",
       lastLoginAt: null,
+      emailVerified: true,
+      organisation: "",
+      purpose: "",
+      newsletter: false,
     });
+  });
+
+  it("carries a visitor's sign-up answers and email confirmation", () => {
+    const visitor = toManagedUser({ ...apiUser, role: "public", email_verified: false, organisation: "Calicut University", purpose: "research", newsletter_opt_in: true });
+    expect(visitor).toMatchObject({ emailVerified: false, organisation: "Calicut University", purpose: "research", newsletter: true });
   });
 
   it("treats missing name fields as empty", () => {

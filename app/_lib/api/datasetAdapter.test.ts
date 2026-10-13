@@ -57,6 +57,8 @@ describe("accessStateOf", () => {
     const withheld = { ...dataset, file: undefined } as unknown as ApiDataset;
 
     expect(accessStateOf({ ...withheld, visibility: "on_request" })).toBe("requestable");
+    // A public dataset's files wait for a signed-in, confirmed account.
+    expect(accessStateOf({ ...withheld, visibility: "public" })).toBe("signin");
     expect(accessStateOf({ ...withheld, visibility: "internal_only" })).toBe("locked");
   });
 });

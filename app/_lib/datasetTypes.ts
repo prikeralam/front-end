@@ -1,6 +1,10 @@
 import type { Dataset } from "./types";
 
-export type AccessState = "full" | "requestable" | "locked";
+/**
+ * What the visitor may do with a dataset's files. `signin`: a public dataset, downloadable by anyone with a signed-in,
+ * email-confirmed account (the backend withholds the files until then).
+ */
+export type AccessState = "full" | "signin" | "requestable" | "locked";
 
 export type DatasetSummary = {
   /** API id: access requests reference datasets by id, not slug. */
