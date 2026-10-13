@@ -272,7 +272,7 @@ export const RESOURCES: Record<ContentTypeKey, Resource> = {
     fields: [
       { key: "title", label: "Role", kind: "text" },
       { key: "summary", label: "Summary", kind: "textarea", optional: true, help: "One or two sentences shown under the role." },
-      { key: "description", label: "Description", kind: "textarea", optional: true, help: "Responsibilities and what you look for. Line breaks are kept." },
+      { key: "description", label: "Description", kind: "textarea", optional: true, rows: 10, help: "Responsibilities and what you look for. “## Heading” starts a section, “- ” a bullet, **double stars** make bold; leave a blank line between paragraphs." },
       { key: "location", label: "Location", kind: "text", optional: true },
       { key: "employment_type", label: "Employment type", kind: "text", optional: true, help: "e.g. Full time, Part time, Contract." },
       { key: "rolling", label: "Applications", kind: "select", options: options(["true", "Rolling: apply any time"], ["false", "Until a deadline"]) },
