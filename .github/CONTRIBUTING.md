@@ -120,10 +120,10 @@ environments' storage buckets), not from the runtime `API_URL`.
 
 | Workflow | Runs on | What it does |
 |---|---|---|
-| `ci.yml` | every PR, push to `dev`, and called by both deploy workflows | `typecheck` (`next typegen`, `tsc --noEmit`), `test` (Vitest), `build` (`next build` with no backend reachable), `lint` (ESLint), `docker-build` (builds the image, runs it, requests `/healthz`) |
+| `ci.yml` | every PR, except docs/Markdown-only changes and the `dev` -> `staging` and `staging` -> `main` promotion PRs (their code already passed on its own PR) | `typecheck` (`next typegen`, `tsc --noEmit`), `test` (Vitest), `build` (`next build` with no backend reachable), `lint` (ESLint), `docker-build` (builds the image, runs it, requests `/healthz`) |
 | `pr-guard.yml` | PRs into `dev`, `staging`, `main` | `branch-flow` fails a PR whose source/target pair is not an allowed promotion path (section 1) |
-| `deploy-staging.yml` | push to `staging` | CI, then builds and pushes the image to GHCR, then deploys it to the staging EC2 host over SSH (`staging` Environment) |
-| `deploy-production.yml` | push to `main` | CI, then image, then manual approval, then SSH deploy, then git tag and GitHub Release (`production` Environment) |
+| `deploy-staging.yml` | push to `staging` | builds and pushes the image to GHCR, then deploys it to the staging EC2 host over SSH (`staging` Environment) |
+| `deploy-production.yml` | push to `main` | image, then manual approval, then SSH deploy, then git tag and GitHub Release (`production` Environment) |
 | `hotfix-backport.yml` | push to `main` from a `fix/*` PR | opens backport PRs into `staging` and `dev` |
 
 Images are tagged `sha-<commit>` and `tree-<git tree hash>`. A merge of `staging` into `main` has the same tree
