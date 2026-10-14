@@ -12,7 +12,7 @@ The Policy and Research Initiative (PRI) is a registered society (Reg. No. MPM/C
 - **When you contact us:** your name, email address, the type of enquiry and your message.
 - **When you apply for a fellowship, internship or job:** your name, email address, the role you apply for, and the CV and statement of purpose you upload.
 - **When you create an account** (needed to download datasets): your name, email address and password, your organisation if you give it, what you will use the data for, and whether you want our updates by email. We store your password only in a scrambled form that cannot be read back.
-- **When you use your account:** a record that you confirmed your email address, the datasets you request access to, and the decisions on those requests. PRI staff accounts are created by PRI.
+- **When you use your account:** a record that you confirmed your email address, which datasets you download (and in which format, and when), the datasets you request access to, and the decisions on those requests. PRI staff accounts are created by PRI.
 - **Technical information:** like every website, our servers briefly see your IP address and browser details when you visit. We use the IP address of form submissions only to limit spam, and we do not build profiles from it.
 
 We do not use advertising, analytics or tracking tools, and we do not track you across other websites.
@@ -22,7 +22,7 @@ We do not use advertising, analytics or tracking tools, and we do not track you 
 - To reply to your message and to keep a record of the conversation.
 - To assess your application and contact you about it.
 - To let you sign in and download datasets, to confirm your email address, and to decide and record requests for restricted datasets.
-- To understand who uses PRI's data (for example, how many downloads are for research or journalism), so we can improve it.
+- To understand who uses PRI's data and which datasets are most useful (for example, how many downloads are for research or journalism), so we can improve it.
 - To send you updates about PRI's research and data, only if you ask for them; you can stop them at any time from your account page.
 - To keep the website secure and working, for example by limiting repeated sign-in attempts and spam.
 
