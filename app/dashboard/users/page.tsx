@@ -20,6 +20,7 @@ import {
 import { EmptyState } from "../../_ui/kit";
 import DashboardPageHeader, { primaryButton } from "../_ui/DashboardPageHeader";
 import Drawer from "../_ui/Drawer";
+import { PURPOSES } from "../../_lib/signup";
 import { PlusIcon } from "../_ui/icons";
 
 // Access is per role, not per user (backend Module H): giving someone access means choosing their role.
@@ -239,6 +240,15 @@ function UserRow({ user, self, onChanged }: { user: ManagedUser; self: boolean; 
             {user.active && user.mustChangePassword && <span className="rounded-full bg-[#F2B233]/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[#8A6100]">Temporary password</span>}
           </p>
           <p className="truncate text-[13px] text-[#5b5f74]">@{user.username} &middot; {user.email}</p>
+          {/* Visitors who signed up themselves: what they told us, and whether they confirmed their email. */}
+          {user.role === "public" && (
+            <p className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-[12px] text-[#8b8fa3]">
+              <span className={user.emailVerified ? "text-[#2f6b45]" : "text-[#8A6100]"}>{user.emailVerified ? "Email confirmed" : "Email not confirmed"}</span>
+              {user.organisation && <span>{user.organisation}</span>}
+              {user.purpose && <span>Use: {PURPOSES.find((p) => p.value === user.purpose)?.label ?? user.purpose}</span>}
+              {user.newsletter && <span>Newsletter: yes</span>}
+            </p>
+          )}
         </div>
         <div className="flex items-center gap-3">
           <label className="sr-only" htmlFor={`role-${user.id}`}>Role for {user.username}</label>

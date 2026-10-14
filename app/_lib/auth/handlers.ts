@@ -1,6 +1,16 @@
 import "server-only";
 import { cookies } from "next/headers";
-import { InvalidCredentialsError, TooManyAttemptsError, login, resolveSession, revokeRefresh } from "./authService";
+import { createRateLimiter } from "../rateLimit";
+import { safeNext, splitName, validateSignup, type Purpose } from "../signup";
+import {
+  InvalidCredentialsError,
+  RegistrationError,
+  TooManyAttemptsError,
+  login,
+  register,
+  resolveSession,
+  revokeRefresh,
+} from "./authService";
 import { ACCESS_COOKIE, REFRESH_COOKIE, clearSessionCookies, setSessionCookies } from "./cookies";
 
 const MAX_USERNAME_LENGTH = 150;
@@ -89,6 +99,66 @@ export async function handleSession(): Promise<Response> {
     return json(session.user, 200);
   } catch (error) {
     // An outage is not a sign-out: keep the cookies so the user is still signed in once the backend is back.
+    return unavailable(error);
+  }
+}
+
+// Every sign-up reaches the backend from this server, so the per-visitor limit is kept here, by the IP nginx forwards.
+const signupsPerVisitor = createRateLimiter({ limit: 5, windowMs: 60 * 60 * 1000 });
+
+function visitorIp(request: Request): string {
+  return request.headers.get("x-real-ip") ?? request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+}
+
+// The backend's field names, as the sign-up form calls them.
+const FORM_FIELD: Record<string, string> = { first_name: "name", last_name: "name", email: "email", password: "password", organisation: "organisation", purpose: "purpose" };
+
+/**
+ * `POST /api/auth/signup`: creates a visitor account and signs the visitor in, so they come back to the page signed in
+ * (downloads still wait for the emailed confirmation link). If the address already had an account, the backend emails
+ * its owner instead and signing in fails; that answers 202 with the same "check your inbox" message as a new account,
+ * so the form never reveals who is registered.
+ */
+export async function handleSignup(request: Request): Promise<Response> {
+  if (!isSameOrigin(request)) return json({ detail: "Cross-site sign-up is not allowed." }, 403);
+  if (!signupsPerVisitor(visitorIp(request))) return json({ detail: "Too many sign-ups from here. Try again in an hour." }, 429);
+
+  const body: unknown = await request.json().catch(() => null);
+  const input = (body && typeof body === "object" ? body : {}) as Record<string, unknown>;
+  const errors = validateSignup({ ...input, terms: input.terms });
+  if (Object.keys(errors).length > 0) return json({ fields: errors }, 400);
+
+  const email = String(input.email).trim().toLowerCase();
+  const password = String(input.password);
+  try {
+    await register({
+      email,
+      password,
+      ...splitName(String(input.name)),
+      organisation: typeof input.organisation === "string" ? input.organisation.trim() : "",
+      purpose: input.purpose as Purpose,
+      newsletter_opt_in: input.newsletter === true,
+      next: safeNext(input.next),
+    });
+  } catch (error) {
+    if (error instanceof RegistrationError) {
+      const fields: Record<string, string> = {};
+      for (const [key, message] of Object.entries(error.fields)) fields[FORM_FIELD[key] ?? "form"] ??= message;
+      return json({ fields }, 400);
+    }
+    if (error instanceof TooManyAttemptsError) return json({ detail: "Too many sign-ups for this address. Try again in an hour." }, 429);
+    return unavailable(error);
+  }
+
+  try {
+    const tokens = await login(email, password);
+    const session = await resolveSession({ access: tokens.access });
+    if (!session) return unavailable(new Error("A freshly issued token was rejected"));
+    setSessionCookies(await cookies(), tokens);
+    return json({ user: session.user }, 201);
+  } catch (error) {
+    // An address that already had an account (with another password): its owner has been emailed.
+    if (error instanceof InvalidCredentialsError || error instanceof TooManyAttemptsError) return json({ pending: true }, 202);
     return unavailable(error);
   }
 }

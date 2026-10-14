@@ -34,6 +34,8 @@ export type Session = {
   id?: number;
   /** Signed in with a temporary password an admin set: the dashboard asks for a new one before anything else. */
   mustChangePassword?: boolean;
+  /** False for a self-registered visitor who hasn't confirmed their email yet; downloads wait for it. */
+  emailVerified?: boolean;
 };
 
 const SESSION_KEY = "pri_session";

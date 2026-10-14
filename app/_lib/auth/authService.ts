@@ -5,8 +5,11 @@ import type { components } from "../api/schema";
 import { displayName } from "../api/userAdapter";
 import type { Role } from "../session";
 
-/** `mustChangePassword`: signed in with a temporary password an admin set; the dashboard asks for a new one first. */
-export type SessionUser = { id: number; email: string; role: Role; name: string; mustChangePassword: boolean };
+/**
+ * `mustChangePassword`: signed in with a temporary password an admin set; the dashboard asks for a new one first.
+ * `emailVerified`: a self-registered visitor has confirmed their address; downloads need it.
+ */
+export type SessionUser = { id: number; email: string; role: Role; name: string; mustChangePassword: boolean; emailVerified: boolean };
 export type Tokens = { access?: string; refresh?: string };
 export type ResolvedSession = { user: SessionUser; access: string; accessWasRefreshed: boolean };
 
@@ -14,6 +17,7 @@ const TOKEN_PATH = "/api/v1/token/";
 const REFRESH_PATH = "/api/v1/token/refresh/";
 const LOGOUT_PATH = "/api/v1/token/logout/";
 const ME_PATH = "/api/v1/users/me/";
+const REGISTER_PATH = "/api/v1/register/";
 
 /** Wrong username or password (the backend answers 401 without saying which). */
 export class InvalidCredentialsError extends Error {
@@ -67,7 +71,36 @@ export async function fetchMe(access: string): Promise<SessionUser | null> {
   if (!result.data) throw new ApiError(result.response.status, describeErrorBody(result.error), ME_PATH);
   const { id, email, role, first_name: firstName, last_name: lastName, must_change_password: mustChangePassword } = result.data;
   if (id === undefined || !email || !role) throw new ApiError(result.response.status, "Malformed profile response", ME_PATH);
-  return { id, email, role, name: displayName({ firstName, lastName, email }), mustChangePassword: !!mustChangePassword };
+  // An older backend without the field: every account then was made by an admin, so it counts as confirmed.
+  const emailVerified = result.data.email_verified ?? true;
+  return { id, email, role, name: displayName({ firstName, lastName, email }), mustChangePassword: !!mustChangePassword, emailVerified };
+}
+
+/** The backend refused the sign-up's fields; `fields` maps a field to its message. */
+export class RegistrationError extends Error {
+  constructor(readonly fields: Record<string, string>) {
+    super("Registration refused");
+    this.name = "RegistrationError";
+  }
+}
+
+type RegisterBody = components["schemas"]["Register"];
+
+/**
+ * Creates a visitor account. Resolves the same way whether or not the address was new: the backend emails the owner
+ * of an existing account instead, so this can't tell anyone who is registered.
+ */
+export async function register(body: RegisterBody): Promise<void> {
+  const result = await uncachedApi().POST(REGISTER_PATH, { body });
+  if (result.response.status === 429) throw new TooManyAttemptsError();
+  if (result.response.status === 400) {
+    const raw = (result.error ?? {}) as Record<string, unknown>;
+    const fields = Object.fromEntries(
+      Object.entries(raw).map(([key, value]) => [key, Array.isArray(value) ? String(value[0]) : String(value)]),
+    );
+    throw new RegistrationError(fields);
+  }
+  if (result.response.status !== 202) throw new ApiError(result.response.status, describeErrorBody(result.error), REGISTER_PATH);
 }
 
 /**

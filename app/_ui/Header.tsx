@@ -71,7 +71,8 @@ export default function Header() {
   const currentGroup = nav.find((n) => n.items.some((item) => pathname === item.href || pathname.startsWith(`${item.href}/`)))?.label ?? null;
   const mobileGroup = mobilePick?.path === pathname ? mobilePick.label : currentGroup;
 
-  const isPortal = pathname === "/account" || pathname.startsWith("/dashboard");
+  // The staff dashboard has its own bar; /account keeps the site header, since visitors sign in there too.
+  const isPortal = pathname.startsWith("/dashboard");
   if (isPortal) return <PortalHeader />;
 
   return (

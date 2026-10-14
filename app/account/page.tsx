@@ -1,179 +1,177 @@
 "use client";
 
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { roleLabels, type Session } from "../_lib/session";
-import { checkSession, signIn, signOut, type SignInResult } from "../_lib/auth/authClient";
+import { checkSession, signOut } from "../_lib/auth/authClient";
+import {
+  getProfileAction,
+  resendVerificationAction,
+  updateProfileAction,
+  type Profile,
+  type ResendResult,
+} from "../_lib/auth/accountActions";
+import { PURPOSES, type Purpose } from "../_lib/signup";
+import AuthPanel, { inputClass, labelClass } from "../_ui/auth/AuthPanel";
 import { PageHeader } from "../_ui/kit";
 
-type Failure = Exclude<SignInResult, { ok: true }>["reason"];
-
-const failureCopy: Record<Failure, string> = {
-  invalid: "That username and password don't match an active account. Check them and try again.",
-  input: "Enter both your username and password.",
-  throttled: "Too many sign-in attempts for this account. Wait a minute and try again.",
-  unreachable: "We can't reach the sign-in service right now. Please try again in a few minutes.",
-};
-
 const cardClass = "rounded-lg border border-[#e6e8f0] bg-white p-6 shadow-[0_2px_16px_rgba(23,26,43,0.06)] sm:p-8";
-const labelClass = "mb-1 block text-xs font-bold uppercase tracking-wider text-[#8b8fa3]";
-const inputClass =
-  "h-11 w-full rounded-lg border bg-white px-3 text-[15px] text-[#171a2b] outline-none transition-colors focus:border-[#253D9A] focus:ring-2 focus:ring-[#253D9A]/20 aria-[invalid=true]:border-[#E4633F]";
+const outline =
+  "rounded-md border border-[#dcdee8] px-5 py-2.5 text-sm font-semibold text-[#3a3f55] hover:border-[#253D9A] hover:text-[#253D9A]";
+const primary = "rounded-md bg-[#253D9A] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#1B2C70] disabled:opacity-60";
 
-function Spinner() {
-  return <span aria-hidden="true" className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white motion-reduce:animate-none" />;
-}
-
-function SignedIn({ session, onSignOut }: { session: Session; onSignOut: () => void }) {
+/** PRI staff: their dashboard is where they work. */
+function StaffAccount({ session, onSignOut }: { session: Session; onSignOut: () => void }) {
   return (
     <div className={cardClass}>
-      <p className="text-xs font-[family-name:var(--font-mono)] font-semibold uppercase tracking-[0.12em] text-[#8b8fa3]">Signed in</p>
+      <p className="font-[family-name:var(--font-mono)] text-xs font-semibold uppercase tracking-[0.12em] text-[#8b8fa3]">Signed in</p>
       <p className="mt-2 text-lg font-bold text-[#171a2b]">{session.name}</p>
       <p className="text-[14px] text-[#5b5f74]">
         {session.email} &middot; {roleLabels[session.role]}
       </p>
       <div className="mt-6 flex flex-wrap gap-3">
-        <Link href="/dashboard" className="rounded-md bg-[#253D9A] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#1B2C70]">
-          Go to your dashboard
-        </Link>
-        <button
-          onClick={onSignOut}
-          className="rounded-md border border-[#dcdee8] px-5 py-2.5 text-sm font-semibold text-[#3a3f55] hover:border-[#253D9A] hover:text-[#253D9A]"
-        >
-          Sign out
-        </button>
+        <Link href="/dashboard" className={primary}>Go to your dashboard</Link>
+        <button onClick={onSignOut} className={outline}>Sign out</button>
       </div>
+    </div>
+  );
+}
+
+/** A visitor who signed up to download data: their details, email confirmation, and their sign-up answers. */
+function VisitorAccount({ session, onSignOut }: { session: Session; onSignOut: () => void }) {
+  const [profile, setProfile] = useState<Profile | null | "loading">("loading");
+  const [saved, setSaved] = useState<"saving" | "saved" | "error" | null>(null);
+  const [resend, setResend] = useState<ResendResult | "sending" | null>(null);
+
+  useEffect(() => {
+    let current = true;
+    getProfileAction().then((p) => {
+      if (current) setProfile(p);
+    });
+    return () => {
+      current = false;
+    };
+  }, []);
+
+  async function save(e: FormEvent) {
+    e.preventDefault();
+    if (!profile || profile === "loading") return;
+    setSaved("saving");
+    const result = await updateProfileAction(profile).catch(() => "error" as const);
+    setSaved(result === "saved" ? "saved" : "error");
+  }
+
+  const confirmed = session.emailVerified !== false;
+
+  return (
+    <div className="space-y-6">
+      <div className={cardClass}>
+        <p className="font-[family-name:var(--font-mono)] text-xs font-semibold uppercase tracking-[0.12em] text-[#8b8fa3]">Your account</p>
+        <p className="mt-2 text-lg font-bold text-[#171a2b]">{session.name}</p>
+        <p className="text-[14px] text-[#5b5f74]">{session.email}</p>
+        {confirmed ? (
+          <p className="mt-4 inline-flex items-center gap-2 rounded-md bg-[#eef7f1] px-3 py-1.5 text-[13px] font-semibold text-[#2f6b45]">
+            <span aria-hidden="true">&#10003;</span> Email confirmed: you can download datasets
+          </p>
+        ) : (
+          <div className="mt-4 rounded-lg border border-[#e3c98a] bg-[#fdf8ec] p-4">
+            <p className="text-[14px] font-semibold text-[#171a2b]">Confirm your email to download datasets</p>
+            <p className="mt-1 text-[13.5px] leading-relaxed text-[#5b5f74]">We sent a link to {session.email}.</p>
+            <button
+              type="button"
+              onClick={async () => {
+                setResend("sending");
+                setResend(await resendVerificationAction("/data").catch(() => "error" as const));
+              }}
+              disabled={resend === "sending"}
+              className="mt-2 text-[13.5px] font-semibold text-[#253D9A] hover:underline disabled:opacity-60"
+            >
+              {resend === "sending" ? "Sending…" : "Send the link again"}
+            </button>
+            {resend && resend !== "sending" && (
+              <p role="status" className="mt-1 text-[13px] text-[#5b5f74]">
+                {resend === "sent" ? "Sent. Check your inbox (and spam folder)." : resend === "throttled" ? "Please wait a while before asking again." : "We couldn't send the email. Please try again."}
+              </p>
+            )}
+          </div>
+        )}
+        <div className="mt-6 flex flex-wrap gap-3">
+          <Link href="/data" className={primary}>Browse the data</Link>
+          <button onClick={onSignOut} className={outline}>Sign out</button>
+        </div>
+      </div>
+
+      {profile && profile !== "loading" && (
+        <form onSubmit={save} className={cardClass}>
+          <p className="font-[family-name:var(--font-mono)] text-xs font-semibold uppercase tracking-[0.12em] text-[#8b8fa3]">About you</p>
+          <div className="mt-4 space-y-4">
+            <div>
+              <label htmlFor="organisation" className={labelClass}>Organisation</label>
+              <input id="organisation" value={profile.organisation} maxLength={200} onChange={(e) => setProfile({ ...profile, organisation: e.target.value })} className={inputClass} />
+            </div>
+            <div>
+              <label htmlFor="purpose" className={labelClass}>What you use the data for</label>
+              <select id="purpose" value={profile.purpose} onChange={(e) => setProfile({ ...profile, purpose: e.target.value as Purpose })} className={`${inputClass} px-2`}>
+                <option value="">Not given</option>
+                {PURPOSES.map((p) => <option key={p.value} value={p.value}>{p.label}</option>)}
+              </select>
+            </div>
+            <label className="flex items-start gap-2.5 text-[13.5px] leading-snug text-[#3a3e56]">
+              <input type="checkbox" checked={profile.newsletter} onChange={(e) => setProfile({ ...profile, newsletter: e.target.checked })} className="mt-0.5 h-4 w-4 shrink-0 accent-[#253D9A]" />
+              Send me occasional updates on PRI&rsquo;s new research and data.
+            </label>
+          </div>
+          <div className="mt-5 flex items-center gap-3">
+            <button type="submit" disabled={saved === "saving"} className={primary}>{saved === "saving" ? "Saving…" : "Save"}</button>
+            {saved === "saved" && <span role="status" className="text-[13px] text-[#2f6b45]">Saved.</span>}
+            {saved === "error" && <span role="alert" className="text-[13px] text-[#c2462a]">We couldn&apos;t save. Please try again.</span>}
+          </div>
+        </form>
+      )}
     </div>
   );
 }
 
 export default function AccountPage() {
   const router = useRouter();
-  const usernameRef = useRef<HTMLInputElement>(null);
-  const passwordRef = useRef<HTMLInputElement>(null);
-
-  const [existing, setExisting] = useState<Session | null | "checking">("checking");
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [failure, setFailure] = useState<Failure | null>(null);
+  const [session, setSession] = useState<Session | null | "checking">("checking");
 
   useEffect(() => {
-    checkSession().then((check) => setExisting(check.status === "signed-in" ? check.session : null));
+    checkSession().then((check) => setSession(check.status === "signed-in" ? check.session : null));
   }, []);
 
-  async function handleSubmit(e: FormEvent) {
-    e.preventDefault();
-    if (submitting) return;
-    setSubmitting(true);
-    setFailure(null);
-
-    const result = await signIn(username, password);
-    if (result.ok) {
-      router.push("/dashboard");
-      return;
-    }
-
-    setSubmitting(false);
-    setFailure(result.reason);
-    if (result.reason === "invalid") {
-      // A wrong password is the likeliest slip: clear it and put the cursor back on it.
-      setPassword("");
-      passwordRef.current?.focus();
-    } else if (result.reason === "input") {
-      (username.trim() ? passwordRef : usernameRef).current?.focus();
-    }
+  function handleSignedIn(next: Session) {
+    // Staff go to work; visitors stay here and see their account.
+    if (next.role !== "public") router.push("/dashboard");
+    else setSession(next);
   }
 
   async function handleSignOut() {
     await signOut();
-    setExisting(null);
+    setSession(null);
   }
+
+  const visitor = session !== "checking" && session?.role === "public";
 
   return (
     <>
-      <PageHeader compact kicker="Sign in" title="Access your data dashboard" />
-      <section className="mx-auto max-w-md px-6 py-16">
-        {existing === "checking" ? (
+      <PageHeader compact kicker="Account" title={session && session !== "checking" ? (visitor ? "Your account" : "Welcome back") : "Sign in or create an account"} />
+      <section className="mx-auto max-w-md px-6 py-14">
+        {session === "checking" ? (
           <div className={`${cardClass} min-h-[18rem]`} aria-busy="true">
             <p role="status" className="text-[14px] text-[#8b8fa3]">Checking your session…</p>
           </div>
-        ) : existing ? (
-          <SignedIn session={existing} onSignOut={handleSignOut} />
+        ) : session ? (
+          visitor ? <VisitorAccount session={session} onSignOut={handleSignOut} /> : <StaffAccount session={session} onSignOut={handleSignOut} />
         ) : (
-          <form onSubmit={handleSubmit} noValidate className={cardClass} aria-busy={submitting}>
-            <div id="signin-error" role="alert" className={failure ? "mb-6 rounded-lg border border-[#E4633F]/30 bg-[#E4633F]/8 p-3 text-[13px] leading-relaxed text-[#5b5f74]" : "sr-only"}>
-              {failure ? failureCopy[failure] : ""}
-            </div>
-
-            <div className="space-y-5">
-              <div>
-                <label htmlFor="username" className={labelClass}>Username</label>
-                <input
-                  ref={usernameRef}
-                  id="username"
-                  name="username"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  autoComplete="username"
-                  autoCapitalize="none"
-                  spellCheck={false}
-                  required
-                  autoFocus
-                  aria-invalid={failure === "input" && !username.trim()}
-                  aria-describedby={failure ? "signin-error" : undefined}
-                  className={`${inputClass} border-[#dcdee8]`}
-                />
-              </div>
-
-              <div>
-                <div className="mb-1 flex items-baseline justify-between">
-                  <label htmlFor="password" className="block text-xs font-[family-name:var(--font-mono)] font-semibold uppercase tracking-[0.12em] text-[#8b8fa3]">Password</label>
-                  <Link href="/reset-password" className="text-[12px] font-semibold text-[#253D9A] hover:underline">Forgot your password?</Link>
-                </div>
-                <div className="relative">
-                  <input
-                    ref={passwordRef}
-                    id="password"
-                    name="password"
-                    type={showPassword ? "text" : "password"}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    autoComplete="current-password"
-                    required
-                    aria-invalid={failure === "invalid" || (failure === "input" && !password)}
-                    aria-describedby={failure ? "signin-error" : undefined}
-                    className={`${inputClass} border-[#dcdee8] pr-16`}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword((shown) => !shown)}
-                    aria-pressed={showPassword}
-                    aria-label="Show password"
-                    className="absolute inset-y-0 right-0 rounded-r-lg px-3 text-[12px] font-semibold text-[#253D9A] hover:text-[#1B2C70] focus-visible:outline-2 focus-visible:outline-[#253D9A]"
-                  >
-                    {showPassword ? "Hide" : "Show"}
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              disabled={submitting}
-              className="mt-7 flex h-11 w-full items-center justify-center gap-2 rounded-full bg-[#253D9A] text-sm font-semibold text-white transition-colors hover:bg-[#1B2C70] disabled:cursor-not-allowed disabled:opacity-70"
-            >
-              {submitting && <Spinner />}
-              {submitting ? "Signing in…" : "Sign in"}
-            </button>
-
-            <p className="mt-6 border-t border-[#e6e8f0] pt-5 text-[13px] leading-relaxed text-[#5b5f74]">
-              Accounts are created by the PRI team, so there is no sign-up. Need access?{" "}
-              <Link href="/contact" className="font-semibold text-[#253D9A] hover:underline">Contact us</Link>.
-            </p>
-          </form>
+          <div className={cardClass}>
+            <AuthPanel
+              next="/data"
+              onSignedIn={handleSignedIn}
+              intro={<p className="mb-5 text-[14px] leading-relaxed text-[#5b5f74]">An account lets you download PRI&rsquo;s datasets. It&rsquo;s free.</p>}
+            />
+          </div>
         )}
       </section>
     </>

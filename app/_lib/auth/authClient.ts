@@ -1,4 +1,5 @@
 import { SESSION_CHANGED_EVENT, clearSession, getSession, setSession, type Session, type Role } from "../session";
+import type { SignupErrors, SignupInput } from "../signup";
 
 /**
  * Browser half of sign-in. The server owns the truth (httpOnly token cookies behind /api/auth/*); this module asks it
@@ -6,7 +7,7 @@ import { SESSION_CHANGED_EVENT, clearSession, getSession, setSession, type Sessi
  * stale local copy can never outlive the real session for long.
  */
 
-type SessionUser = { id: number; name: string; email: string; role: Role; mustChangePassword?: boolean };
+type SessionUser = { id: number; name: string; email: string; role: Role; mustChangePassword?: boolean; emailVerified?: boolean };
 
 export type SignInResult = { ok: true; session: Session } | { ok: false; reason: "invalid" | "input" | "throttled" | "unreachable" };
 
@@ -17,7 +18,14 @@ export type SessionCheck =
   | { status: "unreachable"; session: Session | null };
 
 function mirror(user: SessionUser): Session {
-  const session: Session = { id: user.id, name: user.name, email: user.email, role: user.role, mustChangePassword: !!user.mustChangePassword };
+  const session: Session = {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    mustChangePassword: !!user.mustChangePassword,
+    emailVerified: user.emailVerified !== false,
+  };
   setSession(session);
   window.dispatchEvent(new Event(SESSION_CHANGED_EVENT));
   return session;
@@ -45,6 +53,28 @@ export async function signIn(username: string, password: string): Promise<SignIn
   if (response.status === 429) return { ok: false, reason: "throttled" };
   if (!response.ok) return { ok: false, reason: "unreachable" };
   return { ok: true, session: mirror((await response.json()) as SessionUser) };
+}
+
+export type SignUpResult =
+  /** Account created and signed in; the email still needs confirming before downloads. */
+  | { ok: true; session: Session }
+  /** Sent, but not signed in: most likely the address already had an account, whose owner has been emailed. */
+  | { ok: true; session: null }
+  | { ok: false; reason: "fields"; fields: SignupErrors & { form?: string } }
+  | { ok: false; reason: "throttled" | "unreachable" };
+
+export async function signUp(input: SignupInput & { terms: boolean }): Promise<SignUpResult> {
+  let response: Response;
+  try {
+    response = await fetch("/api/auth/signup", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(input) });
+  } catch {
+    return { ok: false, reason: "unreachable" };
+  }
+  if (response.status === 201) return { ok: true, session: mirror(((await response.json()) as { user: SessionUser }).user) };
+  if (response.status === 202) return { ok: true, session: null };
+  if (response.status === 400) return { ok: false, reason: "fields", fields: ((await response.json()) as { fields: SignupErrors }).fields ?? {} };
+  if (response.status === 429) return { ok: false, reason: "throttled" };
+  return { ok: false, reason: "unreachable" };
 }
 
 /** Best effort: the local session is dropped even if the server cannot be told. */

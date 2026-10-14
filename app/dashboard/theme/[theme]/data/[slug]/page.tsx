@@ -31,7 +31,7 @@ export default async function DashboardDatasetDetailPage({ params }: { params: P
     <>
       <DashboardPageHeader trail={["Data", theme]} title={ds.title} />
       <section className="mx-auto max-w-4xl px-6 py-6 lg:px-8">
-        <DatasetView ds={ds} previews={previews} access={<DatasetAccess slug={ds.slug} accessState={ds.accessState} files={ds.files} />} />
+        <DatasetView ds={ds} previews={previews} access={<DatasetAccess slug={ds.slug} accessState={ds.accessState} files={ds.files} formats={ds.formats} />} />
       </section>
     </>
   );

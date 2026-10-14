@@ -43,6 +43,7 @@ const VISIBILITY: Record<NonNullable<ApiDataset["visibility"]>, Dataset["visibil
  */
 export function accessStateOf(dataset: ApiDataset): AccessState {
   if (dataset.file) return "full";
+  if (dataset.visibility === "public") return "signin";
   return dataset.visibility === "on_request" ? "requestable" : "locked";
 }
 
