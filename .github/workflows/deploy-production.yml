@@ -65,6 +65,9 @@ jobs:
           cache-to: type=gha,mode=max
           build-args: |
             IMAGE_HOSTS=${{ vars.IMAGE_HOSTS }}
+          # The same key for every image keeps Server Action IDs stable across deploys (see the Dockerfile).
+          secrets: |
+            next_actions_key=${{ secrets.NEXT_SERVER_ACTIONS_ENCRYPTION_KEY }}
 
   deploy:
     needs: image
