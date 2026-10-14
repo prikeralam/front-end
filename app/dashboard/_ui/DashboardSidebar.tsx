@@ -1,17 +1,21 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useState, type ComponentType, type SVGProps } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState, type ComponentType, type SVGProps } from "react";
+import { checkSession, signOut } from "../../_lib/auth/authClient";
+import { getNavCountsAction, type NavCounts } from "../../_lib/dashboard/navActions";
 import { canContributeContent, canReviewDrafts, isAdmin, sessionLabel, type Session } from "../../_lib/session";
 import { useLocalFlag } from "../../_lib/useLocalFlag";
 import { useSession } from "../../_lib/useSession";
-import { AdminIcon, ChevronIcon, CollapseIcon, ContentIcon, DataIcon, EngageIcon, InboxIcon, OverviewIcon, PeopleIcon, ResearchIcon } from "./icons";
+import { AdminIcon, ChevronIcon, CollapseIcon, ContentIcon, DataIcon, EngageIcon, InboxIcon, OverviewIcon, PeopleIcon, ResearchIcon, SignOutIcon } from "./icons";
 
-type NavItem = { label: string; href: string };
+/** `badge` names a count from `NavCounts` shown beside the item (e.g. new messages). */
+type NavItem = { label: string; href: string; badge?: keyof NavCounts };
 type NavSection = { key: string; label: string; icon: ComponentType<SVGProps<SVGSVGElement>>; items: NavItem[]; also?: (path: string) => boolean };
 
 const COLLAPSE_KEY = "pri_sidebar_collapsed";
+const monoFont = "font-[family-name:var(--font-mono)]";
 
 /** Top-level headers; a header with one destination is a plain link, the rest open to show their pages. */
 function buildSections(session: Session | null): NavSection[] {
@@ -22,8 +26,8 @@ function buildSections(session: Session | null): NavSection[] {
       label: "Inbox",
       icon: InboxIcon,
       items: [
-        { label: "Messages", href: "/dashboard/inbox" },
-        { label: "Applications", href: "/dashboard/applications" },
+        { label: "Messages", href: "/dashboard/inbox", badge: "messages" },
+        { label: "Applications", href: "/dashboard/applications", badge: "applications" },
       ],
     });
   }
@@ -88,6 +92,7 @@ function buildSections(session: Session | null): NavSection[] {
       label: "Administration",
       icon: AdminIcon,
       items: [
+        { label: "Visitors", href: "/dashboard/visitors", badge: "newVisitors" },
         { label: "Users & roles", href: "/dashboard/users" },
         { label: "Audit log", href: "/dashboard/audit" },
       ],
@@ -98,16 +103,50 @@ function buildSections(session: Session | null): NavSection[] {
 
 const isActiveSection = (section: NavSection, path: string) => section.items.some((item) => item.href === path) || !!section.also?.(path);
 
+function Count({ n }: { n?: number }) {
+  if (!n) return null;
+  return <span className={`${monoFont} ml-auto rounded-full bg-[#4c6ef5] px-1.5 text-[10.5px] font-semibold leading-[18px] text-white`}>{n > 99 ? "99+" : n}</span>;
+}
+
+/**
+ * The console's navigation: a deep-navy rail with the PRI mark, grouped sections that open to their pages, count
+ * badges (new messages, applications, visitors this week) and the signed-in person with Sign out at the foot.
+ * Collapses to icons.
+ */
 export default function DashboardSidebar({ mobileOpen, onCloseMobile }: { mobileOpen: boolean; onCloseMobile: () => void }) {
   const pathname = usePathname();
+  const router = useRouter();
   const session = useSession() ?? null;
+  const [signingOut, setSigningOut] = useState(false);
   const [collapsed, setCollapsed] = useLocalFlag(COLLAPSE_KEY);
   // The header the user opened, remembered only for the page it was opened on: navigating opens the new page's header.
   const [manual, setManual] = useState<{ path: string; key: string | null } | null>(null);
+  const [counts, setCounts] = useState<NavCounts>({});
+
+  // Refreshed on each page change, so a handled message or a new sign-up shows as staff move around. Asking the
+  // server for the session too keeps the mirrored session (name, role) current, and notices one that ended.
+  useEffect(() => {
+    void checkSession();
+    let current = true;
+    getNavCountsAction()
+      .catch((): NavCounts => ({}))
+      .then((next) => {
+        if (current) setCounts(next);
+      });
+    return () => {
+      current = false;
+    };
+  }, [pathname]);
 
   const sections = buildSections(session);
   const activeKey = sections.find((s) => isActiveSection(s, pathname))?.key ?? null;
   const openKey = manual?.path === pathname ? manual.key : activeKey;
+
+  async function handleSignOut() {
+    setSigningOut(true);
+    await signOut();
+    router.push("/");
+  }
 
   function toggle(section: NavSection) {
     if (collapsed) {
@@ -118,49 +157,57 @@ export default function DashboardSidebar({ mobileOpen, onCloseMobile }: { mobile
     setManual({ path: pathname, key: openKey === section.key ? null : section.key });
   }
 
-  const renderNav = (railCollapsed: boolean) => (
-    <nav aria-label="Dashboard" className="flex h-full flex-col px-3 pb-4 pt-5">
-      {!railCollapsed && <p className="mb-3 px-3 text-[10.5px] font-semibold uppercase tracking-[0.14em] text-[#7d86a8]">Workspace</p>}
+  const renderNav = (rail: boolean) => (
+    <nav aria-label="Dashboard" className="flex h-full flex-col px-4 pb-5 pt-6">
+      <Link href="/dashboard" onClick={onCloseMobile} className={`mb-10 flex items-center gap-3 px-1.5 ${rail ? "justify-center" : ""}`}>
+        <span aria-hidden="true" className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-[#253d9a] font-[family-name:var(--font-heading)] text-[12px] tracking-wide text-white ring-1 ring-white/15">
+          PRI
+        </span>
+        {!rail && (
+          <span className="min-w-0 leading-tight">
+            <span className="block truncate text-[15px] font-semibold text-white">PRI Console</span>
+            <span className="block truncate text-[11.5px] text-white/45">Policy and Research Initiative</span>
+          </span>
+        )}
+      </Link>
 
-      <ul className="flex-1 space-y-1 overflow-y-auto">
+      <ul className="flex-1 space-y-2 overflow-y-auto [scrollbar-color:rgba(255,255,255,0.18)_transparent] [scrollbar-width:thin]">
         {sections.map((section) => {
           const Icon = section.icon;
           const active = section.key === activeKey;
           const single = section.items.length === 1;
-          const open = !railCollapsed && openKey === section.key;
-          const headerClass = `group flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-[13.5px] font-semibold transition-colors ${
-            railCollapsed ? "justify-center" : ""
-          } ${
-            active && (single || railCollapsed)
-              ? "bg-white text-[#253D9A] shadow-[0_1px_2px_rgba(23,26,43,0.08)]"
-              : active
-                ? "text-[#253D9A] hover:bg-white/60"
-                : "text-[#3a4263] hover:bg-white/60 hover:text-[#171a2b]"
-          }`;
-          const icon = <Icon className={`shrink-0 ${active ? "text-[#253D9A]" : "text-[#6f7899] group-hover:text-[#3a4263]"}`} />;
+          const open = !rail && openKey === section.key;
+          const total = section.items.reduce((sum, item) => sum + (item.badge ? counts[item.badge] ?? 0 : 0), 0);
+          const headerClass = `group relative flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left text-[14.5px] font-medium transition-colors ${
+            rail ? "justify-center" : ""
+          } ${active && (single || rail) ? "bg-white/10 text-white" : active ? "text-white" : "text-white/65 hover:bg-white/[0.06] hover:text-white"}`;
+          const icon = <Icon className={`shrink-0 ${active ? "text-[#a9bbff]" : "text-white/45 group-hover:text-white/80"}`} />;
 
           return (
             <li key={section.key}>
               {single ? (
-                <Link href={section.items[0].href} onClick={onCloseMobile} title={railCollapsed ? section.label : undefined} aria-current={active ? "page" : undefined} className={headerClass}>
+                <Link href={section.items[0].href} onClick={onCloseMobile} title={rail ? section.label : undefined} aria-current={active ? "page" : undefined} className={headerClass}>
                   {icon}
-                  {!railCollapsed && <span className="truncate">{section.label}</span>}
+                  {!rail && <span className="truncate">{section.label}</span>}
                 </Link>
               ) : (
                 <>
-                  <button type="button" onClick={() => toggle(section)} aria-expanded={open} title={railCollapsed ? section.label : undefined} className={headerClass}>
+                  <button type="button" onClick={() => toggle(section)} aria-expanded={open} title={rail ? section.label : undefined} className={headerClass}>
                     {icon}
-                    {!railCollapsed && (
+                    {!rail ? (
                       <>
                         <span className="flex-1 truncate">{section.label}</span>
-                        <ChevronIcon width={14} height={14} className={`shrink-0 text-[#8b93b3] transition-transform duration-200 ${open ? "rotate-90" : ""}`} />
+                        {!open && <Count n={total} />}
+                        <ChevronIcon width={14} height={14} className={`shrink-0 text-white/35 transition-transform duration-200 ${open ? "rotate-90" : ""}`} />
                       </>
+                    ) : (
+                      total > 0 && <span aria-hidden="true" className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-[#4c6ef5]" />
                     )}
                   </button>
                   {/* Grid-rows animates the height of the sub-list without measuring it. */}
                   <div className={`grid transition-[grid-template-rows] duration-200 ease-out ${open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}>
                     <div className="overflow-hidden" inert={!open}>
-                      <ul className="relative ml-[21px] mt-1 space-y-0.5 border-l border-[#d3d9ec] pb-1 pl-3">
+                      <ul className="ml-[21px] mt-1.5 space-y-1 border-l border-nav-line pb-1.5 pl-2.5">
                         {section.items.map((item) => {
                           const current = item.href === pathname;
                           return (
@@ -169,12 +216,13 @@ export default function DashboardSidebar({ mobileOpen, onCloseMobile }: { mobile
                                 href={item.href}
                                 onClick={onCloseMobile}
                                 aria-current={current ? "page" : undefined}
-                                className={`relative block rounded-md px-3 py-1.5 text-[13px] transition-colors ${
-                                  current ? "bg-white font-semibold text-[#253D9A] shadow-[0_1px_2px_rgba(23,26,43,0.08)]" : "text-[#4f5878] hover:bg-white/60 hover:text-[#171a2b]"
+                                className={`relative flex items-center rounded-md px-3 py-2 text-[13.5px] transition-colors ${
+                                  current ? "bg-white/10 font-semibold text-white" : "text-white/55 hover:bg-white/[0.06] hover:text-white"
                                 }`}
                               >
-                                {current && <span aria-hidden="true" className="absolute -left-[13.5px] top-1/2 h-4 w-[3px] -translate-y-1/2 rounded-full bg-[#253D9A]" />}
+                                {current && <span aria-hidden="true" className="absolute -left-[11.5px] top-1/2 h-4 w-[2px] -translate-y-1/2 rounded-full bg-[#a9bbff]" />}
                                 {item.label}
+                                {item.badge && <Count n={counts[item.badge]} />}
                               </Link>
                             </li>
                           );
@@ -189,10 +237,32 @@ export default function DashboardSidebar({ mobileOpen, onCloseMobile }: { mobile
         })}
       </ul>
 
-      {session && !railCollapsed && (
-        <div className="mt-4 rounded-lg border border-[#d9def0] bg-white/70 px-3 py-2.5">
-          {sessionLabel(session).name && <p className="truncate text-[13px] font-semibold text-[#171a2b]">{sessionLabel(session).name}</p>}
-          <p className={sessionLabel(session).name ? "text-[11.5px] text-[#6f7899]" : "text-[13px] font-semibold text-[#171a2b]"}>{sessionLabel(session).role}</p>
+      {session && (
+        <div className={`mt-4 rounded-lg border border-nav-line bg-white/[0.04] ${rail ? "flex flex-col items-center gap-1 px-1 py-2" : "px-2.5 py-2"}`}>
+          {!rail && (
+            <div className="flex items-center gap-2.5">
+              <span aria-hidden="true" className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[#a9bbff]/20 text-[11px] font-semibold text-[#d2dbff]">
+                {(sessionLabel(session).name || session.email).slice(0, 1).toUpperCase()}
+              </span>
+              <span className="min-w-0">
+                {sessionLabel(session).name && <span className="block truncate text-[12.5px] font-semibold text-white">{sessionLabel(session).name}</span>}
+                <span className="block truncate text-[11.5px] text-white/50">{sessionLabel(session).role}</span>
+              </span>
+            </div>
+          )}
+          <button
+            type="button"
+            onClick={handleSignOut}
+            disabled={signingOut}
+            title={rail ? "Sign out" : undefined}
+            aria-label={rail ? "Sign out" : undefined}
+            className={`flex items-center gap-2 rounded-md text-[12.5px] font-medium text-white/65 transition-colors hover:bg-white/[0.08] hover:text-white disabled:opacity-60 ${
+              rail ? "justify-center p-2" : "mt-2 w-full px-2 py-1.5"
+            }`}
+          >
+            <SignOutIcon width={16} height={16} className="shrink-0" />
+            {!rail && (signingOut ? "Signing out…" : "Sign out")}
+          </button>
         </div>
       )}
 
@@ -200,24 +270,24 @@ export default function DashboardSidebar({ mobileOpen, onCloseMobile }: { mobile
         type="button"
         onClick={() => setCollapsed(!collapsed)}
         aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-        className={`mt-3 hidden items-center gap-2 rounded-lg px-3 py-2 text-[12.5px] font-medium text-[#6f7899] hover:bg-white/60 hover:text-[#171a2b] lg:flex ${railCollapsed ? "justify-center" : ""}`}
+        className={`mt-2 hidden items-center gap-2 rounded-lg px-2.5 py-2 text-[12.5px] font-medium text-white/45 hover:bg-white/[0.06] hover:text-white lg:flex ${rail ? "justify-center" : ""}`}
       >
         <CollapseIcon className={collapsed ? "rotate-180" : ""} />
-        {!railCollapsed && "Collapse"}
+        {!rail && "Collapse"}
       </button>
     </nav>
   );
 
   return (
     <>
-      <aside className={`sticky top-0 hidden h-[calc(100vh-73px)] shrink-0 border-r border-[#dde2f0] bg-[#eef1f9] transition-[width] duration-200 lg:block ${collapsed ? "w-[72px]" : "w-64"}`}>
+      <aside className={`sticky top-0 hidden h-screen shrink-0 bg-nav transition-[width] duration-200 lg:block ${collapsed ? "w-[76px]" : "w-72"}`}>
         {renderNav(collapsed)}
       </aside>
 
       {mobileOpen && (
         <div className="fixed inset-0 z-40 lg:hidden">
-          <button aria-label="Close menu" className="absolute inset-0 bg-[#171a2b]/40" onClick={onCloseMobile} />
-          <aside className="absolute left-0 top-0 h-full w-72 bg-[#eef1f9] shadow-xl">{renderNav(false)}</aside>
+          <button aria-label="Close menu" className="absolute inset-0 bg-[#0b0e24]/50" onClick={onCloseMobile} />
+          <aside className="absolute left-0 top-0 h-full w-80 max-w-[85vw] bg-nav shadow-xl">{renderNav(false)}</aside>
         </div>
       )}
     </>

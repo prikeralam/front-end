@@ -133,7 +133,7 @@ export default function DatasetAccess({ slug, accessState, files, formats = [] }
   if (step === "files") {
     return (
       <div className="mt-8">
-        <DownloadFiles files={access.files} />
+        <DownloadFiles slug={slug} files={access.files} />
       </div>
     );
   }

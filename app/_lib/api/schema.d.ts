@@ -1806,10 +1806,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Admin user management. Users are deactivated, never deleted: content keeps its author. */
+        /** @description Admin user management. Deactivating keeps an account; deleting removes it (see `destroy`). */
         get: operations["v1_users_list"];
         put?: never;
-        /** @description Admin user management. Users are deactivated, never deleted: content keeps its author. */
+        /** @description Admin user management. Deactivating keeps an account; deleting removes it (see `destroy`). */
         post: operations["v1_users_create"];
         delete?: never;
         options?: never;
@@ -1824,14 +1824,21 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Admin user management. Users are deactivated, never deleted: content keeps its author. */
+        /** @description Admin user management. Deactivating keeps an account; deleting removes it (see `destroy`). */
         get: operations["v1_users_retrieve"];
         put?: never;
         post?: never;
-        delete?: never;
+        /**
+         * @description Deletes an account for good, with its downloads and access requests (e.g. a visitor asking to be erased).
+         *
+         *     Refused for the admin's own account and the last active admin, and with 409 for anyone who created content
+         *     (publications, drafts, uploads), which keeps its author: deactivate those accounts instead. Audit rows the
+         *     user made stay, without the link to them; the deletion is audited with the username and email.
+         */
+        delete: operations["v1_users_destroy"];
         options?: never;
         head?: never;
-        /** @description Admin user management. Users are deactivated, never deleted: content keeps its author. */
+        /** @description Admin user management. Deactivating keeps an account; deleting removes it (see `destroy`). */
         patch: operations["v1_users_partial_update"];
         trace?: never;
     };
@@ -1852,6 +1859,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/users/{id}/downloads/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description The user's 100 most recent dataset downloads, newest first. */
+        get: operations["v1_users_downloads_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/users/{id}/reactivate/": {
         parameters: {
             query?: never;
@@ -1861,8 +1885,25 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Admin user management. Users are deactivated, never deleted: content keeps its author. */
+        /** @description Admin user management. Deactivating keeps an account; deleting removes it (see `destroy`). */
         post: operations["v1_users_reactivate_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/users/{id}/resend-verification/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Emails the user a new confirmation link, e.g. when a visitor says theirs never arrived. */
+        post: operations["v1_users_resend_verification_create"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1896,6 +1937,23 @@ export interface paths {
         put?: never;
         /** @description Emails a set-password link: a fresh invite if the user never set a password, else a reset. */
         post: operations["v1_users_send_password_reset_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/users/export/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description The filtered list as a CSV file (same filters and search as the list). Every export is audited. */
+        get: operations["v1_users_export_retrieve"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -1961,6 +2019,23 @@ export interface paths {
             cookie?: never;
         };
         get: operations["v1_users_me_role_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/users/stats/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Visitor totals, weekly sign-ups for 12 weeks, purposes, top organisations, and dataset downloads. */
+        get: operations["v1_users_stats_retrieve"];
         put?: never;
         post?: never;
         delete?: never;
@@ -3059,13 +3134,6 @@ export interface components {
             parent?: number | null;
             readonly subthemes?: components["schemas"]["ThemeChild"][];
         };
-        /**
-         * @description A user as admins see them, and as a user sees themselves at /users/me/.
-         *
-         *     Only contact details and sign-up answers are writable here: the role has its own audited endpoint,
-         *     `is_active` its deactivate/reactivate actions, passwords their own flows, and `email_verified` changes
-         *     only through a confirmation link.
-         */
         PatchedUser: {
             readonly id?: number;
             /** @description Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only. */
@@ -3092,6 +3160,7 @@ export interface components {
             organisation?: string;
             purpose?: components["schemas"]["PurposeEnum"] | components["schemas"]["BlankEnum"];
             newsletter_opt_in?: boolean;
+            readonly download_count?: number;
         };
         PersonProfile: {
             readonly id: number;
@@ -3303,13 +3372,6 @@ export interface components {
             readonly access: string;
             refresh: string;
         };
-        /**
-         * @description A user as admins see them, and as a user sees themselves at /users/me/.
-         *
-         *     Only contact details and sign-up answers are writable here: the role has its own audited endpoint,
-         *     `is_active` its deactivate/reactivate actions, passwords their own flows, and `email_verified` changes
-         *     only through a confirmation link.
-         */
         User: {
             readonly id: number;
             /** @description Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only. */
@@ -3336,6 +3398,7 @@ export interface components {
             organisation?: string;
             purpose?: components["schemas"]["PurposeEnum"] | components["schemas"]["BlankEnum"];
             newsletter_opt_in?: boolean;
+            readonly download_count: number;
         };
         /** @description Creates an account with either a temporary password or, when none is given, an emailed invite. */
         UserCreate: {
@@ -3364,6 +3427,7 @@ export interface components {
             organisation?: string;
             purpose?: components["schemas"]["PurposeEnum"] | components["schemas"]["BlankEnum"];
             newsletter_opt_in?: boolean;
+            readonly download_count: number;
             password?: string;
         };
         VerifyEmail: {
@@ -6736,9 +6800,27 @@ export interface operations {
     v1_users_list: {
         parameters: {
             query?: {
+                email_verified?: boolean;
                 is_active?: boolean;
+                joined_after?: string;
+                joined_before?: string;
+                newsletter_opt_in?: boolean;
+                /** @description Which field to use when ordering the results. */
+                ordering?: string;
                 /** @description A page number within the paginated result set. */
                 page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+                /**
+                 * @description * `research` - Research
+                 *     * `journalism` - Journalism
+                 *     * `policy` - Policy or government
+                 *     * `teaching` - Teaching or study
+                 *     * `business` - Business
+                 *     * `personal` - Personal interest
+                 *     * `other` - Other
+                 */
+                purpose?: "business" | "journalism" | "other" | "personal" | "policy" | "research" | "teaching";
                 /** @description Matches username, email, first or last name */
                 q?: string;
                 /**
@@ -6749,6 +6831,7 @@ export interface operations {
                  *     * `admin` - Admin
                  */
                 role?: "admin" | "editor" | "fellow" | "public" | "researcher";
+                staff?: boolean;
             };
             header?: never;
             path?: never;
@@ -6812,6 +6895,26 @@ export interface operations {
             };
         };
     };
+    v1_users_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     v1_users_partial_update: {
         parameters: {
             query?: never;
@@ -6860,6 +6963,29 @@ export interface operations {
             };
         };
     };
+    v1_users_downloads_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
     v1_users_reactivate_create: {
         parameters: {
             query?: never;
@@ -6878,6 +7004,26 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["User"];
                 };
+            };
+        };
+    };
+    v1_users_resend_verification_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -6925,6 +7071,28 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    v1_users_export_retrieve: {
+        parameters: {
+            query?: {
+                /** @description Only accounts that asked for updates. */
+                newsletter_only?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/csv": string;
+                };
             };
         };
     };
@@ -7035,6 +7203,27 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["MyRole"];
+                };
+            };
+        };
+    };
+    v1_users_stats_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
         };

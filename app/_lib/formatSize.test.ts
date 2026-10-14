@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatSize } from "./DownloadFiles";
+import { formatSize } from "./formatSize";
 
 describe("formatSize", () => {
   it("reads bytes as people expect, and stays empty when unknown", () => {
