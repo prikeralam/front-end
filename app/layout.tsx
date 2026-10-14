@@ -3,6 +3,7 @@ import "./globals.css";
 import Header from "./_ui/Header";
 import Footer from "./_ui/Footer";
 import ScrollReveal from "./_ui/ScrollReveal";
+import SiteUpdatedNotice from "./_ui/SiteUpdatedNotice";
 import { headingFont, bodyFont, monoFont } from "./fonts";
 import { DEFAULT_DESCRIPTION, DEFAULT_SHARE_IMAGE, SITE_NAME, SITE_URL } from "./_lib/seo";
 
@@ -27,6 +28,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <main className="flex-1">{children}</main>
         <Footer />
         <ScrollReveal />
+        <SiteUpdatedNotice />
       </body>
     </html>
   );
