@@ -1,13 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, type ComponentType, type SVGProps } from "react";
+import { checkSession, signOut } from "../../_lib/auth/authClient";
 import { getNavCountsAction, type NavCounts } from "../../_lib/dashboard/navActions";
 import { canContributeContent, canReviewDrafts, isAdmin, sessionLabel, type Session } from "../../_lib/session";
 import { useLocalFlag } from "../../_lib/useLocalFlag";
 import { useSession } from "../../_lib/useSession";
-import { AdminIcon, ChevronIcon, CollapseIcon, ContentIcon, DataIcon, EngageIcon, InboxIcon, OverviewIcon, PeopleIcon, ResearchIcon } from "./icons";
+import { AdminIcon, ChevronIcon, CollapseIcon, ContentIcon, DataIcon, EngageIcon, InboxIcon, OverviewIcon, PeopleIcon, ResearchIcon, SignOutIcon } from "./icons";
 
 /** `badge` names a count from `NavCounts` shown beside the item (e.g. new messages). */
 type NavItem = { label: string; href: string; badge?: keyof NavCounts };
@@ -109,18 +110,23 @@ function Count({ n }: { n?: number }) {
 
 /**
  * The console's navigation: a deep-navy rail with the PRI mark, grouped sections that open to their pages, count
- * badges (new messages, applications, visitors this week) and the signed-in person at the foot. Collapses to icons.
+ * badges (new messages, applications, visitors this week) and the signed-in person with Sign out at the foot.
+ * Collapses to icons.
  */
 export default function DashboardSidebar({ mobileOpen, onCloseMobile }: { mobileOpen: boolean; onCloseMobile: () => void }) {
   const pathname = usePathname();
+  const router = useRouter();
   const session = useSession() ?? null;
+  const [signingOut, setSigningOut] = useState(false);
   const [collapsed, setCollapsed] = useLocalFlag(COLLAPSE_KEY);
   // The header the user opened, remembered only for the page it was opened on: navigating opens the new page's header.
   const [manual, setManual] = useState<{ path: string; key: string | null } | null>(null);
   const [counts, setCounts] = useState<NavCounts>({});
 
-  // Refreshed on each page change, so a handled message or a new sign-up shows as staff move around.
+  // Refreshed on each page change, so a handled message or a new sign-up shows as staff move around. Asking the
+  // server for the session too keeps the mirrored session (name, role) current, and notices one that ended.
   useEffect(() => {
+    void checkSession();
     let current = true;
     getNavCountsAction()
       .catch((): NavCounts => ({}))
@@ -135,6 +141,12 @@ export default function DashboardSidebar({ mobileOpen, onCloseMobile }: { mobile
   const sections = buildSections(session);
   const activeKey = sections.find((s) => isActiveSection(s, pathname))?.key ?? null;
   const openKey = manual?.path === pathname ? manual.key : activeKey;
+
+  async function handleSignOut() {
+    setSigningOut(true);
+    await signOut();
+    router.push("/");
+  }
 
   function toggle(section: NavSection) {
     if (collapsed) {
@@ -225,15 +237,32 @@ export default function DashboardSidebar({ mobileOpen, onCloseMobile }: { mobile
         })}
       </ul>
 
-      {session && !rail && (
-        <div className="mt-4 flex items-center gap-2.5 rounded-lg border border-nav-line bg-white/[0.04] px-2.5 py-2">
-          <span aria-hidden="true" className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[#a9bbff]/20 text-[11px] font-semibold text-[#d2dbff]">
-            {(sessionLabel(session).name || session.email).slice(0, 1).toUpperCase()}
-          </span>
-          <span className="min-w-0">
-            {sessionLabel(session).name && <span className="block truncate text-[12.5px] font-semibold text-white">{sessionLabel(session).name}</span>}
-            <span className="block truncate text-[11.5px] text-white/50">{sessionLabel(session).role}</span>
-          </span>
+      {session && (
+        <div className={`mt-4 rounded-lg border border-nav-line bg-white/[0.04] ${rail ? "flex flex-col items-center gap-1 px-1 py-2" : "px-2.5 py-2"}`}>
+          {!rail && (
+            <div className="flex items-center gap-2.5">
+              <span aria-hidden="true" className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[#a9bbff]/20 text-[11px] font-semibold text-[#d2dbff]">
+                {(sessionLabel(session).name || session.email).slice(0, 1).toUpperCase()}
+              </span>
+              <span className="min-w-0">
+                {sessionLabel(session).name && <span className="block truncate text-[12.5px] font-semibold text-white">{sessionLabel(session).name}</span>}
+                <span className="block truncate text-[11.5px] text-white/50">{sessionLabel(session).role}</span>
+              </span>
+            </div>
+          )}
+          <button
+            type="button"
+            onClick={handleSignOut}
+            disabled={signingOut}
+            title={rail ? "Sign out" : undefined}
+            aria-label={rail ? "Sign out" : undefined}
+            className={`flex items-center gap-2 rounded-md text-[12.5px] font-medium text-white/65 transition-colors hover:bg-white/[0.08] hover:text-white disabled:opacity-60 ${
+              rail ? "justify-center p-2" : "mt-2 w-full px-2 py-1.5"
+            }`}
+          >
+            <SignOutIcon width={16} height={16} className="shrink-0" />
+            {!rail && (signingOut ? "Signing out…" : "Sign out")}
+          </button>
         </div>
       )}
 
@@ -251,7 +280,7 @@ export default function DashboardSidebar({ mobileOpen, onCloseMobile }: { mobile
 
   return (
     <>
-      <aside className={`sticky top-0 hidden h-[calc(100vh-73px)] shrink-0 bg-nav transition-[width] duration-200 lg:block ${collapsed ? "w-[68px]" : "w-60"}`}>
+      <aside className={`sticky top-0 hidden h-screen shrink-0 bg-nav transition-[width] duration-200 lg:block ${collapsed ? "w-[68px]" : "w-60"}`}>
         {renderNav(collapsed)}
       </aside>
 

@@ -43,7 +43,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   if (verified.mustChangePassword) return <ChangePasswordForm name={verified.name} onChanged={verify} />;
 
   return (
-    <div className="flex min-h-[calc(100vh-73px)] bg-canvas">
+    <div className="flex min-h-screen bg-canvas">
       <DashboardSidebar mobileOpen={mobileOpen} onCloseMobile={() => setMobileOpen(false)} />
       <div className="min-w-0 flex-1">
         <ConsoleTopBar onMenu={() => setMobileOpen(true)} />
