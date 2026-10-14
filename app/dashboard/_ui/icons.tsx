@@ -122,3 +122,9 @@ export const EngageIcon = (p: P) => (
     <path d="M3 8.25h14M7 2.75v3M13 2.75v3M7 11.75h2M11 11.75h2M7 14h2" />
   </Icon>
 );
+
+export const SignOutIcon = (p: P) => (
+  <Icon {...p}>
+    <path d="M8 4H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3M12.5 13.5 16 10l-3.5-3.5M16 10H8" />
+  </Icon>
+);

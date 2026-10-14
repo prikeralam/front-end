@@ -2,54 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { usePathname } from "next/navigation";
+import { useState, useSyncExternalStore } from "react";
 import { nav, org } from "../_content/org";
-import { sessionLabel } from "../_lib/session";
-import { useSession } from "../_lib/useSession";
-import { checkSession, signOut } from "../_lib/auth/authClient";
-
-function PortalHeader() {
-  const pathname = usePathname();
-  const router = useRouter();
-  const session = useSession() ?? null;
-
-  // The server is the source of truth: asking it refreshes the mirrored session, which `useSession` then follows.
-  useEffect(() => {
-    void checkSession();
-  }, [pathname]);
-
-  async function handleSignOut() {
-    await signOut();
-    router.push("/");
-  }
-
-  return (
-    <header className="sticky top-0 z-20 bg-[#12142b] text-white">
-      <div className="h-1 w-full bg-[#E4633F]" />
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-6 px-6 py-4">
-        <Link href="/data" className="flex shrink-0 items-center gap-2.5">
-          <Image src="/logo.png" alt="PRI mark" width={32} height={32} className="rounded" />
-          <span className="text-[16px] font-bold tracking-tight text-white">PRI Data Portal</span>
-        </Link>
-        {session && (
-          <div className="flex items-center gap-4">
-            <span className="hidden text-[13px] text-white/60 sm:inline">
-              {sessionLabel(session).name && <>{sessionLabel(session).name} &middot; </>}
-              {sessionLabel(session).role}
-            </span>
-            <button
-              onClick={handleSignOut}
-              className="rounded-full border border-white/25 px-4 py-1.5 text-[13px] font-semibold text-white/80 transition-colors hover:bg-white/10 hover:text-white"
-            >
-              Sign out
-            </button>
-          </div>
-        )}
-      </div>
-    </header>
-  );
-}
 
 function subscribeToScroll(onChange: () => void) {
   window.addEventListener("scroll", onChange, { passive: true });
@@ -71,9 +26,9 @@ export default function Header() {
   const currentGroup = nav.find((n) => n.items.some((item) => pathname === item.href || pathname.startsWith(`${item.href}/`)))?.label ?? null;
   const mobileGroup = mobilePick?.path === pathname ? mobilePick.label : currentGroup;
 
-  // The staff dashboard has its own bar; /account keeps the site header, since visitors sign in there too.
-  const isPortal = pathname.startsWith("/dashboard");
-  if (isPortal) return <PortalHeader />;
+  // The staff dashboard is its own full-height console (sign-out sits in its sidebar); /account keeps the site
+  // header, since visitors sign in there too.
+  if (pathname.startsWith("/dashboard")) return null;
 
   return (
     <header

@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
-import { formatSize } from "../../data/_ui/DownloadFiles";
+import { formatSize } from "../../_lib/formatSize";
 import { DATASET_FORMATS, DATASET_MAX_MB } from "../../_lib/datasetFormats";
 import { addExtraFormatAction, listExtraFormatsAction, removeExtraFormatAction, type ExtraFormatsResult } from "../../_lib/dashboard/datasetActions";
 import { secondaryButton } from "./DashboardPageHeader";
