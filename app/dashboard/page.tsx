@@ -4,7 +4,8 @@ import { useState } from "react";
 import { roleLabels } from "../_lib/session";
 import { useRequireSession } from "../_lib/useSession";
 import DashboardPageHeader from "./_ui/DashboardPageHeader";
-import { AdminOverview, EditorOverview, ResearcherOverview, FellowOverview, DonorOverview } from "./_ui/RoleOverview";
+import AdminOverview from "./_ui/AdminOverview";
+import { EditorOverview, ResearcherOverview, FellowOverview, DonorOverview } from "./_ui/RoleOverview";
 
 export default function DashboardPage() {
   const session = useRequireSession();
@@ -16,7 +17,7 @@ export default function DashboardPage() {
 
   return (
     <>
-      <DashboardPageHeader trail={["Overview"]} title={`Welcome, ${session.name}`} description={`Signed in as ${roleLabels[session.role]}`} />
+      <DashboardPageHeader trail={["Overview"]} title={`Welcome back, ${session.name}`} description={session.role === "admin" ? "How PRI's data is being used, and what is waiting for you." : `Signed in as ${roleLabels[session.role]}`} />
 
       <section className="mx-auto max-w-6xl px-6 py-6 lg:px-8">
         {session.role === "admin" && <AdminOverview session={session} bump={bump} />}

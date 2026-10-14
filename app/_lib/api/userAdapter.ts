@@ -19,6 +19,8 @@ export type ManagedUser = {
   organisation: string;
   purpose: string;
   newsletter: boolean;
+  /** Dataset download links issued to this account. */
+  downloadCount: number;
 };
 
 export type ApiUser = {
@@ -36,6 +38,7 @@ export type ApiUser = {
   organisation?: string;
   purpose?: string;
   newsletter_opt_in?: boolean;
+  download_count?: number;
 };
 
 /** Full name when the account has one, otherwise the local part of the email. */
@@ -53,7 +56,7 @@ export function toManagedUser(user: ApiUser): ManagedUser {
     email: user.email,
     firstName,
     lastName,
-    name: displayName({ firstName, lastName, email: user.email }),
+    name: displayName({ firstName, lastName, email: user.email }) || user.username,
     role: user.role,
     active: user.is_active,
     mustChangePassword: user.must_change_password,
@@ -64,5 +67,6 @@ export function toManagedUser(user: ApiUser): ManagedUser {
     organisation: user.organisation ?? "",
     purpose: user.purpose ?? "",
     newsletter: !!user.newsletter_opt_in,
+    downloadCount: user.download_count ?? 0,
   };
 }

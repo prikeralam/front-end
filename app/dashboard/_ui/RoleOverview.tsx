@@ -8,7 +8,7 @@ import type { AccessRequestRow } from "../../_lib/datasetTypes";
 import type { Session } from "../../_lib/session";
 import { transitionCmsAction } from "../../_lib/dashboard/cmsActions";
 import { contentTypeLabel, type CmsRecord } from "../../_lib/cms/types";
-import { useCmsRecords, useRecentAudit } from "../../_lib/useCmsApi";
+import { useCmsRecords } from "../../_lib/useCmsApi";
 import { SectionHeading, Card, EmptyState } from "../../_ui/kit";
 import StatusBadge from "./StatusBadge";
 
@@ -18,28 +18,6 @@ type OverviewProps = { session: Session; bump: () => void };
 // Shared building blocks reused across role views
 // ---------------------------------------------------------------------------
 
-const kpiTone = {
-  amber: "before:bg-[#d98f1c]",
-  coral: "before:bg-[#E4633F]",
-  blue: "before:bg-[#253D9A]",
-  green: "before:bg-[#27a567]",
-};
-
-/** A headline number with a coloured edge, linking to the screen where it can be acted on. */
-function KpiTile({ value, label, tone, href }: { value: number; label: string; tone: keyof typeof kpiTone; href: string }) {
-  return (
-    <Link
-      href={href}
-      className={`group relative overflow-hidden rounded-xl border border-[#e3e6f0] bg-white p-5 shadow-[0_1px_2px_rgba(23,26,43,0.04)] transition-shadow before:absolute before:inset-y-0 before:left-0 before:w-1 hover:shadow-[0_4px_16px_rgba(23,26,43,0.08)] ${kpiTone[tone]}`}
-    >
-      <p className="font-[family-name:var(--font-mono)] text-[30px] font-semibold leading-none text-[#171a2b]">{value}</p>
-      <p className="mt-2 text-[13px] text-[#5b6280] group-hover:text-[#253D9A]">{label} &rarr;</p>
-    </Link>
-  );
-}
-
-const panel = "rounded-xl border border-[#e3e6f0] bg-white shadow-[0_1px_2px_rgba(23,26,43,0.04)]";
-const panelHeading = "flex items-center justify-between border-b border-[#edf0f6] px-5 py-3.5 font-[family-name:var(--font-heading)] text-[16px] text-[#171a2b]";
 
 function BrowseDatasetsGrid({ session }: { session: Session | null }) {
   const datasets = useDatasets(session);
@@ -182,102 +160,6 @@ function ContentAwaitingReview({ session, bump }: { session: Session; bump: () =
 // ---------------------------------------------------------------------------
 // Role overviews
 // ---------------------------------------------------------------------------
-
-export function AdminOverview({ session, bump }: OverviewProps) {
-  const datasets = useDatasets(session);
-  const pendingAccessRequests = usePendingAccessRequests(session).filter((r) => r.status === "pending");
-  const cms = useCmsRecords(session, [bump]);
-  const pendingDatasets = cms.filter((r) => r.type === "dataset" && r.status === "in_review");
-  const pendingContent = cms.filter((r) => r.type !== "dataset" && r.status === "in_review");
-  const recentActivity = useRecentAudit(session);
-  const needsAttentionCount = pendingAccessRequests.length + pendingDatasets.length + pendingContent.length;
-
-  return (
-    <div className="space-y-8">
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <KpiTile value={pendingAccessRequests.length} label="Pending access requests" tone="coral" href="#needs-attention" />
-        <KpiTile value={pendingDatasets.length} label="Datasets awaiting review" tone="amber" href="/dashboard/manage" />
-        <KpiTile value={pendingContent.length} label="Content awaiting review" tone="blue" href="/dashboard/content" />
-        <KpiTile value={datasets.length} label="Datasets in the repository" tone="green" href="/dashboard/manage" />
-      </div>
-
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
-      <div id="needs-attention" className={`${panel} scroll-mt-6`}>
-        <h2 className={panelHeading}>
-          Needs your attention
-          {needsAttentionCount > 0 && <span className="rounded-full bg-[#E4633F]/10 px-2 py-0.5 font-[family-name:var(--font-mono)] text-[12px] text-[#b3452a]">{needsAttentionCount}</span>}
-        </h2>
-        {needsAttentionCount === 0 ? (
-          <p className="px-5 py-10 text-center text-[13px] text-[#7d86a8]">Nothing pending review right now.</p>
-        ) : (
-          <div className="divide-y divide-[#edf0f6] [&>div]:rounded-none [&>div]:border-0">
-            {pendingAccessRequests.map((r) => {
-              const d = datasets.find((ds) => ds.slug === r.datasetSlug);
-              return (
-                <div key={`ar-${r.id}`} className="flex items-center justify-between gap-4 rounded-lg border border-[#e6e8f0] bg-white px-5 py-4">
-                  <div>
-                    <p className="text-[15px] text-[#171a2b]">Access request &middot; {d?.title ?? r.datasetSlug}</p>
-                    <p className="mt-1 text-[13px] text-[#8b8fa3]">{[r.requesterName, r.requesterEmail].filter(Boolean).join(" · ")}</p>
-                  </div>
-                  <AccessRequestRowActions r={r} bump={bump} />
-                </div>
-              );
-            })}
-            {pendingDatasets.map((d) => (
-              <div key={`ds-${d.key}`} className="flex items-center justify-between gap-4 rounded-lg border border-[#e6e8f0] bg-white px-5 py-4">
-                <div className="min-w-0">
-                  <p className="text-[15px] text-[#171a2b]">Dataset &middot; {d.title}</p>
-                  <p className="mt-1 text-[13px] text-[#8b8fa3]">created by user #{d.createdBy}</p>
-                </div>
-                <Link href="/dashboard/manage" className="shrink-0 rounded-full border border-[#253D9A] px-3 py-1.5 text-[12px] font-semibold text-[#253D9A] hover:bg-[#253D9A] hover:text-white">
-                  Review in Manage &rarr;
-                </Link>
-              </div>
-            ))}
-            {pendingContent.map((r) => (
-              <div key={`content-${r.type}-${r.key}`} className="flex items-center justify-between gap-4 rounded-lg border border-[#e6e8f0] bg-white px-5 py-4">
-                <div className="min-w-0">
-                  <p className="text-[15px] text-[#171a2b]">{contentTypeLabel[r.type]} &middot; {r.title}</p>
-                  <p className="mt-1 text-[13px] text-[#8b8fa3]">created by user #{r.createdBy}</p>
-                </div>
-                <button
-                  onClick={async () => { await transitionCmsAction(r.type, r.key, "approved").catch(() => null); bump(); }}
-                  className="shrink-0 rounded-full border border-[#253D9A] px-3 py-1.5 text-[12px] font-semibold text-[#253D9A] hover:bg-[#253D9A] hover:text-white"
-                >
-                  Approve
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      <div className={panel}>
-        <h2 className={panelHeading}>
-          Recent activity
-          <Link href="/dashboard/audit" className="font-[family-name:var(--font-body)] text-[12.5px] font-semibold text-[#253D9A] hover:underline">Audit log &rarr;</Link>
-        </h2>
-        {recentActivity.length === 0 ? (
-          <p className="px-5 py-10 text-center text-[13px] text-[#7d86a8]">No activity recorded yet.</p>
-        ) : (
-          <ul className="divide-y divide-[#edf0f6]">
-            {recentActivity.map((item) => (
-              <li key={item.id} className="flex items-start justify-between gap-3 px-5 py-3">
-                <p className="text-[13px] leading-snug text-[#171a2b]">{item.summary}</p>
-                <span className="shrink-0 rounded bg-[#eef0f5] px-2 py-0.5 font-[family-name:var(--font-mono)] text-[11px] text-[#5b6280]">{item.module}</span>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-      </div>
-
-      <div className="border-t border-[#e6e8f0] pt-10">
-        <BrowseDatasetsGrid session={session} />
-      </div>
-    </div>
-  );
-}
 
 export function EditorOverview({ session, bump }: OverviewProps) {
   return (

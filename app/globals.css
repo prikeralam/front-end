@@ -4,6 +4,29 @@
 @theme {
   --default-transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-pri: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Admin console tokens (dashboard). Text: ink > ink-soft > muted > faint. Surfaces: canvas behind white panels, with
+     hairline borders. PRI blue is the one accent; ok/warn/danger only carry status. The sidebar is deep navy. */
+  --color-ink: #161a2e;
+  --color-ink-soft: #3a4060;
+  --color-muted: #646b88;
+  --color-faint: #9298b2;
+  --color-line: #e5e8f0;
+  --color-line-strong: #d4d9e6;
+  --color-canvas: #f4f5f9;
+  --color-surface: #ffffff;
+  --color-hover: #f7f8fb;
+  --color-brand: #253d9a;
+  --color-brand-strong: #1b2c70;
+  --color-brand-soft: #edf0fa;
+  --color-nav: #111634;
+  --color-nav-line: #232a52;
+  --color-ok: #1d7a4b;
+  --color-ok-soft: #e8f5ee;
+  --color-warn: #8f6200;
+  --color-warn-soft: #fdf5e2;
+  --color-danger: #b23f24;
+  --color-danger-soft: #fcefeb;
 }
 
 :root {

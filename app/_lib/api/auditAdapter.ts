@@ -11,8 +11,8 @@ export type AuditRow = {
   summary: string;
 };
 
-/** "status_transition" -> "status transition". */
-const words = (value: string) => value.replace(/[_-]+/g, " ").trim();
+/** "status_transition" (or "user.registered") -> "status transition". */
+const words = (value: string) => value.replace(/[._-]+/g, " ").trim();
 
 const meta = (metadata: unknown, key: string): string | null => {
   const value = metadata && typeof metadata === "object" ? (metadata as Record<string, unknown>)[key] : undefined;
@@ -34,6 +34,21 @@ export function describeAuditEntry(entry: Pick<ApiAuditLog, "action" | "target" 
       return `Changed the role of ${target} ${change(meta(entry.metadata, "old_role"), meta(entry.metadata, "new_role"))}`.trim();
     case "access_request_review":
       return `Reviewed ${target}: ${change(meta(entry.metadata, "old_status"), meta(entry.metadata, "new_status"))}`.trim();
+    case "user.registered":
+      return `New visitor signed up (${target})`;
+    case "user_create":
+      return `Created the account ${target}`;
+    case "user_update":
+      return `Edited the account ${target}`;
+    case "user_deactivate":
+      return `Deactivated the account ${target}`;
+    case "user_reactivate":
+      return `Reactivated the account ${target}`;
+    case "users_export": {
+      const data = entry.metadata && typeof entry.metadata === "object" ? (entry.metadata as Record<string, unknown>) : {};
+      const what = data.newsletter_only === true ? "the newsletter list" : "accounts";
+      return typeof data.rows === "number" ? `Exported ${what} as CSV (${data.rows} ${data.rows === 1 ? "row" : "rows"})` : `Exported ${what} as CSV`;
+    }
     default:
       return `${words(entry.action).replace(/^./, (c) => c.toUpperCase())}: ${target}`;
   }

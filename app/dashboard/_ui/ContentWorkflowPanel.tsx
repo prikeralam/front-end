@@ -6,8 +6,9 @@ import type { CmsMutation, CmsRecord, WorkflowStatus } from "../../_lib/cms/type
 import { canContributeContent, canReviewDrafts, type Session } from "../../_lib/session";
 import { ImageIcon } from "./icons";
 import StatusBadge from "./StatusBadge";
+import { MoreMenu, type MenuAction } from "./console";
 
-type Action = { label: string; run: () => void; danger?: boolean };
+type Action = MenuAction;
 
 /** What a reviewer can do next. The backend checks the role again on every transition. */
 function reviewActions(status: WorkflowStatus): { label: string; next: WorkflowStatus }[] {
@@ -33,41 +34,6 @@ const formatDate = (iso: string) => {
 
 const rowButton = "rounded-md border border-[#d9ddea] bg-white px-2.5 py-1 text-[12px] font-semibold text-[#3a4263] hover:bg-[#f3f5fa] disabled:cursor-not-allowed disabled:opacity-50";
 const nextButton = "rounded-md bg-[#253D9A] px-2.5 py-1 text-[12px] font-semibold text-white hover:bg-[#1B2C70] disabled:cursor-not-allowed disabled:opacity-50";
-
-function MoreMenu({ actions, disabled }: { actions: Action[]; disabled: boolean }) {
-  const [open, setOpen] = useState(false);
-  if (actions.length === 0) return null;
-  return (
-    <div
-      className="relative"
-      onBlur={(e) => {
-        if (!e.currentTarget.contains(e.relatedTarget)) setOpen(false);
-      }}
-    >
-      <button type="button" disabled={disabled} aria-haspopup="menu" aria-expanded={open} aria-label="More actions" onClick={() => setOpen(!open)} className={`${rowButton} px-2 tracking-widest`}>
-        •••
-      </button>
-      {open && (
-        <div role="menu" className="absolute right-0 z-20 mt-1 min-w-44 overflow-hidden rounded-lg border border-[#e3e6f0] bg-white py-1 shadow-[0_8px_24px_rgba(23,26,43,0.12)]">
-          {actions.map((a) => (
-            <button
-              key={a.label}
-              type="button"
-              role="menuitem"
-              onClick={() => {
-                setOpen(false);
-                a.run();
-              }}
-              className={`block w-full px-3 py-2 text-left text-[13px] ${a.danger ? "text-[#b3452a] hover:bg-[#E4633F]/8" : "text-[#3a4263] hover:bg-[#f3f5fa]"}`}
-            >
-              {a.label}
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
 
 /**
  * The list for one content type: thumbnail (where the type has images), title, status, last change, and the actions
@@ -183,7 +149,7 @@ export default function ContentWorkflowPanel({
                       Edit
                     </button>
                   )}
-                  <MoreMenu actions={more} disabled={busy} />
+                  <MoreMenu actions={more} disabled={busy} buttonClassName={rowButton} />
                 </div>
               </li>
             );

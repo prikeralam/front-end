@@ -28,6 +28,14 @@ describe("describeAuditEntry", () => {
 
   it("falls back to a readable generic line for unknown actions", () => {
     expect(describeAuditEntry({ action: "dataset_purged", target: "dataset:9", metadata: {} })).toBe("Dataset purged: dataset #9");
+    expect(describeAuditEntry({ action: "thing.happened", target: "x:1", metadata: {} })).toBe("Thing happened: x #1");
+  });
+
+  it("describes account events and exports", () => {
+    expect(describeAuditEntry({ action: "user.registered", target: "user:21", metadata: {} })).toBe("New visitor signed up (user #21)");
+    expect(describeAuditEntry({ action: "user_deactivate", target: "user:5", metadata: {} })).toBe("Deactivated the account user #5");
+    expect(describeAuditEntry({ action: "users_export", target: "users:export", metadata: { rows: 1, newsletter_only: true } })).toBe("Exported the newsletter list as CSV (1 row)");
+    expect(describeAuditEntry({ action: "users_export", target: "users:export", metadata: { rows: 12, newsletter_only: false } })).toBe("Exported accounts as CSV (12 rows)");
   });
 });
 

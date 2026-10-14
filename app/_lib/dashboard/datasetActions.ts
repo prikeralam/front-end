@@ -31,6 +31,21 @@ export async function getDatasetAccessAction(slug: string): Promise<{ accessStat
   return detail ? { accessState: detail.accessState, files: detail.files } : null;
 }
 
+const FORMAT = /^[a-z0-9]{1,20}$/;
+
+/**
+ * A fresh download link for one of a dataset's files, from the backend's `/download/`, which records the download
+ * against the signed-in account. Null when the caller may not download it or it can't be reached.
+ */
+export async function getDownloadLinkAction(slug: string, format: string): Promise<string | null> {
+  if (typeof slug !== "string" || !SLUG.test(slug) || typeof format !== "string" || !FORMAT.test(format)) return null;
+  const accessToken = await getAccessToken();
+  if (!accessToken) return null;
+  const result = await backendRequest("GET", `/api/v1/datasets/${slug}/download/?format=${format}`, { accessToken }).catch(() => null);
+  const file = result?.ok ? (result.data as { file?: unknown } | null)?.file : null;
+  return typeof file === "string" && /^https?:\/\//.test(file) ? file : null;
+}
+
 export type RequestAccessResult = "requested" | "signed-out" | "not-found" | "error";
 
 /** Asks for access to a dataset. The API is idempotent: a repeat request returns the existing one. */

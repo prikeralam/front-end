@@ -32,6 +32,7 @@ describe("toManagedUser", () => {
       organisation: "",
       purpose: "",
       newsletter: false,
+      downloadCount: 0,
     });
   });
 
@@ -52,5 +53,9 @@ describe("displayName", () => {
     expect(displayName({ firstName: " Asha ", lastName: "", email: "a@x.org" })).toBe("Asha");
     expect(displayName({ firstName: "", lastName: "", email: "editor@demo.example" })).toBe("editor");
     expect(displayName({ email: "@odd" })).toBe("@odd");
+  });
+
+  it("falls back to the username when there is no name or email", () => {
+    expect(toManagedUser({ ...apiUser, first_name: "", last_name: "", email: "" }).name).toBe(apiUser.username);
   });
 });
