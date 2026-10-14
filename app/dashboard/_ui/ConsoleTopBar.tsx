@@ -123,8 +123,8 @@ function PeopleSearch() {
   );
 }
 
-/** Screens that list accounts have their own search, so the top bar leaves it out there. */
-const ACCOUNT_SCREENS = ["/dashboard/users", "/dashboard/visitors"];
+/** The people search is left out on the Overview (at the owner's request) and on the screens that list accounts, which have their own. */
+const NO_SEARCH = ["/dashboard", "/dashboard/users", "/dashboard/visitors"];
 
 /** The console's top bar: the menu button on phones, people search for admins, and a way back to the public site. */
 export default function ConsoleTopBar({ onMenu }: { onMenu: () => void }) {
@@ -135,7 +135,7 @@ export default function ConsoleTopBar({ onMenu }: { onMenu: () => void }) {
       <button type="button" onClick={onMenu} aria-label="Open menu" className="grid h-9 w-9 place-items-center rounded-lg border border-line text-ink-soft lg:hidden">
         <MenuIcon />
       </button>
-      {isAdmin(session) && !ACCOUNT_SCREENS.includes(pathname) ? <PeopleSearch /> : <span className="flex-1" />}
+      {isAdmin(session) && !NO_SEARCH.includes(pathname) ? <PeopleSearch /> : <span className="flex-1" />}
       <Link href="/" className="ml-auto shrink-0 text-[13px] font-semibold text-muted hover:text-brand">
         View site <span aria-hidden="true">↗</span>
       </Link>

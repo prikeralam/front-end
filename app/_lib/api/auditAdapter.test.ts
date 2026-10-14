@@ -34,6 +34,7 @@ describe("describeAuditEntry", () => {
   it("describes account events and exports", () => {
     expect(describeAuditEntry({ action: "user.registered", target: "user:21", metadata: {} })).toBe("New visitor signed up (user #21)");
     expect(describeAuditEntry({ action: "user_deactivate", target: "user:5", metadata: {} })).toBe("Deactivated the account user #5");
+    expect(describeAuditEntry({ action: "user_delete", target: "user:5", metadata: { email: "a@x.org" } })).toBe("Deleted the account user #5 (a@x.org)");
     expect(describeAuditEntry({ action: "users_export", target: "users:export", metadata: { rows: 1, newsletter_only: true } })).toBe("Exported the newsletter list as CSV (1 row)");
     expect(describeAuditEntry({ action: "users_export", target: "users:export", metadata: { rows: 12, newsletter_only: false } })).toBe("Exported accounts as CSV (12 rows)");
   });

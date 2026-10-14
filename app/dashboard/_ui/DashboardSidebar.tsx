@@ -158,27 +158,27 @@ export default function DashboardSidebar({ mobileOpen, onCloseMobile }: { mobile
   }
 
   const renderNav = (rail: boolean) => (
-    <nav aria-label="Dashboard" className="flex h-full flex-col px-3 pb-4 pt-4">
-      <Link href="/dashboard" onClick={onCloseMobile} className={`mb-5 flex items-center gap-2.5 px-1.5 ${rail ? "justify-center" : ""}`}>
-        <span aria-hidden="true" className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-[#253d9a] font-[family-name:var(--font-heading)] text-[11px] tracking-wide text-white ring-1 ring-white/15">
+    <nav aria-label="Dashboard" className="flex h-full flex-col px-4 pb-5 pt-6">
+      <Link href="/dashboard" onClick={onCloseMobile} className={`mb-10 flex items-center gap-3 px-1.5 ${rail ? "justify-center" : ""}`}>
+        <span aria-hidden="true" className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-[#253d9a] font-[family-name:var(--font-heading)] text-[12px] tracking-wide text-white ring-1 ring-white/15">
           PRI
         </span>
         {!rail && (
           <span className="min-w-0 leading-tight">
-            <span className="block truncate text-[13.5px] font-semibold text-white">PRI Console</span>
-            <span className="block truncate text-[11px] text-white/45">Policy and Research Initiative</span>
+            <span className="block truncate text-[15px] font-semibold text-white">PRI Console</span>
+            <span className="block truncate text-[11.5px] text-white/45">Policy and Research Initiative</span>
           </span>
         )}
       </Link>
 
-      <ul className="flex-1 space-y-1.5 overflow-y-auto [scrollbar-color:rgba(255,255,255,0.18)_transparent] [scrollbar-width:thin]">
+      <ul className="flex-1 space-y-2 overflow-y-auto [scrollbar-color:rgba(255,255,255,0.18)_transparent] [scrollbar-width:thin]">
         {sections.map((section) => {
           const Icon = section.icon;
           const active = section.key === activeKey;
           const single = section.items.length === 1;
           const open = !rail && openKey === section.key;
           const total = section.items.reduce((sum, item) => sum + (item.badge ? counts[item.badge] ?? 0 : 0), 0);
-          const headerClass = `group relative flex w-full items-center gap-3 rounded-lg px-2.5 py-2.5 text-left text-[13.5px] font-medium transition-colors ${
+          const headerClass = `group relative flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left text-[14.5px] font-medium transition-colors ${
             rail ? "justify-center" : ""
           } ${active && (single || rail) ? "bg-white/10 text-white" : active ? "text-white" : "text-white/65 hover:bg-white/[0.06] hover:text-white"}`;
           const icon = <Icon className={`shrink-0 ${active ? "text-[#a9bbff]" : "text-white/45 group-hover:text-white/80"}`} />;
@@ -207,7 +207,7 @@ export default function DashboardSidebar({ mobileOpen, onCloseMobile }: { mobile
                   {/* Grid-rows animates the height of the sub-list without measuring it. */}
                   <div className={`grid transition-[grid-template-rows] duration-200 ease-out ${open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}>
                     <div className="overflow-hidden" inert={!open}>
-                      <ul className="ml-[19px] mt-1 space-y-1 border-l border-nav-line pb-1.5 pl-2.5">
+                      <ul className="ml-[21px] mt-1.5 space-y-1 border-l border-nav-line pb-1.5 pl-2.5">
                         {section.items.map((item) => {
                           const current = item.href === pathname;
                           return (
@@ -216,7 +216,7 @@ export default function DashboardSidebar({ mobileOpen, onCloseMobile }: { mobile
                                 href={item.href}
                                 onClick={onCloseMobile}
                                 aria-current={current ? "page" : undefined}
-                                className={`relative flex items-center rounded-md px-2.5 py-2 text-[13px] transition-colors ${
+                                className={`relative flex items-center rounded-md px-3 py-2 text-[13.5px] transition-colors ${
                                   current ? "bg-white/10 font-semibold text-white" : "text-white/55 hover:bg-white/[0.06] hover:text-white"
                                 }`}
                               >
@@ -280,14 +280,14 @@ export default function DashboardSidebar({ mobileOpen, onCloseMobile }: { mobile
 
   return (
     <>
-      <aside className={`sticky top-0 hidden h-screen shrink-0 bg-nav transition-[width] duration-200 lg:block ${collapsed ? "w-[68px]" : "w-60"}`}>
+      <aside className={`sticky top-0 hidden h-screen shrink-0 bg-nav transition-[width] duration-200 lg:block ${collapsed ? "w-[76px]" : "w-72"}`}>
         {renderNav(collapsed)}
       </aside>
 
       {mobileOpen && (
         <div className="fixed inset-0 z-40 lg:hidden">
           <button aria-label="Close menu" className="absolute inset-0 bg-[#0b0e24]/50" onClick={onCloseMobile} />
-          <aside className="absolute left-0 top-0 h-full w-72 bg-nav shadow-xl">{renderNav(false)}</aside>
+          <aside className="absolute left-0 top-0 h-full w-80 max-w-[85vw] bg-nav shadow-xl">{renderNav(false)}</aside>
         </div>
       )}
     </>

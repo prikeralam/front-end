@@ -201,7 +201,8 @@ export default function AccountsScreen({ kind }: { kind: Kind }) {
 
   function changed(user: ManagedUser | null, text: string) {
     setNotice({ tone: "ok", text });
-    if (user) setSelected(user);
+    // null: the account was deleted, so its panel closes.
+    setSelected(user);
     setTick((t) => t + 1);
   }
 

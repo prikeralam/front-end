@@ -9,6 +9,7 @@ import {
   resendUserVerificationAction,
   sendPasswordResetAction,
   setUserActiveAction,
+  deleteUserAction,
   setUserRoleAction,
   updateUserAction,
   type NewUserInput,
@@ -18,7 +19,7 @@ import {
 } from "../../_lib/dashboard/userActions";
 import { roleLabels, type Role } from "../../_lib/session";
 import { PURPOSES } from "../../_lib/signup";
-import { Avatar, Badge, buttonClass, dangerClass, mono, primaryClass, type Tone } from "./console";
+import { Avatar, Badge, buttonClass, dangerClass, dangerSolidClass, mono, primaryClass, type Tone } from "./console";
 
 // Shared by Users & Roles (staff) and Visitors. Access is per role (backend Module H): giving access is choosing a role.
 
@@ -180,7 +181,7 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
   return <h3 className="mb-2 mt-6 text-[11.5px] font-semibold uppercase tracking-[0.08em] text-faint">{children}</h3>;
 }
 
-type Pending = "edit" | "deactivate" | { role: Role } | null;
+type Pending = "edit" | "deactivate" | "delete" | { role: Role } | null;
 
 /**
  * One account in the side panel: who they are, the facts, a visitor's sign-up answers and downloads, and the actions
@@ -215,6 +216,15 @@ export function AccountPanel({ user, selfId, onChanged }: { user: ManagedUser; s
     if (!outcome.ok) return setError(outcome);
     setPending(null);
     onChanged(outcome.user ?? (next ? { ...user, ...next } : user), notice);
+  }
+
+  async function remove() {
+    setBusy(true);
+    setError(null);
+    const outcome = await deleteUserAction(user.id).catch(() => unreachable);
+    setBusy(false);
+    if (!outcome.ok) return setError(outcome);
+    onChanged(null, `${user.name}'s account was deleted.`);
   }
 
   async function saveDetails(e: FormEvent<HTMLFormElement>) {
@@ -326,6 +336,20 @@ export function AccountPanel({ user, selfId, onChanged }: { user: ManagedUser; s
             <button type="button" onClick={() => setPending(null)} className={buttonClass}>Cancel</button>
           </div>
         </div>
+      ) : pending === "delete" ? (
+        <div className="rounded-lg border border-danger/25 bg-danger-soft p-3 text-[13px] text-ink-soft">
+          <p>
+            Delete <strong className="text-ink">{user.name}</strong>&apos;s account for good? This can&apos;t be undone.{" "}
+            {visitor ? "Their sign-up answers, download history and access requests go with it." : "Their download history and access requests go with it."}
+          </p>
+          <p className="mt-1 text-[12px] text-muted">An account that created content on the site can&apos;t be deleted; deactivate it instead.</p>
+          <div className="mt-3 flex gap-2">
+            <button type="button" disabled={busy} onClick={remove} className={dangerSolidClass}>
+              {busy ? "Deleting…" : "Delete account"}
+            </button>
+            <button type="button" onClick={() => setPending(null)} className={buttonClass}>Cancel</button>
+          </div>
+        </div>
       ) : (
         <div className="space-y-3">
           <div>
@@ -363,6 +387,9 @@ export function AccountPanel({ user, selfId, onChanged }: { user: ManagedUser; s
                 Reactivate
               </button>
             )}
+            <button type="button" disabled={busy || self} title={self ? "You can't delete your own account." : undefined} onClick={() => setPending("delete")} className={dangerClass}>
+              Delete
+            </button>
           </div>
         </div>
       )}

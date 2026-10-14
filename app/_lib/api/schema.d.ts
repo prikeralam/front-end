@@ -1806,10 +1806,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Admin user management. Users are deactivated, never deleted: content keeps its author. */
+        /** @description Admin user management. Deactivating keeps an account; deleting removes it (see `destroy`). */
         get: operations["v1_users_list"];
         put?: never;
-        /** @description Admin user management. Users are deactivated, never deleted: content keeps its author. */
+        /** @description Admin user management. Deactivating keeps an account; deleting removes it (see `destroy`). */
         post: operations["v1_users_create"];
         delete?: never;
         options?: never;
@@ -1824,14 +1824,21 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Admin user management. Users are deactivated, never deleted: content keeps its author. */
+        /** @description Admin user management. Deactivating keeps an account; deleting removes it (see `destroy`). */
         get: operations["v1_users_retrieve"];
         put?: never;
         post?: never;
-        delete?: never;
+        /**
+         * @description Deletes an account for good, with its downloads and access requests (e.g. a visitor asking to be erased).
+         *
+         *     Refused for the admin's own account and the last active admin, and with 409 for anyone who created content
+         *     (publications, drafts, uploads), which keeps its author: deactivate those accounts instead. Audit rows the
+         *     user made stay, without the link to them; the deletion is audited with the username and email.
+         */
+        delete: operations["v1_users_destroy"];
         options?: never;
         head?: never;
-        /** @description Admin user management. Users are deactivated, never deleted: content keeps its author. */
+        /** @description Admin user management. Deactivating keeps an account; deleting removes it (see `destroy`). */
         patch: operations["v1_users_partial_update"];
         trace?: never;
     };
@@ -1878,7 +1885,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Admin user management. Users are deactivated, never deleted: content keeps its author. */
+        /** @description Admin user management. Deactivating keeps an account; deleting removes it (see `destroy`). */
         post: operations["v1_users_reactivate_create"];
         delete?: never;
         options?: never;
@@ -6885,6 +6892,26 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["User"];
                 };
+            };
+        };
+    };
+    v1_users_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

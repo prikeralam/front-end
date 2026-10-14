@@ -44,6 +44,10 @@ export function describeAuditEntry(entry: Pick<ApiAuditLog, "action" | "target" 
       return `Deactivated the account ${target}`;
     case "user_reactivate":
       return `Reactivated the account ${target}`;
+    case "user_delete": {
+      const who = meta(entry.metadata, "email") ?? meta(entry.metadata, "username");
+      return `Deleted the account ${target}${who ? ` (${who})` : ""}`;
+    }
     case "users_export": {
       const data = entry.metadata && typeof entry.metadata === "object" ? (entry.metadata as Record<string, unknown>) : {};
       const what = data.newsletter_only === true ? "the newsletter list" : "accounts";

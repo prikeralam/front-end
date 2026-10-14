@@ -15,6 +15,9 @@ export const primaryClass =
   "inline-flex items-center justify-center gap-1.5 rounded-lg bg-brand px-3 py-1.5 text-[13px] font-semibold text-white shadow-[0_1px_2px_rgba(37,61,154,0.3)] transition-colors hover:bg-brand-strong disabled:cursor-not-allowed disabled:opacity-60";
 export const dangerClass =
   "inline-flex items-center justify-center gap-1.5 rounded-lg border border-danger/30 bg-surface px-3 py-1.5 text-[13px] font-semibold text-danger transition-colors hover:bg-danger-soft disabled:cursor-not-allowed disabled:opacity-50";
+/** The confirming step of something that can't be undone, such as deleting an account. */
+export const dangerSolidClass =
+  "inline-flex items-center justify-center gap-1.5 rounded-lg bg-danger px-3 py-1.5 text-[13px] font-semibold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60";
 
 const AVATAR_TONES = ["bg-[#e7ecfb] text-[#253d9a]", "bg-[#e6f4ee] text-[#1d6b45]", "bg-[#fbf0e2] text-[#8a5a12]", "bg-[#f3e8f7] text-[#6b2d86]", "bg-[#e5f2f6] text-[#145e74]"];
 

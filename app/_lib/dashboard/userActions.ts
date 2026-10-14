@@ -70,6 +70,7 @@ function failure(result: BackendResult): UserMutation {
       return { ok: false, message: "Only admins can manage users." };
     case 404:
       return { ok: false, message: "That user no longer exists." };
+    case 409:
     case 400: {
       // DRF answers {field: [messages]}, or a general message under `detail` (a string, or a list when raised as a
       // ValidationError, as the last-admin guard does) or `non_field_errors`.
@@ -188,6 +189,17 @@ export async function setUserActiveAction(id: number, active: boolean): Promise<
 
   const result = await backendRequest("POST", `${USERS_PATH}${id}/${active ? "reactivate" : "deactivate"}/`, { accessToken });
   return result.ok ? { ok: true, user: asUser(result) } : failure(result);
+}
+
+/** Deletes an account for good. The backend refuses the admin's own account and anyone who created content (409). */
+export async function deleteUserAction(id: number): Promise<UserMutation> {
+  if (!isId(id)) return { ok: false, message: "That user no longer exists." };
+
+  const accessToken = await getAccessToken();
+  if (!accessToken) return signedOut;
+
+  const result = await backendRequest("DELETE", `${USERS_PATH}${id}/`, { accessToken });
+  return result.ok ? { ok: true } : failure(result);
 }
 
 /** Emails the user a password-reset link (or a fresh invite if they never set a password). */
