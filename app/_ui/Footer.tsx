@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { org, nav } from "../_content/org";
 
 const socials = [
@@ -39,6 +42,10 @@ const footerColumns = [
 ];
 
 export default function Footer() {
+  const pathname = usePathname();
+  // The staff dashboard is a full-height console with no site chrome, as in Header.
+  if (pathname.startsWith("/dashboard")) return null;
+
   return (
     <footer className="bg-[#12142b]">
       <div className="mx-auto max-w-6xl px-6 py-14">
