@@ -5,17 +5,18 @@ vi.mock("server-only", () => ({}));
 const jar = { set: vi.fn(), delete: vi.fn(), get: vi.fn() };
 vi.mock("next/headers", () => ({ cookies: async () => jar }));
 
-const service = { login: vi.fn(), resolveSession: vi.fn(), revokeRefresh: vi.fn(), register: vi.fn() };
+const service = { login: vi.fn(), loginWithGoogle: vi.fn(), resolveSession: vi.fn(), revokeRefresh: vi.fn(), register: vi.fn() };
 class InvalidCredentialsError extends Error {}
+class GoogleSignInRefusedError extends Error {}
 class TooManyAttemptsError extends Error {}
 class RegistrationError extends Error {
   constructor(readonly fields: Record<string, string>) {
     super("refused");
   }
 }
-vi.mock("./authService", () => ({ ...service, InvalidCredentialsError, TooManyAttemptsError, RegistrationError }));
+vi.mock("./authService", () => ({ ...service, InvalidCredentialsError, GoogleSignInRefusedError, TooManyAttemptsError, RegistrationError }));
 
-const { handleLogin, handleLogout, handleSession, handleSignup } = await import("./handlers");
+const { handleGoogleLogin, handleLogin, handleLogout, handleSession, handleSignup } = await import("./handlers");
 
 const user = { id: 12, email: "admin@demo.example", role: "admin", name: "admin" };
 const tokens = { access: "h.e30.s", refresh: "h.e30.s" };
@@ -33,6 +34,7 @@ beforeEach(() => {
   jar.delete.mockReset();
   jar.get.mockReset();
   service.login.mockReset();
+  service.loginWithGoogle.mockReset();
   service.resolveSession.mockReset();
   service.revokeRefresh.mockReset();
   service.register.mockReset();
@@ -120,6 +122,56 @@ describe("handleLogin", () => {
     service.resolveSession.mockResolvedValueOnce({ user, access: tokens.access, accessWasRefreshed: false });
     const same = await handleLogin(proxied({ Origin: "https://pri.example", Host: "pri.example", "X-Forwarded-Host": "pri.example" }));
     expect(same.status).toBe(200);
+  });
+});
+
+describe("handleGoogleLogin", () => {
+  const googleRequest = (body: unknown, headers: Record<string, string> = {}) =>
+    new Request("https://pri.example/api/auth/google", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...headers },
+      body: typeof body === "string" ? body : JSON.stringify(body),
+    });
+
+  it("signs in with Google's ID token: sets httpOnly cookies and returns the user, never the tokens", async () => {
+    service.loginWithGoogle.mockResolvedValueOnce(tokens);
+    service.resolveSession.mockResolvedValueOnce({ user, access: tokens.access, accessWasRefreshed: false });
+
+    const response = await handleGoogleLogin(googleRequest({ credential: "google.id.token" }));
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual(user);
+    expect(response.headers.get("Cache-Control")).toBe("no-store");
+    expect(service.loginWithGoogle).toHaveBeenCalledWith("google.id.token");
+    expect(jar.set).toHaveBeenCalledTimes(2);
+    expect(jar.set.mock.calls.every(([, , options]) => (options as { httpOnly: boolean }).httpOnly)).toBe(true);
+  });
+
+  it("answers 401 when the backend refuses the token, 429 when throttled, 503 when it fails", async () => {
+    service.loginWithGoogle.mockRejectedValueOnce(new GoogleSignInRefusedError());
+    expect((await handleGoogleLogin(googleRequest({ credential: "c" }))).status).toBe(401);
+    service.loginWithGoogle.mockRejectedValueOnce(new TooManyAttemptsError());
+    expect((await handleGoogleLogin(googleRequest({ credential: "c" }))).status).toBe(429);
+    service.loginWithGoogle.mockRejectedValueOnce(new TypeError("fetch failed"));
+    expect((await handleGoogleLogin(googleRequest({ credential: "c" }))).status).toBe(503);
+    expect(jar.set).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ["invalid JSON", "{nope"],
+    ["a missing credential", {}],
+    ["an empty credential", { credential: "" }],
+    ["a non-string credential", { credential: 7 }],
+    ["an oversized credential", { credential: "c".repeat(4097) }],
+  ])("rejects %s with 400 before calling the backend", async (_label, body) => {
+    expect((await handleGoogleLogin(googleRequest(body))).status).toBe(400);
+    expect(service.loginWithGoogle).not.toHaveBeenCalled();
+  });
+
+  it("rejects a cross-site Origin with 403", async () => {
+    const response = await handleGoogleLogin(googleRequest({ credential: "c" }, { Origin: "https://evil.example" }));
+    expect(response.status).toBe(403);
+    expect(service.loginWithGoogle).not.toHaveBeenCalled();
   });
 });
 

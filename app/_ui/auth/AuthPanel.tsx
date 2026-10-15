@@ -4,6 +4,7 @@ import { useId, useRef, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { signIn, signUp, type SignInResult } from "../../_lib/auth/authClient";
 import type { Session } from "../../_lib/session";
+import GoogleSignIn from "./GoogleSignIn";
 import { PURPOSES, validateSignup, type Purpose, type SignupErrors } from "../../_lib/signup";
 
 export const labelClass = "mb-1 block font-[family-name:var(--font-mono)] text-[11px] font-semibold uppercase tracking-[0.12em] text-[#8b8fa3]";
@@ -237,7 +238,7 @@ export type AuthTab = "signin" | "signup";
 
 /**
  * Sign in and create-account, as two tabs. `next` is where a new account's confirmation email brings the visitor
- * back to (the dataset they wanted). The empty slot above the forms is where "Sign in with Google" will go.
+ * back to (the dataset they wanted). "Continue with Google" sits above both forms, since it signs in or creates an account.
  */
 export default function AuthPanel({ next = "", initialTab = "signin", onSignedIn }: {
   next?: string;
@@ -261,6 +262,7 @@ export default function AuthPanel({ next = "", initialTab = "signin", onSignedIn
         </button>
       </div>
       <div role="tabpanel" id={`${id}-panel`} aria-labelledby={`${id}-tab-${tab}`}>
+        <GoogleSignIn onSignedIn={onSignedIn} />
         {tab === "signin" ? <SignInForm onSignedIn={onSignedIn} /> : <SignUpForm next={next} onSignedUp={onSignedIn} />}
       </div>
     </div>
