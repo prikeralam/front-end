@@ -166,11 +166,7 @@ export default function AccountPage() {
           visitor ? <VisitorAccount session={session} onSignOut={handleSignOut} /> : <StaffAccount session={session} onSignOut={handleSignOut} />
         ) : (
           <div className={cardClass}>
-            <AuthPanel
-              next="/data"
-              onSignedIn={handleSignedIn}
-              intro={<p className="mb-5 text-[14px] leading-relaxed text-[#5b5f74]">An account lets you download PRI&rsquo;s datasets. It&rsquo;s free.</p>}
-            />
+            <AuthPanel next="/data" onSignedIn={handleSignedIn} />
           </div>
         )}
       </section>
