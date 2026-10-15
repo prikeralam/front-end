@@ -8,6 +8,8 @@ import { dataStories, educationCharts, demographyCharts, healthCharts, migration
 import { HBarChart, GroupedBarChart, DivergingBarChart, ScatterChart, LineChart, VBarChart, HBarSimpleChart, type ChartPalette } from "../_ui/dataStoryCharts";
 import ArticleHeader from "../_ui/ArticleHeader";
 import StoryFrame from "../_ui/StoryFrame";
+import StoryText from "../_ui/StoryText";
+import { extractStoryText, storyWordCount } from "../../_lib/storyText";
 import { PageHeader, SectionHeading } from "../../_ui/kit";
 import MediaSlot from "../../_ui/MediaSlot";
 import type { Metadata } from "next";
@@ -23,6 +25,7 @@ const palette: ChartPalette = {
   fontFamily: "Public Sans, sans-serif",
 };
 const neutralGrey = "#c9c3b4";
+const MIN_STORY_TEXT_WORDS = 80;
 
 function sortAsc(labels: string[], values: number[]) {
   const order = labels.map((l, i) => ({ l, v: values[i] })).sort((a, b) => a.v - b.v);
@@ -315,6 +318,10 @@ export default async function PublicationDetailPage({ params }: { params: Promis
   const storyUrl = pub.storyUrl;
   const uploaded = storyUrl ? await load("this story file", () => fetchStoryHtml(storyUrl)) : null;
   const story = dataStories[slug];
+  // The story's words, shown under its frame as text the page itself carries (for search engines, and readers whose
+  // browser doesn't run the story); left out when there's too little prose to be worth a text version.
+  const storyText = uploaded?.ok ? extractStoryText(uploaded.data) : [];
+  const showStoryText = storyWordCount(storyText) >= MIN_STORY_TEXT_WORDS;
   const people = pub.authors.map((s) => authors[s]).filter(Boolean);
   // Data stories get a wider column for their charts; the header shares whichever column the text uses.
   const column = uploaded || story ? "max-w-[55rem]" : "max-w-3xl";
@@ -331,7 +338,10 @@ export default async function PublicationDetailPage({ params }: { params: Promis
         {uploaded ? (
           uploaded.ok ? (
             // On phones the story's own side padding is the gutter, so the frame bleeds past the column's.
-            <StoryFrame html={uploaded.data} title={pub.title} className="-mx-6 !w-[calc(100%+3rem)] sm:mx-0 sm:!w-full" />
+            <>
+              <StoryFrame html={uploaded.data} title={pub.title} className="-mx-6 !w-[calc(100%+3rem)] sm:mx-0 sm:!w-full" />
+              {showStoryText && <StoryText blocks={storyText} />}
+            </>
           ) : (
             <LoadError what="this story" />
           )
