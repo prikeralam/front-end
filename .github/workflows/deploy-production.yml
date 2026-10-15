@@ -61,6 +61,7 @@ jobs:
           cache-to: type=gha,mode=max
           build-args: |
             IMAGE_HOSTS=${{ vars.IMAGE_HOSTS }}
+            NEXT_PUBLIC_GOOGLE_CLIENT_ID=${{ vars.NEXT_PUBLIC_GOOGLE_CLIENT_ID }}
           # The same key for every image keeps Server Action IDs stable across deploys (see the Dockerfile).
           secrets: |
             next_actions_key=${{ secrets.NEXT_SERVER_ACTIONS_ENCRYPTION_KEY }}

@@ -55,6 +55,22 @@ export async function signIn(username: string, password: string): Promise<SignIn
   return { ok: true, session: mirror((await response.json()) as SessionUser) };
 }
 
+export type GoogleSignInResult = { ok: true; session: Session } | { ok: false; reason: "refused" | "throttled" | "unreachable" };
+
+/** Finishes "Sign in with Google": the server checks Google's ID token with the backend and sets the session cookies. */
+export async function signInWithGoogle(credential: string): Promise<GoogleSignInResult> {
+  let response: Response;
+  try {
+    response = await fetch("/api/auth/google", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ credential }) });
+  } catch {
+    return { ok: false, reason: "unreachable" };
+  }
+  if (response.status === 401 || response.status === 400) return { ok: false, reason: "refused" };
+  if (response.status === 429) return { ok: false, reason: "throttled" };
+  if (!response.ok) return { ok: false, reason: "unreachable" };
+  return { ok: true, session: mirror((await response.json()) as SessionUser) };
+}
+
 export type SignUpResult =
   /** Account created and signed in; the email still needs confirming before downloads. */
   | { ok: true; session: Session }

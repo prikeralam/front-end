@@ -1746,6 +1746,30 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/token/google/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * @description Exchanges a "Sign in with Google" ID token for the same access/refresh pair as `/token/`.
+         *
+         *     The token must be signed by Google for this site's client ID and carry a verified address. An active account
+         *     with that address (or username) is signed in; otherwise a visitor account is created, already confirmed and
+         *     with no password. Answers 404 while `GOOGLE_CLIENT_ID` is unset, 401 for a token it can't accept or an
+         *     inactive account, and 503 when Google's keys can't be fetched.
+         */
+        post: operations["v1_token_google_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/token/logout/": {
         parameters: {
             query?: never;
@@ -2379,6 +2403,10 @@ export interface components {
          * @enum {string}
          */
         EventModeEnum: "in_person" | "online" | "hybrid";
+        /** @description The ID token ("credential") that Google Identity Services gives the browser. */
+        GoogleLogin: {
+            credential: string;
+        };
         /**
          * @description * `team` - Team
          *     * `patron` - Patron
@@ -6710,6 +6738,31 @@ export interface operations {
                 "application/json": components["schemas"]["TokenObtainPair"];
                 "application/x-www-form-urlencoded": components["schemas"]["TokenObtainPair"];
                 "multipart/form-data": components["schemas"]["TokenObtainPair"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TokenObtainPair"];
+                };
+            };
+        };
+    };
+    v1_token_google_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GoogleLogin"];
+                "application/x-www-form-urlencoded": components["schemas"]["GoogleLogin"];
+                "multipart/form-data": components["schemas"]["GoogleLogin"];
             };
         };
         responses: {
