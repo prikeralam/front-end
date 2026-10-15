@@ -1,4 +1,6 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { cache } from "react";
 import { LoadError } from "../../../../../_ui/ApiMessage";
 import DashboardPageHeader from "../../../../_ui/DashboardPageHeader";
 import { getDatasetDetail, getDatasetPreviews } from "../../../../../_lib/api/datasets";
@@ -7,13 +9,24 @@ import { getAccessToken } from "../../../../../_lib/auth/serverAuth";
 import DatasetAccess from "../../../../../data/_ui/DatasetAccess";
 import DatasetView from "../../../../../data/_ui/DatasetView";
 
+// Signed-in view: the caller's token decides what they can see (internal datasets for staff, files once approved).
+// Cached per request, so the title and the page share one backend call.
+const loadDataset = cache(async (slug: string) => {
+  const accessToken = await getAccessToken().catch(() => null);
+  return { accessToken, result: await load("this dataset", () => getDatasetDetail(slug, { accessToken })) };
+});
+
+export async function generateMetadata({ params }: { params: Promise<{ theme: string; slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const { result } = await loadDataset(slug);
+  return { title: result.ok && result.data ? result.data.title : "Dataset" };
+}
+
 export default async function DashboardDatasetDetailPage({ params }: { params: Promise<{ theme: string; slug: string }> }) {
   const { theme: rawTheme, slug } = await params;
   const theme = decodeURIComponent(rawTheme);
 
-  // Signed-in view: the caller's token decides what they can see (internal datasets for staff, files once approved).
-  const accessToken = await getAccessToken().catch(() => null);
-  const result = await load("this dataset", () => getDatasetDetail(slug, { accessToken }));
+  const { accessToken, result } = await loadDataset(slug);
   if (!result.ok) {
     return (
       <>
