@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useRef, useState, type FormEvent, type ReactNode } from "react";
+import { useId, useRef, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { signIn, signUp, type SignInResult } from "../../_lib/auth/authClient";
 import type { Session } from "../../_lib/session";
@@ -108,7 +108,6 @@ function SignInForm({ onSignedIn }: { onSignedIn: (session: Session) => void }) 
             aria-describedby={failure ? `${id}-error` : undefined}
             className={inputClass}
           />
-          <p className="mt-1 text-[12px] text-[#8b8fa3]">PRI staff can also use their username.</p>
         </div>
         <div>
           <div className="mb-1 flex items-baseline justify-between">
@@ -240,10 +239,9 @@ export type AuthTab = "signin" | "signup";
  * Sign in and create-account, as two tabs. `next` is where a new account's confirmation email brings the visitor
  * back to (the dataset they wanted). The empty slot above the forms is where "Sign in with Google" will go.
  */
-export default function AuthPanel({ next = "", initialTab = "signin", intro, onSignedIn }: {
+export default function AuthPanel({ next = "", initialTab = "signin", onSignedIn }: {
   next?: string;
   initialTab?: AuthTab;
-  intro?: ReactNode;
   /** Called with the new session after signing in or creating an account (which signs the visitor in). */
   onSignedIn: (session: Session) => void;
 }) {
@@ -254,7 +252,6 @@ export default function AuthPanel({ next = "", initialTab = "signin", intro, onS
 
   return (
     <div>
-      {intro}
       <div role="tablist" aria-label="Sign in or create an account" className="mb-6 flex gap-1 rounded-lg bg-[#eef0f6] p-1">
         <button type="button" role="tab" id={`${id}-tab-signin`} aria-selected={tab === "signin"} aria-controls={`${id}-panel`} onClick={() => setTab("signin")} className={tabClass(tab === "signin")}>
           Sign in
