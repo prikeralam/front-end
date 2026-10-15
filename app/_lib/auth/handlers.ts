@@ -3,10 +3,12 @@ import { cookies } from "next/headers";
 import { createRateLimiter } from "../rateLimit";
 import { safeNext, splitName, validateSignup, type Purpose } from "../signup";
 import {
+  GoogleSignInRefusedError,
   InvalidCredentialsError,
   RegistrationError,
   TooManyAttemptsError,
   login,
+  loginWithGoogle,
   register,
   resolveSession,
   revokeRefresh,
@@ -62,6 +64,35 @@ export async function handleLogin(request: Request): Promise<Response> {
     return json(session.user, 200);
   } catch (error) {
     if (error instanceof InvalidCredentialsError) return json({ detail: "Invalid credentials" }, 401);
+    if (error instanceof TooManyAttemptsError) return json({ detail: "Too many sign-in attempts. Wait a minute and try again." }, 429);
+    return unavailable(error);
+  }
+}
+
+// Google's ID tokens are a little over 1 KB; anything far longer isn't one.
+const MAX_GOOGLE_CREDENTIAL_LENGTH = 4096;
+
+/**
+ * `POST /api/auth/google`: hands the ID token from "Sign in with Google" to the backend, which checks it with Google and
+ * signs in (or creates) the matching account; then stores the tokens in httpOnly cookies, as a password sign-in does.
+ */
+export async function handleGoogleLogin(request: Request): Promise<Response> {
+  if (!isSameOrigin(request)) return json({ detail: "Cross-site sign-in is not allowed." }, 403);
+
+  const body: unknown = await request.json().catch(() => null);
+  const { credential } = (body && typeof body === "object" ? body : {}) as { credential?: unknown };
+  if (typeof credential !== "string" || !credential || credential.length > MAX_GOOGLE_CREDENTIAL_LENGTH) {
+    return json({ detail: "Google sign-in didn't finish. Please try again." }, 400);
+  }
+
+  try {
+    const tokens = await loginWithGoogle(credential);
+    const session = await resolveSession({ access: tokens.access });
+    if (!session) return unavailable(new Error("A freshly issued token was rejected"));
+    setSessionCookies(await cookies(), tokens);
+    return json(session.user, 200);
+  } catch (error) {
+    if (error instanceof GoogleSignInRefusedError) return json({ detail: "Google sign-in failed." }, 401);
     if (error instanceof TooManyAttemptsError) return json({ detail: "Too many sign-in attempts. Wait a minute and try again." }, 429);
     return unavailable(error);
   }

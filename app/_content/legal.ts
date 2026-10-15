@@ -2,7 +2,7 @@
 // cookies, third parties, hosting), for PRI to review, and ideally for a lawyer to check, before relying on them.
 // Written in the Markdown subset `_ui/RichText` renders: "## " headings, "- " bullets, **bold**.
 
-export const LEGAL_UPDATED = "2026-10-13";
+export const LEGAL_UPDATED = "2026-10-15";
 
 export const privacyPolicy = `\
 The Policy and Research Initiative (PRI) is a registered society (Reg. No. MPM/CA/204/2025) based in Malappuram, Kerala. This policy explains what personal information priresearch.in collects, why, and what you can ask us to do with it. We collect as little as we need and we do not sell personal information.
@@ -11,7 +11,7 @@ The Policy and Research Initiative (PRI) is a registered society (Reg. No. MPM/C
 
 - **When you contact us:** your name, email address, the type of enquiry and your message.
 - **When you apply for a fellowship, internship or job:** your name, email address, the role you apply for, and the CV and statement of purpose you upload.
-- **When you create an account** (needed to download datasets): your name, email address and password, your organisation if you give it, what you will use the data for, and whether you want our updates by email. We store your password only in a scrambled form that cannot be read back.
+- **When you create an account** (needed to download datasets): your name, email address and password, your organisation if you give it, what you will use the data for, and whether you want our updates by email. We store your password only in a scrambled form that cannot be read back. If you continue with Google instead, Google tells us your name and your email address (which Google has confirmed), and the account has no password with us.
 - **When you use your account:** a record that you confirmed your email address, which datasets you download (and in which format, and when), the datasets you request access to, and the decisions on those requests. PRI staff accounts are created by PRI.
 - **Technical information:** like every website, our servers briefly see your IP address and browser details when you visit. We use the IP address of form submissions only to limit spam, and we do not build profiles from it.
 
@@ -33,7 +33,7 @@ We use only what the site needs to work:
 - **Sign-in cookies** (pri_access and pri_refresh), set only when you sign in. They are not readable by scripts on the page and are removed when you sign out.
 - **Local storage** in your browser, used to remember your signed-in name and role on this device, the datasets you have requested, and display preferences such as a collapsed menu. It stays on your device.
 
-There are no advertising or analytics cookies. The map on our Contact page is provided by Google Maps, which may set its own cookies when it loads.
+There are no advertising or analytics cookies. The map on our Contact page is provided by Google Maps, and the "Continue with Google" button on the sign-in page by Google; each may set its own cookies when it loads.
 
 ## Who we share it with
 
@@ -42,6 +42,7 @@ We do not sell or rent personal information. We share it only with services that
 - **Amazon Web Services** hosts the website, its database and uploaded files, in its Mumbai (India) region.
 - **Our email provider** delivers contact messages and account emails (such as confirmation and password links) to their recipients.
 - **Google Maps** shows our office location on the Contact page.
+- **Google sign-in**, if you choose it, confirms who you are; Google then knows you signed in to this site.
 - **Donations** are made on Razorpay's payment page, through your UPI app or by bank transfer. These happen outside this website, and we never see your card or bank details.
 
 We may also disclose information when the law requires it.
