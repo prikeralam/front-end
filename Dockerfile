@@ -6,9 +6,11 @@ RUN npm ci
 
 FROM node:22-alpine AS builder
 WORKDIR /app
-# Media hosts allowed for next/image, baked in at build time (see next.config.ts).
+# Media hosts allowed for next/image, baked in at build time (see next.config.ts), and the public OAuth client ID
+# for "Continue with Google" (empty hides the button).
 ARG IMAGE_HOSTS=""
-ENV IMAGE_HOSTS=$IMAGE_HOSTS \
+ARG NEXT_PUBLIC_GOOGLE_CLIENT_ID=""
+ENV IMAGE_HOSTS=$IMAGE_HOSTS     NEXT_PUBLIC_GOOGLE_CLIENT_ID=$NEXT_PUBLIC_GOOGLE_CLIENT_ID \
     NEXT_TELEMETRY_DISABLED=1
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .

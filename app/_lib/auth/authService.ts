@@ -14,6 +14,7 @@ export type Tokens = { access?: string; refresh?: string };
 export type ResolvedSession = { user: SessionUser; access: string; accessWasRefreshed: boolean };
 
 const TOKEN_PATH = "/api/v1/token/";
+const GOOGLE_TOKEN_PATH = "/api/v1/token/google/";
 const REFRESH_PATH = "/api/v1/token/refresh/";
 const LOGOUT_PATH = "/api/v1/token/logout/";
 const ME_PATH = "/api/v1/users/me/";
@@ -45,6 +46,26 @@ export async function login(username: string, password: string): Promise<{ acces
   if (result.response.status === 401) throw new InvalidCredentialsError();
   if (result.response.status === 429) throw new TooManyAttemptsError();
   if (!result.data) throw new ApiError(result.response.status, describeErrorBody(result.error), TOKEN_PATH);
+  return { access: result.data.access, refresh: result.data.refresh };
+}
+
+/** Google's ID token was refused (bad, expired, another site's), or the account it matches is deactivated (401). */
+export class GoogleSignInRefusedError extends Error {
+  constructor() {
+    super("Google sign-in refused");
+    this.name = "GoogleSignInRefusedError";
+  }
+}
+
+/**
+ * Exchanges the ID token from "Sign in with Google" for the same token pair as a password sign-in. The backend checks
+ * the token with Google and signs in the matching account, or creates a confirmed visitor account.
+ */
+export async function loginWithGoogle(credential: string): Promise<{ access: string; refresh: string }> {
+  const result = await uncachedApi().POST(GOOGLE_TOKEN_PATH, { body: { credential } });
+  if (result.response.status === 401) throw new GoogleSignInRefusedError();
+  if (result.response.status === 429) throw new TooManyAttemptsError();
+  if (!result.data) throw new ApiError(result.response.status, describeErrorBody(result.error), GOOGLE_TOKEN_PATH);
   return { access: result.data.access, refresh: result.data.refresh };
 }
 
