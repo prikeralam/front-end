@@ -12,13 +12,14 @@ const ROW = 4;
 /**
  * Lets the public pages' sections and cards rise into place as they scroll into view. Only elements that start below
  * the current screen are marked, and only from script, so the first screen is never hidden and a page without
- * JavaScript shows everything. Skipped under reduced motion and on the dashboard.
+ * JavaScript shows everything. Skipped under reduced motion, on the dashboard and on the homepage.
  */
 export default function ScrollReveal() {
   const pathname = usePathname();
 
   useEffect(() => {
-    if (pathname.startsWith("/dashboard") || pathname === "/account") return;
+    // The homepage (and its redesign previews) stays still on purpose.
+    if (pathname.startsWith("/dashboard") || pathname === "/account" || pathname === "/" || pathname.startsWith("/home-preview")) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !("IntersectionObserver" in window)) return;
 
     const below = (el: HTMLElement) => el.getBoundingClientRect().top > window.innerHeight;
