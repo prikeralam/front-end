@@ -80,6 +80,8 @@ function buildSections(session: Session | null): NavSection[] {
         items: [
           { label: "Datasets", href: "/dashboard/manage" },
           { label: "Collections", href: "/dashboard/collections" },
+          // editors and admins add and rename themes (the backend refuses everyone else)
+          ...(canReviewDrafts(session) ? [{ label: "Themes", href: "/dashboard/themes" }] : []),
         ],
         also: (path) => path.startsWith("/dashboard/theme/"),
       },
