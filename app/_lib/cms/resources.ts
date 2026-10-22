@@ -214,7 +214,8 @@ export const RESOURCES: Record<ContentTypeKey, Resource> = {
       { key: "file", label: "Main data file", kind: "file", accept: ALL_DATASET_EXTENSIONS, maxMb: DATASET_MAX_MB, help: `Up to ${DATASET_MAX_MB} MB. Required when creating. Leave empty on edit to keep the current file. Add the same data in other formats after saving.` },
     ],
     title: (v) => v.title,
-    subtitle: (v) => [v.format.toUpperCase(), v.geography, v.year].filter(Boolean).join(" · "),
+    // The PRI catalog ID (pri-data) leads, so editors can identify and search for a dataset by it.
+    subtitle: (v, record) => [typeof record.code === "string" ? record.code : "", v.format.toUpperCase(), v.geography, v.year].filter(Boolean).join(" · "),
   },
   mention: {
     path: "/api/v1/mentions/",

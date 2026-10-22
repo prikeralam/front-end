@@ -93,7 +93,7 @@ export default async function DataPage() {
             )}
             {datasetsResult.ok && datasets.length > 0 && (
               <div className="max-w-3xl">
-                <DataSearch datasets={datasets} themes={themes} />
+                <DataSearch datasets={datasets} suggestions={themes} />
               </div>
             )}
           </div>

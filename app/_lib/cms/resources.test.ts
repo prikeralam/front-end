@@ -178,6 +178,12 @@ describe("phase D types", () => {
     expect(toPayload("collection", { title: "T", description: "", datasets: "", publication: "" }, "update")).toMatchObject({ payload: { datasets: [] } });
   });
 
+  it("leads a dataset's subtitle with its catalog ID when it has one", () => {
+    const api = { ...base, slug: "sslc", title: "SSLC results", format: "csv", geography: "Kerala", year: 2026, sub_theme: 3 };
+    expect(toCmsRecord("dataset", { ...api, code: "PRI-EDU-0009" } as ApiRecord).subtitle).toBe("PRI-EDU-0009 · CSV · Kerala · 2026");
+    expect(toCmsRecord("dataset", { ...api, code: null } as ApiRecord).subtitle).toBe("CSV · Kerala · 2026");
+  });
+
   it("reads a collection's datasets back as form values and counts them in the subtitle", () => {
     const record = toCmsRecord("collection", { ...base, slug: "plus-one", title: "Plus One", description: "", datasets: ["a", "b"], publication: null } as ApiRecord);
     expect(record).toMatchObject({ key: "plus-one", values: { datasets: "a, b", publication: "" }, subtitle: "2 datasets" });
