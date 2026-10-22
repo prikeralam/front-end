@@ -9,6 +9,7 @@ import { listPartners, listPeopleByGroup } from "./_lib/api/people";
 import { listProjects } from "./_lib/api/projects";
 import { listPublications } from "./_lib/api/publications";
 import { listThemes } from "./_lib/api/themes";
+import { heroProjectPhotos } from "./_lib/stockPhotos";
 import { LoadError, NotPublishedYet } from "./_ui/ApiMessage";
 import { StatusTag } from "./_ui/kit";
 import MediaSlot from "./_ui/MediaSlot";
@@ -133,23 +134,39 @@ export default async function HomePage() {
         {!projects.ok && <LoadError what="our projects" />}
         {projects.ok && projects.data.length === 0 && <NotPublishedYet>Projects will be published here soon.</NotPublishedYet>}
         <div className="mt-8 grid gap-5 md:grid-cols-3">
-          {(projects.ok ? projects.data : []).map((p, i) => (
-            <Link
-              key={p.slug}
-              href={`/projects/${p.slug}`}
-              className="group flex flex-col overflow-hidden rounded-lg border border-[#e3e6f0] bg-white transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-1 hover:border-[#cdd6f3] hover:shadow-[0_16px_32px_-18px_rgba(23,26,43,0.4)] motion-reduce:hover:translate-y-0"
-            >
-              <ThemePanel slug={p.slug} index={i} />
-              <div className="flex flex-1 flex-col gap-2 p-6">
-                {p.stage && <ProjectStageTag stage={p.stage} />}
-                <h3 className="text-[20px] leading-snug text-[#171a2b]">{p.title}</h3>
-                <p className="flex-1 text-[14.5px] leading-relaxed text-[#5b6280]">{p.blurb}</p>
-                <span className="mt-2 inline-flex items-center gap-1 text-[13.5px] font-semibold text-[#253D9A]">
-                  Explore project <span aria-hidden="true" className="transition-transform group-hover:translate-x-0.5">&rarr;</span>
-                </span>
-              </div>
-            </Link>
-          ))}
+          {(projects.ok ? projects.data : []).map((p, i) => {
+            // Same photo as the project's own page: the upload, else the stock photo.
+            const photo = p.image.src ?? heroProjectPhotos[p.slug];
+            return (
+              <Link
+                key={p.slug}
+                href={`/projects/${p.slug}`}
+                className="group flex flex-col overflow-hidden rounded-lg border border-[#e3e6f0] bg-white transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-1 hover:border-[#cdd6f3] hover:shadow-[0_16px_32px_-18px_rgba(23,26,43,0.4)] motion-reduce:hover:translate-y-0"
+              >
+                {photo ? (
+                  <div className="relative aspect-[16/9] overflow-hidden bg-[#eef1f9]">
+                    <Image
+                      src={photo}
+                      alt={p.title}
+                      fill
+                      sizes="(min-width: 768px) 380px, 100vw"
+                      className="object-cover transition-transform duration-500 group-hover:scale-[1.03] motion-reduce:group-hover:scale-100"
+                    />
+                  </div>
+                ) : (
+                  <ThemePanel slug={p.slug} index={i} />
+                )}
+                <div className="flex flex-1 flex-col gap-2 p-6">
+                  {p.stage && <ProjectStageTag stage={p.stage} />}
+                  <h3 className="text-[20px] leading-snug text-[#171a2b]">{p.title}</h3>
+                  <p className="flex-1 text-[14.5px] leading-relaxed text-[#5b6280]">{p.blurb}</p>
+                  <span className="mt-2 inline-flex items-center gap-1 text-[13.5px] font-semibold text-[#253D9A]">
+                    Explore project <span aria-hidden="true" className="transition-transform group-hover:translate-x-0.5">&rarr;</span>
+                  </span>
+                </div>
+              </Link>
+            );
+          })}
         </div>
       </section>
 
