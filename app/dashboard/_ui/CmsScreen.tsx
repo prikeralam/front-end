@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createCmsAction, getFormOptionsAction, listCmsAction, updateCmsAction, type FormOptions } from "../../_lib/dashboard/cmsActions";
 import { RESOURCES } from "../../_lib/cms/resources";
+import { themeOf, themesOf } from "../../_lib/cms/themeFilter";
 import { WORKFLOW_STATUSES, contentTypeLabel, workflowStatusLabel, type CmsListResult, type CmsMutation, type CmsRecord, type ContentTypeKey, type WorkflowStatus } from "../../_lib/cms/types";
 import { canContributeContent, canReviewDrafts } from "../../_lib/session";
 import { useRequireSession } from "../../_lib/useSession";
@@ -48,10 +49,14 @@ export default function CmsScreen({
   const [status, setStatus] = useState<StatusFilter>("all");
   const [query, setQuery] = useState("");
   const [facet, setFacet] = useState("");
+  const [theme, setTheme] = useState("");
   const resource = RESOURCES[type];
   const needsOptions = resource.fields.some((f) => f.optionsFrom);
   const showImages = resource.fields.some((f) => f.kind === "image");
   const facetField = filterField ? resource.fields.find((f) => f.key === filterField) : undefined;
+  // Records with a sub-theme (datasets, publications) can be narrowed by their top-level theme.
+  const themeField = resource.fields.find((f) => f.optionsFrom === "sub-themes");
+  const subThemes = options?.["sub-themes"];
   const label = contentTypeLabel[type].toLowerCase();
 
   const reload = useCallback(() => {
@@ -80,9 +85,11 @@ export default function CmsScreen({
       (r) =>
         (status === "all" || r.status === status) &&
         (!facetField || !facet || r.values[facetField.key] === facet) &&
+        (!themeField || !theme || themeOf(r, themeField.key, subThemes) === theme) &&
         (!q || `${r.title} ${r.subtitle}`.toLowerCase().includes(q)),
     );
-  }, [records, status, query, facet, facetField]);
+  }, [records, status, query, facet, facetField, theme, themeField, subThemes]);
+  const themes = useMemo(() => (themeField ? themesOf(records, themeField.key, subThemes) : []), [records, themeField, subThemes]);
 
   if (!session) return null;
   const canCreate = canContributeContent(session);
@@ -188,6 +195,23 @@ export default function CmsScreen({
                 </label>
               </div>
             </div>
+
+            {themes.length > 1 && (
+              <div role="group" aria-label="Filter by theme" className="mb-4 flex flex-wrap items-center gap-1.5">
+                <span className="mr-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#7d86a8]">Theme</span>
+                {["", ...themes].map((t) => (
+                  <button
+                    key={t || "all"}
+                    type="button"
+                    onClick={() => setTheme(t)}
+                    aria-pressed={theme === t}
+                    className={`rounded-md border px-2.5 py-1 text-[12.5px] font-semibold transition-colors ${theme === t ? "border-[#253D9A] bg-[#253D9A] text-white" : "border-[#d9ddea] bg-white text-[#4f5878] hover:border-[#253D9A]/40 hover:bg-[#f3f5fa]"}`}
+                  >
+                    {t || "All themes"}
+                  </button>
+                ))}
+              </div>
+            )}
 
             {missingImages > 0 && (
               <p className="mb-3 flex items-center gap-2 text-[12.5px] text-[#9a6412]">
