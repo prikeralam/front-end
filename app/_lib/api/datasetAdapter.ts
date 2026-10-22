@@ -60,6 +60,7 @@ export function toDatasetSummary(dataset: ApiDataset, topLevelBySubTheme: Readon
   return {
     id: dataset.id,
     slug: dataset.slug,
+    code: dataset.code || undefined,
     title: dataset.title,
     description: dataset.description ?? "",
     visibility: VISIBILITY[dataset.visibility ?? "public"],

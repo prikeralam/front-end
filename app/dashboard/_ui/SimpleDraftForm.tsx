@@ -4,6 +4,7 @@ import { useRef, useState, type FormEvent } from "react";
 import type { CmsMutation, FieldConfig, FieldOption } from "../../_lib/cms/types";
 import { primaryButton, secondaryButton } from "./DashboardPageHeader";
 import ImageField from "./ImageField";
+import MultiSelectField from "./MultiSelectField";
 
 const controlClass =
   "w-full rounded-lg border border-[#d9ddea] bg-white px-3 text-[14px] text-[#171a2b] outline-none transition-shadow focus:border-[#253D9A] focus:ring-2 focus:ring-[#253D9A]/15 read-only:bg-[#f6f7fb] read-only:text-[#7d86a8]";
@@ -89,18 +90,7 @@ export default function SimpleDraftForm({
                   Nothing to choose from yet.
                 </p>
               ) : (
-                <fieldset id={id} className="max-h-56 overflow-y-auto rounded-lg border border-[#d9ddea] bg-white p-1">
-                  <legend className="sr-only">{f.label}</legend>
-                  {opts.map((o) => {
-                    const checked = (initial ?? "").split(",").map((v) => v.trim()).includes(o.value);
-                    return (
-                      <label key={o.value} className="flex cursor-pointer items-start gap-2.5 rounded-md px-2.5 py-2 text-[13.5px] text-[#171a2b] hover:bg-[#f3f5fa]">
-                        <input type="checkbox" name={f.key} value={o.value} defaultChecked={checked} className="mt-0.5 h-4 w-4 shrink-0 accent-[#253D9A]" />
-                        <span>{o.label}</span>
-                      </label>
-                    );
-                  })}
-                </fieldset>
+                <MultiSelectField id={id} name={f.key} label={f.label} options={opts} initial={initial ?? ""} />
               )
             ) : f.kind === "select" ? (
               <select id={id} name={f.key} defaultValue={initial ?? ""} required={required} className={`${controlClass} h-10 px-2`}>

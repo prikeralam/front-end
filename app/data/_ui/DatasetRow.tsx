@@ -22,6 +22,7 @@ export default function DatasetRow({ dataset: d, href = `/data/${d.slug}` }: { d
   return (
     <Link href={href} className="group flex flex-wrap items-start justify-between gap-x-6 gap-y-3 px-5 py-4 transition-colors hover:bg-[#f7f8fc]">
       <div className="min-w-0 flex-1 basis-72">
+        {d.code && <p className="mb-1 font-[family-name:var(--font-mono)] text-[11px] font-semibold tracking-[0.06em] text-[#253D9A]">{d.code}</p>}
         <h3 className="text-[16px] leading-snug text-[#171a2b] group-hover:text-[#253D9A]">{d.title}</h3>
         {d.description && <p className="mt-1 line-clamp-2 max-w-2xl text-[13.5px] leading-relaxed text-[#5b6280]">{d.description}</p>}
         {facts.length > 0 && (
