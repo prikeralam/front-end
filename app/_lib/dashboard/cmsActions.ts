@@ -98,7 +98,7 @@ export async function getFormOptionsAction(): Promise<FormOptions> {
   const nameById = new Map(themes.map((theme) => [theme.id, theme.name]));
   return {
     publications: publications.publications.map((p) => ({ value: p.slug, label: p.title })),
-    datasets: datasets.map((d) => ({ value: d.slug, label: d.title })),
+    datasets: datasets.map((d) => ({ value: d.slug, label: d.code ? `${d.code} · ${d.title}` : d.title })),
     "sub-themes": themes
       .filter((theme) => theme.parent !== null && theme.parent !== undefined)
       .map((theme) => ({ value: String(theme.id), label: `${nameById.get(theme.parent as number) ?? "Theme"} › ${theme.name}` })),

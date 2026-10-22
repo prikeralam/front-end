@@ -10,6 +10,8 @@ export type DatasetSummary = {
   /** API id: access requests reference datasets by id, not slug. */
   id?: number;
   slug: string;
+  /** PRI catalog ID from pri-data (e.g. "PRI-EDU-0012"); absent for datasets added by hand. */
+  code?: string;
   title: string;
   description: string;
   visibility: Dataset["visibility"];

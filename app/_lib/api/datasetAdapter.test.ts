@@ -41,6 +41,9 @@ const dataset: ApiDataset = {
   created_at: "2026-09-25T06:52:45Z",
   updated_at: "2026-09-25T06:52:48Z",
   published_at: "2026-09-25T06:52:46Z",
+  qa_checklist_items: [],
+  approved_by: null,
+  approved_at: null,
 };
 
 const themes: components["schemas"]["Theme"][] = [
@@ -82,6 +85,11 @@ describe("toDatasetSummary / toDatasetDetail", () => {
     });
     expect(toDatasetSummary({ ...dataset, visibility: "on_request", format: "geojson" }, topLevel)).toMatchObject({ visibility: "on-request", fileFormat: "GeoJSON" });
     expect(toDatasetSummary({ ...dataset, visibility: "internal_only" }, topLevel).visibility).toBe("internal");
+  });
+
+  it("carries the PRI catalog ID when the dataset has one", () => {
+    expect(toDatasetSummary({ ...dataset, code: "PRI-DEM-0002" }, topLevel).code).toBe("PRI-DEM-0002");
+    expect(toDatasetSummary({ ...dataset, code: null }, topLevel).code).toBeUndefined();
   });
 
   it("leaves theme null for an unknown sub-theme and year unset when the API has none", () => {
