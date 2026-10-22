@@ -96,7 +96,8 @@ export default function ContentWorkflowPanel({
           {records.map((r) => {
             const busy = busyKey === r.key;
             const review = canReview ? reviewActions(r.status) : [];
-            const submit = r.status === "draft" && isOwn(r) && canSubmit ? [{ label: "Submit for review", next: "in_review" as WorkflowStatus }] : [];
+            // Reviewers may send any draft back to review (e.g. a pipeline dataset returned to draft), authors their own.
+            const submit = r.status === "draft" && (canReview || (isOwn(r) && canSubmit)) ? [{ label: "Submit for review", next: "in_review" as WorkflowStatus }] : [];
             // Only a step forward gets the solid button; stepping back (unpublish, back to draft) sits in the menu.
             const steps = [...submit, ...review];
             const next = steps.find((a) => a.next !== "draft" && a.next !== "unpublished");
