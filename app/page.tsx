@@ -129,7 +129,7 @@ export default async function HomePage() {
 
       {/* What we do */}
       <section className="mx-auto max-w-6xl px-6 py-16">
-        <SectionIntro label="What we do" title="Our projects" action={<Link href="/projects" className={viewAll}>All projects &rarr;</Link>} />
+        <SectionIntro label="What we do" title="Projects" action={<Link href="/projects" className={viewAll}>All projects &rarr;</Link>} />
         {!projects.ok && <LoadError what="our projects" />}
         {projects.ok && projects.data.length === 0 && <NotPublishedYet>Projects will be published here soon.</NotPublishedYet>}
         <div className="mt-8 grid gap-5 md:grid-cols-3">
@@ -156,7 +156,7 @@ export default async function HomePage() {
       {/* Featured research */}
       <section className="border-y border-[#e3e6f0] bg-white">
         <div className="mx-auto max-w-6xl px-6 py-16">
-          <SectionIntro label="Research" title="Featured research" action={<Link href="/research" className={viewAll}>View all research &rarr;</Link>} />
+          <SectionIntro label="Research" title="Featured Research" action={<Link href="/research" className={viewAll}>View all research &rarr;</Link>} />
           {!research.ok && <LoadError what="our research" />}
           {research.ok && featuredResearch.length === 0 && <NotPublishedYet>Research will be published here soon.</NotPublishedYet>}
           <div className="mt-8 grid gap-5 sm:grid-cols-3">
@@ -200,7 +200,7 @@ export default async function HomePage() {
       {/* Featured events */}
       <section className="border-y border-[#e3e6f0] bg-white">
         <div className="mx-auto max-w-6xl px-6 py-16">
-          <SectionIntro label="Engage" title="Featured events & campaigns" action={<Link href="/events" className={viewAll}>View all events &rarr;</Link>} />
+          <SectionIntro label="Engage" title="Featured Events & Campaigns" action={<Link href="/events" className={viewAll}>View all events &rarr;</Link>} />
           {!events.ok && <LoadError what="our events" />}
           {events.ok && featuredEvents.length === 0 && <NotPublishedYet>Events and campaigns will be published here soon.</NotPublishedYet>}
           <div className="mt-8 grid gap-5 sm:grid-cols-3">
