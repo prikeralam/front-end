@@ -2191,6 +2191,16 @@ export interface components {
             /** Format: date-time */
             readonly published_at: string | null;
         };
+        /**
+         * @description * `administrative` - Administrative
+         *     * `census` - Census
+         *     * `sample_survey` - Sample survey
+         *     * `rti` - RTI reply
+         *     * `pri_primary` - PRI primary data
+         *     * `compiled` - Compiled
+         * @enum {string}
+         */
+        CollectionMethodEnum: "administrative" | "census" | "sample_survey" | "rti" | "pri_primary" | "compiled";
         /** @description A message as staff see it. Only `status` can be changed. */
         ContactMessage: {
             readonly id: number;
@@ -2286,6 +2296,42 @@ export interface components {
             readonly column_count: number | null;
             readonly columns: unknown;
             readonly file_size: number | null;
+            /** @description Permanent dataset ID, e.g. PRI-EDU-0012 (from pri-data's catalog). Blank means none. */
+            code?: string | null;
+            version?: string;
+            summary?: string;
+            keywords?: string[];
+            source_publisher?: string;
+            source_document?: string;
+            source_url?: string;
+            archived_url?: string;
+            /** Format: date */
+            retrieval_date?: string | null;
+            source_tier?: components["schemas"]["SourceTierEnum"] | components["schemas"]["BlankEnum"];
+            collection_method?: components["schemas"]["CollectionMethodEnum"] | components["schemas"]["BlankEnum"];
+            source_terms?: string;
+            period_type?: components["schemas"]["PeriodTypeEnum"] | components["schemas"]["BlankEnum"];
+            next_update?: string;
+            methodology?: string;
+            known_limitations?: string;
+            lgd_levels?: string[];
+            quality_grade?: components["schemas"]["QualityGradeEnum"] | components["schemas"]["BlankEnum"];
+            license?: components["schemas"]["LicenseEnum"] | components["schemas"]["BlankEnum"];
+            steward?: string;
+            contact?: string;
+            /** @description Publications that use this dataset, by slug. */
+            related_publications?: string[];
+            column_dictionary?: unknown;
+            provenance?: unknown;
+            qa_report?: unknown;
+            qa_checklist?: unknown;
+            /** @description The manual QA checklist: the keys `qa_checklist` takes, with their labels, in order. */
+            readonly qa_checklist_items: {
+                [key: string]: unknown;
+            }[];
+            readonly approved_by: number | null;
+            /** Format: date-time */
+            readonly approved_at: string | null;
             readonly status: components["schemas"]["WorkflowStatusEnum"];
             readonly created_by: number;
             readonly reviewed_by: number | null;
@@ -2455,6 +2501,15 @@ export interface components {
             /** Format: date-time */
             published_at: string;
         };
+        /**
+         * @description * `CC-BY-4.0` - CC BY 4.0
+         *     * `CC-BY-NC-4.0` - CC BY-NC 4.0
+         *     * `GODL-India` - GODL-India
+         *     * `ODbL-1.0` - ODbL 1.0
+         *     * `other` - Other
+         * @enum {string}
+         */
+        LicenseEnum: "CC-BY-4.0" | "CC-BY-NC-4.0" | "GODL-India" | "ODbL-1.0" | "other";
         Mention: {
             readonly id: number;
             slug: string;
@@ -2924,6 +2979,42 @@ export interface components {
             readonly column_count?: number | null;
             readonly columns?: unknown;
             readonly file_size?: number | null;
+            /** @description Permanent dataset ID, e.g. PRI-EDU-0012 (from pri-data's catalog). Blank means none. */
+            code?: string | null;
+            version?: string;
+            summary?: string;
+            keywords?: string[];
+            source_publisher?: string;
+            source_document?: string;
+            source_url?: string;
+            archived_url?: string;
+            /** Format: date */
+            retrieval_date?: string | null;
+            source_tier?: components["schemas"]["SourceTierEnum"] | components["schemas"]["BlankEnum"];
+            collection_method?: components["schemas"]["CollectionMethodEnum"] | components["schemas"]["BlankEnum"];
+            source_terms?: string;
+            period_type?: components["schemas"]["PeriodTypeEnum"] | components["schemas"]["BlankEnum"];
+            next_update?: string;
+            methodology?: string;
+            known_limitations?: string;
+            lgd_levels?: string[];
+            quality_grade?: components["schemas"]["QualityGradeEnum"] | components["schemas"]["BlankEnum"];
+            license?: components["schemas"]["LicenseEnum"] | components["schemas"]["BlankEnum"];
+            steward?: string;
+            contact?: string;
+            /** @description Publications that use this dataset, by slug. */
+            related_publications?: string[];
+            column_dictionary?: unknown;
+            provenance?: unknown;
+            qa_report?: unknown;
+            qa_checklist?: unknown;
+            /** @description The manual QA checklist: the keys `qa_checklist` takes, with their labels, in order. */
+            readonly qa_checklist_items?: {
+                [key: string]: unknown;
+            }[];
+            readonly approved_by?: number | null;
+            /** Format: date-time */
+            readonly approved_at?: string | null;
             readonly status?: components["schemas"]["WorkflowStatusEnum"];
             readonly created_by?: number;
             readonly reviewed_by?: number | null;
@@ -3190,6 +3281,16 @@ export interface components {
             newsletter_opt_in?: boolean;
             readonly download_count?: number;
         };
+        /**
+         * @description * `calendar_year` - Calendar year
+         *     * `fiscal_year` - Fiscal year
+         *     * `academic_year` - Academic year
+         *     * `survey_year` - Survey year
+         *     * `snapshot` - Snapshot
+         *     * `other` - Other
+         * @enum {string}
+         */
+        PeriodTypeEnum: "calendar_year" | "fiscal_year" | "academic_year" | "survey_year" | "snapshot" | "other";
         PersonProfile: {
             readonly id: number;
             slug: string;
@@ -3291,6 +3392,13 @@ export interface components {
          * @enum {string}
          */
         PurposeEnum: "research" | "journalism" | "policy" | "teaching" | "business" | "personal" | "other";
+        /**
+         * @description * `A` - A
+         *     * `B` - B
+         *     * `C` - C
+         * @enum {string}
+         */
+        QualityGradeEnum: "A" | "B" | "C";
         Recognition: {
             readonly id: number;
             slug: string;
@@ -3340,6 +3448,15 @@ export interface components {
          * @enum {string}
          */
         RoleEnum: "public" | "researcher" | "editor" | "fellow" | "admin";
+        /**
+         * @description * `1` - 1 Official producer
+         *     * `2` - 2 Official, second-hand or RTI
+         *     * `3` - 3 Research or civil society
+         *     * `4` - 4 Unverified
+         *     * `P` - P PRI
+         * @enum {string}
+         */
+        SourceTierEnum: "1" | "2" | "3" | "4" | "P";
         /**
          * @description * `ongoing` - Ongoing
          *     * `completed` - Completed
@@ -4336,11 +4453,26 @@ export interface operations {
     v1_datasets_list: {
         parameters: {
             query?: {
+                code?: string;
                 geography?: string;
                 /** @description A page number within the paginated result set. */
                 page?: number;
                 /** @description A search term. */
                 q?: string;
+                /**
+                 * @description * `A` - A
+                 *     * `B` - B
+                 *     * `C` - C
+                 */
+                quality_grade?: "A" | "B" | "C";
+                /**
+                 * @description * `1` - 1 Official producer
+                 *     * `2` - 2 Official, second-hand or RTI
+                 *     * `3` - 3 Research or civil society
+                 *     * `4` - 4 Unverified
+                 *     * `P` - P PRI
+                 */
+                source_tier?: "1" | "2" | "3" | "4" | "P";
                 sub_theme?: number;
                 theme?: number;
                 year?: number;

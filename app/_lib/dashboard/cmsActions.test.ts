@@ -84,13 +84,14 @@ describe("listAllCmsAction", () => {
 
 describe("getFormOptionsAction", () => {
   it("offers sub-themes labelled with their theme, people as authors, and publications and datasets by slug", async () => {
-    listDatasets.mockResolvedValueOnce([{ slug: "plus-one", title: "Plus One batch size" }]);
+    listDatasets.mockResolvedValueOnce([{ slug: "plus-one", title: "Plus One batch size" }, { slug: "sslc", code: "PRI-EDU-0009", title: "SSLC results" }]);
 
     expect(await getFormOptionsAction()).toEqual({
       "sub-themes": [{ value: "11", label: "Health › Primary Care" }],
       authors: [{ value: "38", label: "PRI Research Team" }],
       publications: [{ value: "healthcare-gap", label: "Healthcare gap" }],
-      datasets: [{ value: "plus-one", label: "Plus One batch size" }],
+      // A catalogued dataset's label leads with its catalog ID, so the collection picker can be searched by it.
+      datasets: [{ value: "plus-one", label: "Plus One batch size" }, { value: "sslc", label: "PRI-EDU-0009 · SSLC results" }],
     });
     // Datasets are listed as the signed-in user sees them, so staff can bundle internal ones.
     expect(listDatasets).toHaveBeenCalledWith({ accessToken: "tok" });
