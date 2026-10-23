@@ -3,6 +3,8 @@
 import { useMemo, useState, type ReactNode } from "react";
 import type { DatasetSummary } from "../../_lib/datasetTypes";
 import { EmptyState } from "../../_ui/kit";
+import Pager from "./Pager";
+import { pageOf } from "./paging";
 
 const distinct = (values: (string | null | undefined)[]) => Array.from(new Set(values.filter((v): v is string => !!v)));
 
@@ -54,6 +56,12 @@ export default function DatasetFacetList({
   const [type, setType] = useState("");
   const [geography, setGeography] = useState("");
   const [year, setYear] = useState("");
+  const [page, setPage] = useState(1);
+  // Any filter change starts again from the first page.
+  const filterBy = (set: (v: string) => void) => (v: string) => {
+    set(v);
+    setPage(1);
+  };
 
   const subThemes = useMemo(() => distinct(datasets.map((d) => d.subTheme)).sort(), [datasets]);
   const types = useMemo(() => distinct(datasets.map((d) => d.type)), [datasets]);
@@ -70,6 +78,8 @@ export default function DatasetFacetList({
       (!year || d.year === year)
   );
 
+  const shown = pageOf(filtered, page);
+
   const active = [subTheme, fileFormat, type, geography, year].filter(Boolean).length;
   const clear = () => {
     setSubTheme("");
@@ -77,17 +87,18 @@ export default function DatasetFacetList({
     setType("");
     setGeography("");
     setYear("");
+    setPage(1);
   };
 
   return (
     <div className={`grid gap-5 ${className}`}>
       <div className="flex flex-wrap items-end gap-x-4 gap-y-3 border-b border-[#e6e8f0] pb-5 max-sm:grid max-sm:grid-cols-2">
         {/* One sub-theme would be a filter with nothing to choose. */}
-        <FacetSelect label="Sub-theme" options={subThemes.length > 1 ? subThemes : []} value={subTheme} onChange={setSubTheme} />
-        <FacetSelect label="File format" options={formats} value={fileFormat} onChange={setFileFormat} />
-        <FacetSelect label="Type" options={types} value={type} onChange={setType} />
-        <FacetSelect label="Geography" options={geographies} value={geography} onChange={setGeography} />
-        <FacetSelect label="Year" options={years} value={year} onChange={setYear} />
+        <FacetSelect label="Sub-theme" options={subThemes.length > 1 ? subThemes : []} value={subTheme} onChange={filterBy(setSubTheme)} />
+        <FacetSelect label="File format" options={formats} value={fileFormat} onChange={filterBy(setFileFormat)} />
+        <FacetSelect label="Type" options={types} value={type} onChange={filterBy(setType)} />
+        <FacetSelect label="Geography" options={geographies} value={geography} onChange={filterBy(setGeography)} />
+        <FacetSelect label="Year" options={years} value={year} onChange={filterBy(setYear)} />
         <p className="text-[13px] text-[#5b5f74] max-sm:col-span-2 sm:ml-auto sm:pb-2.5">
           {filtered.length} of {datasets.length} {datasets.length === 1 ? "dataset" : "datasets"}
           {active > 0 && (
@@ -102,7 +113,10 @@ export default function DatasetFacetList({
         {filtered.length === 0 ? (
           <EmptyState message="No datasets match your filters." />
         ) : (
-          <div className="divide-y divide-[#e6e8f0] rounded-lg border border-[#e6e8f0] bg-white">{filtered.map(renderRow)}</div>
+          <>
+            <div className="divide-y divide-[#e6e8f0] rounded-lg border border-[#e6e8f0] bg-white">{shown.items.map(renderRow)}</div>
+            <Pager page={shown.page} pages={shown.pages} onChange={setPage} />
+          </>
         )}
       </div>
     </div>
