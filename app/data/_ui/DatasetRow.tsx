@@ -16,7 +16,6 @@ export default function DatasetRow({ dataset: d, href = `/data/${d.slug}` }: { d
     d.granularity && `By ${d.granularity}`,
     d.timePeriod ?? d.year,
     d.rowCount !== undefined && `${numberFormat.format(d.rowCount)} rows`,
-    d.lastUpdated && `Updated ${d.lastUpdated}`,
   ].filter(Boolean);
   const tag = access[d.visibility];
 
@@ -36,20 +35,24 @@ export default function DatasetRow({ dataset: d, href = `/data/${d.slug}` }: { d
           </p>
         )}
       </div>
-      <div className="flex shrink-0 items-center gap-2">
-        {d.formats.map((format) => (
-          <span key={format} className="rounded bg-[#171a2b]/5 px-2 py-0.5 font-[family-name:var(--font-mono)] text-[11px] font-semibold uppercase tracking-[0.08em] text-[#171a2b]">
-            {format}
+      {/* Formats and access at the top right, the last update at the bottom right. */}
+      <div className="flex shrink-0 flex-col items-end justify-between gap-2 self-stretch">
+        <div className="flex items-center gap-2">
+          {d.formats.map((format) => (
+            <span key={format} className="rounded bg-[#171a2b]/5 px-2 py-0.5 font-[family-name:var(--font-mono)] text-[11px] font-semibold uppercase tracking-[0.08em] text-[#171a2b]">
+              {format}
+            </span>
+          ))}
+          <span className={`flex items-center gap-1 rounded px-2 py-0.5 font-[family-name:var(--font-mono)] text-[11px] font-semibold uppercase tracking-[0.08em] ${tag.tone}`}>
+            {d.visibility !== "public" && (
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M12 1a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V11a2 2 0 0 0-2-2h-1V6a5 5 0 0 0-5-5Zm-3 8V6a3 3 0 1 1 6 0v3H9Z" />
+              </svg>
+            )}
+            {tag.label}
           </span>
-        ))}
-        <span className={`flex items-center gap-1 rounded px-2 py-0.5 font-[family-name:var(--font-mono)] text-[11px] font-semibold uppercase tracking-[0.08em] ${tag.tone}`}>
-          {d.visibility !== "public" && (
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path d="M12 1a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V11a2 2 0 0 0-2-2h-1V6a5 5 0 0 0-5-5Zm-3 8V6a3 3 0 1 1 6 0v3H9Z" />
-            </svg>
-          )}
-          {tag.label}
-        </span>
+        </div>
+        {d.lastUpdated && <p className="font-[family-name:var(--font-mono)] text-[11.5px] text-[#6f7899]">Updated {d.lastUpdated}</p>}
       </div>
     </Link>
   );
