@@ -8,6 +8,7 @@ import { canReviewDrafts } from "../../_lib/session";
 import { useRequireSession } from "../../_lib/useSession";
 import { EmptyState } from "../../_ui/kit";
 import DashboardPageHeader, { secondaryButton } from "../_ui/DashboardPageHeader";
+import { gmailComposeUrl, OFFICE_MAILBOX } from "../../_lib/dashboard/gmailCompose";
 
 const TABS: { key: ApplicationStatus | ""; label: string }[] = [
   { key: "new", label: "New" },
@@ -65,13 +66,13 @@ function ApplicationItem({ a, me, onChange }: { a: ApplicationRow; me?: number; 
             <span className="text-[15px] font-semibold text-[#171a2b]">{a.fullName}</span>
           </p>
           <p className="mt-1 break-all text-[13px] text-[#5b6280]">
-            <a href={`mailto:${a.email}`} className="hover:text-[#253D9A] hover:underline">{a.email}</a> &middot; {when(a.createdAt)}
+            <a href={gmailComposeUrl(a.email)} target="_blank" rel="noopener noreferrer" title={`Write from ${OFFICE_MAILBOX} in Gmail`} className="hover:text-[#253D9A] hover:underline">{a.email}</a> &middot; {when(a.createdAt)}
           </p>
         </div>
         <div className="flex shrink-0 flex-wrap gap-2">
           <button type="button" onClick={() => open("cv")} className={secondaryButton}>Open CV</button>
           <button type="button" onClick={() => open("sop")} className={secondaryButton}>Open SOP</button>
-          <a href={`mailto:${a.email}?subject=${encodeURIComponent(`Your application to PRI (${applyingFor})`)}`} className={secondaryButton}>Reply</a>
+          <a href={gmailComposeUrl(a.email, `Your application to PRI (${applyingFor})`)} target="_blank" rel="noopener noreferrer" title={`Reply from ${OFFICE_MAILBOX} in Gmail`} className={secondaryButton}>Reply</a>
           <button type="button" onClick={toggle} disabled={busy} className={secondaryButton}>
             {busy ? "Saving…" : a.status === "new" ? "Mark reviewed" : "Reopen"}
           </button>
