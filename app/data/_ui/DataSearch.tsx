@@ -4,12 +4,20 @@ import { useMemo, useState } from "react";
 import type { DatasetSummary } from "../../_lib/datasetTypes";
 import { matchesQuery } from "./datasetSearch";
 import DatasetRow from "./DatasetRow";
+import Pager from "./Pager";
+import { pageOf } from "./paging";
 
-/** Search across every dataset, with the themes as one-tap searches. Results replace nothing; they appear below. Sits on the Data page's dark header band. */
-export default function DataSearch({ datasets, suggestions }: { datasets: DatasetSummary[]; suggestions: string[] }) {
-  const [query, setQuery] = useState("");
+/** Search across every dataset. Results replace nothing; they appear below. Sits on the Data page's dark header band. */
+export default function DataSearch({ datasets }: { datasets: DatasetSummary[] }) {
+  const [query, setQueryText] = useState("");
+  const [page, setPage] = useState(1);
+  const setQuery = (q: string) => {
+    setQueryText(q);
+    setPage(1);
+  };
   const results = useMemo(() => datasets.filter((d) => matchesQuery(d, query)), [datasets, query]);
   const searching = query.trim().length > 0;
+  const shown = pageOf(results, page);
 
   return (
     <div className="grid gap-4">
@@ -26,41 +34,25 @@ export default function DataSearch({ datasets, suggestions }: { datasets: Datase
           type="search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search datasets, e.g. “Malappuram”, “Plus One”, “health”"
+          placeholder="Search datasets, e.g. “Census 2011” or “Kerala School List”"
           autoComplete="off"
           className="h-13 w-full rounded-lg border border-[#d9ddea] bg-white py-3.5 pl-11 pr-4 text-[15px] text-[#171a2b] shadow-[0_1px_2px_rgba(23,26,43,0.05)] outline-none transition-shadow placeholder:text-[#8b93b3] focus:border-[#253D9A] focus:ring-4 focus:ring-[#253D9A]/12"
         />
       </form>
-      {suggestions.length > 0 && (
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="font-[family-name:var(--font-mono)] text-[11px] font-semibold uppercase tracking-[0.1em] text-[#aebbf0]">Popular</span>
-          {suggestions.map((s) => (
-            <button
-              key={s}
-              type="button"
-              onClick={() => setQuery(query === s ? "" : s)}
-              aria-pressed={query === s}
-              className={`rounded-md border px-2.5 py-1 text-[12.5px] font-semibold transition-colors ${
-                query === s ? "border-white bg-white text-[#16245c] ring-2 ring-white/40" : "border-white/25 bg-white/10 text-white hover:border-white/60 hover:bg-white/15"
-              }`}
-            >
-              {s}
-            </button>
-          ))}
-        </div>
-      )}
-
       {searching && (
         <div className="mt-2" aria-live="polite">
           <p className="mb-3 text-[13px] text-white/75">
             {results.length === 0 ? `No datasets match “${query.trim()}”.` : `${results.length} ${results.length === 1 ? "dataset" : "datasets"} for “${query.trim()}”`}
           </p>
           {results.length > 0 && (
-            <div className="divide-y divide-[#e3e6f0] overflow-hidden rounded-lg border border-[#e3e6f0] bg-white">
-              {results.map((d) => (
-                <DatasetRow key={d.slug} dataset={d} />
-              ))}
-            </div>
+            <>
+              <div className="divide-y divide-[#e3e6f0] overflow-hidden rounded-lg border border-[#e3e6f0] bg-white">
+                {shown.items.map((d) => (
+                  <DatasetRow key={d.slug} dataset={d} />
+                ))}
+              </div>
+              <Pager page={shown.page} pages={shown.pages} onChange={setPage} tone="dark" />
+            </>
           )}
         </div>
       )}
