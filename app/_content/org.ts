@@ -74,9 +74,7 @@ export const nav = [
   {
     label: "People",
     items: [
-      { label: "Patrons", href: "/people/patrons" },
       { label: "Advisory Body", href: "/people/advisory" },
-      { label: "Executive Council", href: "/people/executive" },
       { label: "Partners", href: "/partners" },
       { label: "Our Team", href: "/people/team" },
     ],
