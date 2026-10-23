@@ -6,29 +6,24 @@ import { EmptyState } from "../../_ui/kit";
 
 const distinct = (values: (string | null | undefined)[]) => Array.from(new Set(values.filter((v): v is string => !!v)));
 
-function FacetGroup({ label, options, value, onChange }: { label: string; options: string[]; value: string; onChange: (v: string) => void }) {
+function FacetSelect({ label, options, value, onChange }: { label: string; options: string[]; value: string; onChange: (v: string) => void }) {
   if (options.length === 0) return null;
   return (
-    <div>
-      <p className="mb-2 text-[11px] font-[family-name:var(--font-mono)] font-semibold uppercase tracking-[0.12em] text-[#8b8fa3]">{label}</p>
-      <div className="space-y-1.5">
-        <button
-          onClick={() => onChange("")}
-          className={`block text-[14px] ${!value ? "font-bold text-[#253D9A]" : "text-[#5b5f74] hover:text-[#253D9A]"}`}
-        >
-          All
-        </button>
+    <label className="grid gap-1">
+      <span className="text-[11px] font-[family-name:var(--font-mono)] font-semibold uppercase tracking-[0.12em] text-[#8b8fa3]">{label}</span>
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className={`h-10 w-full min-w-0 rounded-lg border bg-white px-3 text-[14px] outline-none focus:border-[#253D9A] focus:ring-4 focus:ring-[#253D9A]/12 sm:w-44 ${value ? "border-[#253D9A] font-semibold text-[#253D9A]" : "border-[#d9ddea] text-[#171a2b]"}`}
+      >
+        <option value="">All</option>
         {options.map((o) => (
-          <button
-            key={o}
-            onClick={() => onChange(o)}
-            className={`block text-[14px] ${value === o ? "font-bold text-[#253D9A]" : "text-[#5b5f74] hover:text-[#253D9A]"}`}
-          >
+          <option key={o} value={o}>
             {o}
-          </button>
+          </option>
         ))}
-      </div>
-    </div>
+      </select>
+    </label>
   );
 }
 
@@ -72,14 +67,30 @@ export default function DatasetFacetList({
       (!year || d.year === year)
   );
 
+  const active = [fileFormat, type, geography, year].filter(Boolean).length;
+  const clear = () => {
+    setFileFormat("");
+    setType("");
+    setGeography("");
+    setYear("");
+  };
+
   return (
-    <div className={`grid gap-10 lg:grid-cols-[220px_1fr] ${className}`}>
-      <aside className="space-y-8 lg:border-r lg:border-[#e6e8f0] lg:pr-8">
-        <FacetGroup label="File format" options={formats} value={fileFormat} onChange={setFileFormat} />
-        <FacetGroup label="Type" options={types} value={type} onChange={setType} />
-        <FacetGroup label="Geography" options={geographies} value={geography} onChange={setGeography} />
-        <FacetGroup label="Year" options={years} value={year} onChange={setYear} />
-      </aside>
+    <div className={`grid gap-5 ${className}`}>
+      <div className="flex flex-wrap items-end gap-x-4 gap-y-3 border-b border-[#e6e8f0] pb-5 max-sm:grid max-sm:grid-cols-2">
+        <FacetSelect label="File format" options={formats} value={fileFormat} onChange={setFileFormat} />
+        <FacetSelect label="Type" options={types} value={type} onChange={setType} />
+        <FacetSelect label="Geography" options={geographies} value={geography} onChange={setGeography} />
+        <FacetSelect label="Year" options={years} value={year} onChange={setYear} />
+        <p className="text-[13px] text-[#5b5f74] max-sm:col-span-2 sm:ml-auto sm:pb-2.5">
+          {filtered.length} of {datasets.length} {datasets.length === 1 ? "dataset" : "datasets"}
+          {active > 0 && (
+            <button type="button" onClick={clear} className="ml-3 font-semibold text-[#253D9A] hover:underline">
+              Clear filters
+            </button>
+          )}
+        </p>
+      </div>
 
       <div>
         {filtered.length === 0 ? (
