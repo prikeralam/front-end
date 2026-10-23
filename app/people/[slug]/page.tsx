@@ -10,6 +10,7 @@ import { load } from "../../_lib/api/load";
 import { getPersonBySlug } from "../../_lib/api/people";
 import type { Metadata } from "next";
 import { pageMetadata, personJsonLd } from "../../_lib/seo";
+import { HIDDEN_PEOPLE_GROUPS } from "../../_lib/hiddenPeople";
 import JsonLd from "../../_ui/JsonLd";
 
 const groupLabel: Record<string, string> = {
@@ -38,7 +39,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params;
   const result = await load("this profile", () => getPersonBySlug(slug));
   const person = result.ok ? result.data : null;
-  if (!person) return { title: "People" };
+  if (!person || HIDDEN_PEOPLE_GROUPS.has(person.group)) return { title: "People" };
   return pageMetadata({
     // Advisory Body members may have no role.
     title: person.role ? `${person.name}, ${person.role}` : person.name,
@@ -61,7 +62,7 @@ export default async function PersonDetailPage({ params }: { params: Promise<{ s
     );
   }
   const person = result.data;
-  if (!person) notFound();
+  if (!person || HIDDEN_PEOPLE_GROUPS.has(person.group)) notFound();
   // Only authors have a publications list; a failed read just shows the empty copy rather than hiding the profile.
   const research = person.group === "author" ? await load("publications", listPublications) : null;
   const authoredPublications = research?.ok ? research.data.publications.filter((p) => p.authors.includes(person.slug)) : [];

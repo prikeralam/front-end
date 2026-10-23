@@ -56,7 +56,12 @@ export function topLevelNameBySubTheme(themes: readonly ApiTheme[]): Map<number,
   return index;
 }
 
-export function toDatasetSummary(dataset: ApiDataset, topLevelBySubTheme: ReadonlyMap<number, string>): DatasetSummary {
+/** Sub-theme id -> its own name. */
+export function subThemeNames(themes: readonly ApiTheme[]): Map<number, string> {
+  return new Map(themes.flatMap((theme) => (theme.subthemes ?? []).map((sub): [number, string] => [sub.id, sub.name])));
+}
+
+export function toDatasetSummary(dataset: ApiDataset, topLevelBySubTheme: ReadonlyMap<number, string>, subThemeNameById: ReadonlyMap<number, string> = new Map()): DatasetSummary {
   return {
     id: dataset.id,
     slug: dataset.slug,
@@ -66,6 +71,7 @@ export function toDatasetSummary(dataset: ApiDataset, topLevelBySubTheme: Readon
     visibility: VISIBILITY[dataset.visibility ?? "public"],
     accessState: accessStateOf(dataset),
     theme: topLevelBySubTheme.get(dataset.sub_theme) ?? null,
+    subTheme: subThemeNameById.get(dataset.sub_theme),
     geography: dataset.geography || undefined,
     year: dataset.year ? String(dataset.year) : undefined,
     source: dataset.source || undefined,

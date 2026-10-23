@@ -39,7 +39,7 @@ export function DatasetIcon() {
   );
 }
 
-/** Datasets with file format / type / geography / year facets derived from the data; each row is the caller's. */
+/** Datasets with sub-theme / file format / type / geography / year facets derived from the data; each row is the caller's. */
 export default function DatasetFacetList({
   datasets,
   renderRow,
@@ -49,11 +49,13 @@ export default function DatasetFacetList({
   renderRow: (dataset: DatasetSummary) => ReactNode;
   className?: string;
 }) {
+  const [subTheme, setSubTheme] = useState("");
   const [fileFormat, setFileFormat] = useState("");
   const [type, setType] = useState("");
   const [geography, setGeography] = useState("");
   const [year, setYear] = useState("");
 
+  const subThemes = useMemo(() => distinct(datasets.map((d) => d.subTheme)).sort(), [datasets]);
   const types = useMemo(() => distinct(datasets.map((d) => d.type)), [datasets]);
   const formats = useMemo(() => distinct(datasets.flatMap((d) => d.formats)), [datasets]);
   const geographies = useMemo(() => distinct(datasets.map((d) => d.geography)), [datasets]);
@@ -61,14 +63,16 @@ export default function DatasetFacetList({
 
   const filtered = datasets.filter(
     (d) =>
+      (!subTheme || d.subTheme === subTheme) &&
       (!fileFormat || d.formats.includes(fileFormat)) &&
       (!type || d.type === type) &&
       (!geography || d.geography === geography) &&
       (!year || d.year === year)
   );
 
-  const active = [fileFormat, type, geography, year].filter(Boolean).length;
+  const active = [subTheme, fileFormat, type, geography, year].filter(Boolean).length;
   const clear = () => {
+    setSubTheme("");
     setFileFormat("");
     setType("");
     setGeography("");
@@ -78,6 +82,8 @@ export default function DatasetFacetList({
   return (
     <div className={`grid gap-5 ${className}`}>
       <div className="flex flex-wrap items-end gap-x-4 gap-y-3 border-b border-[#e6e8f0] pb-5 max-sm:grid max-sm:grid-cols-2">
+        {/* One sub-theme would be a filter with nothing to choose. */}
+        <FacetSelect label="Sub-theme" options={subThemes.length > 1 ? subThemes : []} value={subTheme} onChange={setSubTheme} />
         <FacetSelect label="File format" options={formats} value={fileFormat} onChange={setFileFormat} />
         <FacetSelect label="Type" options={types} value={type} onChange={setType} />
         <FacetSelect label="Geography" options={geographies} value={geography} onChange={setGeography} />

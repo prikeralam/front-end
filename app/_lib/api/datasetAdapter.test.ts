@@ -7,6 +7,7 @@ import {
   toDatasetDetail,
   toDatasetSummary,
   toResourcePreview,
+  subThemeNames,
   topLevelNameBySubTheme,
   PREVIEW_ROWS,
 } from "./datasetAdapter";
@@ -97,6 +98,12 @@ describe("toDatasetSummary / toDatasetDetail", () => {
 
     expect(summary.theme).toBeNull();
     expect(summary.year).toBeUndefined();
+  });
+
+  it("names the sub-theme when given the sub-theme index, and leaves it unset otherwise", () => {
+    expect(toDatasetSummary(dataset, topLevel, subThemeNames(themes)).subTheme).toBe("Religious Composition");
+    expect(toDatasetSummary({ ...dataset, sub_theme: 404 }, topLevel, subThemeNames(themes)).subTheme).toBeUndefined();
+    expect(toDatasetSummary(dataset, topLevel).subTheme).toBeUndefined();
   });
 
   it("exposes every downloadable file, main first, and none when they are withheld", () => {
