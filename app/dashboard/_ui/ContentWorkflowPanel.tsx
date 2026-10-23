@@ -3,28 +3,13 @@
 import { useState } from "react";
 import { deleteCmsAction, transitionCmsAction } from "../../_lib/dashboard/cmsActions";
 import type { CmsMutation, CmsRecord, WorkflowStatus } from "../../_lib/cms/types";
+import { reviewActions } from "../../_lib/dashboard/workflowSteps";
 import { canContributeContent, canReviewDrafts, type Session } from "../../_lib/session";
 import { ImageIcon } from "./icons";
 import StatusBadge from "./StatusBadge";
 import { MoreMenu, type MenuAction } from "./console";
 
 type Action = MenuAction;
-
-/** What a reviewer can do next. The backend checks the role again on every transition. */
-function reviewActions(status: WorkflowStatus): { label: string; next: WorkflowStatus }[] {
-  switch (status) {
-    case "in_review":
-      return [{ label: "Approve", next: "approved" }, { label: "Send back to draft", next: "draft" }];
-    case "approved":
-      return [{ label: "Publish", next: "published" }];
-    case "published":
-      return [{ label: "Unpublish", next: "unpublished" }];
-    case "unpublished":
-      return [{ label: "Republish", next: "published" }];
-    default:
-      return [];
-  }
-}
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const formatDate = (iso: string) => {
@@ -98,7 +83,7 @@ export default function ContentWorkflowPanel({
             const review = canReview ? reviewActions(r.status) : [];
             // Reviewers may send any draft back to review (e.g. a pipeline dataset returned to draft), authors their own.
             const submit = r.status === "draft" && (canReview || (isOwn(r) && canSubmit)) ? [{ label: "Submit for review", next: "in_review" as WorkflowStatus }] : [];
-            // Only a step forward gets the solid button; stepping back (unpublish, back to draft) sits in the menu.
+            // Only a step forward gets the solid button; stepping back (unpublish, back to review or draft) sits in the menu.
             const steps = [...submit, ...review];
             const next = steps.find((a) => a.next !== "draft" && a.next !== "unpublished");
             const otherSteps = steps.filter((a) => a !== next);
