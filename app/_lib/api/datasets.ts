@@ -8,6 +8,7 @@ import {
   toDatasetDetail,
   toDatasetSummary,
   toResourcePreview,
+  subThemeNames,
   topLevelNameBySubTheme,
   type GeoJsonFeatureCollection,
   type TablePreviewBody,
@@ -34,7 +35,8 @@ export async function listDatasets(caller: Caller = {}): Promise<DatasetSummary[
     listThemes(),
   ]);
   const topLevel = topLevelNameBySubTheme(themes);
-  return datasets.sort((a, b) => a.id - b.id).map((dataset) => toDatasetSummary(dataset, topLevel));
+  const subNames = subThemeNames(themes);
+  return datasets.sort((a, b) => a.id - b.id).map((dataset) => toDatasetSummary(dataset, topLevel, subNames));
 }
 
 /** `null` when the dataset is not visible to the caller (the API answers 404 for hidden objects too). */
