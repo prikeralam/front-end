@@ -26,7 +26,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     settle(listTopThemes, []),
     settle(listCollections, []),
     settle(listProjects, []),
-    settle(async () => (await Promise.all((["team", "patron", "executive", "advisory"] as const).map((g) => listPeopleByGroup(g)))).flat(), []),
+    settle(async () => (await Promise.all((["team", "advisory"] as const).map((g) => listPeopleByGroup(g)))).flat(), []),
     settle(listEvents, []),
     settle(listJobs, []),
   ]);

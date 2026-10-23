@@ -17,6 +17,8 @@ export type DatasetSummary = {
   visibility: Dataset["visibility"];
   accessState: AccessState;
   theme: string | null;
+  /** The sub-theme the dataset is filed under (e.g. "Higher Secondary"); absent when unknown. */
+  subTheme?: string;
   geography?: string;
   year?: string;
   type?: string;

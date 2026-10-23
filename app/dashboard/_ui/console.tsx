@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
+import { menuPlacement } from "../../_lib/dashboard/menuPlacement";
 
 /*
  * The admin console's building blocks, all on the design tokens in globals.css (ink, muted, line, canvas, brand...):
@@ -158,20 +159,44 @@ export type MenuAction = { label: string; run: () => void; danger?: boolean };
 
 /** A "•••" button that opens a short menu of secondary actions. */
 export function MoreMenu({ actions, disabled = false, buttonClassName = buttonClass }: { actions: MenuAction[]; disabled?: boolean; buttonClassName?: string }) {
-  const [open, setOpen] = useState(false);
+  // Fixed to the viewport, so a list's overflow-hidden can't clip it; opens upward when there isn't room below.
+  const [menuStyle, setMenuStyle] = useState<CSSProperties | null>(null);
+  const open = menuStyle !== null;
+
+  useEffect(() => {
+    if (!open) return;
+    const close = () => setMenuStyle(null);
+    // Scrolling the page would leave the menu behind; scrolling inside a long menu is fine.
+    const onScroll = (e: Event) => {
+      if (!(e.target instanceof Element && e.target.closest('[role="menu"]'))) close();
+    };
+    window.addEventListener("scroll", onScroll, true);
+    window.addEventListener("resize", close);
+    return () => {
+      window.removeEventListener("scroll", onScroll, true);
+      window.removeEventListener("resize", close);
+    };
+  }, [open]);
+
   if (actions.length === 0) return null;
+
+  function toggle(button: HTMLElement) {
+    if (open) return setMenuStyle(null);
+    setMenuStyle(menuPlacement(button.getBoundingClientRect(), { width: window.innerWidth, height: window.innerHeight }, actions.length));
+  }
+
   return (
     <div
       className="relative"
       onBlur={(e) => {
-        if (!e.currentTarget.contains(e.relatedTarget)) setOpen(false);
+        if (!e.currentTarget.contains(e.relatedTarget)) setMenuStyle(null);
       }}
     >
-      <button type="button" disabled={disabled} aria-haspopup="menu" aria-expanded={open} aria-label="More actions" onClick={(e) => { e.stopPropagation(); setOpen(!open); }} className={`${buttonClassName} px-2 tracking-widest`}>
+      <button type="button" disabled={disabled} aria-haspopup="menu" aria-expanded={open} aria-label="More actions" onClick={(e) => { e.stopPropagation(); toggle(e.currentTarget); }} className={`${buttonClassName} px-2 tracking-widest`}>
         •••
       </button>
       {open && (
-        <div role="menu" className="absolute right-0 z-20 mt-1 min-w-44 overflow-hidden rounded-lg border border-line bg-surface py-1 shadow-[0_10px_30px_rgba(22,26,46,0.14)]">
+        <div role="menu" style={menuStyle} className="z-50 max-h-[70vh] min-w-44 overflow-y-auto rounded-lg border border-line bg-surface py-1 shadow-[0_10px_30px_rgba(22,26,46,0.14)]">
           {actions.map((a) => (
             <button
               key={a.label}
@@ -179,7 +204,7 @@ export function MoreMenu({ actions, disabled = false, buttonClassName = buttonCl
               role="menuitem"
               onClick={(e) => {
                 e.stopPropagation();
-                setOpen(false);
+                setMenuStyle(null);
                 a.run();
               }}
               className={`block w-full px-3 py-2 text-left text-[13px] ${a.danger ? "text-danger hover:bg-danger-soft" : "text-ink-soft hover:bg-hover"}`}
