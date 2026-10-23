@@ -13,8 +13,6 @@ export const STATIC_PATHS: { path: string; priority: number; changeFrequency: Fr
   { path: "/projects", priority: 0.7, changeFrequency: "monthly" },
   { path: "/people", priority: 0.6, changeFrequency: "monthly" },
   { path: "/people/team", priority: 0.6, changeFrequency: "monthly" },
-  { path: "/people/patrons", priority: 0.5, changeFrequency: "monthly" },
-  { path: "/people/executive", priority: 0.5, changeFrequency: "monthly" },
   { path: "/people/advisory", priority: 0.5, changeFrequency: "monthly" },
   { path: "/partners", priority: 0.5, changeFrequency: "monthly" },
   { path: "/events", priority: 0.6, changeFrequency: "weekly" },

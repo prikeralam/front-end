@@ -11,6 +11,12 @@ describe("sitemapEntries", () => {
     expect(entries.map((e) => e.url)).not.toContain("https://priresearch.in/dashboard");
   });
 
+  it("leaves out the hidden Patrons and Executive Council pages (#242)", () => {
+    const urls = sitemapEntries(empty).map((e) => e.url);
+    expect(urls).not.toContain("https://priresearch.in/people/patrons");
+    expect(urls).not.toContain("https://priresearch.in/people/executive");
+  });
+
   it("adds every published record, with dates where they make sense", () => {
     const entries = sitemapEntries({
       ...empty,
