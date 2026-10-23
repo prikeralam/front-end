@@ -16,6 +16,7 @@ export default function DatasetRow({ dataset: d, href = `/data/${d.slug}` }: { d
     d.granularity && `By ${d.granularity}`,
     d.timePeriod ?? d.year,
     d.rowCount !== undefined && `${numberFormat.format(d.rowCount)} rows`,
+    d.lastUpdated && `Updated ${d.lastUpdated}`,
   ].filter(Boolean);
   const tag = access[d.visibility];
 
