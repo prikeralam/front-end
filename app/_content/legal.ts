@@ -10,7 +10,7 @@ The Policy and Research Initiative (PRI) is a registered society (Reg. No. MPM/C
 ## What we collect
 
 - **When you contact us:** your name, email address, the type of enquiry and your message.
-- **When you apply for a fellowship, internship or job:** your name, email address, the role you apply for, and the CV and statement of purpose you upload.
+- **When you apply for a fellowship, internship or job:** your name, email address, the role you apply for, and the CV, cover letter and (where you send one) writing sample you upload.
 - **When you create an account** (needed to download datasets): your name, email address and password, your organisation if you give it, what you will use the data for, and whether you want our updates by email. We store your password only in a scrambled form that cannot be read back. If you continue with Google instead, Google tells us your name and your email address (which Google has confirmed), and the account has no password with us.
 - **When you use your account:** a record that you confirmed your email address, which datasets you download (and in which format, and when), the datasets you request access to, and the decisions on those requests. PRI staff accounts are created by PRI.
 - **Technical information:** like every website, our servers briefly see your IP address and browser details when you visit. We use the IP address of form submissions only to limit spam, and we do not build profiles from it.

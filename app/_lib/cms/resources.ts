@@ -279,9 +279,11 @@ export const RESOURCES: Record<ContentTypeKey, Resource> = {
       { key: "rolling", label: "Applications", kind: "select", options: options(["true", "Rolling: apply any time"], ["false", "Until a deadline"]) },
       { key: "deadline", label: "Deadline", kind: "date", optional: true, help: "Only used when applications are not rolling." },
       { key: "display_order", label: "Display order", kind: "number", optional: true, emptyValue: 0, help: "Lower numbers appear first on the careers page." },
+      { key: "writing_sample", label: "Writing sample", kind: "select", options: options(["optional", "Optional"], ["required", "Required"]), help: "Set Required for roles like Research Assistant: applicants can't apply without one." },
+      { key: "description_pdf", label: "Job description (PDF)", kind: "file", accept: ".pdf", maxMb: 5, optional: true, help: "Shown on the opening's page for applicants to download and share. Up to 5 MB. Leave empty on edit to keep the current file." },
     ],
     title: (v) => v.title,
-    subtitle: (v) => (v.rolling === "false" && v.deadline ? `Until ${v.deadline}` : "Rolling"),
+    subtitle: (v) => [v.rolling === "false" && v.deadline ? `Until ${v.deadline}` : "Rolling", v.writing_sample === "required" ? "Writing sample required" : ""].filter(Boolean).join(" · "),
   },
   event: {
     path: "/api/v1/events/",

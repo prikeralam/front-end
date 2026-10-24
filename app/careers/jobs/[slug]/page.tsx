@@ -3,12 +3,13 @@ import RichText from "../../../_ui/RichText";
 import { notFound } from "next/navigation";
 import { LoadError } from "../../../_ui/ApiMessage";
 import { getJobBySlug } from "../../../_lib/api/engage";
-import { jobAvailability, todayInIndia } from "../../../_lib/api/engageAdapter";
+import { jobAvailability, jobDescriptionPath, todayInIndia } from "../../../_lib/api/engageAdapter";
 import { load } from "../../../_lib/api/load";
 import { PageHeader } from "../../../_ui/kit";
 import type { Metadata } from "next";
 import { jobPostingJsonLd, pageMetadata } from "../../../_lib/seo";
 import JsonLd from "../../../_ui/JsonLd";
+import CopyLinkButton from "./CopyLinkButton";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
@@ -48,9 +49,22 @@ export default async function JobDetailPage({ params }: { params: Promise<{ slug
             <RichText text={job.description} />
           </div>
         )}
-        <Link href={`/fellowship/apply?role=${encodeURIComponent(job.slug)}`} className="mt-8 inline-block rounded-md bg-[#253D9A] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#1B2C70]">
-          Apply for this role &rarr;
-        </Link>
+        {job.writingSample === "required" && (
+          <p className="mt-8 text-[14px] text-[#4b4f66]">This role asks for a writing sample with your CV and cover letter.</p>
+        )}
+        <div className="mt-8 flex flex-wrap items-center gap-3">
+          <Link href={`/fellowship/apply?role=${encodeURIComponent(job.slug)}`} className="inline-block rounded-md bg-[#253D9A] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#1B2C70]">
+            Apply for this role &rarr;
+          </Link>
+          {job.hasDescriptionPdf && (
+            <>
+              <a href={jobDescriptionPath(job.slug)} target="_blank" rel="noopener" className="inline-block rounded-md border border-[#253D9A] px-5 py-2.5 text-sm font-semibold text-[#253D9A] hover:bg-[#253D9A]/5">
+                Job description (PDF)
+              </a>
+              <CopyLinkButton path={jobDescriptionPath(job.slug)} title={`${job.title}: job description`} />
+            </>
+          )}
+        </div>
         <div>
           <Link href="/careers" className="mt-6 inline-block text-[14px] font-semibold text-[#253D9A] hover:underline">&larr; All open roles</Link>
         </div>
