@@ -152,6 +152,22 @@ describe("phase 3 types", () => {
   it("sends a job's rolling choice as given and a blank deadline as null", () => {
     const values = { title: "Data Analyst", summary: "", description: "", location: "", employment_type: "", rolling: "true", deadline: "", display_order: "", writing_sample: "required" };
     expect(toPayload("job", values, "create")).toMatchObject({ ok: true, payload: { slug: "data-analyst", rolling: "true", deadline: null, display_order: 0, writing_sample: "required" } });
+    // Choosing Rolling drops a date left in the deadline field, which the backend would otherwise let win.
+    expect(toPayload("job", { ...values, deadline: "2026-11-10" }, "update")).toMatchObject({ ok: true, payload: { rolling: "true", deadline: null } });
+  });
+
+  it("starts a new job at Until a deadline, and refuses that choice without a date", () => {
+    const rolling = RESOURCES.job.fields.find((f) => f.key === "rolling")!;
+    expect([rolling.defaultValue, rolling.options?.[0]]).toEqual(["false", { value: "false", label: "Until a deadline" }]);
+    const values = { title: "Research Associate", summary: "", description: "", location: "", employment_type: "", rolling: "false", deadline: "", display_order: "", writing_sample: "optional" };
+    expect(toPayload("job", values, "create")).toEqual({ ok: false, message: "Set a deadline, or choose Rolling." });
+    expect(toPayload("job", { ...values, deadline: "2026-11-10" }, "create")).toMatchObject({ ok: true, payload: { rolling: "false", deadline: "2026-11-10" } });
+  });
+
+  it("shows a job's deadline in its subtitle whenever one is set", () => {
+    const subtitle = (v: Record<string, string>) => RESOURCES.job.subtitle(v, {} as never);
+    expect(subtitle({ rolling: "true", deadline: "2026-11-10", writing_sample: "required" })).toBe("Until 2026-11-10 · Writing sample required");
+    expect(subtitle({ rolling: "true", deadline: "", writing_sample: "optional" })).toBe("Rolling");
   });
 
   it("needs an event's start date, sends a blank end date as null, and dates its slug", () => {

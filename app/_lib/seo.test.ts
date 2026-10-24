@@ -152,7 +152,7 @@ describe("structured data", () => {
     });
     expect((conclave.organizer as { name: string }[]).map((o) => o.name)).toEqual(["Policy and Research Initiative", "SAFI Institutions"]);
     expect(eventJsonLd({ ...event, mode: "online" }).location).toMatchObject({ "@type": "VirtualLocation" });
-    const job = { slug: "data-analyst", title: "Data Analyst", summary: "", description: "", location: "", employment: "", rolling: true, deadline: null, writingSample: "optional" as const, hasDescriptionPdf: false };
+    const job = { slug: "data-analyst", title: "Data Analyst", summary: "", description: "", location: "", employment: "", rolling: true, deadline: null, closed: false, writingSample: "optional" as const, hasDescriptionPdf: false };
     expect(jobPostingJsonLd(job, "2026-10-08")).toMatchObject({ "@type": "JobPosting", datePosted: "2026-10-08", hiringOrganization: { name: "Policy and Research Initiative" } });
   });
 

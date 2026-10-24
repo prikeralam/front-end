@@ -26,7 +26,7 @@ export async function getEventBySlug(slug: string): Promise<PRIEvent | null> {
 /** Published job openings in the order staff set. */
 export async function listJobs(): Promise<JobListing[]> {
   const jobs = await collectAllPages(async (page) => unwrap(await api.GET(JOBS_PATH, { params: { query: { page } } }), JOBS_PATH));
-  return jobs.map(toJob);
+  return jobs.map((job) => toJob(job));
 }
 
 /** The current link to a published role's job description PDF, or null when it has none (or no such role). */
