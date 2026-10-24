@@ -150,8 +150,8 @@ describe("image fields", () => {
 
 describe("phase 3 types", () => {
   it("sends a job's rolling choice as given and a blank deadline as null", () => {
-    const values = { title: "Data Analyst", summary: "", description: "", location: "", employment_type: "", rolling: "true", deadline: "", display_order: "" };
-    expect(toPayload("job", values, "create")).toMatchObject({ ok: true, payload: { slug: "data-analyst", rolling: "true", deadline: null, display_order: 0 } });
+    const values = { title: "Data Analyst", summary: "", description: "", location: "", employment_type: "", rolling: "true", deadline: "", display_order: "", writing_sample: "required" };
+    expect(toPayload("job", values, "create")).toMatchObject({ ok: true, payload: { slug: "data-analyst", rolling: "true", deadline: null, display_order: 0, writing_sample: "required" } });
   });
 
   it("needs an event's start date, sends a blank end date as null, and dates its slug", () => {
@@ -228,7 +228,7 @@ describe("belongsToType / objectPath", () => {
     expect(objectPath("publication", "study")).toBe("/api/v1/publications/study/");
   });
 
-  it("gives every resource fields: documents and datasets require a file, publications take an optional story file", () => {
+  it("gives every resource fields: documents and datasets require a file, publications and jobs take an optional one (story, JD PDF)", () => {
     const withFiles = (optional: boolean) =>
       Object.entries(RESOURCES)
         .filter(([, r]) => r.fields.some((f) => f.kind === "file" && Boolean(f.optional) === optional))
@@ -236,6 +236,6 @@ describe("belongsToType / objectPath", () => {
         .sort();
 
     expect(withFiles(false)).toEqual(["dataset", "document"]);
-    expect(withFiles(true)).toEqual(["publication"]);
+    expect(withFiles(true)).toEqual(["job", "publication"]);
   });
 });

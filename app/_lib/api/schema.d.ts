@@ -88,7 +88,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description A link to the applicant's CV or SOP. On S3 it is presigned and expires; never stored on the page. */
+        /**
+         * @description A link to the applicant's CV, cover letter or writing sample. On S3 it is presigned and expires; never
+         *     stored on the page.
+         */
         get: operations["v1_applications_files_retrieve"];
         put?: never;
         post?: never;
@@ -107,7 +110,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description The public application form (fellowships, internships and job openings), with a CV and an SOP. */
+        /**
+         * @description The public application form (fellowships, internships and job openings), with a CV, a cover letter and,
+         *     optionally or where the role asks for one, a writing sample.
+         */
         post: operations["v1_apply_create"];
         delete?: never;
         options?: never;
@@ -615,6 +621,97 @@ export interface paths {
         get: operations["v1_datasets_preview_table_retrieve"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/datasets/{slug}/releases/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description GET: the version history (published releases, newest first; staff and the creator also see the others).
+         *     POST: a new version of a published dataset, as multipart `version`, `changelog`, `format` (main file),
+         *     `metadata` (JSON) and `files[<format>]`; the main format's file is required.
+         */
+        get: operations["v1_datasets_releases_list"];
+        put?: never;
+        /**
+         * @description GET: the version history (published releases, newest first; staff and the creator also see the others).
+         *     POST: a new version of a published dataset, as multipart `version`, `changelog`, `format` (main file),
+         *     `metadata` (JSON) and `files[<format>]`; the main format's file is required.
+         */
+        post: operations["v1_datasets_releases_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/datasets/{slug}/releases/{release_id}/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description GET one release. PATCH: editors tick its QA checklist. DELETE: its creator while it is a draft, editors and
+         *     admins until it is published (the pipeline replaces a draft by deleting it and posting again).
+         */
+        get: operations["v1_datasets_releases_retrieve"];
+        put?: never;
+        post?: never;
+        /**
+         * @description GET one release. PATCH: editors tick its QA checklist. DELETE: its creator while it is a draft, editors and
+         *     admins until it is published (the pipeline replaces a draft by deleting it and posting again).
+         */
+        delete: operations["v1_datasets_releases_destroy"];
+        options?: never;
+        head?: never;
+        /**
+         * @description GET one release. PATCH: editors tick its QA checklist. DELETE: its creator while it is a draft, editors and
+         *     admins until it is published (the pipeline replaces a draft by deleting it and posting again).
+         */
+        patch: operations["v1_datasets_releases_partial_update"];
+        trace?: never;
+    };
+    "/api/v1/datasets/{slug}/releases/{release_id}/files/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Add another format to a draft release (one request per file keeps each upload under the 50 MB limit). */
+        post: operations["v1_datasets_releases_files_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/datasets/{slug}/releases/{release_id}/transition/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * @description Move a release through review: draft -> in_review (its creator or staff), then approved, published,
+         *     rejected or back to draft (editors and admins), with the dataset's gate and two-person rule.
+         */
+        post: operations["v1_datasets_releases_transition_create"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2122,6 +2219,8 @@ export interface components {
             readonly full_name: string;
             /** Format: email */
             readonly email: string;
+            /** @description Whether the applicant sent a writing sample. */
+            readonly has_writing_sample: boolean;
             status?: components["schemas"]["ApplicationStatusEnum"];
             /** Format: date-time */
             readonly created_at: string;
@@ -2152,7 +2251,9 @@ export interface components {
             /** Format: uri */
             cv: string;
             /** Format: uri */
-            sop: string;
+            cover_letter: string;
+            /** Format: uri */
+            writing_sample?: string | null;
             website?: string;
         };
         AuditLog: {
@@ -2362,6 +2463,77 @@ export interface components {
          * @enum {string}
          */
         DatasetFormatEnum: "csv" | "parquet" | "zip" | "geojson" | "json" | "xlsx";
+        DatasetRelease: {
+            readonly id: number;
+            readonly version: string;
+            readonly changelog: string;
+            readonly status: components["schemas"]["ReleaseStatusEnum"];
+            /**
+             * @description Format of the main file.
+             *
+             *     * `csv` - CSV
+             *     * `parquet` - Parquet
+             *     * `zip` - ZIP
+             *     * `geojson` - GeoJSON
+             *     * `json` - JSON
+             *     * `xlsx` - Excel
+             */
+            readonly format: components["schemas"]["DatasetFormatEnum"];
+            /** @description The release's files, main first: [{id, format, label, url, size, sha256}]. Omitted for callers who may not download the dataset. */
+            readonly files: {
+                [key: string]: unknown;
+            }[];
+            readonly metadata: unknown;
+            readonly row_count: number | null;
+            readonly column_count: number | null;
+            readonly columns: unknown;
+            readonly qa_checklist: unknown;
+            /** @description The manual QA checklist: the keys `qa_checklist` takes, with their labels, in order. */
+            readonly qa_checklist_items: {
+                [key: string]: unknown;
+            }[];
+            readonly created_by: number;
+            readonly approved_by: number | null;
+            /** Format: date-time */
+            readonly approved_at: string | null;
+            /** Format: date-time */
+            readonly published_at: string | null;
+            /** Format: date-time */
+            readonly created_at: string;
+            /** Format: date-time */
+            readonly updated_at: string;
+        };
+        /** @description POST /datasets/{slug}/releases/ (multipart). Files go as `files[<format>]`; at least the main format's. */
+        DatasetReleaseCreate: {
+            /** @description Semantic version, higher than every earlier one. */
+            version: string;
+            /** @description What changed since the previous version. */
+            changelog: string;
+            /**
+             * @description Format of the main file.
+             *
+             *     * `csv` - CSV
+             *     * `parquet` - Parquet
+             *     * `zip` - ZIP
+             *     * `geojson` - GeoJSON
+             *     * `json` - JSON
+             *     * `xlsx` - Excel
+             */
+            format: components["schemas"]["DatasetFormatEnum"];
+            /** @description Dataset fields this release sets (a JSON object). */
+            metadata?: unknown;
+        };
+        /** @description A format of a release, as uploaded (multipart `format`, `file`); size and SHA-256 are worked out. */
+        DatasetReleaseFile: {
+            readonly id: number;
+            format: components["schemas"]["DatasetFormatEnum"];
+            /** Format: uri */
+            file: string;
+            readonly size: number | null;
+            readonly sha256: string;
+            /** Format: date-time */
+            readonly created_at: string;
+        };
         /**
          * @description * `public` - Public
          *     * `on_request` - On Request
@@ -2477,6 +2649,12 @@ export interface components {
             /** Format: date */
             deadline?: string | null;
             display_order?: number;
+            writing_sample?: components["schemas"]["WritingSampleEnum"];
+            /**
+             * Format: uri
+             * @description The job description as a PDF (up to 5 MB), shown on the opening's page. Send null to remove it.
+             */
+            description_pdf?: string | null;
             readonly status: components["schemas"]["WorkflowStatusEnum"];
             readonly created_by: number;
             readonly reviewed_by: number | null;
@@ -2669,6 +2847,21 @@ export interface components {
              */
             previous?: string | null;
             results: components["schemas"]["Dataset"][];
+        };
+        PaginatedDatasetReleaseList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["DatasetRelease"][];
         };
         PaginatedDocumentList: {
             /** @example 123 */
@@ -2875,6 +3068,8 @@ export interface components {
             readonly full_name?: string;
             /** Format: email */
             readonly email?: string;
+            /** @description Whether the applicant sent a writing sample. */
+            readonly has_writing_sample?: boolean;
             status?: components["schemas"]["ApplicationStatusEnum"];
             /** Format: date-time */
             readonly created_at?: string;
@@ -3090,6 +3285,12 @@ export interface components {
             /** Format: date */
             deadline?: string | null;
             display_order?: number;
+            writing_sample?: components["schemas"]["WritingSampleEnum"];
+            /**
+             * Format: uri
+             * @description The job description as a PDF (up to 5 MB), shown on the opening's page. Send null to remove it.
+             */
+            description_pdf?: string | null;
             readonly status?: components["schemas"]["WorkflowStatusEnum"];
             readonly created_by?: number;
             readonly reviewed_by?: number | null;
@@ -3217,6 +3418,10 @@ export interface components {
             readonly updated_at?: string;
             /** Format: date-time */
             readonly published_at?: string | null;
+        };
+        /** @description PATCH /datasets/{slug}/releases/{id}/: editors tick the release's QA checklist. */
+        PatchedReleaseChecklist: {
+            qa_checklist?: unknown;
         };
         PatchedRoleUpdate: {
             role?: components["schemas"]["RoleEnum"];
@@ -3435,6 +3640,18 @@ export interface components {
             /** @default  */
             next: string;
         };
+        /**
+         * @description * `draft` - Draft
+         *     * `in_review` - In Review
+         *     * `approved` - Approved
+         *     * `published` - Published
+         *     * `rejected` - Rejected
+         * @enum {string}
+         */
+        ReleaseStatusEnum: "draft" | "in_review" | "approved" | "published" | "rejected";
+        ReleaseTransition: {
+            status: components["schemas"]["ReleaseStatusEnum"];
+        };
         ResendVerification: {
             /** @default  */
             next: string;
@@ -3588,6 +3805,12 @@ export interface components {
          * @enum {string}
          */
         WorkflowStatusEnum: "draft" | "in_review" | "approved" | "published" | "unpublished";
+        /**
+         * @description * `optional` - Optional
+         *     * `required` - Required
+         * @enum {string}
+         */
+        WritingSampleEnum: "optional" | "required";
     };
     responses: never;
     parameters: never;
@@ -3741,7 +3964,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                document: "cv" | "sop";
+                document: "cover_letter" | "cv" | "writing_sample";
                 /** @description A unique integer value identifying this application. */
                 id: number;
             };
@@ -3751,6 +3974,13 @@ export interface operations {
         responses: {
             /** @description {"file": "<short-lived URL>"} */
             200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No such file was sent (writing samples are optional). */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -4721,6 +4951,201 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Dataset"];
+                };
+            };
+        };
+    };
+    v1_datasets_releases_list: {
+        parameters: {
+            query?: {
+                code?: string;
+                geography?: string;
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description A search term. */
+                q?: string;
+                /**
+                 * @description * `A` - A
+                 *     * `B` - B
+                 *     * `C` - C
+                 */
+                quality_grade?: "A" | "B" | "C";
+                /**
+                 * @description * `1` - 1 Official producer
+                 *     * `2` - 2 Official, second-hand or RTI
+                 *     * `3` - 3 Research or civil society
+                 *     * `4` - 4 Unverified
+                 *     * `P` - P PRI
+                 */
+                source_tier?: "1" | "2" | "3" | "4" | "P";
+                sub_theme?: number;
+                theme?: number;
+                year?: number;
+            };
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedDatasetReleaseList"];
+                };
+            };
+        };
+    };
+    v1_datasets_releases_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["DatasetReleaseCreate"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DatasetRelease"];
+                };
+            };
+        };
+    };
+    v1_datasets_releases_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                release_id: string;
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DatasetRelease"];
+                };
+            };
+        };
+    };
+    v1_datasets_releases_destroy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                release_id: string;
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    v1_datasets_releases_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                release_id: string;
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedReleaseChecklist"];
+                "application/x-www-form-urlencoded": components["schemas"]["PatchedReleaseChecklist"];
+                "multipart/form-data": components["schemas"]["PatchedReleaseChecklist"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DatasetRelease"];
+                };
+            };
+        };
+    };
+    v1_datasets_releases_files_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                release_id: string;
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["DatasetReleaseFile"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DatasetReleaseFile"];
+                };
+            };
+        };
+    };
+    v1_datasets_releases_transition_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                release_id: string;
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReleaseTransition"];
+                "application/x-www-form-urlencoded": components["schemas"]["ReleaseTransition"];
+                "multipart/form-data": components["schemas"]["ReleaseTransition"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DatasetRelease"];
                 };
             };
         };

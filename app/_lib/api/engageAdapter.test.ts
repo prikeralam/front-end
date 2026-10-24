@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatTime, jobAvailability, splitLabelled, timeRange, todayInIndia, toEvent, toJob } from "./engageAdapter";
+import { formatTime, jobAvailability, jobDescriptionPath, splitLabelled, timeRange, todayInIndia, toEvent, toJob } from "./engageAdapter";
 import type { components } from "./schema";
 
 const workflow = {
@@ -135,5 +135,10 @@ describe("toJob", () => {
 
   it("shows the deadline of a role that isn't rolling", () => {
     expect(jobAvailability(toJob({ ...job, rolling: false }))).toBe("Apply by 1 Dec 2026");
+    const mapped = toJob(job);
+    expect([mapped.writingSample, mapped.hasDescriptionPdf]).toEqual(["optional", false]);
+    const ra = toJob({ ...job, writing_sample: "required", description_pdf: "https://bucket.example/jobs/jd.pdf?sig=1" });
+    expect([ra.writingSample, ra.hasDescriptionPdf]).toEqual(["required", true]);
+    expect(jobDescriptionPath("research-assistant")).toBe("/careers/jobs/research-assistant/job-description");
   });
 });
