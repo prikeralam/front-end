@@ -8,6 +8,7 @@ import { canReviewDrafts } from "../../_lib/session";
 import { useRequireSession } from "../../_lib/useSession";
 import { EmptyState } from "../../_ui/kit";
 import DashboardPageHeader, { secondaryButton } from "../_ui/DashboardPageHeader";
+import { OFFICE_MAILBOX, zohoComposeUrl } from "../../_lib/dashboard/zohoCompose";
 
 const TABS: { key: InboxStatus | ""; label: string }[] = [
   { key: "new", label: "New" },
@@ -48,11 +49,11 @@ function MessageRow({ m, me, onChange }: { m: InboxMessage; me?: number; onChang
             <span className="text-[15px] font-semibold text-[#171a2b]">{m.name}</span>
           </p>
           <p className="mt-1 break-all text-[13px] text-[#5b6280]">
-            <a href={`mailto:${m.email}`} className="hover:text-[#253D9A] hover:underline">{m.email}</a> &middot; {when(m.createdAt)}
+            <a href={zohoComposeUrl(m.email)} target="_blank" rel="noopener noreferrer" title={`Write from ${OFFICE_MAILBOX} in Zoho Mail`} className="hover:text-[#253D9A] hover:underline">{m.email}</a> &middot; {when(m.createdAt)}
           </p>
         </div>
         <div className="flex shrink-0 gap-2">
-          <a href={`mailto:${m.email}?subject=${encodeURIComponent(subject)}`} title="Opens in Zoho Mail once it is set as this browser's mail handler" className={secondaryButton}>Reply</a>
+          <a href={zohoComposeUrl(m.email, subject)} target="_blank" rel="noopener noreferrer" title={`Reply from ${OFFICE_MAILBOX} in Zoho Mail`} className={secondaryButton}>Reply</a>
           <button type="button" onClick={toggle} disabled={busy} className={secondaryButton}>
             {busy ? "Saving…" : m.status === "new" ? "Mark handled" : "Reopen"}
           </button>
