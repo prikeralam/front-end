@@ -5,6 +5,11 @@ export type ApiApplication = components["schemas"]["Application"];
 
 export type ApplicationStatus = "new" | "reviewed";
 
+/** The files staff can open on an application (website-backend `files/<document>/`). Kept here, not in the actions
+ * file: a "use server" module may export only async functions, and any other export breaks every action in it. */
+export const APPLICATION_DOCUMENTS = ["cv", "cover_letter", "writing_sample"] as const;
+export type ApplicationDocument = (typeof APPLICATION_DOCUMENTS)[number];
+
 export type ApplicationRow = {
   id: number;
   kind: ApplicationKind;

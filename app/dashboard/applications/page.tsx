@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { ApplicationRow, ApplicationStatus } from "../../_lib/api/applicationAdapter";
+import type { ApplicationDocument, ApplicationRow, ApplicationStatus } from "../../_lib/api/applicationAdapter";
 import { applicationKindLabels } from "../../_lib/apply/applyTypes";
-import { getApplicationFileAction, listApplicationsAction, setApplicationStatusAction, type ApplicationDocument, type ApplicationsPage } from "../../_lib/dashboard/applicationActions";
+import { getApplicationFileAction, listApplicationsAction, setApplicationStatusAction, type ApplicationsPage } from "../../_lib/dashboard/applicationActions";
 import { canReviewDrafts } from "../../_lib/session";
 import { useRequireSession } from "../../_lib/useSession";
 import { EmptyState } from "../../_ui/kit";

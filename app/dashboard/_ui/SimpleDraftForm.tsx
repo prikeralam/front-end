@@ -70,7 +70,7 @@ export default function SimpleDraftForm({
         const required = !f.optional && !(f.kind === "file" && isEdit);
         const readOnly = isEdit && f.createOnly;
         const opts = f.options ?? (f.optionsFrom ? dynamicOptions?.[f.optionsFrom] : undefined) ?? [];
-        const initial = initialValues?.[f.key];
+        const initial = initialValues?.[f.key] ?? (isEdit ? undefined : f.defaultValue);
 
         return (
           <div key={f.key}>

@@ -142,10 +142,12 @@ export type JobListing = {
   description: string;
   location: string;
   employment: string;
-  /** Rolling roles take applications at any time. */
+  /** Rolling roles take applications at any time; a role with a deadline is never rolling. */
   rolling: boolean;
-  /** Formatted deadline, only for roles that are not rolling. */
+  /** Formatted deadline ("10 Nov 2026"), whenever one is set. */
   deadline: string | null;
+  /** The deadline has passed (judged on India's date): the role is shown as closed and takes no applications. */
+  closed: boolean;
   /** Whether applicants must send a writing sample for this role. */
   writingSample: "optional" | "required";
   /** Whether staff uploaded a job description PDF (served at /careers/jobs/<slug>/job-description). */

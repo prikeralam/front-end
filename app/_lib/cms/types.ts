@@ -64,6 +64,8 @@ export type FieldConfig = {
   optional?: boolean;
   /** What a blank optional field sends; `null` when unset. For fields the API won't take as null, e.g. an order. */
   emptyValue?: string | number;
+  /** What a new form starts with, e.g. a select's usual choice. Saved records show their own value. */
+  defaultValue?: string;
   /** Set when creating, then fixed (a slug is part of the object's address). */
   createOnly?: boolean;
   /** Extensions offered by the file picker, e.g. ".pdf,.docx". */
