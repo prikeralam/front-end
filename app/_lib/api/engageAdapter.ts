@@ -83,7 +83,10 @@ export function toEvent(event: ApiEvent, today: string): PRIEvent {
   };
 }
 
-export function toJob(job: ApiJob): JobListing {
+export function toJob(job: ApiJob, today: string = todayInIndia()): JobListing {
+  // A deadline always shows, even on a role saved as rolling (the deadline wins, as on the backend). An older backend
+  // without `is_closed` is judged here on India's date; the deadline day itself is still open.
+  const deadline = job.deadline || null;
   return {
     slug: job.slug,
     title: job.title,
@@ -91,8 +94,9 @@ export function toJob(job: ApiJob): JobListing {
     description: job.description ?? "",
     location: job.location ?? "",
     employment: job.employment_type ?? "",
-    rolling: job.rolling ?? true,
-    deadline: !job.rolling && job.deadline ? formatPublicationDate(job.deadline) : null,
+    rolling: !!job.rolling && !deadline,
+    deadline: deadline ? formatPublicationDate(deadline) : null,
+    closed: typeof job.is_closed === "boolean" ? job.is_closed : !!deadline && deadline < today,
     writingSample: job.writing_sample === "required" ? "required" : "optional",
     hasDescriptionPdf: !!job.description_pdf,
   };
@@ -101,8 +105,12 @@ export function toJob(job: ApiJob): JobListing {
 /** The stable address of a role's job description PDF: it redirects to the file's current (expiring) link. */
 export const jobDescriptionPath = (slug: string) => `/careers/jobs/${encodeURIComponent(slug)}/job-description`;
 
-/** How a job reads on its card: rolling roles say so, others show their deadline. */
+/** The page for applying to one role. */
+export const jobApplyPath = (slug: string) => `/careers/jobs/${encodeURIComponent(slug)}/apply`;
+
+/** How a job's availability reads on its card and page: closed, open until a deadline, or rolling. */
 export function jobAvailability(job: JobListing): string {
-  if (job.rolling || !job.deadline) return "Rolling, apply any time";
-  return `Apply by ${job.deadline}`;
+  if (job.closed && job.deadline) return `Applications closed on ${job.deadline}`;
+  if (job.deadline) return `Apply by ${job.deadline}`;
+  return "Rolling, apply any time";
 }

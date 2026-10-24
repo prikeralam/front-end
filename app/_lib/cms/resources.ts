@@ -15,6 +15,8 @@ export type Resource = {
   lookup: "id" | "slug";
   /** Fixed values added to every create (e.g. a partner is a person profile in the `partner` group). */
   fixed?: Record<string, unknown>;
+  /** Checks across fields once the payload is built, and may adjust it; returns the message to show, or null. */
+  check?: (payload: Record<string, unknown>) => string | null;
   /** Decides whether a listed API record belongs to this content type (people and partners share an endpoint). */
   belongs?: (record: ApiRecord) => boolean;
   /** Where an auto-generated slug comes from, when the form has no slug field. */
@@ -276,14 +278,20 @@ export const RESOURCES: Record<ContentTypeKey, Resource> = {
       { key: "description", label: "Description", kind: "textarea", optional: true, rows: 10, help: "Responsibilities and what you look for. “## Heading” starts a section, “- ” a bullet, **double stars** make bold; leave a blank line between paragraphs." },
       { key: "location", label: "Location", kind: "text", optional: true },
       { key: "employment_type", label: "Employment type", kind: "text", optional: true, help: "e.g. Full time, Part time, Contract." },
-      { key: "rolling", label: "Applications", kind: "select", options: options(["true", "Rolling: apply any time"], ["false", "Until a deadline"]) },
-      { key: "deadline", label: "Deadline", kind: "date", optional: true, help: "Only used when applications are not rolling." },
+      { key: "rolling", label: "Applications", kind: "select", options: options(["false", "Until a deadline"], ["true", "Rolling: apply any time"]), defaultValue: "false" },
+      { key: "deadline", label: "Deadline", kind: "date", optional: true, help: "Required unless applications are rolling. Applications close at the end of this day (India time), and the role then shows as closed." },
       { key: "display_order", label: "Display order", kind: "number", optional: true, emptyValue: 0, help: "Lower numbers appear first on the careers page." },
       { key: "writing_sample", label: "Writing sample", kind: "select", options: options(["optional", "Optional"], ["required", "Required"]), help: "Set Required for roles like Research Assistant: applicants can't apply without one." },
       { key: "description_pdf", label: "Job description (PDF)", kind: "file", accept: ".pdf", maxMb: 5, optional: true, help: "Shown on the opening's page for applicants to download and share. Up to 5 MB. Leave empty on edit to keep the current file." },
     ],
+    // Rolling or until a deadline, never both (website-backend refuses a role with neither; a deadline would win).
+    check: (p) => {
+      if (p.rolling === "true") p.deadline = null;
+      else if (!p.deadline) return "Set a deadline, or choose Rolling.";
+      return null;
+    },
     title: (v) => v.title,
-    subtitle: (v) => [v.rolling === "false" && v.deadline ? `Until ${v.deadline}` : "Rolling", v.writing_sample === "required" ? "Writing sample required" : ""].filter(Boolean).join(" · "),
+    subtitle: (v) => [v.deadline ? `Until ${v.deadline}` : v.rolling === "true" ? "Rolling" : "No deadline set", v.writing_sample === "required" ? "Writing sample required" : ""].filter(Boolean).join(" · "),
   },
   event: {
     path: "/api/v1/events/",
@@ -420,6 +428,8 @@ export function toPayload(type: ContentTypeKey, values: Record<string, string>, 
     if (resource.slugFrom) payload.slug = `${slugify(resource.slugFrom(values))}${uniqueSuffix}`;
     Object.assign(payload, resource.fixed);
   }
+  const problem = resource.check?.(payload);
+  if (problem) return { ok: false, message: problem };
   return { ok: true, payload };
 }
 

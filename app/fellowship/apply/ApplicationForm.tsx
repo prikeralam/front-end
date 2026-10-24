@@ -23,21 +23,24 @@ const hint = "mt-1.5 text-[12.5px] text-[#6f7899]";
 
 const unreachable = (): ApplicationResult => ({ ok: false, message: "We couldn't reach the server. Please try again, or email us directly." });
 
-type Role = { slug: string; title: string; writingSample: WritingSample };
+export type Role = { slug: string; title: string; writingSample: WritingSample };
 
-/** One form for fellowships, internships and the open roles. Files travel as multipart through the Server Action. */
-export default function ApplicationForm({ roles, initialRole, email: orgEmail }: { roles: Role[]; initialRole?: string; email: string }) {
-  const startsWithRole = !!initialRole && roles.some((r) => r.slug === initialRole);
-  const [kind, setKind] = useState<ApplicationKind>(startsWithRole ? "job" : "fellowship");
-  const [role, setRole] = useState(startsWithRole ? initialRole! : "");
+/** Fellowships and internships, which the fellowship page offers; job openings each have their own apply page. */
+const PROGRAMME_KINDS = APPLICATION_KINDS.filter((k) => k !== "job");
+
+/**
+ * The application form. With `fixedRole` (a role's own apply page) it applies for that job only and asks nothing
+ * about what for; without it (the fellowship page) it offers a fellowship or an internship. Files travel as multipart
+ * through the Server Action.
+ */
+export default function ApplicationForm({ fixedRole, email: orgEmail }: { fixedRole?: Role; email: string }) {
+  const [kind, setKind] = useState<ApplicationKind>(fixedRole ? "job" : "fellowship");
   // Some roles (e.g. Research Assistant) ask for a writing sample; for the rest, and fellowships, it is optional.
-  const sampleRequired = kind === "job" && roles.find((r) => r.slug === role)?.writingSample === "required";
+  const sampleRequired = fixedRole?.writingSample === "required";
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [fieldErrors, setFieldErrors] = useState<Partial<Record<ApplicationField, string>>>({});
   const [sentTo, setSentTo] = useState<string | null>(null);
-  // Without open roles there is nothing to choose, so "a job opening" isn't offered.
-  const kinds = APPLICATION_KINDS.filter((k) => k !== "job" || roles.length > 0);
 
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -72,54 +75,44 @@ export default function ApplicationForm({ roles, initialRole, email: orgEmail }:
 
   return (
     <form onSubmit={submit} noValidate aria-busy={busy} className="rounded-lg border border-[#e3e6f0] bg-white p-6 sm:p-8">
-      <h2 className="text-[20px] leading-tight text-[#171a2b]">Apply to PRI</h2>
-      <p className="mt-1.5 text-[14px] text-[#5b6280]">Applications are open on a rolling basis. All fields are required unless marked optional.</p>
+      <h2 className="text-[20px] leading-tight text-[#171a2b]">{fixedRole ? `Apply for ${fixedRole.title}` : "Apply to PRI"}</h2>
+      <p className="mt-1.5 text-[14px] text-[#5b6280]">
+        {fixedRole ? "" : "Applications are open on a rolling basis. "}All fields are required unless marked optional.
+      </p>
 
       <div role="alert" className={error ? "mt-5 rounded-md border border-[#E4633F]/30 bg-[#E4633F]/8 p-3 text-[13.5px] leading-relaxed text-[#4b4f66]" : "sr-only"}>
         {error}
       </div>
 
-      <div className="mt-6 grid gap-5 sm:grid-cols-2">
-        <div>
-          <label htmlFor="apply-kind" className={labelClass}>Applying for</label>
-          <select
-            id="apply-kind"
-            name="kind"
-            value={kind}
-            onChange={(e) => setKind(e.target.value as ApplicationKind)}
-            aria-invalid={!!fieldErrors.kind}
-            aria-describedby={describe("kind")}
-            className={`${inputClass} h-11 px-2`}
-          >
-            {kinds.map((k) => (
-              <option key={k} value={k}>{applicationKindLabels[k]}</option>
-            ))}
-          </select>
-          {fieldErrors.kind && <p id="apply-kind-error" className={fieldError}>{fieldErrors.kind}</p>}
-        </div>
-        {kind === "job" && (
+      {fixedRole ? (
+        <>
+          <input type="hidden" name="kind" value="job" />
+          <input type="hidden" name="job" value={fixedRole.slug} />
+          {(fieldErrors.kind || fieldErrors.job) && <p className={`mt-5 ${fieldError}`}>{fieldErrors.job ?? fieldErrors.kind}</p>}
+        </>
+      ) : (
+        <div className="mt-6 grid gap-5 sm:grid-cols-2">
           <div>
-            <label htmlFor="apply-job" className={labelClass}>Role</label>
+            <label htmlFor="apply-kind" className={labelClass}>Applying for</label>
             <select
-              id="apply-job"
-              name="job"
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              aria-invalid={!!fieldErrors.job}
-              aria-describedby={describe("job")}
+              id="apply-kind"
+              name="kind"
+              value={kind}
+              onChange={(e) => setKind(e.target.value as ApplicationKind)}
+              aria-invalid={!!fieldErrors.kind}
+              aria-describedby={describe("kind")}
               className={`${inputClass} h-11 px-2`}
             >
-              <option value="" disabled>Choose a role…</option>
-              {roles.map((r) => (
-                <option key={r.slug} value={r.slug}>{r.title}</option>
+              {PROGRAMME_KINDS.map((k) => (
+                <option key={k} value={k}>{applicationKindLabels[k]}</option>
               ))}
             </select>
-            {fieldErrors.job && <p id="apply-job-error" className={fieldError}>{fieldErrors.job}</p>}
+            {fieldErrors.kind && <p id="apply-kind-error" className={fieldError}>{fieldErrors.kind}</p>}
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
-      <div className="mt-5 grid gap-5 sm:grid-cols-2">
+      <div className={`${fixedRole ? "mt-6" : "mt-5"} grid gap-5 sm:grid-cols-2`}>
         <div>
           <label htmlFor="apply-name" className={labelClass}>Full name</label>
           <input id="apply-name" name="full_name" autoComplete="name" maxLength={120} aria-invalid={!!fieldErrors.full_name} aria-describedby={describe("full_name")} className={`${inputClass} h-11`} />

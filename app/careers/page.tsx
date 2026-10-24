@@ -8,7 +8,7 @@ import { pageMetadata } from "../_lib/seo";
 
 export const metadata = pageMetadata({
   title: "Careers",
-  description: "Open roles at the Policy and Research Initiative. Applications are open on a rolling basis.",
+  description: "Open roles at the Policy and Research Initiative.",
   path: "/careers",
 });
 
@@ -22,7 +22,6 @@ export default async function CareersPage() {
       <section className="border-b border-[#e6e8f0] bg-white">
         <div className="mx-auto max-w-6xl px-6 py-16">
           <SectionHeading>Open Roles</SectionHeading>
-          <p className="mt-2 max-w-2xl text-[15px] text-[#5b6280]">These roles are open on a rolling basis, with no deadline. Apply any time; if you are a good fit, we will be in touch.</p>
           {!result.ok && <LoadError what="our open roles" />}
           {result.ok && result.data.length === 0 && <NotPublishedYet>There are no open roles right now.</NotPublishedYet>}
           <ul className="mt-8 grid gap-3">

@@ -2655,6 +2655,8 @@ export interface components {
              * @description The job description as a PDF (up to 5 MB), shown on the opening's page. Send null to remove it.
              */
             description_pdf?: string | null;
+            /** @description Whether the deadline has passed (judged on India's date); closed roles refuse applications. */
+            readonly is_closed: boolean;
             readonly status: components["schemas"]["WorkflowStatusEnum"];
             readonly created_by: number;
             readonly reviewed_by: number | null;
@@ -3291,6 +3293,8 @@ export interface components {
              * @description The job description as a PDF (up to 5 MB), shown on the opening's page. Send null to remove it.
              */
             description_pdf?: string | null;
+            /** @description Whether the deadline has passed (judged on India's date); closed roles refuse applications. */
+            readonly is_closed?: boolean;
             readonly status?: components["schemas"]["WorkflowStatusEnum"];
             readonly created_by?: number;
             readonly reviewed_by?: number | null;
