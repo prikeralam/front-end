@@ -11,9 +11,9 @@ import {
 } from "../api/applicationAdapter";
 import { getAccessToken } from "../auth/serverAuth";
 
-// Applications sent through /fellowship/apply (website-backend's careers app). Editors and admins read them, open the
-// CV, cover letter and writing sample, and mark them reviewed; the backend answers 403 to anyone else. Arguments are validated because Server
-// Actions are public POST endpoints.
+// Applications sent through /careers/apply and each role's apply page (website-backend's careers app). Editors and
+// admins read them, open the CV, cover letter and writing sample, and mark them reviewed; the backend answers 403 to
+// anyone else. Arguments are validated because Server Actions are public POST endpoints.
 
 const PATH = "/api/v1/applications/";
 const MAX_PAGE = 100_000;

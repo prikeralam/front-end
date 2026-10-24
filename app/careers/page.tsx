@@ -8,7 +8,7 @@ import { pageMetadata } from "../_lib/seo";
 
 export const metadata = pageMetadata({
   title: "Careers",
-  description: "Open roles at the Policy and Research Initiative.",
+  description: "Open roles, fellowships and internships at the Policy and Research Initiative.",
   path: "/careers",
 });
 
@@ -37,6 +37,22 @@ export default async function CareersPage() {
               </li>
             ))}
           </ul>
+        </div>
+      </section>
+
+      {/* Linked from the menu and footer, and where the old /fellowship page redirects. */}
+      <section id="fellowships" className="scroll-mt-24 border-b border-[#e6e8f0]">
+        <div className="mx-auto max-w-6xl px-6 py-16">
+          <SectionHeading>Fellowships &amp; Internships</SectionHeading>
+          <div className="mt-8 rounded-lg border border-[#e6e8f0] bg-white p-8">
+            <p className="max-w-2xl text-[15px] leading-relaxed text-[#5b5f74]">
+              We welcome fellows and interns who want to work on PRI&rsquo;s research and data. Applications are open at any
+              time: send us your CV and a cover letter whenever you are ready, and we will get back to you.
+            </p>
+            <Link href="/careers/apply" className="mt-6 inline-block rounded-md bg-[#253D9A] px-6 py-3 text-sm font-semibold text-white hover:bg-[#1B2C70]">
+              Apply for a fellowship or internship &rarr;
+            </Link>
+          </div>
         </div>
       </section>
     </>
