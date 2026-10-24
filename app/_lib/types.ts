@@ -146,6 +146,10 @@ export type JobListing = {
   rolling: boolean;
   /** Formatted deadline, only for roles that are not rolling. */
   deadline: string | null;
+  /** Whether applicants must send a writing sample for this role. */
+  writingSample: "optional" | "required";
+  /** Whether staff uploaded a job description PDF (served at /careers/jobs/<slug>/job-description). */
+  hasDescriptionPdf: boolean;
 };
 
 export type PRIDocument = {

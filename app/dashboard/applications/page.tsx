@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import type { ApplicationRow, ApplicationStatus } from "../../_lib/api/applicationAdapter";
 import { applicationKindLabels } from "../../_lib/apply/applyTypes";
-import { getApplicationFileAction, listApplicationsAction, setApplicationStatusAction, type ApplicationsPage } from "../../_lib/dashboard/applicationActions";
+import { getApplicationFileAction, listApplicationsAction, setApplicationStatusAction, type ApplicationDocument, type ApplicationsPage } from "../../_lib/dashboard/applicationActions";
 import { canReviewDrafts } from "../../_lib/session";
 import { useRequireSession } from "../../_lib/useSession";
 import { EmptyState } from "../../_ui/kit";
@@ -39,7 +39,7 @@ function ApplicationItem({ a, me, onChange }: { a: ApplicationRow; me?: number; 
     else setError(result.error);
   }
 
-  async function open(document: "cv" | "sop") {
+  async function open(document: ApplicationDocument) {
     setError("");
     // Opened before the request so the browser doesn't treat it as an unrequested pop-up; the link expires, so it is
     // fetched on each click rather than kept on the page.
@@ -71,7 +71,8 @@ function ApplicationItem({ a, me, onChange }: { a: ApplicationRow; me?: number; 
         </div>
         <div className="flex shrink-0 flex-wrap gap-2">
           <button type="button" onClick={() => open("cv")} className={secondaryButton}>Open CV</button>
-          <button type="button" onClick={() => open("sop")} className={secondaryButton}>Open SOP</button>
+          <button type="button" onClick={() => open("cover_letter")} className={secondaryButton}>Open cover letter</button>
+          {a.hasWritingSample && <button type="button" onClick={() => open("writing_sample")} className={secondaryButton}>Open writing sample</button>}
           <a href={zohoComposeUrl(a.email, `Your application to PRI (${applyingFor})`)} target="_blank" rel="noopener noreferrer" title={`Reply from ${OFFICE_MAILBOX} in Zoho Mail`} className={secondaryButton}>Reply</a>
           <button type="button" onClick={toggle} disabled={busy} className={secondaryButton}>
             {busy ? "Saving…" : a.status === "new" ? "Mark reviewed" : "Reopen"}
@@ -119,7 +120,7 @@ export default function ApplicationsPage() {
     <DashboardPageHeader
       trail={["Inbox", "Applications"]}
       title="Applications"
-      description="Fellowship, internship and job applications sent through the website. PRI's contact address is told about each one; the CV and SOP open only from here."
+      description="Fellowship, internship and job applications sent through the website. PRI's contact address is told about each one; the CV, cover letter and writing sample open only from here."
     />
   );
 

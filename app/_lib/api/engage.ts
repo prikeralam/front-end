@@ -29,6 +29,14 @@ export async function listJobs(): Promise<JobListing[]> {
   return jobs.map(toJob);
 }
 
+/** The current link to a published role's job description PDF, or null when it has none (or no such role). */
+export async function getJobDescriptionUrl(slug: string): Promise<string | null> {
+  const result = await api.GET(JOB_PATH, { params: { path: { slug } } });
+  if (result.response.status === 404) return null;
+  const url = unwrap(result, JOB_PATH).description_pdf;
+  return typeof url === "string" && /^https?:\/\//.test(url) ? url : null;
+}
+
 export async function getJobBySlug(slug: string): Promise<JobListing | null> {
   const result = await api.GET(JOB_PATH, { params: { path: { slug } } });
   if (result.response.status === 404) return null;

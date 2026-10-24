@@ -57,9 +57,13 @@ export async function setApplicationStatusAction(id: number, status: Application
   return { ok: false, error: "Something went wrong on the server. Please try again." };
 }
 
-/** A short-lived link to an applicant's CV or SOP. Fetched when staff click, never stored on the page. */
-export async function getApplicationFileAction(id: number, document: "cv" | "sop"): Promise<ApplicationFile> {
-  if (!isId(id) || (document !== "cv" && document !== "sop")) return { ok: false, error: "That file isn't available." };
+export const APPLICATION_DOCUMENTS = ["cv", "cover_letter", "writing_sample"] as const;
+export type ApplicationDocument = (typeof APPLICATION_DOCUMENTS)[number];
+
+/** A short-lived link to an applicant's CV, cover letter or writing sample. Fetched when staff click, never stored on
+ * the page. */
+export async function getApplicationFileAction(id: number, document: ApplicationDocument): Promise<ApplicationFile> {
+  if (!isId(id) || !(APPLICATION_DOCUMENTS as readonly string[]).includes(document)) return { ok: false, error: "That file isn't available." };
 
   const accessToken = await getAccessToken();
   if (!accessToken) return { ok: false, error: signedOut };
@@ -69,6 +73,6 @@ export async function getApplicationFileAction(id: number, document: "cv" | "sop
   if (result.ok && typeof url === "string" && /^https?:\/\//.test(url)) return { ok: true, url };
   if (result.status === 401) return { ok: false, error: signedOut };
   if (result.status === 403) return { ok: false, error: "Only editors and admins can open applications." };
-  if (result.status === 404) return { ok: false, error: "That application no longer exists." };
+  if (result.status === 404) return { ok: false, error: document === "writing_sample" ? "No writing sample was sent." : "That application no longer exists." };
   return { ok: false, error: "We couldn't open that file. Please try again." };
 }

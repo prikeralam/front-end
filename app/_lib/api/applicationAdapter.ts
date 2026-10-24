@@ -12,6 +12,8 @@ export type ApplicationRow = {
   jobTitle: string | null;
   fullName: string;
   email: string;
+  /** Whether the applicant sent a writing sample (optional for most roles). */
+  hasWritingSample: boolean;
   status: ApplicationStatus;
   createdAt: string;
   handledAt: string | null;
@@ -25,6 +27,7 @@ export function toApplicationRow(a: ApiApplication): ApplicationRow {
     jobTitle: a.job_title ?? null,
     fullName: a.full_name,
     email: a.email,
+    hasWritingSample: a.has_writing_sample ?? false,
     status: a.status === "reviewed" ? "reviewed" : "new",
     createdAt: a.created_at,
     handledAt: a.handled_at ?? null,
