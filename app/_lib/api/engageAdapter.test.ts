@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatTime, jobAvailability, jobDescriptionPath, splitLabelled, timeRange, todayInIndia, toEvent, toJob } from "./engageAdapter";
+import { formatTime, jobApplyPath, jobAvailability, jobDescriptionPath, splitLabelled, timeRange, todayInIndia, toEvent, toJob } from "./engageAdapter";
 import type { components } from "./schema";
 
 const workflow = {
@@ -126,19 +126,35 @@ describe("todayInIndia", () => {
 });
 
 describe("toJob", () => {
-  const job: components["schemas"]["JobOpening"] = { ...workflow, slug: "data-analyst", title: "Data Analyst", rolling: true, deadline: "2026-12-01" };
+  const job: components["schemas"]["JobOpening"] = { ...workflow, slug: "data-analyst", title: "Data Analyst", rolling: true, deadline: null, is_closed: false };
+  const dated = { ...job, rolling: false, deadline: "2026-11-10" };
 
-  it("treats a rolling role as open any time, whatever its deadline", () => {
-    const mapped = toJob(job);
-    expect([mapped.rolling, mapped.deadline, jobAvailability(mapped)]).toEqual([true, null, "Rolling, apply any time"]);
+  it("treats a rolling role without a deadline as open any time", () => {
+    const mapped = toJob(job, "2026-10-24");
+    expect([mapped.rolling, mapped.deadline, mapped.closed, jobAvailability(mapped)]).toEqual([true, null, false, "Rolling, apply any time"]);
   });
 
-  it("shows the deadline of a role that isn't rolling", () => {
-    expect(jobAvailability(toJob({ ...job, rolling: false }))).toBe("Apply by 1 Dec 2026");
+  it("shows a deadline whenever one is set, even on a role saved as rolling", () => {
+    expect(jobAvailability(toJob(dated, "2026-10-24"))).toBe("Apply by 10 Nov 2026");
+    const stillRolling = toJob({ ...dated, rolling: true }, "2026-10-24");
+    expect([stillRolling.rolling, jobAvailability(stillRolling)]).toEqual([false, "Apply by 10 Nov 2026"]);
+  });
+
+  it("shows a role whose deadline has passed as closed, from the API or, on an older backend, by India's date", () => {
+    const closed = toJob({ ...dated, is_closed: true }, "2026-11-11");
+    expect([closed.closed, jobAvailability(closed)]).toEqual([true, "Applications closed on 10 Nov 2026"]);
+    const older = { ...dated } as Partial<typeof dated>;
+    delete older.is_closed;
+    expect(toJob(older as typeof dated, "2026-11-10").closed).toBe(false);
+    expect(toJob(older as typeof dated, "2026-11-11").closed).toBe(true);
+  });
+
+  it("maps the writing sample, the job description PDF and the apply page", () => {
     const mapped = toJob(job);
     expect([mapped.writingSample, mapped.hasDescriptionPdf]).toEqual(["optional", false]);
     const ra = toJob({ ...job, writing_sample: "required", description_pdf: "https://bucket.example/jobs/jd.pdf?sig=1" });
     expect([ra.writingSample, ra.hasDescriptionPdf]).toEqual(["required", true]);
     expect(jobDescriptionPath("research-assistant")).toBe("/careers/jobs/research-assistant/job-description");
+    expect(jobApplyPath("research-assistant")).toBe("/careers/jobs/research-assistant/apply");
   });
 });

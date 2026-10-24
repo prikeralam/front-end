@@ -1,11 +1,18 @@
 "use server";
 
 import { backendRequest } from "../api/backendRequest";
-import { toApplicationRow, type ApiApplication, type ApplicationRow, type ApplicationStatus } from "../api/applicationAdapter";
+import {
+  APPLICATION_DOCUMENTS,
+  toApplicationRow,
+  type ApiApplication,
+  type ApplicationDocument,
+  type ApplicationRow,
+  type ApplicationStatus,
+} from "../api/applicationAdapter";
 import { getAccessToken } from "../auth/serverAuth";
 
 // Applications sent through /fellowship/apply (website-backend's careers app). Editors and admins read them, open the
-// CV and SOP, and mark them reviewed; the backend answers 403 to anyone else. Arguments are validated because Server
+// CV, cover letter and writing sample, and mark them reviewed; the backend answers 403 to anyone else. Arguments are validated because Server
 // Actions are public POST endpoints.
 
 const PATH = "/api/v1/applications/";
@@ -56,9 +63,6 @@ export async function setApplicationStatusAction(id: number, status: Application
   if (result.status === 404) return { ok: false, error: "That application no longer exists." };
   return { ok: false, error: "Something went wrong on the server. Please try again." };
 }
-
-export const APPLICATION_DOCUMENTS = ["cv", "cover_letter", "writing_sample"] as const;
-export type ApplicationDocument = (typeof APPLICATION_DOCUMENTS)[number];
 
 /** A short-lived link to an applicant's CV, cover letter or writing sample. Fetched when staff click, never stored on
  * the page. */
