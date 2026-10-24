@@ -18,8 +18,16 @@ const nextConfig: NextConfig = {
     serverActions: { bodySizeLimit: "21mb" },
   },
   async redirects() {
-    // "Cited in" folded into the bottom of /data (2026-10-08) until it grows enough for its own page again.
-    return [{ source: "/cited-in", destination: "/data#cited-in", permanent: true }];
+    return [
+      // "Cited in" folded into the bottom of /data (2026-10-08) until it grows enough for its own page again.
+      { source: "/cited-in", destination: "/data#cited-in", permanent: true },
+      // Fellowships & Internships became a section of /careers (#274). Old job links (/fellowship/apply?role=<slug>)
+      // go to that role's own apply page, so they come first; fellow profiles were dropped.
+      { source: "/fellowship/apply", has: [{ type: "query", key: "role", value: "(?<role>[a-z0-9-]+)" }], destination: "/careers/jobs/:role/apply", permanent: true },
+      { source: "/fellowship/apply", destination: "/careers/apply", permanent: true },
+      { source: "/fellowship/:slug", destination: "/careers#fellowships", permanent: true },
+      { source: "/fellowship", destination: "/careers#fellowships", permanent: true },
+    ];
   },
   images: {
     remotePatterns: [
