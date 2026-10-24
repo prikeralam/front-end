@@ -8,7 +8,7 @@ import { load } from "../../../../_lib/api/load";
 import { pageMetadata } from "../../../../_lib/seo";
 import { LoadError } from "../../../../_ui/ApiMessage";
 import { PageHeader } from "../../../../_ui/kit";
-import ApplicationForm from "../../../../fellowship/apply/ApplicationForm";
+import ApplicationForm from "../../../apply/ApplicationForm";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
