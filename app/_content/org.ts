@@ -83,7 +83,6 @@ export const nav = [
     label: "Engage",
     items: [
       { label: "Events & Campaigns", href: "/events" },
-      { label: "Fellowships & Internships", href: "/careers#fellowships" },
       { label: "Careers", href: "/careers" },
       { label: "Contact", href: "/contact" },
     ],
