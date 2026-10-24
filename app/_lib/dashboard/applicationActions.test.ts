@@ -39,7 +39,7 @@ describe("listApplicationsAction", () => {
     expect(backendRequest).toHaveBeenCalledWith("GET", "/api/v1/applications/?page=1&status=new", { accessToken: "tok" });
     expect(result).toEqual({
       status: "ok",
-      applications: [{ id: 4, kind: "job", jobTitle: "Data Analyst", fullName: "Asha K", email: "asha@example.org", status: "new", createdAt: "2026-10-08T08:00:00Z", handledAt: null, handledBy: null }],
+      applications: [{ id: 4, kind: "job", jobTitle: "Data Analyst", fullName: "Asha K", email: "asha@example.org", hasWritingSample: false, status: "new", createdAt: "2026-10-08T08:00:00Z", handledAt: null, handledBy: null }],
       count: 1,
       hasNext: true,
       hasPrevious: false,
@@ -78,12 +78,15 @@ describe("getApplicationFileAction", () => {
     expect(backendRequest).toHaveBeenCalledWith("GET", "/api/v1/applications/4/files/cv/", { accessToken: "tok" });
   });
 
-  it("only asks for a CV or SOP, and never passes on a link that isn't http(s)", async () => {
+  it("only asks for a CV, cover letter or writing sample, and never passes on a link that isn't http(s)", async () => {
     expect(await getApplicationFileAction(4, "passport" as never)).toMatchObject({ ok: false });
+    expect(await getApplicationFileAction(4, "sop" as never)).toMatchObject({ ok: false });
     expect(backendRequest).not.toHaveBeenCalled();
     backendRequest.mockResolvedValueOnce(ok({ file: "javascript:alert(1)" }));
-    expect(await getApplicationFileAction(4, "sop")).toMatchObject({ ok: false });
+    expect(await getApplicationFileAction(4, "cover_letter")).toMatchObject({ ok: false });
     backendRequest.mockResolvedValueOnce(bad(403));
-    expect(await getApplicationFileAction(4, "sop")).toEqual({ ok: false, error: "Only editors and admins can open applications." });
+    expect(await getApplicationFileAction(4, "cover_letter")).toEqual({ ok: false, error: "Only editors and admins can open applications." });
+    backendRequest.mockResolvedValueOnce(bad(404));
+    expect(await getApplicationFileAction(4, "writing_sample")).toEqual({ ok: false, error: "No writing sample was sent." });
   });
 });

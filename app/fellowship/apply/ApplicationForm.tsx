@@ -10,6 +10,7 @@ import {
   type ApplicationField,
   type ApplicationKind,
   type ApplicationResult,
+  type WritingSample,
 } from "../../_lib/apply/applyTypes";
 
 const labelClass = "mb-1.5 block font-[family-name:var(--font-mono)] text-[11px] font-semibold uppercase tracking-[0.12em] text-[#6f7899]";
@@ -22,12 +23,15 @@ const hint = "mt-1.5 text-[12.5px] text-[#6f7899]";
 
 const unreachable = (): ApplicationResult => ({ ok: false, message: "We couldn't reach the server. Please try again, or email us directly." });
 
-type Role = { slug: string; title: string };
+type Role = { slug: string; title: string; writingSample: WritingSample };
 
 /** One form for fellowships, internships and the open roles. Files travel as multipart through the Server Action. */
 export default function ApplicationForm({ roles, initialRole, email: orgEmail }: { roles: Role[]; initialRole?: string; email: string }) {
   const startsWithRole = !!initialRole && roles.some((r) => r.slug === initialRole);
   const [kind, setKind] = useState<ApplicationKind>(startsWithRole ? "job" : "fellowship");
+  const [role, setRole] = useState(startsWithRole ? initialRole! : "");
+  // Some roles (e.g. Research Assistant) ask for a writing sample; for the rest, and fellowships, it is optional.
+  const sampleRequired = kind === "job" && roles.find((r) => r.slug === role)?.writingSample === "required";
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [fieldErrors, setFieldErrors] = useState<Partial<Record<ApplicationField, string>>>({});
@@ -69,7 +73,7 @@ export default function ApplicationForm({ roles, initialRole, email: orgEmail }:
   return (
     <form onSubmit={submit} noValidate aria-busy={busy} className="rounded-lg border border-[#e3e6f0] bg-white p-6 sm:p-8">
       <h2 className="text-[20px] leading-tight text-[#171a2b]">Apply to PRI</h2>
-      <p className="mt-1.5 text-[14px] text-[#5b6280]">Applications are open on a rolling basis. All fields are required.</p>
+      <p className="mt-1.5 text-[14px] text-[#5b6280]">Applications are open on a rolling basis. All fields are required unless marked optional.</p>
 
       <div role="alert" className={error ? "mt-5 rounded-md border border-[#E4633F]/30 bg-[#E4633F]/8 p-3 text-[13.5px] leading-relaxed text-[#4b4f66]" : "sr-only"}>
         {error}
@@ -99,7 +103,8 @@ export default function ApplicationForm({ roles, initialRole, email: orgEmail }:
             <select
               id="apply-job"
               name="job"
-              defaultValue={startsWithRole ? initialRole : ""}
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
               aria-invalid={!!fieldErrors.job}
               aria-describedby={describe("job")}
               className={`${inputClass} h-11 px-2`}
@@ -135,11 +140,22 @@ export default function ApplicationForm({ roles, initialRole, email: orgEmail }:
           {fieldErrors.cv && <p id="apply-cv-error" className={fieldError}>{fieldErrors.cv}</p>}
         </div>
         <div>
-          <label htmlFor="apply-sop" className={labelClass}>Statement of purpose</label>
-          <input id="apply-sop" name="sop" type="file" accept={DOCUMENT_ACCEPT} aria-invalid={!!fieldErrors.sop} aria-describedby={describe("sop", true)} className={fileClass} />
-          <p id="apply-sop-hint" className={hint}>Why you want to work with PRI. PDF or Word, up to {DOCUMENT_MAX_MB} MB.</p>
-          {fieldErrors.sop && <p id="apply-sop-error" className={fieldError}>{fieldErrors.sop}</p>}
+          <label htmlFor="apply-cover_letter" className={labelClass}>Cover letter</label>
+          <input id="apply-cover_letter" name="cover_letter" type="file" accept={DOCUMENT_ACCEPT} aria-invalid={!!fieldErrors.cover_letter} aria-describedby={describe("cover_letter", true)} className={fileClass} />
+          <p id="apply-cover_letter-hint" className={hint}>Why you want this role and what you would bring. PDF or Word, up to {DOCUMENT_MAX_MB} MB.</p>
+          {fieldErrors.cover_letter && <p id="apply-cover_letter-error" className={fieldError}>{fieldErrors.cover_letter}</p>}
         </div>
+      </div>
+
+      <div className="mt-5">
+        <label htmlFor="apply-writing_sample" className={labelClass}>
+          Writing sample{sampleRequired ? "" : <span className="normal-case tracking-normal font-normal"> (optional)</span>}
+        </label>
+        <input id="apply-writing_sample" name="writing_sample" type="file" accept={DOCUMENT_ACCEPT} aria-invalid={!!fieldErrors.writing_sample} aria-describedby={describe("writing_sample", true)} className={fileClass} />
+        <p id="apply-writing_sample-hint" className={hint}>
+          {sampleRequired ? "This role asks for one: " : ""}a piece of your own writing, such as a report, paper or article. PDF or Word, up to {DOCUMENT_MAX_MB} MB.
+        </p>
+        {fieldErrors.writing_sample && <p id="apply-writing_sample-error" className={fieldError}>{fieldErrors.writing_sample}</p>}
       </div>
 
       {/* A trap for bots: hidden from people and assistive technology, so anything typed here is automated. */}

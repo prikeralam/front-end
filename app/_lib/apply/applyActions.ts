@@ -18,7 +18,7 @@ import {
 
 const LIMITS = { full_name: 120, email: 254, job: 50, website: 200 };
 const perVisitor = createRateLimiter({ limit: 3, windowMs: 60 * 60 * 1000 });
-const FIELDS: ApplicationField[] = ["kind", "job", "full_name", "email", "cv", "sop"];
+const FIELDS: ApplicationField[] = ["kind", "job", "full_name", "email", "cv", "cover_letter", "writing_sample"];
 
 const isKind = (value: unknown): value is ApplicationKind => typeof value === "string" && (APPLICATION_KINDS as readonly string[]).includes(value);
 const text = (value: FormDataEntryValue | null) => (typeof value === "string" ? value.trim() : "");
@@ -28,7 +28,7 @@ async function visitorKey(): Promise<string> {
   return h.get("x-real-ip") ?? h.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
 }
 
-/** Why a CV or SOP can't be sent, or null when it is fine. */
+/** Why a CV, cover letter or writing sample can't be sent, or null when it is fine. */
 function checkDocument(value: FormDataEntryValue | null, what: string): string | null {
   if (!(value instanceof File) || value.size === 0) return `Attach your ${what}.`;
   const extension = value.name.includes(".") ? value.name.split(".").pop()!.toLowerCase() : "";
@@ -45,7 +45,10 @@ export async function submitApplicationAction(form: FormData): Promise<Applicati
   const fullName = text(form.get("full_name"));
   const email = text(form.get("email"));
   const cv = form.get("cv");
-  const sop = form.get("sop");
+  const coverLetter = form.get("cover_letter");
+  // Optional unless the role asks for one, which the backend decides; checked here only when one is attached.
+  const writingSample = form.get("writing_sample");
+  const hasWritingSample = writingSample instanceof File && writingSample.size > 0;
 
   const fieldErrors: Partial<Record<ApplicationField, string>> = {};
   if (!isKind(kind)) fieldErrors.kind = "Choose what you are applying for.";
@@ -54,8 +57,10 @@ export async function submitApplicationAction(form: FormData): Promise<Applicati
   if (email.length > LIMITS.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) fieldErrors.email = "Enter a valid email address.";
   const cvError = checkDocument(cv, "CV");
   if (cvError) fieldErrors.cv = cvError;
-  const sopError = checkDocument(sop, "statement of purpose");
-  if (sopError) fieldErrors.sop = sopError;
+  const coverLetterError = checkDocument(coverLetter, "cover letter");
+  if (coverLetterError) fieldErrors.cover_letter = coverLetterError;
+  const writingSampleError = hasWritingSample ? checkDocument(writingSample, "writing sample") : null;
+  if (writingSampleError) fieldErrors.writing_sample = writingSampleError;
   if (Object.keys(fieldErrors).length > 0) return { ok: false, message: "Check the highlighted fields.", fieldErrors };
 
   // The hidden `website` field is a bot trap: say it worked, and send nothing.
@@ -69,7 +74,8 @@ export async function submitApplicationAction(form: FormData): Promise<Applicati
   body.set("full_name", fullName);
   body.set("email", email);
   body.set("cv", cv as File);
-  body.set("sop", sop as File);
+  body.set("cover_letter", coverLetter as File);
+  if (hasWritingSample) body.set("writing_sample", writingSample as File);
 
   try {
     const response = await fetch(`${apiBaseUrl()}/api/v1/apply/`, { method: "POST", body, headers: { Accept: "application/json" }, cache: "no-store" });

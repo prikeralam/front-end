@@ -93,8 +93,13 @@ export function toJob(job: ApiJob): JobListing {
     employment: job.employment_type ?? "",
     rolling: job.rolling ?? true,
     deadline: !job.rolling && job.deadline ? formatPublicationDate(job.deadline) : null,
+    writingSample: job.writing_sample === "required" ? "required" : "optional",
+    hasDescriptionPdf: !!job.description_pdf,
   };
 }
+
+/** The stable address of a role's job description PDF: it redirects to the file's current (expiring) link. */
+export const jobDescriptionPath = (slug: string) => `/careers/jobs/${encodeURIComponent(slug)}/job-description`;
 
 /** How a job reads on its card: rolling roles say so, others show their deadline. */
 export function jobAvailability(job: JobListing): string {

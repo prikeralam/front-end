@@ -20,7 +20,7 @@ function application(fields: Record<string, string | File> = {}): FormData {
     full_name: " Asha K ",
     email: " asha@example.org ",
     cv: file("cv.pdf"),
-    sop: file("sop.docx"),
+    cover_letter: file("letter.docx"),
     ...fields,
   };
   for (const [key, value] of Object.entries(values)) form.set(key, value);
@@ -46,7 +46,25 @@ describe("submitApplicationAction", () => {
     const sent = init.body as FormData;
     expect([sent.get("kind"), sent.get("full_name"), sent.get("email"), sent.get("job")]).toEqual(["fellowship", "Asha K", "asha@example.org", null]);
     expect((sent.get("cv") as File).name).toBe("cv.pdf");
-    expect((sent.get("sop") as File).name).toBe("sop.docx");
+    expect((sent.get("cover_letter") as File).name).toBe("letter.docx");
+    expect(sent.get("writing_sample")).toBeNull();
+  });
+
+  it("sends a writing sample when one is attached, and checks it like the other files", async () => {
+    fetchMock.mockResolvedValueOnce(answer(201));
+    expect(await submitApplicationAction(application({ writing_sample: file("essay.pdf") }))).toEqual({ ok: true });
+    expect(((fetchMock.mock.calls[0][1].body as FormData).get("writing_sample") as File).name).toBe("essay.pdf");
+    expect(await submitApplicationAction(application({ writing_sample: file("essay.exe") }))).toMatchObject({ ok: false, fieldErrors: { writing_sample: expect.stringContaining("PDF or Word") } });
+    // an empty file input is "not attached", not an error
+    fetchMock.mockResolvedValueOnce(answer(201));
+    expect(await submitApplicationAction(application({ writing_sample: new File([], "") }))).toEqual({ ok: true });
+  });
+
+  it("shows the backend's refusal when the role requires a writing sample", async () => {
+    fetchMock.mockResolvedValueOnce(answer(400, { writing_sample: ["This role asks for a writing sample."] }));
+    expect(await submitApplicationAction(application({ kind: "job", job: "research-assistant" }))).toMatchObject({
+      ok: false, fieldErrors: { writing_sample: "This role asks for a writing sample." },
+    });
   });
 
   it("sends the role for a job application", async () => {
@@ -56,14 +74,14 @@ describe("submitApplicationAction", () => {
   });
 
   it("points at every invalid field without calling the backend", async () => {
-    const result = await submitApplicationAction(application({ kind: "job", job: "", full_name: " ", email: "nope", cv: file("cv.exe"), sop: file("sop.pdf", 6 * 1024 * 1024) }));
+    const result = await submitApplicationAction(application({ kind: "job", job: "", full_name: " ", email: "nope", cv: file("cv.exe"), cover_letter: file("letter.pdf", 6 * 1024 * 1024) }));
     expect(result).toMatchObject({
       ok: false,
-      fieldErrors: { job: expect.any(String), full_name: expect.any(String), email: expect.any(String), cv: expect.stringContaining("PDF or Word"), sop: expect.stringContaining("5 MB") },
+      fieldErrors: { job: expect.any(String), full_name: expect.any(String), email: expect.any(String), cv: expect.stringContaining("PDF or Word"), cover_letter: expect.stringContaining("5 MB") },
     });
     const missing = new FormData();
     missing.set("kind", "teacher");
-    expect(await submitApplicationAction(missing)).toMatchObject({ ok: false, fieldErrors: { kind: expect.any(String), cv: expect.any(String), sop: expect.any(String) } });
+    expect(await submitApplicationAction(missing)).toMatchObject({ ok: false, fieldErrors: { kind: expect.any(String), cv: expect.any(String), cover_letter: expect.any(String) } });
     expect(await submitApplicationAction(null as never)).toMatchObject({ ok: false });
     expect(fetchMock).not.toHaveBeenCalled();
   });

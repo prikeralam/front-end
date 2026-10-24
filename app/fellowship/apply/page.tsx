@@ -16,7 +16,7 @@ export default async function FellowshipApplyPage({ searchParams }: { searchPara
   const { role } = await searchParams;
   // Without the roles the form still takes fellowship and internship applications.
   const jobs = await load("open roles", listJobs);
-  const roles = jobs.ok ? jobs.data.map((j) => ({ slug: j.slug, title: j.title })) : [];
+  const roles = jobs.ok ? jobs.data.map((j) => ({ slug: j.slug, title: j.title, writingSample: j.writingSample })) : [];
 
   return (
     <>
